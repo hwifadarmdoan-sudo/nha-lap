@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#A9DBF7">
+<title>Nhà Láp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="world"></canvas>
+
+<!-- Màn mở đầu -->
+<section id="intro" class="screen show">
+  <div class="sky-deco"><span class="cloud c1"></span><span class="cloud c2"></span><span class="cloud c3"></span></div>
+  <div id="introLogo" class="intro-step show">
+    <div class="logo-badge"><div class="logo-ring">🧬</div><div class="logo-text">Đội thi Khoa Sinh học<br><small>Trường ĐHSP Hà Nội</small></div></div>
+  </div>
+  <div id="introTitle" class="intro-step">
+    <h1 class="game-title">Nhà Láp</h1>
+    <button class="btn big pop" id="btnStart">Bắt đầu</button>
+  </div>
+  <div id="introName" class="intro-step">
+    <h2 class="headline">Em tên là gì?</h2>
+    <input id="nameInput" maxlength="14" placeholder="Tên của em" autocomplete="off">
+    <button class="btn big pop" id="btnName">Tiếp</button>
+  </div>
+  <div id="introLook" class="intro-step">
+    <div class="look-wrap">
+      <canvas id="lookPreview" width="220" height="260"></canvas>
+      <div class="look-opts">
+        <div class="opt-row"><span>Kiểu tóc</span><div id="optHair" class="chips"></div></div>
+        <div class="opt-row"><span>Màu tóc</span><div id="optHairColor" class="chips"></div></div>
+        <div class="opt-row"><span>Áo blouse</span><div id="optCoat" class="chips"></div></div>
+        <button class="btn big pop" id="btnLook">Vào tòa A1</button>
+      </div>
+    </div>
+  </div>
+  <div id="introBack" class="intro-step">
+    <h2 class="headline">Chào <b id="backName"></b>!</h2>
+    <canvas id="backPreview" width="160" height="190"></canvas>
+    <div class="row-btns">
+      <button class="btn big pop" id="btnEnter">Vào tòa A1</button>
+      <button class="btn ghost pop" id="btnChange">Đổi nhân vật</button>
+    </div>
+  </div>
+</section>
+
+<!-- Giao diện trong game -->
+<div id="hud" class="hidden">
+  <div class="hud-tl">
+    <div class="chip" id="hudFloor">Trước tòa A1</div>
+  </div>
+  <div class="hud-tr">
+    <button class="icon-btn pop" id="btnSound" title="Âm thanh">🔊</button>
+    <button class="icon-btn pop" id="btnReport" title="Báo cáo">📋</button>
+  </div>
+  <div id="guide" class="guide hidden"></div>
+  <div class="hud-br" id="emoteBar">
+    <button class="emo pop" data-emo="wave">👋</button>
+    <button class="emo pop" data-emo="poke">👉</button>
+    <button class="emo pop" data-emo="five">✋</button>
+    <button class="emo pop" data-emo="heart">❤️</button>
+    <button class="emo pop" data-emo="haha">😂</button>
+    <button class="emo pop" data-emo="dance">💃</button>
+    <button class="emo pop locked" data-emo="special" id="emoSpecial">🕺</button>
+    <button class="help-btn pop" id="btnHelp">🙋 Hỏi giáo viên</button>
+  </div>
+  <div id="joy" class="joy"><div class="joy-knob"></div></div>
+  <div id="toast" class="toast"></div>
+</div>
+
+<!-- Thang máy -->
+<div id="elevator" class="modal hidden">
+  <div class="elev-box">
+    <div class="elev-doors"><div class="door l"></div><div class="door r"></div><div class="elev-screen" id="elevScreen">1</div></div>
+    <div class="elev-panel" id="elevPanel"></div>
+    <button class="btn ghost pop" id="elevClose">Ra khỏi thang</button>
+  </div>
+</div>
+
+<!-- Bàn thí nghiệm góc nhìn POV -->
+<div id="lab" class="lab hidden">
+  <div class="lab-top">
+    <button class="icon-btn pop" id="labExit" title="Rời bàn">✕</button>
+    <div class="step-card"><div class="step-no" id="stepNo"></div><div class="step-text" id="stepText"></div></div>
+    <button class="icon-btn pop help-mini" id="labHelp" title="Hỏi giáo viên">🙋</button>
+  </div>
+  <div class="lab-stage" id="labStage"></div>
+  <div class="lab-side" id="labSide"></div>
+  <button class="btn big pop next-btn hidden" id="btnNext">Bước tiếp theo ➜</button>
+  <div class="hint hidden" id="labHint"></div>
+</div>
+
+<!-- Báo cáo -->
+<div id="report" class="modal hidden">
+  <div class="report-box">
+    <button class="icon-btn pop close" id="reportClose">✕</button>
+    <div class="report-pages" id="reportPages"></div>
+    <div class="report-nav"><button class="icon-btn pop" id="repPrev">‹</button><span id="repDots"></span><button class="icon-btn pop" id="repNext">›</button></div>
+  </div>
+</div>
+
+<!-- Thông báo lớn (gọi về, thành công) -->
+<div id="bigmsg" class="modal hidden"><div class="big-box"><div class="big-emoji" id="bigEmoji"></div><div class="big-text" id="bigText"></div><button class="btn big pop" id="bigOk">OK</button></div></div>
+
+<!-- Màn điều hành -->
+<div id="teacher" class="hidden">
+  <div class="t-panel">
+    <div class="t-head">Điều hành <span id="tCount"></span></div>
+    <div class="t-floors" id="tFloors"></div>
+    <div class="t-list" id="tList"></div>
+    <div class="t-tools">
+      <label class="t-zoom">🔍 <input type="range" id="tZoom" min="0.35" max="1.6" step="0.05" value="1"></label>
+      <button class="btn small pop" id="tRecall">📣 Gọi về</button>
+      <button class="btn small ghost pop" id="tBots">🤖 Học sinh ảo: bật</button>
+      <button class="btn small ghost pop" id="tFilm">🎬 Quay phim</button>
+    </div>
+  </div>
+  <button class="icon-btn pop t-toggle" id="tToggle">☰</button>
+</div>
+<div id="tAlert" class="t-alert hidden"></div>
+
+<!-- Xoay ngang -->
+<div id="rotate" class="rotate"><div class="phone">📱</div><p>Xoay ngang điện thoại nhé</p></div>
+
+<script src="js/audio.js"></script>
+<script src="js/draw.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/net.js"></script>
+<script src="js/bots.js"></script>
+<script src="js/lab-common.js"></script>
+<script src="js/lab-bubbles.js"></script>
+<script src="js/lab-plasmo.js"></script>
+<script src="js/report.js"></script>
+<script src="js/teacher.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
