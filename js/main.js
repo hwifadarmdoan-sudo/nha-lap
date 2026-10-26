@@ -484,10 +484,14 @@
   document.addEventListener('DOMContentLoaded', () => {});
   if (wantTeacher) {
     $('intro').classList.add('hidden');
-    setTimeout(() => {
-      const pw = prompt('Mật khẩu điều hành:');
-      if (pw !== TEACHER_PASS) { alert('Sai mật khẩu'); location.href = location.pathname; return; }
-      const nm = (prompt('Tên hiển thị của bạn:', 'Cô Linh') || 'Cô Linh').slice(0, 14);
+    $('login').classList.remove('hidden');
+    setTimeout(() => $('loginPass').focus(), 200);
+    $('loginForm').addEventListener('submit', e => {
+      e.preventDefault();
+      if ($('loginPass').value !== TEACHER_PASS) { $('loginErr').textContent = 'Sai mật khẩu, thử lại nhé'; return; }
+      $('login').classList.add('hidden');
+      NL.audio.init(); NL.audio.music('calm');
+      const nm = ($('loginName').value.trim() || 'Cô Linh').slice(0, 14);
       g.teacher = true; g.name = nm; g.look = { hair: 1, hairColor: '#2B2B2B', coat: '#2F80C0' };
       g.tut.elevator = 1;
       $('hud').classList.remove('hidden'); $('btnHelp').classList.add('hidden');
@@ -496,7 +500,7 @@
       goScene('lobby', 'fromElev');
       NL.teacher.init();
       if (isTouch) $('joy').classList.add('on');
-    }, 50);
+    });
   } else intro();
   requestAnimationFrame(frame);
 })();

@@ -107,6 +107,16 @@
 <!-- Thông báo lớn (gọi về, thành công) -->
 <div id="bigmsg" class="modal hidden"><div class="big-box"><div class="big-emoji" id="bigEmoji"></div><div class="big-text" id="bigText"></div><button class="btn big pop" id="bigOk">OK</button></div></div>
 
+<!-- Đăng nhập điều hành -->
+<div id="login" class="modal hidden"><form class="big-box login-box" id="loginForm">
+  <div class="big-emoji">👩‍🏫</div>
+  <div class="big-text">Vào chế độ điều hành</div>
+  <input id="loginPass" type="password" placeholder="Mật khẩu" autocomplete="off">
+  <input id="loginName" placeholder="Tên hiển thị" value="Cô Linh" maxlength="14" autocomplete="off">
+  <div class="login-err" id="loginErr"></div>
+  <button class="btn big pop" type="submit">Vào</button>
+</form></div>
+
 <!-- Màn điều hành -->
 <div id="teacher" class="hidden">
   <div class="t-panel">

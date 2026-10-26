@@ -189,3 +189,9 @@ body.film #hud,body.film #teacher,body.film .t-alert{display:none!important}
   .t-tools .btn.small{font-size:13px;padding:5px 10px}
   .elev-doors{width:160px;height:180px}
 }
+
+.login-box{display:flex;flex-direction:column;gap:10px;align-items:center}
+.login-box .big-text{margin:4px 0}
+.login-box input{font-family:inherit;font-size:20px;font-weight:700;text-align:center;padding:8px 16px;border-radius:999px;border:3px solid #DCEBF7;outline:none;width:min(280px,76vw);color:var(--ink);user-select:text;-webkit-user-select:text}
+.login-box input:focus{border-color:var(--blue)}
+.login-err{color:var(--red);font-weight:700;min-height:20px}
