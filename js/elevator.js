@@ -58,10 +58,12 @@ NL.elevator = (function () {
     hand = el('g', {}, svg); hand.style.pointerEvents = 'none';
     el('rect', { x: -22, y: 30, width: 44, height: 90, rx: 18, fill: '#F4F8FB', stroke: 'rgba(30,60,90,.25)', 'stroke-width': 2 }, hand);
     el('rect', { x: -24, y: 22, width: 48, height: 16, rx: 8, fill: '#fff', stroke: 'rgba(30,60,90,.2)', 'stroke-width': 2 }, hand);
-    el('ellipse', { cx: 0, cy: 8, rx: 24, ry: 22, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 2 }, hand);
-    el('rect', { x: -6, y: -44, width: 10, height: 40, rx: 5, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 1.5 }, hand); // ngón trỏ
-    [[-18, -10], [5, -8], [14, -4]].forEach(([fx, fy]) => el('rect', { x: fx, y: fy, width: 9, height: 16, rx: 4.5, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 1.5 }, hand));
-    el('rect', { x: -26, y: 0, width: 9, height: 18, rx: 4.5, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 1.5, transform: 'rotate(-35 -22 9)' }, hand);
+    // nắm tay, ngón trỏ duỗi ở mép trái (không để ngón chỉ nằm giữa), ba ngón gập, ngón cái vắt ngang
+    const SK = { fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 2 };
+    el('rect', Object.assign({ x: -28, y: -6, width: 52, height: 42, rx: 16 }, SK), hand);
+    el('rect', Object.assign({ x: -26, y: -48, width: 14, height: 50, rx: 7 }, SK), hand); // ngón trỏ
+    [-10, 1, 12].forEach(fx => el('rect', Object.assign({ x: fx, y: -12, width: 11, height: 18, rx: 5.5 }, SK), hand)); // 3 ngón gập
+    el('rect', Object.assign({ x: -20, y: 10, width: 34, height: 12, rx: 6, transform: 'rotate(-12 -3 16)' }, SK), hand); // ngón cái
     hand._x = 880; hand._y = 620; placeHand();
   }
   function placeHand() { hand.setAttribute('transform', `translate(${hand._x},${hand._y})`); }
@@ -82,7 +84,7 @@ NL.elevator = (function () {
   function press(f, b) {
     if (busy) return;
     NL.audio.play('click');
-    moveHand(778 + 4, b._y + 44, 280, () => {
+    moveHand(778 + 19, b._y + 46, 280, () => {
       b.querySelector('.face').setAttribute('fill', b._ready ? '#FFE9A8' : '#FFD6D6');
       setTimeout(() => moveHand(880, 620, 400), 250);
       if (!b._ready) { NL.helpers.toast('Tầng ' + f + ' sắp có, em lên tầng 2 nhé'); setTimeout(() => b.querySelector('.face').setAttribute('fill', '#F7F9FB'), 600); return; }
