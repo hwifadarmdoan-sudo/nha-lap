@@ -159,7 +159,7 @@ NL.drawTag = function (c, sx, sy, name, o) {
   NL.pill(c, sx, top, name, o.teacher ? '#2F80C0' : 'rgba(255,255,255,.92)', o.teacher ? '#fff' : '#1F4E79', 13);
   if (o.help) {
     const yy = top - 26 + Math.sin(o.t * 8) * 3;
-    NL.pill(c, sx, yy, 'Help teacher! 🙋', '#E5534B', '#fff', 14);
+    NL.pill(c, sx, yy, 'Teacher, help! 🙋', '#E5534B', '#fff', 14);
   } else if (o.bubble) {
     const k = Math.min(1, o.bubbleAge * 6);
     c.save(); c.translate(sx, top - 28); c.scale(k, k);

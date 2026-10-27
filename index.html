@@ -53,6 +53,7 @@
 <div id="hud" class="hidden">
   <div class="hud-tl">
     <div class="chip" id="hudFloor">Trước tòa A1</div>
+    <button class="btn small pop elev-btn hidden" id="btnElev">🛗 Thang máy</button>
   </div>
   <div class="hud-tr">
     <button class="icon-btn pop" id="btnSound" title="Âm thanh">🔊</button>
@@ -74,12 +75,10 @@
 </div>
 
 <!-- Thang máy -->
-<div id="elevator" class="modal hidden">
-  <div class="elev-box">
-    <div class="elev-doors"><div class="door l"></div><div class="door r"></div><div class="elev-screen" id="elevScreen">1</div></div>
-    <div class="elev-panel" id="elevPanel"></div>
-    <button class="btn ghost pop" id="elevClose">Ra khỏi thang</button>
-  </div>
+<div id="elevator" class="elev-pov hidden">
+  <svg id="elevSvg" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid slice"></svg>
+  <div class="elev-tip" id="elevTip">Bấm số tầng muốn lên</div>
+  <button class="btn ghost pop elev-exit" id="elevClose">Ra khỏi thang</button>
 </div>
 
 <!-- Bàn thí nghiệm góc nhìn POV -->
@@ -147,6 +146,7 @@
 <script src="js/lab-plasmo.js"></script>
 <script src="js/report.js"></script>
 <script src="js/teacher.js"></script>
+<script src="js/elevator.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

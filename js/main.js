@@ -109,6 +109,7 @@
     if (s.subject && !g.teacher && !g.tut[id]) { g.tut[id] = 1; setGuide('Chọn phòng A hoặc phòng B', 4000); }
     if (s.lab && !g.teacher) setGuide('Tới bàn thí nghiệm', 0);
     benchPrompt(false);
+    $('btnElev').classList.toggle('hidden', !s.triggers.some(tr => tr.type === 'elevator'));
   }
   const inRect = (r, x, y) => x >= r.x1 && x <= r.x2 && y >= r.y1 && y <= r.y2;
 
@@ -177,7 +178,7 @@
     // chạm vào bàn thí nghiệm
     const bench = s.objects.find(o => o.kind === 'bench' && w.x > o.x - 0.3 && w.x < o.x + o.w + 0.3 && w.y > o.y - 0.6 && w.y < o.y + o.d + 0.4);
     if (bench && !g.teacher) { g.pendingBench = bench.exp; g.path = NL.findPath(s, g.x, g.y, bench.x + bench.w / 2, bench.y + bench.d + 0.7); g.followId = null; return; }
-    g.pendingBench = null;
+    g.pendingBench = null; g.pendingElev = false;
     g.path = NL.findPath(s, g.x, g.y, w.x, w.y);
     g.followId = null;
     if (g.path) clickMark = { x: w.x, y: w.y, t: 0 };
@@ -222,42 +223,32 @@
   $('btnReport').addEventListener('click', () => { NL.audio.play('click'); NL.report.open(); });
 
   // ---------- thang máy ----------
-  let elevBusy = false;
+  // Bước vào cửa thang (nhìn từ trên), nhân vật biến vào trong, rồi chuyển sang góc nhìn POV trong cabin.
   function floorOf(scene) { const s = NL.scenes[scene]; return s.floor || 0; }
-  function openElevator() {
+  function elevTrig(s) { return s.triggers.find(tr => tr.type === 'elevator'); }
+  function walkToElevator() {
+    const s = NL.scenes[g.scene], tr = elevTrig(s);
+    if (!tr || g.inElev || NL.lab.isOpen) return;
+    const cx = (tr.x1 + tr.x2) / 2;
+    if (inRect(tr, g.x, g.y)) { enterElevator(); return; }
+    g.path = NL.findPath(s, g.x, g.y, cx, 0.6); g.pendingBench = null; g.pendingElev = true;
+    if (!g.path) { g.pendingElev = false; enterElevator(); }
+  }
+  function enterElevator() {
     if (g.teacher && NL.teacher.filming) return;
-    const cur = floorOf(g.scene);
-    const counts = { 1: 0, 2: 0, 3: 0, 4: 0 };
-    allPeople().forEach(p => { const f = floorOf(p.scene); if (counts[f] !== undefined) counts[f]++; });
-    const names = { 1: 'Sảnh', 2: 'Sinh học', 3: 'Hóa học', 4: 'Vật lí' }, cols = { 1: '#5BB4EA', 2: '#3FB37F', 3: '#9B6BD6', 4: '#3D8BD9' };
-    $('elevPanel').innerHTML = [1, 2, 3, 4].map(f => `<button class="floor-btn pop ${f === cur ? 'here' : ''}" data-f="${f}"><span class="num" style="background:${cols[f]}">${f}</span>${names[f]}<span class="cnt">👤 ${counts[f]}</span></button>`).join('');
-    $('elevScreen').textContent = cur;
-    $('elevator').querySelector('.elev-doors').classList.remove('closed');
-    $('elevator').classList.remove('hidden');
-    $('elevPanel').querySelectorAll('.floor-btn').forEach(b => b.onclick = () => ride(cur, +b.dataset.f));
+    const s = NL.scenes[g.scene], tr = elevTrig(s); if (!tr) return;
+    g.pendingElev = false; g.path = null; setGuide(null);
+    g.x = (tr.x1 + tr.x2) / 2; g.y = 0.35; g.inElev = true; g.facing = 1;
+    NL.audio.play('door');
+    setTimeout(() => {
+      NL.elevator.open({
+        floor: floorOf(g.scene) || 1, allowAll: g.teacher,
+        onArrive: to => { g.inElev = false; g.tut.elevator = 1; goScene(to === 1 ? 'lobby' : 'f' + to, 'fromElev'); },
+        onExit: () => { g.inElev = false; const sc = NL.scenes[g.scene]; g.y = 0.6; g.path = NL.findPath(sc, g.x, g.y, g.x, 1.8); }
+      });
+    }, 450);
   }
-  function ride(from, to) {
-    if (elevBusy) return; elevBusy = true;
-    NL.audio.play('click'); NL.audio.play('door');
-    const doors = $('elevator').querySelector('.elev-doors'); doors.classList.add('closed');
-    $('elevPanel').querySelectorAll('.floor-btn').forEach(b => b.style.pointerEvents = 'none');
-    let f = from; const dir = to > from ? 1 : -1;
-    setTimeout(function stepF() {
-      f += dir; $('elevScreen').textContent = f + (f === to ? '' : dir > 0 ? ' ▲' : ' ▼');
-      if (f !== to) { setTimeout(stepF, 650); return; }
-      setTimeout(() => {
-        NL.audio.play('ting');
-        g.tut.elevator = 1;
-        goScene(to === 1 ? 'lobby' : 'f' + to, 'fromElev');
-        doors.classList.remove('closed');
-        setTimeout(() => { $('elevator').classList.add('hidden'); elevBusy = false; }, 900);
-      }, 450);
-    }, 1100);
-  }
-  $('elevClose').addEventListener('click', () => {
-    NL.audio.play('click'); $('elevator').classList.add('hidden');
-    const s = NL.scenes[g.scene]; g.path = NL.findPath(s, g.x, g.y, g.x, g.y + 1.4);
-  });
+  $('btnElev').addEventListener('click', () => { NL.audio.play('click'); walkToElevator(); });
 
   // ---------- bàn thí nghiệm ----------
   function benchPrompt(on, exp) {
@@ -311,7 +302,7 @@
   });
   NL.net.onEvent(ev => {
     if (ev.type === 'recall' && !g.teacher) {
-      NL.lab.close(); $('elevator').classList.add('hidden'); elevBusy = false;
+      NL.lab.close(); NL.elevator.close(); g.inElev = false; g.pendingElev = false;
       bigMsg('📣', 'Hết giờ rồi!\nVề sảnh tầng 1 thôi', () => { goScene('lobby', 'fromElev'); });
     } else if (ev.type === 'bots') { NL.bots.enabled = ev.on; if (g.teacher) NL.teacher.syncBots(); }
     else if (ev.type === 'resolve' && ev.target === g.id) {
@@ -323,7 +314,7 @@
     }
   });
   function myState() {
-    return { name: g.name, look: g.look, scene: g.scene, x: +g.x.toFixed(2), y: +g.y.toFixed(2), facing: g.facing, anim: g.anim, emote: g.emote, emoteT: g.emoteT, help: g.help, status: g.status, lastMove: g.lastMove, teacher: g.teacher, hidden: g.teacher && NL.teacher.filming };
+    return { name: g.name, look: g.look, scene: g.scene, x: +g.x.toFixed(2), y: +g.y.toFixed(2), facing: g.facing, anim: g.anim, emote: g.emote, emoteT: g.emoteT, help: g.help, status: g.status, lastMove: g.lastMove, teacher: g.teacher, hidden: (g.teacher && NL.teacher.filming) || !!g.inElev };
   }
   function visibleOthers() {
     const out = [];
@@ -352,7 +343,7 @@
 
   function update(dt) {
     const s = NL.scenes[g.scene];
-    const frozen = NL.lab.isOpen || !$('elevator').classList.contains('hidden') || !$('bigmsg').classList.contains('hidden') || (g.teacher && NL.teacher.filming);
+    const frozen = NL.lab.isOpen || NL.elevator.isOpen() || g.inElev || !$('bigmsg').classList.contains('hidden') || (g.teacher && NL.teacher.filming);
     // hướng đi từ bàn phím / cần điều khiển
     let mx = 0, my = 0;
     if (!frozen) {
@@ -360,7 +351,7 @@
       if (keys.arrowup || keys.w) ky -= 1; if (keys.arrowdown || keys.s) ky += 1;
       if (keys.arrowleft || keys.a) kx -= 1; if (keys.arrowright || keys.d) kx += 1;
       if (joy.on) { kx = joy.dx; ky = joy.dy; }
-      if (kx || ky) { mx = kx + ky; my = ky - kx; const m = Math.hypot(mx, my); mx /= m; my /= m; const mag = joy.on ? Math.min(1, Math.hypot(joy.dx, joy.dy) * 1.3) : 1; mx *= mag; my *= mag; g.path = null; g.pendingBench = null; g.followId = null; }
+      if (kx || ky) { mx = kx + ky; my = ky - kx; const m = Math.hypot(mx, my); mx /= m; my /= m; const mag = joy.on ? Math.min(1, Math.hypot(joy.dx, joy.dy) * 1.3) : 1; mx *= mag; my *= mag; g.path = null; g.pendingBench = null; g.pendingElev = false; g.followId = null; }
     }
     const SPEED = 3.2;
     let moving = false;
@@ -375,7 +366,7 @@
       if (d <= sp) { g.x = tg.x; g.y = tg.y; g.path.shift(); } else { g.x += dx / d * sp; g.y += dy / d * sp; }
       if (Math.abs(dx - dy) > 0.02) g.facing = (dx - dy) > 0 ? 1 : -1;
       moving = true;
-      if (!g.path.length) { g.path = null; if (g.pendingBench) { const e = g.pendingBench; g.pendingBench = null; openLab(e); } }
+      if (!g.path.length) { g.path = null; if (g.pendingElev) enterElevator(); else if (g.pendingBench) { const e = g.pendingBench; g.pendingBench = null; openLab(e); } }
     }
     if (moving) { g.lastMove = Date.now(); g.danceT = 0; stepAcc += dt; if (stepAcc > 0.32) { stepAcc = 0; NL.audio.play('step'); } }
     if (g.danceT > 0) { g.danceT -= dt; if (g.danceT <= 0) NL.audio.music('calm'); }
@@ -409,7 +400,7 @@
 
   function onTrigger(tr) {
     if (tr.type === 'goto') { NL.audio.play('door'); goScene(tr.to, tr.spawn); }
-    else if (tr.type === 'elevator') { setGuide(null); openElevator(); }
+    else if (tr.type === 'elevator') { enterElevator(); }
     else if (tr.type === 'locked') { toast('🚧 Phòng đang lắp đặt, quay lại sau nhé'); }
     else if (tr.type === 'bench' && !g.teacher) { if (!g.pendingBench) benchPrompt(true, tr.exp); }
     else if (tr.type === 'balcony') { if (!g.teacher) toast('🌤 Gió mát quá!', 1500); }
@@ -463,7 +454,7 @@
 
     const chars = [];
     visibleOthers().forEach(o => chars.push({ x: o.rx, y: o.ry, draw: charDrawer(o, false) }));
-    if (!(g.teacher && NL.teacher.filming)) chars.push({ x: g.x, y: g.y, draw: charDrawer(Object.assign({}, g, { id: 'self' }), !g.teacher) });
+    if (!(g.teacher && NL.teacher.filming) && !g.inElev) chars.push({ x: g.x, y: g.y, draw: charDrawer(Object.assign({}, g, { id: 'self' }), !g.teacher) });
     NL.drawScene(c, s, t, chars);
 
     if (clickMark) {

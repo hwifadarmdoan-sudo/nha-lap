@@ -156,7 +156,42 @@ window.NL = window.NL || {};
     }
   }
 
+  // Phần tòa nhà bên dưới phòng + mặt đất có cỏ, để thấy phòng nằm trong tòa A1 đứng trên mặt đất.
+  const STOREY = 76;
+  function drawBase(c, s, t) {
+    const f = s.floor || 1, H = (f - 1) * STOREY + 14, w = s.w, d = s.d;
+    const gp = (x, y) => { const p = i(x, y); p.y += H; return p; };
+    NL.poly(c, [gp(-14, -14), gp(w + 14, -14), gp(w + 14, d + 14), gp(-14, d + 14)], '#A6DB8F');
+    NL.poly(c, [gp(-1.4, -1.4), gp(w + 1.4, -1.4), gp(w + 1.4, d + 1.4), gp(-1.4, d + 1.4)], '#E7DCC0');
+    // cây trên mặt đất
+    [[w + 4, 1], [w + 5, d - 1], [-3, d + 4], [3, d + 5], [w - 3, d + 4.5], [w + 3.5, d + 3]].forEach(([x, y], k) => {
+      const p = gp(x, y), sw = Math.sin(t * 1.2 + k) * 2;
+      c.fillStyle = '#9C6B43'; c.fillRect(p.x - 4, p.y - 26, 8, 26);
+      c.fillStyle = '#4FA36B'; c.beginPath(); c.arc(p.x + sw, p.y - 40, 22, 0, 7); c.fill();
+      c.fillStyle = '#62B77C'; c.beginPath(); c.arc(p.x - 8 + sw, p.y - 46, 12, 0, 7); c.fill();
+    });
+    // khối tòa nhà các tầng bên dưới
+    NL.box(c, 0, 0, w, d, H, '#F4E9C8', { z: -H, top: '#EADDB5', left: '#F7EDCF', right: '#E6D6A8' });
+    const win = (pa, pb, e1, e2, col) => NL.poly(c, [{ x: pa.x, y: pa.y - e1 }, { x: pb.x, y: pb.y - e1 }, { x: pb.x, y: pb.y - e2 }, { x: pa.x, y: pa.y - e2 }], col);
+    for (let k = 0; k < f - 1; k++) {
+      const e1 = -H + 14 + k * STOREY + 20, e2 = e1 + 38;
+      for (let x = 0.5; x < w - 0.6; x += 1.5) {
+        if (k === 0 && x > w / 2 - 1.5 && x < w / 2 + 0.6) continue;
+        win(i(x, d), i(x + 0.8, d), e1, e2, '#8EC9EE');
+      }
+      for (let y = 0.5; y < d - 0.5; y += 1.5) win(i(w, y), i(w, y + 0.8), e1, e2, '#7DBBE3');
+      const a = i(0, d), b = i(w, d), cc = i(w, 0), e = -H + 14 + (k + 1) * STOREY - 6;
+      c.strokeStyle = '#E2D2A2'; c.lineWidth = 3; c.beginPath();
+      c.moveTo(a.x, a.y - e); c.lineTo(b.x, b.y - e); c.lineTo(cc.x, cc.y - e); c.stroke();
+    }
+    if (f > 1) { // cửa chính tầng 1
+      const a = i(w / 2 - 0.7, d), b = i(w / 2 + 0.7, d);
+      win(a, b, -H, -H + 56, '#5FA6D6');
+    }
+  }
+
   function drawRoom(c, s, t) {
+    if (s.walls && s.floor) drawBase(c, s, t);
     // sàn
     for (let y = 0; y < s.d; y++) for (let x = 0; x < s.w; x++) {
       NL.tile(c, x, y, s.floorColor(x, y), 'rgba(30,60,90,.06)');
@@ -236,8 +271,7 @@ window.NL = window.NL || {};
         { kind: 'elevator', side: 'N', a: 7.2, b: 8.8, floorLabel: String(f) },
         { kind: 'window', side: 'N', a: 9.6, b: 12 },
         { kind: 'door', side: 'N', a: 12.9, b: 14.6, label: 'B · ' + sub.B, color: sub.color, locked: !sub.ready, sub: sub.ready ? null : '🚧 Đang lắp đặt' },
-        { kind: 'window', side: 'W', a: 1, b: 3.6 },
-        { kind: 'board', side: 'W', a: 5.2, b: 7.6, lines: ['🌤 Ban công', 'Hóng gió nhé'], head: '#5BB4EA' }
+        { kind: 'window', side: 'W', a: 1, b: 3.6 }
       ],
       objects: [
         { kind: 'railing', x1: 0, x2: 16, y: 7.85 },
@@ -247,6 +281,7 @@ window.NL = window.NL || {};
         { kind: 'plant', x: 6.4, y: 0.25, w: 0.7, d: 0.7, solid: true }, { kind: 'plant', x: 9, y: 0.25, w: 0.7, d: 0.7, solid: true }
       ],
       block(x, y) { return y > 7.6; },
+      tags: [{ x: 3.3, y: 5.5, label: '🌤 Ban công' }, { x: 12.8, y: 5.5, label: '🌤 Ban công' }],
       triggers: [
         { x1: 6.7, y1: 0, x2: 9.3, y2: 1.0, type: 'elevator' },
         { x1: 0.9, y1: 0, x2: 3.6, y2: 0.9, type: sub.ready ? 'goto' : 'locked', to: 'lab-' + f + 'A', spawn: 'default' },
@@ -342,6 +377,7 @@ window.NL = window.NL || {};
       for (let k = 0; k < m.w; k++) NL.tile(c, m.x + k, m.y, '#5BB4EA');
       const p = i(m.x + m.w / 2, m.y + 0.5); NL.pill(c, p.x, p.y, m.label, 'rgba(255,255,255,.9)', '#1F4E79', 12);
     });
+    (s.tags || []).forEach(tg => { const p = i(tg.x, tg.y); NL.pill(c, p.x, p.y, tg.label, 'rgba(255,255,255,.85)', '#1F4E79', 12); });
     const items = [];
     s.objects.forEach(o => {
       const key = o.kind === 'railing' ? o.y + 100 : (o.x + o.w / 2) + (o.y + o.d / 2) + (o.kind === 'building' ? -3 : 0);

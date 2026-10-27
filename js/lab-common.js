@@ -27,8 +27,9 @@ NL.lab = (function () {
       el('rect', { x: -22, y: 20, width: 44, height: 70, rx: 18, fill: coat, stroke: 'rgba(30,60,90,.25)', 'stroke-width': 2 }, inner);
       el('rect', { x: -24, y: 14, width: 48, height: 16, rx: 8, fill: '#fff', stroke: 'rgba(30,60,90,.2)', 'stroke-width': 2 }, inner);
       el('ellipse', { cx: 0, cy: 0, rx: 24, ry: 22, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 2 }, inner);
-      [-14, -5, 4].forEach((fx, k) => el('rect', { x: fx, y: -34 + (k === 1 ? -4 : 0), width: 9, height: 24, rx: 4.5, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 1.5 }, inner));
-      el('rect', { x: 12, y: -16, width: 9, height: 20, rx: 4.5, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 1.5, transform: 'rotate(35 16 -6)' }, inner);
+      // 4 ngón + ngón cái = 5 ngón
+      [[-20, -30, 20], [-10, -38, 26], [0, -38, 26], [10, -33, 22]].forEach(([fx, fy, fh]) => el('rect', { x: fx, y: fy, width: 9, height: fh, rx: 4.5, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 1.5 }, inner));
+      el('rect', { x: 16, y: -14, width: 9, height: 20, rx: 4.5, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 1.5, transform: 'rotate(40 20 -4)' }, inner);
       h.style.pointerEvents = 'none';
       return h;
     };

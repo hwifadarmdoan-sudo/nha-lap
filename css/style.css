@@ -195,3 +195,18 @@ body.film #hud,body.film #teacher,body.film .t-alert{display:none!important}
 .login-box input{font-family:inherit;font-size:20px;font-weight:700;text-align:center;padding:8px 16px;border-radius:999px;border:3px solid #DCEBF7;outline:none;width:min(280px,76vw);color:var(--ink);user-select:text;-webkit-user-select:text}
 .login-box input:focus{border-color:var(--blue)}
 .login-err{color:var(--red);font-weight:700;min-height:20px}
+
+/* Thang máy góc nhìn POV */
+.elev-pov{position:fixed;inset:0;z-index:28;background:#8E9BA8;animation:fade .35s}
+.elev-pov svg{width:100%;height:100%;display:block}
+.elev-pov .door-l,.elev-pov .door-r{transition:transform 1s ease-in-out}
+.elev-pov.closed .door-l,.elev-pov.closed .door-r{transform:translateX(0)!important}
+.elev-pov .fbtn{cursor:pointer}
+.elev-pov .fbtn circle.face{transition:fill .2s}
+.elev-pov .fbtn:hover circle.face{fill:#FFFFFF}
+.elev-pov .cabin{transition:transform .25s}
+.elev-pov.moving .cabin{animation:cabBob .5s ease-in-out infinite}
+@keyframes cabBob{50%{transform:translateY(3px)}}
+.elev-tip{position:absolute;bottom:max(18px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:#fff;color:var(--navy);font-weight:800;font-size:19px;padding:7px 20px;border-radius:999px;box-shadow:var(--shadow);white-space:nowrap}
+.elev-exit{position:absolute;left:max(16px,env(safe-area-inset-left));bottom:max(16px,env(safe-area-inset-bottom))}
+.elev-btn{align-self:center}

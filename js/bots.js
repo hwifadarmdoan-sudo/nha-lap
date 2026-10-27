@@ -5,7 +5,7 @@ NL.bots = (function () {
   const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
   const pick = a => a[Math.floor(rnd() * a.length)];
   const NAMES = ['Minh', 'Lan', 'Huy', 'Mai', 'Tú', 'Ngọc', 'Khoa', 'Vy', 'Phúc', 'An'];
-  const HOME = ['lobby', 'outside', 'f2', 'f2', 'f3', 'f4', 'lab-2A', 'lab-2B', 'f2', 'lobby'];
+  const HOME = ['lobby', 'outside', 'f2', 'f2', 'lobby', 'f2', 'lab-2A', 'lab-2B', 'f2', 'lobby'];
   const HELP = {
     'lab-2A': ['Kẹt ở bước 6: bọt nổi nhanh quá, đếm không kịp', 'Chưa biết chỉnh khoảng cách đèn'],
     'lab-2B': ['Kẹt ở bước 5: không biết nhỏ lọ nào trước', 'Chưa hiểu vì sao tế bào co lại'],
@@ -67,7 +67,7 @@ NL.bots = (function () {
       else if (r < 0.78) { b.mode = 'dance'; b.timer = 3; }
       else if (r < 0.84 && !s.lab) { b.help = true; b.helpReason = pick(HELP.other); b.timer = 25; }
       else if (r < 0.92) { // đổi tầng
-        const to = pick(['outside', 'lobby', 'f2', 'f3', 'f4', 'lab-2A', 'lab-2B']);
+        const to = pick(['outside', 'lobby', 'f2', 'f2', 'lab-2A', 'lab-2B']);
         b.scene = to; const ns = NL.scenes[to];
         if (ns.lab) { b.x = 5; b.y = 6.6; walkTo(b, 3.8 + rnd() * 2.4, 4.8); b.mode = 'lab'; b.step = 1; b.status = `TN ${ns.lab} · bước 1/7`; }
         else { const sp = ns.spawns.fromElev || ns.spawns.default; b.x = sp.x; b.y = sp.y; b.status = ''; }
