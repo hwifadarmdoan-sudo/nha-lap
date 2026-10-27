@@ -4,7 +4,7 @@
 window.NL = window.NL || {};
 NL.net = (function () {
   const peers = new Map();
-  let ch = null, selfId = null, stateCb = () => {}, eventCb = () => {}, fb = null;
+  let ch = null, selfId = null, stateCb = () => {}, eventCb = () => {}, fb = null, online = false, lastSent = '', lastSentAt = 0;
 
   function init(id) {
     selfId = id;
@@ -16,20 +16,35 @@ NL.net = (function () {
   }
 
   function initFirebase() {
-    // Sẽ nối khi Linh tạo xong Firebase Realtime Database.
-    const app = firebase.initializeApp(window.NL_FIREBASE);
-    const db = firebase.database(app);
-    const meRef = db.ref('players/' + selfId);
-    meRef.onDisconnect().remove();
-    db.ref('players').on('value', snap => {
-      const all = snap.val() || {};
-      const now = Date.now();
-      Object.keys(all).forEach(id => { if (id !== selfId) handle({ kind: 'state', from: id, state: all[id] }); });
-      peers.forEach((p, id) => { if (!all[id]) peers.delete(id); });
-      void now;
-    });
-    db.ref('events').limitToLast(1).on('child_added', snap => { const ev = snap.val(); if (ev && ev.from !== selfId && Date.now() - ev.at < 8000) handle({ kind: 'event', from: ev.from, ev }); });
-    fb = { meRef, events: db.ref('events') };
+    // Mỗi người ghi trạng thái của mình vào players/{id}; mất kết nối thì tự xóa.
+    // Nghe từng người thay đổi (child_*) thay vì cả danh sách, để mỗi máy chỉ tải phần đổi.
+    try {
+      const app = firebase.initializeApp(window.NL_FIREBASE);
+      const db = firebase.database(app);
+      const meRef = db.ref('players/' + selfId);
+      meRef.onDisconnect().remove();
+      const players = db.ref('players');
+      const onPlayer = snap => { if (snap.key !== selfId) handle({ kind: 'state', from: snap.key, state: snap.val() }); };
+      players.on('child_added', onPlayer);
+      players.on('child_changed', onPlayer);
+      players.on('child_removed', snap => peers.delete(snap.key));
+      // bỏ qua các sự kiện cũ có sẵn lúc mới vào, chỉ nhận sự kiện mới (không dựa vào đồng hồ từng máy)
+      const evRef = db.ref('events').limitToLast(10), seen = new Set();
+      evRef.once('value', all => {
+        all.forEach(ch2 => { seen.add(ch2.key); });
+        evRef.on('child_added', snap => {
+          const ev = snap.val();
+          if (!ev || seen.has(snap.key) || ev.from === selfId) return;
+          seen.add(snap.key); handle({ kind: 'event', from: ev.from, ev });
+        });
+      });
+      db.ref('.info/connected').on('value', snap => { online = !!snap.val(); });
+      fb = { meRef, events: db.ref('events') };
+    } catch (e) {
+      console.warn('Không nối được Firebase, dùng chế độ thử trên một máy', e);
+      fb = null;
+      try { ch = new BroadcastChannel('nha-lap'); ch.onmessage = e2 => handle(e2.data); } catch (e2) { ch = null; }
+    }
   }
 
   function handle(msg) {
@@ -40,20 +55,25 @@ NL.net = (function () {
   }
 
   function sendState(state) {
-    if (fb) { fb.meRef.set(state); return; }
+    if (fb) {
+      // chỉ gửi khi có gì đổi, tối đa 5 lần/giây, để gói miễn phí của Firebase đủ dùng cho cả lớp
+      const key = JSON.stringify(Object.assign({}, state, { emoteT: 0 })), now = Date.now();
+      if (key === lastSent || now - lastSentAt < 200) return;
+      lastSent = key; lastSentAt = now; fb.meRef.set(state); return;
+    }
     if (ch) ch.postMessage({ kind: 'state', from: selfId, state });
   }
   function sendEvent(ev) {
     ev.from = selfId; ev.at = Date.now();
-    if (fb) { fb.events.push(ev); return; }
+    if (fb) { const r = fb.events.push(ev); r.onDisconnect().remove(); return; }
     if (ch) ch.postMessage({ kind: 'event', from: selfId, ev });
   }
   function bye() { if (ch) ch.postMessage({ kind: 'bye', from: selfId }); if (fb) fb.meRef.remove(); }
-  function prune() { const now = Date.now(); peers.forEach((p, id) => { if (now - p.last > 6000) peers.delete(id); }); }
+  function prune() { if (fb) return; const now = Date.now(); peers.forEach((p, id) => { if (now - p.last > 6000) peers.delete(id); }); }
 
   window.addEventListener('pagehide', bye);
   return {
-    init, sendState, sendEvent, prune, peers,
+    init, sendState, sendEvent, prune, peers, get online() { return online; }, get mode() { return fb ? 'firebase' : 'local'; },
     onState(cb) { stateCb = cb; }, onEvent(cb) { eventCb = cb; }
   };
 })();
