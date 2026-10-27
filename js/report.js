@@ -46,12 +46,12 @@ NL.report = (function () {
     const g = NL.game, box = $('reportPages');
     box.innerHTML = '';
     const p0 = document.createElement('div'); p0.className = 'rep-page';
-    const done = NL.EXPERIMENTS.filter(e => g.results[e.id]).length;
-    p0.innerHTML = `<div class="rep-head"><div id="repAv"></div><div><h3>Báo cáo của ${esc(g.name)}</h3><div class="rep-sub">Nhà Láp · Đã hoàn thành ${done}/6 thí nghiệm</div><div class="rep-sub">${new Date().toLocaleDateString('vi-VN')}</div></div></div>
-      <ul class="rep-list">${NL.EXPERIMENTS.map(e => {
+    const ready = NL.EXPERIMENTS.filter(e => e.ready), done = ready.filter(e => g.results[e.id]).length;
+    p0.innerHTML = `<div class="rep-head"><div id="repAv"></div><div><h3>Báo cáo của ${esc(g.name)}</h3><div class="rep-sub">Nhà Láp · Đã hoàn thành ${done}/${ready.length} thí nghiệm</div><div class="rep-sub">${new Date().toLocaleDateString('vi-VN')}</div></div></div>
+      <ul class="rep-list">${ready.map(e => {
         const r = g.results[e.id], ord = g.order.indexOf(e.id);
-        return `<li><span class="st ${r ? 'ok' : ''}">${r ? '✓' : ''}</span>Tầng ${e.floor} · ${e.name}${r ? ` <span class="rep-sub">(lần ${ord + 1})</span>` : (e.ready ? '' : ' <span class="rep-sub">🚧</span>')}</li>`;
-      }).join('')}</ul>`;
+        return `<li><span class="st ${r ? 'ok' : ''}">${r ? '✓' : ''}</span>Tầng ${e.floor} · ${e.name}${r ? ` <span class="rep-sub">(lần ${ord + 1})</span>` : ''}</li>`;
+      }).join('')}<li class="rep-sub">Tầng 3 Hóa, tầng 4 Lý: sắp có</li></ul>`;
     box.appendChild(p0);
     p0.querySelector('#repAv').appendChild(avatar(g.look));
     g.order.forEach(id => {
@@ -59,12 +59,19 @@ NL.report = (function () {
       const p = document.createElement('div'); p.className = 'rep-page';
       const tb = `<table><tr>${r.table.head.map(h => `<th>${h}</th>`).join('')}</tr>${r.table.rows.map(row => `<tr>${row.map(v => `<td>${v}</td>`).join('')}</tr>`).join('')}</table>`;
       p.innerHTML = `<h3>✓ ${r.title}</h3><div class="rep-sub">Thông số em chọn: ${r.param} · ${esc(g.name)}</div>
-        <div class="rep-flex"><div>${tb}</div><div style="flex:1;min-width:260px">${NL.chartSVG(r.chart, 420, 230)}</div></div>
-        <div style="font-weight:800;color:#1F4E79;margin-top:6px">Kết luận: ${r.conclusion}</div>`;
+        <div class="rep-flex"><div>${tb}</div><div style="flex:1;min-width:260px">${NL.chartSVG(r.chart, 420, 200)}</div></div>
+        <div style="font-weight:800;color:#1F4E79;margin-top:6px">Kết luận: ${r.conclusion}</div>${r.note ? `<div class="rep-sub">${r.note}</div>` : ''}${quizBlock(r)}`;
       box.appendChild(p);
     });
     pages = box.children.length; page = 0; go(0);
     $('report').classList.remove('hidden');
+  }
+  // Câu hỏi cuối thí nghiệm: số câu đúng ngay lần đầu và những câu em chọn sai.
+  function quizBlock(r) {
+    if (!r.quiz || !r.quiz.length) return '';
+    const wrong = r.quiz.filter(x => !x.ok), right = r.quiz.length - wrong.length;
+    return `<div class="rep-quiz"><b>Câu hỏi: đúng ngay ${right}/${r.quiz.length} câu</b>${r.predict ? ` · Em đã đoán: "${esc(r.predict)}"` : ''}
+      ${wrong.length ? `<ul>${wrong.map(x => `<li>${esc(x.q)}<br><span class="rep-sub">Em chọn: ${esc(x.answer)} → Đáp án: ${esc(x.right)}</span></li>`).join('')}</ul>` : ' 🌟'}</div>`;
   }
   function go(k) {
     page = Math.max(0, Math.min(pages - 1, k));

@@ -125,7 +125,7 @@
 
   const steps = [
     {
-      text: 'Dùng kim mũi mác bóc lớp biểu bì của lá', hint: 'Kéo kim mũi mác đang sáng chạm vào chiếc lá tím',
+      label: 'Làm tiêu bản 1/4', text: 'Dùng kim mũi mác bóc lớp biểu bì của lá thài lài tía', hint: 'Kéo kim mũi mác đang sáng chạm vào chiếc lá tím',
       enter(api) {
         api.setOn(st.needle, true);
         api.draggable(st.needle, {
@@ -135,21 +135,21 @@
       }
     },
     {
-      text: 'Đặt lớp biểu bì lên giọt nước trên lam kính', hint: 'Kéo mảnh biểu bì màu tím vào giữa lam kính',
+      label: 'Làm tiêu bản 2/4', text: 'Đặt lớp biểu bì lên giọt nước trên lam kính', hint: 'Kéo mảnh biểu bì màu tím vào giữa lam kính',
       enter(api) {
         api.setOn(st.peel, true);
         api.draggable(st.peel, { target: { x: 470, y: 465, r: 90 }, onDrop: () => { st.peel.style.display = 'none'; st.slPeel.style.display = ''; api.done(); } });
       }
     },
     {
-      text: 'Đậy lamen lên', hint: 'Kéo lamen phủ lên mảnh biểu bì',
+      label: 'Làm tiêu bản 3/4', text: 'Đậy lamen lên', hint: 'Kéo lamen phủ lên mảnh biểu bì',
       enter(api) {
         api.setOn(st.lamen, true);
         api.draggable(st.lamen, { target: { x: 470, y: 465, r: 90 }, onDrop: () => { st.lamen.style.display = 'none'; st.slLamen.style.display = ''; api.done(); } });
       }
     },
     {
-      text: 'Đặt lam kính lên bàn kính hiển vi', hint: 'Kéo lam kính lên bệ của kính hiển vi bên phải',
+      label: 'Làm tiêu bản 4/4', text: 'Đặt lam kính lên bàn kính hiển vi', hint: 'Kéo lam kính lên bệ của kính hiển vi bên phải',
       enter(api) {
         api.setOn(st.slide, true);
         api.draggable(st.slide, {
@@ -163,8 +163,13 @@
       }
     },
     {
+      label: () => `Thử lọ ${doneCount() + 1}/3`,
       text: 'Chọn một lọ dung dịch để nhỏ vào mép lamen', hint: 'Chạm vào một lọ đang sáng. Lọ nào làm rồi sẽ không sáng nữa',
       enter(api) {
+        if (!doneCount() && !api.prediction) api.ask({
+          predict: true, q: 'Nhỏ dung dịch ưu trương vào, tế bào sẽ…?',
+          options: [{ t: 'Co lại vì nước đi ra' }, { t: 'Trương to vì nước đi vào' }, { t: 'Không thay đổi' }]
+        });
         ['nhuoc', 'dang', 'uu'].forEach(k => {
           const b = st.bottles[k]; b.style.display = '';
           if (st.done[k] !== undefined) return;
@@ -175,7 +180,7 @@
       }
     },
     {
-      text: 'Đặt giấy thấm ở mép bên kia lamen', hint: 'Kéo giấy thấm lên bệ kính hiển vi để kéo dung dịch qua mẫu',
+      label: () => `Thử lọ ${doneCount() + 1}/3`, text: 'Đặt giấy thấm ở mép bên kia lamen', hint: 'Kéo giấy thấm lên bệ kính hiển vi để kéo dung dịch qua mẫu',
       enter(api) {
         const p = st.paper; p.style.display = ''; api.place(p, 560, 470);
         api.setOn(p, true);
@@ -184,7 +189,7 @@
       }
     },
     {
-      text: 'Nhỏ nước cất, rồi đặt giấy thấm để xem tế bào phản co', hint: 'Chạm lọ nước cất, sau đó kéo giấy thấm lên bệ kính',
+      label: () => `Thử lọ ${doneCount()}/3`, text: 'Nhỏ nước cất, rồi đặt giấy thấm để xem tế bào phản co', hint: 'Chạm lọ nước cất, sau đó kéo giấy thấm lên bệ kính',
       enter(api) {
         const b = st.bottles.cat; api.setOn(b, true);
         if (!b._tap) { b._tap = true; api.tapable(b, () => dropperTo(api, b, () => {
@@ -194,7 +199,7 @@
       }
     },
     {
-      text: '', hint: 'Bấm nút ở góc dưới để đi tiếp',
+      label: () => `Thử lọ ${doneCount()}/3`, text: '', hint: 'Bấm nút ở góc dưới để đi tiếp',
       enter(api) {
         const left = ['nhuoc', 'dang', 'uu'].filter(k => st.done[k] === undefined).length;
         document.getElementById('stepText').textContent = left ? `Đã ghi kết quả. Còn ${left} lọ chưa thử` : 'Đã thử đủ 3 lọ!';
@@ -208,7 +213,7 @@
       }
     },
     {
-      text: 'Biểu đồ tỉ lệ tế bào co nguyên sinh', hint: 'So chiều cao 3 cột',
+      label: 'Kết quả', text: 'Biểu đồ tỉ lệ tế bào co nguyên sinh', hint: 'So chiều cao 3 cột',
       enter(api) {
         st.view.style.display = 'none';
         Object.values(st.bottles).forEach(b => { b.style.display = 'none'; });
@@ -217,11 +222,48 @@
         const fo = api.el('foreignObject', { x: 150, y: 20, width: 700, height: 420 }, api.svg);
         const div = document.createElement('div');
         div.style.cssText = 'background:#fff;border-radius:20px;padding:10px 16px;box-shadow:0 6px 0 rgba(31,78,121,.18);font-family:Baloo 2;height:100%;box-sizing:border-box';
-        div.innerHTML = NL.chartSVG(res.chart, 660, 330) + `<div style="font-weight:800;color:#1F4E79;font-size:17px;text-align:center">${res.conclusion}</div>`;
+        div.innerHTML = NL.chartSVG(res.chart, 660, 360);
         fo.appendChild(div);
-        api.done('Hoàn thành 🎉');
+        api.done('Trả lời câu hỏi ➜');
       },
-      onNext(api) { api.finish(result()); }
+      onNext(api) { afterChart(api); }
+    }
+  ];
+
+  const doneCount = () => ['nhuoc', 'dang', 'uu'].filter(k => st.done[k] !== undefined).length;
+
+  // Sau biểu đồ: so với điều em đã đoán, hỏi vì sao, rồi câu kiểm tra.
+  function afterChart(api) {
+    const pred = api.prediction, right = 'Co lại vì nước đi ra';
+    api.card({
+      kicker: '🔁 So với điều em đoán',
+      text: pred ? (pred === right ? `Em đoán "${pred}". Kết quả: đúng như em đoán! 🎯` : `Em đoán "${pred}". Kết quả: trong dung dịch ưu trương, tế bào co nguyên sinh.`) : 'Kết quả: trong dung dịch ưu trương, tế bào co nguyên sinh.',
+      sub: 'Khi nhỏ nước cất vào, tế bào phản co trở lại như cũ.'
+    }, () => api.askAll(QUIZ, () => api.finish(result())));
+  }
+  const QUIZ = [
+    {
+      kicker: '❓ Vì sao?', q: 'Vì sao trong dung dịch ưu trương, tế bào co nguyên sinh?',
+      options: [
+        { t: 'Bên ngoài đậm chất tan hơn nên nước đi ra khỏi tế bào, chất nguyên sinh co lại', ok: true },
+        { t: 'Chất tan đi vào làm tế bào nặng và co lại', why: 'Thứ di chuyển qua màng nhiều nhất ở đây là nước. Nước đi từ nơi loãng sang nơi đậm hay ngược lại?' },
+        { t: 'Thành tế bào bị vỡ', why: 'Nếu thành tế bào vỡ thì tế bào có phản co được khi thêm nước cất không?' }
+      ],
+      explain: 'Nước đi từ nơi có nồng độ chất tan thấp sang nơi có nồng độ chất tan cao. Dung dịch ưu trương đậm hơn dịch tế bào nên kéo nước ra.'
+    },
+    {
+      q: 'Dung dịch nhược trương có nồng độ chất tan … so với dịch tế bào',
+      options: [{ t: 'Thấp hơn', ok: true }, { t: 'Cao hơn', why: '"Nhược" nghĩa là yếu, ít. Dung dịch có ít hay nhiều chất tan?' }, { t: 'Bằng', why: 'Bằng dịch tế bào là dung dịch đẳng trương.' }],
+      explain: 'Nhược trương: ít chất tan hơn nên nước đi vào tế bào, tế bào không co.'
+    },
+    {
+      q: 'Tế bào đã co mà nhỏ nước cất vào lại phản co. Điều đó cho thấy…',
+      options: [
+        { t: 'Tế bào vẫn còn sống', ok: true },
+        { t: 'Tế bào đã chết', why: 'Tế bào chết thì màng sinh chất không còn điều khiển nước ra vào. Nó có trở lại như cũ được không?' },
+        { t: 'Nước cất rất đậm chất tan', why: 'Nước cất gần như không có chất tan, nó là dung dịch nhược trương.' }
+      ],
+      explain: 'Chỉ tế bào sống mới co và phản co nguyên sinh được. Đây cũng là cách kiểm tra tế bào sống hay chết.'
     }
   ];
 
@@ -267,9 +309,9 @@
       title: 'Co và phản co nguyên sinh', param: 'Loại dung dịch',
       table: { head: ['Dung dịch', 'Tế bào co'], rows: ks.map(k => [SOL[k].name, (st.done[k] || 0) + '%']).concat([['Nước cất sau ưu trương', st.recovered ? 'Phản co ✓' : '…']]) },
       chart: { labels: ks.map(k => SOL[k].name), yLabel: '% tế bào co', max: 100, series: [{ name: 'Tế bào co nguyên sinh', color: '#9B4FC4', values: ks.map(k => st.done[k] || 0) }] },
-      conclusion: 'Dung dịch ưu trương → tế bào mất nước → co nguyên sinh; thêm nước cất → phản co'
+      conclusion: 'Dung dịch ưu trương → nước đi ra khỏi tế bào → co nguyên sinh; thêm nước cất → nước đi vào → phản co'
     };
   }
 
-  NL.lab.register('2B', { build, steps, cleanup() { if (st && st.raf) cancelAnimationFrame(st.raf); } });
+  NL.lab.register('2B', { goal: 'Tế bào thay đổi thế nào khi ở trong dung dịch đậm hơn hoặc loãng hơn dịch tế bào?', build, steps, cleanup() { if (st && st.raf) cancelAnimationFrame(st.raf); } });
 })();

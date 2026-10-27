@@ -3,7 +3,9 @@
   const BX = 480;                 // tâm cốc
   let st;                          // trạng thái riêng của lần làm này
 
-  function rate(d) { const I = Math.pow(10 / d, 2); return 60 * I / (I + 0.35); } // số bọt / phút
+  // số bọt trong 15 giây: tăng theo cường độ sáng rồi chững lại (điểm bão hoà ánh sáng)
+  function rate(d) { const I = Math.pow(10 / d, 2); return 30 * I / (I + 0.35); }
+  const DUR = 15; // mỗi lần đếm 15 giây
 
   function build(api) {
     const L = api.svg, el = api.el;
@@ -87,7 +89,7 @@
 
   const steps = [
     {
-      text: 'Kéo cành rong vào cốc nước', hint: 'Giữ cành rong đang sáng, kéo thả vào giữa cốc nước',
+      label: 'Chuẩn bị 1/3', text: 'Kéo cành rong vào cốc nước', hint: 'Giữ cành rong đang sáng, kéo thả vào giữa cốc nước',
       enter(api) {
         sideCards(api);
         api.setOn(st.rong, true);
@@ -95,22 +97,27 @@
       }
     },
     {
-      text: 'Úp ống nghiệm lên cành rong', hint: 'Kéo ống nghiệm đang sáng vào cốc, trùm lên cành rong',
+      label: 'Chuẩn bị 2/3', text: 'Úp ống nghiệm lên cành rong', hint: 'Kéo ống nghiệm đang sáng vào cốc, trùm lên cành rong',
       enter(api) {
         api.setOn(st.tube, true);
         api.draggable(st.tube, { target: { x: BX, y: 430, r: 120 }, onDrop: () => api.done() });
       }
     },
     {
-      text: 'Bật đèn', hint: 'Chạm vào nút đỏ ở chân đèn',
+      label: 'Chuẩn bị 3/3', text: 'Bật đèn', hint: 'Chạm vào nút đỏ ở chân đèn',
       enter(api) {
         api.setOn(st.sw, true);
         api.tapable(st.sw, () => { st.lampOn = true; NL.audio.play('hum'); updateLight(); api.done(); });
       }
     },
     {
+      label: () => `Lần đo ${Math.min(3, st.rows.length + 1)}/3`,
       text: 'Kéo thanh để chọn khoảng cách đèn', hint: 'Kéo thanh trượt bên phải. Mỗi lần đo chọn một khoảng cách khác nhau',
       enter(api) {
+        if (!st.rows.length && !api.prediction) api.ask({
+          predict: true, q: 'Đèn càng gần cốc nước thì bọt khí sẽ…?',
+          options: [{ t: 'Nhiều hơn' }, { t: 'Ít hơn' }, { t: 'Không thay đổi' }]
+        });
         const card = document.createElement('div'); card.className = 'slider-card';
         card.innerHTML = `<div>Khoảng cách đèn</div><div class="big-num"><span id="dVal">${st.d}</span> cm</div><input type="range" min="10" max="50" step="1" value="${st.d}" id="dRange"><div id="dWarn" style="color:#E5534B;font-size:14px"></div>`;
         api.side.prepend(card); st.slider = card;
@@ -127,10 +134,12 @@
       onNext(api) { if (st.slider) { st.slider.remove(); st.slider = null; } api.goto(4); }
     },
     {
-      text: 'Chạm vào từng bọt khí để đếm!', hint: 'Mỗi bọt khí nổi lên trong ống, chạm vào là được tính. Hết 1 phút thì dừng',
+      label: () => `Lần đo ${Math.min(3, st.rows.length + 1)}/3`,
+      text: 'Chạm vào từng bọt khí O₂ để đếm!', hint: 'Mỗi bọt khí nổi lên trong ống, chạm vào là được tính. Hết 15 giây thì dừng',
       enter(api) { runCount(api); }
     },
     {
+      label: () => `Lần đo ${st.rows.length}/3`,
       text: '', hint: 'Bấm nút ở góc dưới để đi tiếp',
       enter(api) {
         sideCards(api);
@@ -141,26 +150,25 @@
       onNext(api) { api.goto(st.rows.length < 3 ? 3 : 6); }
     },
     {
-      text: 'Biểu đồ số bọt khí theo khoảng cách đèn', hint: 'So cột xanh dương (em đếm) và cột xanh lá (thực tế)',
+      label: 'Kết quả', text: 'Biểu đồ số bọt khí theo khoảng cách đèn', hint: 'So cột xanh dương (em đếm) và cột xanh lá (thực tế)',
       enter(api) {
         const res = result();
         const fo = api.el('foreignObject', { x: 150, y: 20, width: 700, height: 420 }, api.svg);
         const div = document.createElement('div');
         div.style.cssText = 'background:#fff;border-radius:20px;padding:10px 16px;box-shadow:0 6px 0 rgba(31,78,121,.18);font-family:Baloo 2;height:100%;box-sizing:border-box';
-        div.innerHTML = NL.chartSVG(res.chart, 660, 330) + `<div style="font-weight:800;color:#1F4E79;font-size:17px;text-align:center">${res.conclusion}</div>`;
+        div.innerHTML = NL.chartSVG(res.chart, 660, 360);
         fo.appendChild(div);
-        api.done('Hoàn thành 🎉');
+        api.done('Trả lời câu hỏi ➜');
       },
-      onNext(api) { api.finish(result()); }
+      onNext(api) { afterChart(api); }
     }
   ];
 
   function runCount(api) {
     const card = document.createElement('div'); card.className = 'slider-card';
-    card.innerHTML = `<div>⏱ <span id="tVal">0:00</span> / 1:00</div><div class="big-num">Em đếm: <span id="cVal">0</span></div>`;
+    card.innerHTML = `<div>⏱ còn <span id="tVal">${DUR}</span> giây</div><div class="big-num">Em đếm: <span id="cVal">0</span></div>`;
     api.side.prepend(card);
     const L = api.svg, per = rate(st.d) * (0.92 + Math.random() * 0.16);
-    const DUR = 20; // 1 phút thí nghiệm = 20 giây thật
     let t = 0, next = 0.6, em = 0, real = 0, last = performance.now(), gasH = 0;
     const bubbles = [];
     const tick = now => {
@@ -171,8 +179,8 @@
           next = (DUR / per) * (0.6 + Math.random() * 0.8);
           real++;
           const gB = api.g(L, BX + (Math.random() * 12 - 6), 330);
-          const r = 6 + Math.random() * 4;
-          api.el('circle', { r: 24, fill: 'transparent' }, gB);
+          const r = 9 + Math.random() * 4;
+          api.el('circle', { r: 32, fill: 'transparent' }, gB);
           api.el('circle', { r, fill: 'rgba(255,255,255,.85)', stroke: '#7FB9DC', 'stroke-width': 2 }, gB);
           api.el('circle', { r: r * 0.3, cx: -r * 0.3, cy: -r * 0.3, fill: '#fff' }, gB);
           gB.style.cursor = 'pointer';
@@ -190,8 +198,7 @@
         b.g._y -= b.vy * dt; b.g._x += Math.sin(t * 6 + b.wob) * 0.3; api.place(b.g);
         if (b.g._y < 150 && !b.dead) { b.dead = true; b.g.remove(); gasH = Math.min(60, gasH + 0.8); st.gas.setAttribute('height', gasH); }
       });
-      const sec = Math.min(60, Math.floor(t / DUR * 60));
-      card.querySelector('#tVal').textContent = '0:' + String(sec).padStart(2, '0');
+      card.querySelector('#tVal').textContent = Math.max(0, Math.ceil(DUR - t));
       if (t < DUR + 2.5) st.raf = requestAnimationFrame(tick);
       else {
         bubbles.forEach(b => b.g.remove());
@@ -208,14 +215,55 @@
     const rows = st.rows.slice().sort((a, b) => a.d - b.d);
     return {
       title: 'Đếm bọt khí rong', param: 'Khoảng cách đèn',
-      table: { head: ['Khoảng cách', 'Em đếm', 'Thực tế'], rows: rows.map(r => [r.d + ' cm', r.em, r.real]) },
+      table: { head: ['Khoảng cách', 'Em đếm (15 giây)', 'Thực tế'], rows: rows.map(r => [r.d + ' cm', r.em, r.real]) },
       chart: {
-        labels: rows.map(r => r.d + ' cm'), yLabel: 'Số bọt / phút',
+        labels: rows.map(r => r.d + ' cm'), yLabel: 'Số bọt / 15 giây',
         series: [{ name: 'Em đếm', color: '#5BB4EA', values: rows.map(r => r.em) }, { name: 'Thực tế', color: '#3FB37F', values: rows.map(r => r.real) }]
       },
-      conclusion: 'Đèn càng gần → càng nhiều bọt khí (O₂) → quang hợp càng mạnh'
+      conclusion: 'Trong một giới hạn: đèn càng gần → ánh sáng càng mạnh → càng nhiều bọt khí O₂ → quang hợp càng mạnh',
+      note: 'Quá điểm bão hoà ánh sáng thì quang hợp không tăng nữa; đèn quá gần còn làm nóng nước.'
     };
   }
 
-  NL.lab.register('2A', { build, steps, cleanup() { if (st && st.raf) cancelAnimationFrame(st.raf); } });
+  // Sau biểu đồ: so với điều em đã đoán, hỏi vì sao, rồi 3 câu kiểm tra.
+  function afterChart(api) {
+    const pred = api.prediction, right = 'Nhiều hơn';
+    api.card({
+      kicker: '🔁 So với điều em đoán',
+      text: pred ? (pred === right ? `Em đoán "${pred}". Kết quả đo: đúng như em đoán! 🎯` : `Em đoán "${pred}". Kết quả đo: đèn gần thì bọt khí nhiều hơn.`) : 'Kết quả đo: đèn gần thì bọt khí nhiều hơn.',
+      sub: 'Nhưng chỉ tăng trong một giới hạn: tới điểm bão hoà ánh sáng thì gần như không tăng nữa.'
+    }, () => api.askAll(QUIZ, () => api.finish(result())));
+  }
+  const QUIZ = [
+    {
+      kicker: '❓ Vì sao?', q: 'Vì sao đèn càng gần thì bọt khí càng nhiều?',
+      options: [
+        { t: 'Ánh sáng mạnh hơn nên rong quang hợp mạnh hơn, thải nhiều O₂ hơn', ok: true },
+        { t: 'Đèn làm nước nóng lên và sôi ra bọt', why: 'Nước trong cốc chỉ ấm lên chút ít, chưa thể sôi. Bọt khí này sinh ra từ lá rong.' },
+        { t: 'Rong hô hấp mạnh hơn nên thải nhiều CO₂', why: 'Khí thu được trong ống làm que đóm còn tàn đỏ bùng cháy. Khí nào giúp sự cháy?' }
+      ],
+      explain: 'Ánh sáng là nguồn năng lượng cho quang hợp. Sáng mạnh hơn thì quang hợp nhanh hơn, thải nhiều O₂ hơn (trong một giới hạn).'
+    },
+    {
+      q: 'Bọt khí nổi lên từ cành rong chủ yếu là khí gì?',
+      options: [{ t: 'Khí O₂', ok: true }, { t: 'Khí CO₂', why: 'CO₂ là khí cây lấy vào để quang hợp. Cây thải ra khí nào?' }, { t: 'Hơi nước', why: 'Hơi nước không tạo bọt trong nước lạnh. Nhớ lại sản phẩm khí của quang hợp nhé.' }],
+      explain: 'Quang hợp lấy CO₂, thải ra O₂.'
+    },
+    {
+      q: 'Nếu cứ đưa đèn sát hơn nữa, số bọt khí sẽ thế nào?',
+      options: [
+        { t: 'Tăng mãi không ngừng', why: 'Quang hợp có tăng mãi được không? Nhớ lại điểm bão hoà ánh sáng.' },
+        { t: 'Tăng tới một mức rồi gần như không tăng nữa', ok: true },
+        { t: 'Giảm ngay về 0', why: 'Đèn gần hơn thì ánh sáng mạnh hơn, quang hợp không thể dừng ngay được.' }
+      ],
+      explain: 'Đến điểm bão hoà ánh sáng thì quang hợp không tăng nữa. Đèn quá gần còn làm nóng nước, có hại cho rong.'
+    },
+    {
+      q: 'Trong thí nghiệm này, em đã thay đổi yếu tố nào?',
+      options: [{ t: 'Khoảng cách từ đèn tới cốc', ok: true }, { t: 'Loại cây rong', why: 'Em dùng một cành rong suốt cả bài. Em đã kéo thanh trượt để đổi gì?' }, { t: 'Lượng nước trong cốc', why: 'Cốc nước giữ nguyên. Em đã kéo thanh trượt để đổi gì?' }],
+      explain: 'Chỉ thay đổi một yếu tố (khoảng cách đèn), giữ nguyên các yếu tố khác thì mới so sánh được.'
+    }
+  ];
+
+  NL.lab.register('2A', { goal: 'Ánh sáng mạnh hay yếu ảnh hưởng thế nào tới quang hợp của cành rong?', build, steps, cleanup() { if (st && st.raf) cancelAnimationFrame(st.raf); } });
 })();

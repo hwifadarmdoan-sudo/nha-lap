@@ -2,7 +2,6 @@
 (function () {
   const $ = id => document.getElementById(id);
   const cv = $('world'), c = cv.getContext('2d');
-  const TEACHER_PASS = 'nhalap2026';
   const isTouch = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
   const params = new URLSearchParams(location.search);
   const wantTeacher = params.has('dieuhanh') || location.hash === '#dieuhanh';
@@ -17,13 +16,13 @@
   const g = NL.game = {
     id: 'p' + Math.random().toString(36).slice(2, 9),
     name: saved ? saved.name : '', look: saved ? saved.look : { hair: 0, hairColor: NL.HAIR_COLORS[0], coat: NL.COAT_COLORS[0] },
-    results: (saved && saved.results) || {}, order: (saved && saved.order) || [], unlocked: !!(saved && saved.unlocked),
+    results: (saved && saved.results) || {}, order: (saved && saved.order) || [], unlocked: !!(saved && saved.unlocked), tutDone: !!(saved && saved.tutDone),
     scene: 'outside', x: 8, y: 11.5, facing: 1, anim: 'idle', path: null, emote: null, emoteT: 0, help: false, status: '',
     danceT: 0, danceKind: 'dance', lastMove: Date.now(), teacher: false, playing: false, tut: {}, followId: null,
     setStatus(s) { g.status = s; },
     toast, finishExperiment
   };
-  function persist() { if (!g.teacher) store.save({ name: g.name, look: g.look, results: g.results, order: g.order, unlocked: g.unlocked }); }
+  function persist() { if (!g.teacher) store.save({ name: g.name, look: g.look, results: g.results, order: g.order, unlocked: g.unlocked, tutDone: g.tutDone }); }
 
   // ---------- canvas ----------
   let W = 0, H = 0, DPR = 1, zoom = 1, baseZoom = 1, cam = { x: 0, y: 0 };
@@ -77,7 +76,7 @@
     };
     $('btnName').onclick = () => {
       const v = $('nameInput').value.trim().slice(0, 14);
-      if (!v) { $('nameInput').focus(); return; }
+      if (!v) { $('nameNote').textContent = 'Em nhập tên trước nha'; $('nameNote').classList.add('warn'); $('nameInput').focus(); return; }
       g.name = v; NL.audio.play('pop'); buildChips(); showStep('introLook'); drawPreview($('lookPreview'), 2.4);
     };
     $('nameInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnName').click(); });
@@ -86,29 +85,37 @@
     $('btnChange').onclick = () => { $('nameInput').value = g.name; showStep('introName'); };
   }
 
+  // Lối tắt vào thẳng thí nghiệm: ?tn=2A (đếm bọt khí) hoặc ?tn=2B (co nguyên sinh)
+  const TN = { '2a': '2A', bubbles: '2A', bot: '2A', '2b': '2B', plasmo: '2B', co: '2B' }[(params.get('tn') || '').toLowerCase()];
   function enterGame() {
     $('intro').classList.add('hidden'); $('hud').classList.remove('hidden');
     g.playing = true;
+    NL.bots.avoidName(g.name);
     if (g.unlocked) $('emoSpecial').classList.remove('locked');
-    goScene('outside', 'default');
     if (isTouch) $('joy').classList.add('on');
+    if (TN) { g.tut.elevator = 1; goScene('lab-' + TN, 'default'); $('btnLab').click(); return; }
+    goScene('outside', 'default');
+    if (!g.tutDone) {
+      $('tutMove').textContent = isTouch ? 'Kéo cần tròn ở góc trái để đi, hoặc chạm xuống sàn' : 'Đi bằng phím mũi tên hoặc W A S D, hoặc bấm chuột xuống sàn';
+      $('tutorial').classList.remove('hidden');
+      $('tutOk').onclick = () => { NL.audio.play('pop'); $('tutorial').classList.add('hidden'); g.tutDone = true; persist(); };
+    }
   }
 
   // ---------- chuyển cảnh ----------
-  let fade = 0, insideTrig = new Set();
+  let fade = 0, fadeAt = 0, insideTrig = new Set();
   function goScene(id, spawn) {
     const s = NL.scenes[id];
     g.scene = id;
     const sp = (s.spawns[spawn] || s.spawns.default);
-    g.x = sp.x; g.y = sp.y; g.path = null; fade = 1;
+    g.x = sp.x; g.y = sp.y; g.path = null; fade = 1; fadeAt = performance.now();
     insideTrig = new Set(s.triggers.filter(tr => inRect(tr, g.x, g.y)).map(tr => tr));
     $('hudFloor').textContent = s.title;
     $('hudFloor').style.background = s.subject ? s.subject.color : '#fff';
     $('hudFloor').style.color = s.subject ? '#fff' : '';
     showGuide();
-    if (s.subject && !g.teacher && !g.tut[id]) { g.tut[id] = 1; setGuide('Chọn phòng A hoặc phòng B', 4000); }
-    if (s.lab && !g.teacher) setGuide('Tới bàn thí nghiệm', 0);
     benchPrompt(false);
+    $('btnLab').classList.toggle('hidden', !s.lab || g.teacher);
     $('btnElev').classList.toggle('hidden', !s.triggers.some(tr => tr.type === 'elevator'));
   }
   const inRect = (r, x, y) => x >= r.x1 && x <= r.x2 && y >= r.y1 && y <= r.y2;
@@ -120,10 +127,25 @@
     el.textContent = text; el.classList.remove('hidden');
     if (ms) guideTimer = setTimeout(() => el.classList.add('hidden'), ms);
   }
+  // Việc tiếp theo của em ở cảnh này: chữ hướng dẫn + chỗ mũi tên vàng chỉ tới.
+  function nextGuide() {
+    const s = NL.scenes[g.scene], r = g.results;
+    if (g.teacher) return null;
+    const left = ['2A', '2B'].filter(e => !r[e]);
+    if (s.lab) return r[s.lab] ? null : s.guide;
+    if (g.scene === 'outside') return left.length ? s.guide : null;
+    if (g.scene === 'lobby') return left.length ? { x: 6, y: 0.9, text: 'Vào thang máy, lên tầng 2' } : null;
+    if (g.scene === 'f2') {
+      if (!left.length) return null;
+      const e = left[0], ex = NL.EXPERIMENTS.find(x => x.id === e);
+      return e === '2A' ? { x: 2.25, y: 0.7, text: 'Vào phòng A · ' + ex.name } : { x: 13.75, y: 0.7, text: 'Vào phòng B · ' + ex.name };
+    }
+    if (s.floor > 2) return { x: 8, y: 0.7, text: 'Tầng này sắp có. Quay lại thang máy nhé' };
+    return null;
+  }
   function showGuide() {
-    const s = NL.scenes[g.scene];
-    if (!g.teacher && s.guide && (g.scene === 'outside' || g.scene === 'lobby') && !g.tut.elevator) setGuide(s.guide.text, 0);
-    else if (!s.lab) setGuide(null);
+    const gd = nextGuide();
+    setGuide(gd ? gd.text : null, NL.scenes[g.scene].lab ? 0 : 6000);
   }
 
   // ---------- toast ----------
@@ -169,15 +191,18 @@
     if (document.body.classList.contains('film')) { NL.teacher.film(false); return; }
     const w = toWorld(e.clientX, e.clientY);
     const s = NL.scenes[g.scene];
+    // chạm vào bàn thí nghiệm (ưu tiên hơn bạn đứng gần bàn)
+    const bench = s.objects.find(o => o.kind === 'bench' && w.x > o.x - 0.3 && w.x < o.x + o.w + 0.3 && w.y > o.y - 0.6 && w.y < o.y + o.d + 0.4);
+    if (bench && !g.teacher) { g.pendingBench = bench.exp; g.path = NL.findPath(s, g.x, g.y, bench.x + bench.w / 2, bench.y + bench.d + 0.7); g.followId = null; return; }
+    // chạm vào cửa thang máy
+    const et = elevTrig(s);
+    if (et && w.y < 1.1 && w.x > et.x1 - 0.3 && w.x < et.x2 + 0.3) { walkToElevator(); return; }
     // chạm vào nhân vật khác
     const hit = visibleOthers().find(o => {
       const p = NL.iso(o.rx, o.ry); const sx = p.x * zoom + cam.x, sy = p.y * zoom + cam.y;
       return Math.abs(e.clientX - sx) < 22 * zoom + 6 && e.clientY < sy + 8 && e.clientY > sy - 75 * zoom;
     });
-    if (hit) { showInfo(hit); return; }
-    // chạm vào bàn thí nghiệm
-    const bench = s.objects.find(o => o.kind === 'bench' && w.x > o.x - 0.3 && w.x < o.x + o.w + 0.3 && w.y > o.y - 0.6 && w.y < o.y + o.d + 0.4);
-    if (bench && !g.teacher) { g.pendingBench = bench.exp; g.path = NL.findPath(s, g.x, g.y, bench.x + bench.w / 2, bench.y + bench.d + 0.7); g.followId = null; return; }
+    if (hit) { showInfo(hit); if (g.teacher) return; }
     g.pendingBench = null; g.pendingElev = false;
     g.path = NL.findPath(s, g.x, g.y, w.x, w.y);
     g.followId = null;
@@ -214,7 +239,15 @@
     g.help = on;
     $('btnHelp').classList.toggle('on', on); $('labHelp').classList.toggle('on', on);
     $('btnHelp').textContent = on ? '🙋 Đang gọi cô…' : '🙋 Hỏi giáo viên';
-    if (on) { NL.audio.play('help'); toast('Đã báo cô. Cô sẽ tới chỗ em!'); }
+    if (!on) return;
+    NL.audio.play('help');
+    const teacherOn = [...remote.values()].some(r => r.teacher && NL.net.peers.has(r.id));
+    if (teacherOn) { toast('Đã báo cô. Cô sẽ tới chỗ em!'); return; }
+    // không có cô online: tự hiện gợi ý của bước đang làm
+    if (NL.lab.isOpen) NL.lab.showHint();
+    const gd = nextGuide();
+    toast('Cô chưa online. ' + (NL.lab.isOpen ? 'Xem gợi ý bên dưới nhé 💡' : gd ? '💡 ' + gd.text : 'Em thử đi tiếp nhé'), 4500);
+    setTimeout(() => { if (g.help) setHelp(false); }, 6000);
   }
   $('btnSound').addEventListener('click', () => {
     NL.audio.setMuted(!NL.audio.muted); $('btnSound').textContent = NL.audio.muted ? '🔇' : '🔊';
@@ -248,13 +281,15 @@
       });
     }, 450);
   }
-  $('btnElev').addEventListener('click', () => { NL.audio.play('click'); walkToElevator(); });
+  $('btnElev').addEventListener('click', () => { NL.audio.play('click'); if (!NL.lab.isOpen && !g.inElev) enterElevator(); });
+  $('btnLab').addEventListener('click', () => { const s = NL.scenes[g.scene]; if (!s.lab) return; const b = s.objects.find(o => o.kind === 'bench'); g.x = b.x + b.w / 2; g.y = b.y + b.d + 0.6; openLab(s.lab); });
 
   // ---------- bàn thí nghiệm ----------
   function benchPrompt(on, exp) {
     const el = $('guide');
     if (on) { el.innerHTML = ''; const b = document.createElement('button'); b.className = 'btn pop'; b.textContent = '🔬 Làm thí nghiệm'; b.onclick = () => openLab(exp); el.appendChild(b); el.style.pointerEvents = 'auto'; el.classList.remove('hidden'); clearTimeout(guideTimer); }
     else { el.style.pointerEvents = 'none'; }
+    $('btnLab').classList.toggle('hidden', !!on || !NL.scenes[g.scene].lab || g.teacher);
   }
   function openLab(exp) {
     if (g.teacher) return;
@@ -343,7 +378,7 @@
 
   function update(dt) {
     const s = NL.scenes[g.scene];
-    const frozen = NL.lab.isOpen || NL.elevator.isOpen() || g.inElev || !$('bigmsg').classList.contains('hidden') || (g.teacher && NL.teacher.filming);
+    const frozen = NL.lab.isOpen || NL.elevator.isOpen() || g.inElev || !$('tutorial').classList.contains('hidden') || !$('bigmsg').classList.contains('hidden') || (g.teacher && NL.teacher.filming);
     // hướng đi từ bàn phím / cần điều khiển
     let mx = 0, my = 0;
     if (!frozen) {
@@ -401,7 +436,7 @@
   function onTrigger(tr) {
     if (tr.type === 'goto') { NL.audio.play('door'); goScene(tr.to, tr.spawn); }
     else if (tr.type === 'elevator') { enterElevator(); }
-    else if (tr.type === 'locked') { toast('🚧 Phòng đang lắp đặt, quay lại sau nhé'); }
+    else if (tr.type === 'locked') { toast('Phòng này sắp có, quay lại sau nhé'); }
     else if (tr.type === 'bench' && !g.teacher) { if (!g.pendingBench) benchPrompt(true, tr.exp); }
     else if (tr.type === 'balcony') { if (!g.teacher) toast('🌤 Gió mát quá!', 1500); }
   }
@@ -423,13 +458,15 @@
     c.fillStyle = 'rgba(255,230,120,.25)'; c.beginPath(); c.arc(W - 90, 80, 52 + Math.sin(t * 2) * 4, 0, 7); c.fill();
   }
 
+  let guidePath = null;
   function charDrawer(o, isSelf) {
     return () => {
       const p = NL.iso(o.rx !== undefined ? o.rx : o.x, o.ry !== undefined ? o.ry : o.y);
       const anim = o.anim || 'idle';
       NL.drawChar(c, p.x, p.y, o.teacher ? { hair: 1, hairColor: '#2B2B2B', coat: '#2F80C0' } : o.look, { t: t + (o.id ? o.id.length : 0), facing: o.facing, anim, teacher: o.teacher, emote: o.emote, help: o.help });
       const emo = o.emote && o.emote !== 'dance' && o.emote !== 'special' ? EMO_ICON[o.emote] : null;
-      NL.drawTag(c, p.x, p.y, o.name + (isSelf ? ' (em)' : ''), {
+      NL.drawTag(c, p.x, p.y, o.name + (isSelf ? ' (em)' : o.bot ? ' (ảo)' : ''), {
+        self: isSelf, scale: isTouch ? Math.min(2, Math.max(1.3, 0.95 / zoom)) : 1,
         t, help: o.help, teacher: o.teacher, bubble: emo, bubbleAge: o.emoteT || 0,
         status: g.teacher && !o.teacher && o.status ? o.status : null, lift: anim === 'jump' ? 6 : 0
       });
@@ -463,23 +500,33 @@
       c.beginPath(); c.ellipse(p.x, p.y, 10 + k * 16, 5 + k * 8, 0, 0, 7); c.stroke();
     }
     // mũi tên dẫn đường
-    if (!g.teacher && s.guide && ((!g.tut.elevator && (g.scene === 'outside' || g.scene === 'lobby')) || (s.lab && !g.results[s.lab] && !insideTrig.size))) {
-      const p = NL.iso(s.guide.x, s.guide.y); NL.drawArrow(c, p.x, p.y, t);
+    const gd = nextGuide();
+    if (gd && !insideTrig.size && !g.inElev) {
+      // lần đầu: tô sáng đường đi tới chỗ cần đến
+      if (!g.order.length && (g.scene === 'outside' || g.scene === 'lobby')) {
+        if (!guidePath || t - guidePath.t > 0.4) guidePath = { t, pts: NL.findPath(s, g.x, g.y, gd.x, gd.y) || [] };
+        guidePath.pts.forEach((q, k) => { if (k % 2) return; const p = NL.iso(q.x, q.y); c.fillStyle = `rgba(255,213,74,${0.55 + 0.35 * Math.sin(t * 5 - k * 0.5)})`; c.beginPath(); c.ellipse(p.x, p.y, 9, 4.5, 0, 0, 7); c.fill(); });
+      }
+      const p = NL.iso(gd.x, gd.y); NL.drawArrow(c, p.x, p.y, t);
     }
     c.setTransform(DPR, 0, 0, DPR, 0, 0);
-    if (fade > 0) { c.fillStyle = `rgba(255,255,255,${fade})`; c.fillRect(0, 0, W, H); fade = Math.max(0, fade - dt * 2.5); }
+    if (fade > 0) {
+      c.fillStyle = `rgba(255,255,255,${fade})`; c.fillRect(0, 0, W, H);
+      if (fade > 0.4 && g.scene === 'outside') { c.fillStyle = `rgba(31,78,121,${fade})`; c.font = "800 22px 'Baloo 2', sans-serif"; c.textAlign = 'center'; c.fillText('Đang mở cửa…', W / 2, H / 2); }
+      fade = Math.max(0, 1 - (performance.now() - fadeAt) / 450);
+    }
   }
 
   // ---------- khởi động ----------
-  NL.net.init(g.id);
-  document.addEventListener('DOMContentLoaded', () => {});
+  NL.net.init(id => { g.id = id; }, wantTeacher);
   if (wantTeacher) {
+    // Cô đăng nhập bằng tài khoản Firebase (email + mật khẩu); không có mật khẩu nào nằm trong code.
     $('intro').classList.add('hidden');
     $('login').classList.remove('hidden');
-    setTimeout(() => $('loginPass').focus(), 200);
-    $('loginForm').addEventListener('submit', e => {
-      e.preventDefault();
-      if ($('loginPass').value !== TEACHER_PASS) { $('loginErr').textContent = 'Sai mật khẩu, thử lại nhé'; return; }
+    const local = !NL.net.hasFirebase();
+    if (local) { $('loginEmail').classList.add('hidden'); $('loginPass').classList.add('hidden'); $('loginErr').textContent = 'Đang chạy thử trên một máy (không có mạng lớp học)'; }
+    setTimeout(() => (local ? $('loginName') : $('loginEmail')).focus(), 200);
+    const enterTeacher = () => {
       $('login').classList.add('hidden');
       NL.audio.init(); NL.audio.music('calm');
       const nm = ($('loginName').value.trim() || 'Cô Linh').slice(0, 14);
@@ -491,6 +538,23 @@
       goScene('lobby', 'fromElev');
       NL.teacher.init();
       if (isTouch) $('joy').classList.add('on');
+    };
+    let busy = false;
+    $('loginForm').addEventListener('submit', e => {
+      e.preventDefault();
+      if (local) { enterTeacher(); return; }
+      if (busy) return;
+      const email = $('loginEmail').value.trim(), pass = $('loginPass').value;
+      if (!email || !pass) { $('loginErr').textContent = 'Nhập email và mật khẩu nhé'; return; }
+      busy = true; $('loginErr').textContent = 'Đang kiểm tra…';
+      NL.net.teacherLogin(email, pass).then(enterTeacher).catch(err => {
+        busy = false;
+        const code = (err && (err.code || err.message)) || '';
+        $('loginErr').textContent = code === 'not-teacher' ? 'Tài khoản này chưa có quyền điều hành'
+          : /network/.test(code) ? 'Mất mạng, thử lại nhé'
+          : /too-many/.test(code) ? 'Thử sai nhiều quá, đợi một lát nhé'
+          : 'Sai email hoặc mật khẩu';
+      });
     });
   } else intro();
   requestAnimationFrame(frame);

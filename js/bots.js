@@ -18,7 +18,7 @@ NL.bots = (function () {
   function make() {
     list = NAMES.map((name, k) => {
       const scene = HOME[k], s = NL.scenes[scene];
-      const p = s.lab ? { x: 4 + rnd() * 2, y: 4.8 } : NL.randomSpot(s, rnd);
+      const p = s.lab ? benchSide() : NL.randomSpot(s, rnd);
       return {
         id: 'bot' + k, bot: true, name, scene, x: p.x, y: p.y, facing: 1,
         look: { hair: k % 4, hairColor: NL.HAIR_COLORS[(k * 2) % 6], coat: NL.COAT_COLORS[(k * 5) % 6] },
@@ -28,6 +28,8 @@ NL.bots = (function () {
     });
   }
 
+  // hai bên hông bàn thí nghiệm, chừa lối trước bàn cho em
+  function benchSide() { return rnd() < 0.5 ? { x: 2.6, y: 3.3 + rnd() * 0.8 } : { x: 7.4, y: 3.3 + rnd() * 0.8 }; }
   function walkTo(b, x, y) { b.path = NL.findPath(NL.scenes[b.scene], b.x, b.y, x, y); }
 
   function update(dt, now) {
@@ -52,7 +54,7 @@ NL.bots = (function () {
         const total = 7;
         b.step++; b.status = `TN ${s.lab} · bước ${Math.min(b.step, total)}/${total}`;
         b.timer = 5 + rnd() * 5;
-        if (rnd() < 0.12) { b.help = true; b.helpReason = pick(HELP[b.scene] || HELP.other); b.timer = 30; return; }
+        if (rnd() < 0.12 && NL.game.teacher) { b.help = true; b.helpReason = pick(HELP[b.scene] || HELP.other); b.timer = 30; return; }
         if (b.step > total) { b.mode = 'dance'; b.timer = 5; b.status = `Xong TN ${s.lab} 🎉`; b.step = 1; b.after = 'leave'; }
         return;
       }
@@ -65,11 +67,11 @@ NL.bots = (function () {
         if (mate && b.emote === 'five') { mate.emote = 'five'; mate.emoteT = 0; }
       }
       else if (r < 0.78) { b.mode = 'dance'; b.timer = 3; }
-      else if (r < 0.84 && !s.lab) { b.help = true; b.helpReason = pick(HELP.other); b.timer = 25; }
+      else if (r < 0.84 && !s.lab && NL.game.teacher) { b.help = true; b.helpReason = pick(HELP.other); b.timer = 25; }
       else if (r < 0.92) { // đổi tầng
         const to = pick(['outside', 'lobby', 'f2', 'f2', 'lab-2A', 'lab-2B']);
         b.scene = to; const ns = NL.scenes[to];
-        if (ns.lab) { b.x = 5; b.y = 6.6; walkTo(b, 3.8 + rnd() * 2.4, 4.8); b.mode = 'lab'; b.step = 1; b.status = `TN ${ns.lab} · bước 1/7`; }
+        if (ns.lab) { b.x = 5; b.y = 6.6; const q = benchSide(); walkTo(b, q.x, q.y); b.mode = 'lab'; b.step = 1; b.status = `TN ${ns.lab} · bước 1/7`; }
         else { const sp = ns.spawns.fromElev || ns.spawns.default; b.x = sp.x; b.y = sp.y; b.status = ''; }
       }
       b.timer = 2 + rnd() * 4;
@@ -94,9 +96,16 @@ NL.bots = (function () {
     setTimeout(() => { b.emote = emo; b.emoteT = 0; }, 300);
   }
 
+  // Không để bạn ảo trùng tên em
+  const SPARE = ['Bơ', 'Na', 'Kem', 'Bin', 'Su', 'Mít', 'Bống', 'Cốm', 'Xoài', 'Đậu', 'Thóc'];
+  function avoidName(name) {
+    const n = (name || '').trim().toLowerCase();
+    list.forEach(b => { if (b.name.toLowerCase() === n) b.name = SPARE.find(x => x.toLowerCase() !== n && !list.some(o => o.name === x)); });
+  }
+
   make();
   return {
-    update, resolveHelp, react,
+    update, resolveHelp, react, avoidName,
     get list() { return enabled ? list.map(asState) : []; },
     get enabled() { return enabled; },
     set enabled(v) { enabled = v; }

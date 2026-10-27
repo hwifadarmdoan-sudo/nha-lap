@@ -102,13 +102,25 @@ NL.lab = (function () {
   function setStep() {
     const st = cur.steps[stepIdx];
     active.forEach(a => setOn(a, false)); active = [];
-    $('stepNo').textContent = `Bước ${stepIdx + 1}/${cur.steps.length}`;
-    $('stepText').textContent = st.text;
+    $('stepNo').textContent = st.label ? (typeof st.label === 'function' ? st.label() : st.label) : `Bước ${stepIdx + 1}/${cur.steps.length}`;
+    say(st.text);
     $('btnNext').classList.add('hidden'); $('labHint').classList.add('hidden');
-    NL.game.setStatus(`TN ${cur.id} · bước ${stepIdx + 1}/${cur.steps.length}`);
+    NL.game.setStatus(`TN ${cur.id} · ${$('stepNo').textContent.toLowerCase()}`);
     st.enter(api);
   }
+  function say(text) { $('stepText').innerHTML = NL.learn.decorate(text || ''); NL.learn.bindTerms($('stepText')); }
+  // Câu hỏi: ghi lại để báo cáo cuối có câu em sai lần đầu.
+  function ask(opt, cb) {
+    NL.learn.ask(opt, r => {
+      if (!opt.predict) cur.quiz.push({ q: opt.q, ok: r.firstTry, answer: r.answer, right: r.right });
+      else cur.predict = r.answer;
+      cb && cb(r);
+    });
+  }
+  function askAll(list, done) { let k = 0; const nx = () => { if (k >= list.length) { done(); return; } ask(list[k++], nx); }; nx(); }
   const api = {
+    say, ask, askAll, card: NL.learn.card,
+    get prediction() { return cur.predict; },
     el, g, place, tween, draggable, setOn, tapable, moveHand, restHands,
     get svg() { return layer; },
     get side() { return $('labSide'); },
@@ -120,6 +132,7 @@ NL.lab = (function () {
     goto(idx) { stepIdx = idx; setStep(); },
     get step() { return stepIdx; },
     finish(result) {
+      result.quiz = cur.quiz.slice(); if (cur.predict) result.predict = cur.predict;
       NL.game.finishExperiment(cur.id, result);
     },
     text(parent, x, y, str, size, color, weight) {
@@ -130,7 +143,7 @@ NL.lab = (function () {
 
   function open(id) {
     const mod = modules[id]; if (!mod) return false;
-    cur = { id, steps: mod.steps, mod };
+    cur = { id, steps: mod.steps, mod, quiz: [], predict: null };
     $('lab').classList.remove('hidden');
     const stage = $('labStage'); stage.innerHTML = ''; $('labSide').innerHTML = '';
     svg = el('svg', { viewBox: '0 0 1000 560', preserveAspectRatio: 'xMidYMid meet' }, stage);
@@ -143,10 +156,11 @@ NL.lab = (function () {
     buildHands(NL.game.look.coat === '#FFFFFF' ? '#F4F8FB' : NL.game.look.coat);
     cancelAnimationFrame(rafId); animHands();
     stepIdx = 0; setStep();
+    if (mod.goal) NL.learn.card({ kicker: '🔎 Mình đang tìm hiểu', text: mod.goal, btn: 'Bắt đầu ➜' });
     return true;
   }
   function close() {
-    $('lab').classList.add('hidden'); cancelAnimationFrame(rafId);
+    $('lab').classList.add('hidden'); cancelAnimationFrame(rafId); NL.learn.closeAll();
     if (cur && cur.mod.cleanup) cur.mod.cleanup();
     cur = null; NL.game.setStatus('');
   }

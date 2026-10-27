@@ -1,0 +1,52 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "teachers": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid"
+      }
+    },
+    "players": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['name', 'scene', 'x', 'y']) && (newData.child('teacher').val() !== true || root.child('teachers').child(auth.uid).val() === true)",
+        "name": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 20" },
+        "scene": { ".validate": "newData.isString() && newData.val().length <= 12" },
+        "x": { ".validate": "newData.isNumber() && newData.val() >= -2 && newData.val() <= 30" },
+        "y": { ".validate": "newData.isNumber() && newData.val() >= -2 && newData.val() <= 30" },
+        "facing": { ".validate": "newData.isNumber()" },
+        "anim": { ".validate": "newData.isString() && newData.val().length <= 10" },
+        "emote": { ".validate": "newData.isString() && newData.val().length <= 10" },
+        "emoteT": { ".validate": "newData.isNumber()" },
+        "help": { ".validate": "newData.isBoolean()" },
+        "status": { ".validate": "newData.isString() && newData.val().length <= 40" },
+        "lastMove": { ".validate": "newData.isNumber()" },
+        "teacher": { ".validate": "newData.isBoolean()" },
+        "hidden": { ".validate": "newData.isBoolean()" },
+        "look": {
+          "hair": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 9" },
+          "hairColor": { ".validate": "newData.isString() && newData.val().length <= 9" },
+          "coat": { ".validate": "newData.isString() && newData.val().length <= 9" },
+          "$other": { ".validate": false }
+        },
+        "$other": { ".validate": false }
+      }
+    },
+    "events": {
+      ".read": "auth != null",
+      "$eid": {
+        ".write": "auth != null && (data.exists() ? data.child('from').val() === auth.uid : newData.child('from').val() === auth.uid)",
+        ".validate": "newData.hasChildren(['type', 'from', 'at']) && ((newData.child('type').val() === 'poke' || newData.child('type').val() === 'five') || root.child('teachers').child(auth.uid).val() === true)",
+        "type": { ".validate": "newData.isString() && newData.val().length <= 10" },
+        "from": { ".validate": "newData.isString()" },
+        "at": { ".validate": "newData.isNumber()" },
+        "target": { ".validate": "newData.isString() && newData.val().length <= 64" },
+        "name": { ".validate": "newData.isString() && newData.val().length <= 20" },
+        "on": { ".validate": "newData.isBoolean()" },
+        "$other": { ".validate": false }
+      }
+    }
+  }
+}

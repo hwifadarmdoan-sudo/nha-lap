@@ -266,11 +266,11 @@ window.NL = window.NL || {};
         return (x + y) % 2 ? '#F7F7F2' : '#EDEEE8';
       },
       deco: [
-        { kind: 'door', side: 'N', a: 1.4, b: 3.1, label: 'A · ' + sub.A, color: sub.color, locked: !sub.ready, sub: sub.ready ? null : '🚧 Đang lắp đặt' },
+        { kind: 'door', side: 'N', a: 1.4, b: 3.1, label: 'A · ' + sub.A, color: sub.color, locked: !sub.ready, sub: sub.ready ? null : 'Sắp có' },
         { kind: 'board', side: 'N', a: 4, b: 6.6, lines: [sub.icon + ' ' + sub.name, '⬅ Phòng A', 'Phòng B ➡'], head: sub.color },
         { kind: 'elevator', side: 'N', a: 7.2, b: 8.8, floorLabel: String(f) },
         { kind: 'window', side: 'N', a: 9.6, b: 12 },
-        { kind: 'door', side: 'N', a: 12.9, b: 14.6, label: 'B · ' + sub.B, color: sub.color, locked: !sub.ready, sub: sub.ready ? null : '🚧 Đang lắp đặt' },
+        { kind: 'door', side: 'N', a: 12.9, b: 14.6, label: 'B · ' + sub.B, color: sub.color, locked: !sub.ready, sub: sub.ready ? null : 'Sắp có' },
         { kind: 'window', side: 'W', a: 1, b: 3.6 }
       ],
       objects: [
@@ -366,7 +366,9 @@ window.NL = window.NL || {};
   NL.randomSpot = function (s, rnd) {
     for (let k = 0; k < 60; k++) {
       const x = 0.5 + rnd() * (s.w - 1), y = 0.5 + rnd() * (s.d - 1);
-      if (NL.walkable(s, x, y)) return { x, y };
+      // không đứng chắn cửa, thang máy, bàn thí nghiệm
+      const nearTrig = s.triggers.some(tr => tr.type !== 'balcony' && x > tr.x1 - 0.7 && x < tr.x2 + 0.7 && y > tr.y1 - 0.7 && y < tr.y2 + 0.9);
+      if (NL.walkable(s, x, y) && !nearTrig) return { x, y };
     }
     return s.spawns.default;
   };

@@ -49,7 +49,8 @@ NL.elevator = (function () {
       el('circle', { cx: 778, cy: y, r: 22, fill: 'transparent' }, b);
       el('circle', { cx: 778, cy: y, r: 19, fill: '#F7F9FB', stroke: ready ? COLS[f] : '#B5C0CA', 'stroke-width': 4, class: 'face' }, b);
       txt(b, 778, y + 7, String(f), 20, ready ? '#1F4E79' : '#9AA9B7');
-      txt(b, 806, y + 6, ready ? NAMES[f] : '🚧 ' + NAMES[f], 14, ready ? '#1F4E79' : '#9AA9B7', 'start');
+      if (ready) txt(b, 806, y + 6, NAMES[f], 14, '#1F4E79', 'start');
+      else { txt(b, 806, y - 1, NAMES[f], 13, '#9AA9B7', 'start'); txt(b, 806, y + 15, 'Sắp có', 12, '#E0A100', 'start'); }
       b._ready = ready; b._y = y;
       b.addEventListener('pointerdown', e => { e.stopPropagation(); press(f, b); });
     });
@@ -84,7 +85,7 @@ NL.elevator = (function () {
     moveHand(778 + 4, b._y + 44, 280, () => {
       b.querySelector('.face').setAttribute('fill', b._ready ? '#FFE9A8' : '#FFD6D6');
       setTimeout(() => moveHand(880, 620, 400), 250);
-      if (!b._ready) { NL.helpers.toast('🚧 Tầng này đang lắp đặt, chưa lên được'); setTimeout(() => b.querySelector('.face').setAttribute('fill', '#F7F9FB'), 600); return; }
+      if (!b._ready) { NL.helpers.toast('Tầng ' + f + ' sắp có, em lên tầng 2 nhé'); setTimeout(() => b.querySelector('.face').setAttribute('fill', '#F7F9FB'), 600); return; }
       if (f === cur) { $('elevTip').textContent = 'Em đang ở tầng này rồi'; setTimeout(() => b.querySelector('.face').setAttribute('fill', '#F7F9FB'), 600); return; }
       ride(f, b);
     });
