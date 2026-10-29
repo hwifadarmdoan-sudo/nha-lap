@@ -282,6 +282,7 @@ NL.m3d = (function () {
     if (o.color) el.style.setProperty('--c', o.color);
     ui.labels.appendChild(el);
     const l = { el, on: true, right: o.right };
+    if (Array.isArray(target) && o.parent) { const d0 = new T.Object3D(); d0.position.set(...target); o.parent.add(d0); target = d0; }
     if (target && target.isObject3D) { l.obj = target; if (o.off) l.off = new T.Vector3(...o.off); } else l.pos = new T.Vector3(...(target || [0, 0, 0]));
     l.set = t => { el.innerHTML = t; return l; };
     l.show = v => { l.on = v; return l; };
