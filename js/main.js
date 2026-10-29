@@ -85,8 +85,13 @@
     $('btnChange').onclick = () => { $('nameInput').value = g.name; showStep('introName'); };
   }
 
-  // Lối tắt vào thẳng thí nghiệm: ?tn=2A (đếm bọt khí) hoặc ?tn=2B (co nguyên sinh)
-  const TN = { '2a': '2A', bubbles: '2A', bot: '2A', '2b': '2B', plasmo: '2B', co: '2B' }[(params.get('tn') || '').toLowerCase()];
+  // Lối tắt vào thẳng thí nghiệm: ?tn=2A, ?tn=2B… hoặc số phòng ?tn=1 … ?tn=10
+  const TN = (() => {
+    const q = (params.get('tn') || '').toLowerCase(); if (!q) return null;
+    const alias = { bubbles: '2A', bot: '2A', plasmo: '2B', co: '2B' };
+    const e = NL.EXPERIMENTS.find(x => x.ready && x.floor === 2 && (x.id.toLowerCase() === q || String(x.no) === q || alias[q] === x.id));
+    return e ? e.id : null;
+  })();
   function enterGame() {
     $('intro').classList.add('hidden'); $('hud').classList.remove('hidden');
     g.playing = true;
@@ -131,14 +136,14 @@
   function nextGuide() {
     const s = NL.scenes[g.scene], r = g.results;
     if (g.teacher) return null;
-    const left = ['2A', '2B'].filter(e => !r[e]);
+    const left = NL.EXPERIMENTS.filter(e => e.floor === 2 && e.ready && !r[e.id]);
     if (s.lab) return r[s.lab] ? null : s.guide;
     if (g.scene === 'outside') return left.length ? s.guide : null;
     if (g.scene === 'lobby') return left.length ? { x: 6, y: 0.9, text: 'Vào thang máy, lên tầng 2' } : null;
     if (g.scene === 'f2') {
       if (!left.length) return null;
-      const e = left[0], ex = NL.EXPERIMENTS.find(x => x.id === e);
-      return e === '2A' ? { x: 2.25, y: 0.7, text: 'Vào phòng A · ' + ex.name } : { x: 13.75, y: 0.7, text: 'Vào phòng B · ' + ex.name };
+      const e = left[0], d = s.doors[e.id];
+      return { x: d.x, y: d.y, text: `Vào phòng ${e.no} · ${e.short}` };
     }
     if (s.floor > 2) return { x: 8, y: 0.7, text: 'Tầng này sắp có. Quay lại thang máy nhé' };
     return null;

@@ -8,9 +8,18 @@ window.NL = window.NL || {};
     3: { name: 'Hóa học', color: '#9B6BD6', icon: '⚗️', A: 'Chuẩn độ axit–bazơ', B: 'Màu ngọn lửa', ready: false },
     4: { name: 'Vật lí', color: '#3D8BD9', icon: '🧲', A: 'Con lắc đơn', B: 'Khúc xạ ánh sáng', ready: false }
   };
+  // Tầng 2 Sinh: 10 phòng theo thứ tự trong bản đặc tả "Môn Sinh" (29/10). Mã phòng 2A, 2B giữ như cũ để không mất kết quả đã lưu.
   NL.EXPERIMENTS = [
-    { id: '2A', floor: 2, name: 'Đếm bọt khí rong', ready: true },
-    { id: '2B', floor: 2, name: 'Co và phản co nguyên sinh', ready: true },
+    { id: '2A', floor: 2, no: 1, short: 'Quang hợp', name: 'Đếm bọt khí rong', icon: '🌿', ready: true },
+    { id: '2C', floor: 2, no: 2, short: 'Enzyme', name: 'Nhiệt độ và enzyme amylase', icon: '🧪', ready: false },
+    { id: '2B', floor: 2, no: 3, short: 'Co nguyên sinh', name: 'Co và phản co nguyên sinh', icon: '🔬', ready: true },
+    { id: '2D', floor: 2, no: 4, short: 'Mendel', name: 'Di truyền Mendel ở đậu Hà Lan', icon: '🫛', ready: false },
+    { id: '2E', floor: 2, no: 5, short: 'Điện di DNA', name: 'Điện di DNA', icon: '🧬', ready: false },
+    { id: '2F', floor: 2, no: 6, short: 'Hô hấp hạt', name: 'Hô hấp tế bào ở hạt nảy mầm', icon: '🌰', ready: false },
+    { id: '2G', floor: 2, no: 7, short: 'Nhịp tim', name: 'Huyết áp và nhịp tim', icon: '❤️', ready: false },
+    { id: '2H', floor: 2, no: 8, short: 'Nảy mầm', name: 'Điều kiện nảy mầm của hạt', icon: '🌱', ready: false },
+    { id: '2I', floor: 2, no: 9, short: 'Nguyên phân', name: 'Quan sát nguyên phân', icon: '🔍', ready: false },
+    { id: '2J', floor: 2, no: 10, short: 'Quần thể', name: 'Tần số allele qua các thế hệ', icon: '🦋', ready: false },
     { id: '3A', floor: 3, name: 'Chuẩn độ axit–bazơ', ready: false },
     { id: '3B', floor: 3, name: 'Thử màu ngọn lửa', ready: false },
     { id: '4A', floor: 4, name: 'Con lắc đơn', ready: false },
@@ -60,6 +69,9 @@ window.NL = window.NL || {};
         c.save(); c.translate(p.x + 2, top - 10); c.rotate(-0.4); NL.rr(c, -4, -30, 8, 30, 3); c.fill(); c.restore();
         c.fillStyle = '#8E5BD8'; c.beginPath(); c.ellipse(p.x - 30, top - 6, 12, 5, 0, 0, 7); c.fill();
         c.fillStyle = '#5DB36F'; c.beginPath(); c.ellipse(p.x - 30, top - 9, 9, 4, 0.4, 0, 7); c.fill();
+      } else { // các phòng khác: biểu tượng thí nghiệm trên bàn
+        const e = NL.EXPERIMENTS.find(x => x.id === o.exp);
+        c.font = '26px sans-serif'; c.textAlign = 'center'; c.textBaseline = 'alphabetic'; c.fillText(e ? e.icon : '🧪', p.x, top - 4);
       }
       if (o.glow) {
         const k = 0.5 + Math.sin(t * 4) * 0.5;
@@ -146,8 +158,8 @@ window.NL = window.NL || {};
       NL.wallQuad(c, w.side, w.a, w.b, 0, 84, w.locked ? '#C9D3DD' : '#9FD3F2');
       NL.wallQuad(c, w.side, w.a + 0.15, w.b - 0.15, 40, 76, 'rgba(255,255,255,.55)');
       const m = (w.a + w.b) / 2, p = w.side === 'N' ? i(m, 0) : i(0, m);
-      if (w.locked) { c.strokeStyle = '#F2C94C'; c.lineWidth = 6; c.beginPath(); c.moveTo(p.x - 24, p.y - 70); c.lineTo(p.x + 24, p.y - 22); c.moveTo(p.x + 24, p.y - 70); c.lineTo(p.x - 24, p.y - 22); c.stroke(); }
-      later(() => { NL.pill(c, p.x, p.y - 112, w.label, w.color || '#2F80C0', '#fff', 13); if (w.sub) NL.pill(c, p.x, p.y - 136, w.sub, '#fff', '#1F4E79', 12); });
+      const ly = p.y - (w.high ? 138 : 112);
+      later(() => { NL.pill(c, p.x, ly, w.label, w.locked ? '#9AA9B7' : (w.color || '#2F80C0'), '#fff', 13); if (w.sub) NL.pill(c, p.x, p.y - 46, w.sub, '#fff', '#1F4E79', 12); });
     } else if (w.kind === 'board') {
       NL.wallQuad(c, w.side, w.a, w.b, 40, 96, '#FFFFFF');
       NL.wallQuad(c, w.side, w.a + 0.08, w.b - 0.08, 46, 90, w.color || '#E8F4FC');
@@ -291,16 +303,57 @@ window.NL = window.NL || {};
       spawns: { default: { x: 8, y: 1.6 }, fromElev: { x: 8, y: 1.6 }, fromLabA: { x: 2.25, y: 1.5 }, fromLabB: { x: 13.75, y: 1.5 } }
     };
   }
-  [2, 3, 4].forEach(f => { S['f' + f] = floorScene(f); });
+  [3, 4].forEach(f => { S['f' + f] = floorScene(f); });
 
-  function labScene(f, ab) {
-    const sub = NL.SUBJECTS[f], exp = f + ab, name = sub[ab];
+  // Tầng 2 Sinh: hành lang dài, 5 phòng mỗi bên thang máy.
+  function sinhFloor() {
+    const sub = NL.SUBJECTS[2], W = 28, exps = NL.EXPERIMENTS.filter(e => e.floor === 2);
+    const doorX = k => k < 5 ? 0.6 + k * 2.45 : 15.6 + (k - 5) * 2.45;
+    const s = {
+      id: 'f2', title: `Tầng 2 · ${sub.name}`, floor: 2, w: W, d: 8, walls: true, subject: sub,
+      floorColor(x, y) {
+        if (y >= 5) return (x + y) % 2 ? '#E2C499' : '#D9B988';
+        return (x + y) % 2 ? '#F7F7F2' : '#EDEEE8';
+      },
+      deco: [
+        { kind: 'elevator', side: 'N', a: 12.9, b: 14.5, floorLabel: '2' },
+        { kind: 'board', side: 'W', a: 1.2, b: 3.8, lines: [sub.icon + ' ' + sub.name, '10 phòng thí nghiệm'], head: sub.color },
+        { kind: 'window', side: 'W', a: 4.6, b: 7 }
+      ],
+      objects: [
+        { kind: 'railing', x1: 0, x2: W, y: 7.85 },
+        { kind: 'seat', x: 6.2, y: 6.6, w: 1.6, d: 0.7, solid: true }, { kind: 'seat', x: 20.2, y: 6.6, w: 1.6, d: 0.7, solid: true }
+      ],
+      block(x, y) { return y > 7.6; },
+      tags: [{ x: 3.3, y: 5.5, label: '🌤 Ban công' }, { x: 13.7, y: 5.6, label: '🌤 Ban công' }, { x: 24.5, y: 5.5, label: '🌤 Ban công' }],
+      triggers: [
+        { x1: 12.4, y1: 0, x2: 15.0, y2: 1.0, type: 'elevator' },
+        { x1: 0, y1: 4.8, x2: W, y2: 7.6, type: 'balcony' }
+      ],
+      spawns: { default: { x: 13.7, y: 1.6 }, fromElev: { x: 13.7, y: 1.6 } },
+      doors: {}
+    };
+    [1.6, 11, 17.2, 26.4].forEach(x => s.objects.push({ kind: 'plant', x, y: 6.3, w: 0.8, d: 0.8, solid: true }));
+    exps.forEach((e, k) => {
+      const a = doorX(k), b = a + 1.7, m = (a + b) / 2;
+      s.deco.push({ kind: 'door', side: 'N', a, b, label: e.no + ' · ' + e.short, color: sub.color, locked: !e.ready, sub: e.ready ? null : 'Sắp có', high: k % 2 === 1 });
+      s.triggers.push({ x1: a - 0.15, y1: 0, x2: b + 0.15, y2: 0.9, type: e.ready ? 'goto' : 'locked', to: 'lab-' + e.id, spawn: 'default' });
+      s.spawns['fromLab' + e.id] = { x: m, y: 1.5 };
+      s.doors[e.id] = { x: m, y: 0.7 };
+    });
+    return s;
+  }
+  S.f2 = sinhFloor();
+
+
+  function labScene(e) {
+    const f = e.floor, sub = NL.SUBJECTS[f], exp = e.id, name = e.name, ab = String(e.no);
     return {
       id: 'lab-' + exp, title: `Phòng ${ab} · ${name}`, floor: f, w: 10, d: 8, walls: true, lab: exp,
       floorColor(x, y) { return (x + y) % 2 ? '#F2F6F9' : '#E6EDF2'; },
       deco: [
         { kind: 'window', side: 'N', a: 1, b: 3.4 },
-        { kind: 'board', side: 'N', a: 4, b: 6.4, lines: ['Phòng ' + ab, name], head: sub.color },
+        { kind: 'board', side: 'N', a: 4, b: 6.4, lines: ['Phòng ' + ab, e.short], head: sub.color },
         { kind: 'window', side: 'N', a: 7, b: 9.4 },
         { kind: 'board', side: 'W', a: 4.2, b: 6.8, lines: ['🥽 An toàn', 'Đeo kính bảo hộ', 'Làm theo từng bước'], head: '#E5534B' }
       ],
@@ -312,14 +365,14 @@ window.NL = window.NL || {};
       ],
       triggers: [
         { x1: 3.2, y1: 4.4, x2: 6.8, y2: 5.4, type: 'bench', exp },
-        { x1: 4, y1: 7.5, x2: 6, y2: 8, type: 'goto', to: 'f' + f, spawn: 'fromLab' + ab }
+        { x1: 4, y1: 7.5, x2: 6, y2: 8, type: 'goto', to: 'f' + f, spawn: 'fromLab' + exp }
       ],
       mats: [{ x: 4, y: 7.2, w: 2, label: 'Ra hành lang' }],
       spawns: { default: { x: 5, y: 6.6 } },
       guide: { x: 5, y: 4.9, text: 'Tới bàn thí nghiệm' }
     };
   }
-  ['A', 'B'].forEach(ab => { S['lab-2' + ab] = labScene(2, ab); });
+  NL.EXPERIMENTS.filter(e => e.floor === 2 && e.ready).forEach(e => { S['lab-' + e.id] = labScene(e); });
   NL.scenes = S;
 
   // ---------- đi lại ----------
