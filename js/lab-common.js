@@ -180,7 +180,7 @@ NL.lab = (function () {
     const fo = el('foreignObject', { x: 120, y: 14, width: 760, height: 440 }, layer);
     const div = document.createElement('div');
     div.className = 'lab-chart';
-    div.innerHTML = NL.chartSVG(res.chart, 720, 340).replace(/<animate[^>]*\/>/g, '') + `<div class="rep-dl"><button class="btn small pop">📥 Tải bảng (Excel)</button><button class="btn small pop">🖼 Lưu ảnh biểu đồ</button></div>`;
+    div.innerHTML = NL.chartSVG(res.chart, 720, 340).replace(/<animate[^>]*\/>/g, '') + `<div class="rep-dl"><button class="btn small pop">📥 Tải file Excel</button><button class="btn small pop">🖼 Lưu ảnh biểu đồ</button></div>`;
     const [b1, b2] = div.querySelectorAll('button');
     b1.onclick = () => NL.exportData.csv(res); b2.onclick = () => NL.exportData.jpg(res);
     fo.appendChild(div); return fo;

@@ -16,13 +16,14 @@
   const g = NL.game = {
     id: 'p' + Math.random().toString(36).slice(2, 9),
     name: saved ? saved.name : '', look: saved ? saved.look : { hair: 0, hairColor: NL.HAIR_COLORS[0], coat: NL.COAT_COLORS[0] },
-    results: (saved && saved.results) || {}, order: (saved && saved.order) || [], unlocked: !!(saved && saved.unlocked), tutDone: !!(saved && saved.tutDone),
+    results: (saved && saved.results) || {}, order: (saved && saved.order) || [], unlocked: !!(saved && saved.unlocked), tutDone: !!(saved && saved.tutDone), models: (saved && saved.models) || {},
     scene: 'outside', x: 8, y: 11.5, facing: 1, anim: 'idle', path: null, emote: null, emoteT: 0, help: false, status: '',
     danceT: 0, danceKind: 'dance', lastMove: Date.now(), teacher: false, playing: false, tut: {}, followId: null,
     setStatus(s) { g.status = s; },
     toast, finishExperiment
   };
-  function persist() { if (!g.teacher) store.save({ name: g.name, look: g.look, results: g.results, order: g.order, unlocked: g.unlocked, tutDone: g.tutDone }); }
+  function persist() { if (!g.teacher) store.save({ name: g.name, look: g.look, results: g.results, order: g.order, unlocked: g.unlocked, tutDone: g.tutDone, models: g.models }); }
+  NL.persist = persist;
 
   // ---------- canvas ----------
   let W = 0, H = 0, DPR = 1, zoom = 1, baseZoom = 1, cam = { x: 0, y: 0 };
@@ -92,6 +93,12 @@
     const e = NL.EXPERIMENTS.find(x => x.ready && x.floor === 2 && (x.id.toLowerCase() === q || String(x.no) === q || alias[q] === x.id));
     return e ? e.id : null;
   })();
+  // ?mh=1 … ?mh=10 (hoặc ?mh=M3): vào thẳng phòng Mô hình 3D và mở mô hình đó
+  const MH = (() => {
+    const q = (params.get('mh') || '').toUpperCase(); if (!q) return null;
+    const m = NL.MODELS.find(x => x.id === q || String(x.no) === q || 'M' + q === x.id);
+    return m ? m.id : null;
+  })();
   function enterGame() {
     $('intro').classList.add('hidden'); $('hud').classList.remove('hidden');
     g.playing = true;
@@ -99,6 +106,7 @@
     if (g.unlocked) $('emoSpecial').classList.remove('locked');
     if (isTouch) $('joy').classList.add('on');
     if (TN) { g.tut.elevator = 1; goScene('lab-' + TN, 'default'); $('btnLab').click(); return; }
+    if (MH) { g.tut.elevator = 1; goScene('models', 'default'); openModel(MH); return; }
     goScene('outside', 'default');
     if (!g.tutDone) {
       $('tutMove').textContent = isTouch ? 'Kéo cần tròn ở góc trái để đi, hoặc chạm xuống sàn' : 'Đi bằng phím mũi tên hoặc W A S D, hoặc bấm chuột xuống sàn';
@@ -198,6 +206,12 @@
     const s = NL.scenes[g.scene];
     // chạm vào bàn thí nghiệm (ưu tiên hơn bạn đứng gần bàn)
     const bench = s.objects.find(o => o.kind === 'bench' && w.x > o.x - 0.3 && w.x < o.x + o.w + 0.3 && w.y > o.y - 0.6 && w.y < o.y + o.d + 0.4);
+    const stand = s.objects.find(o => o.kind === 'stand' && w.x > o.x - 0.3 && w.x < o.x + o.w + 0.3 && w.y > o.y - 0.8 && w.y < o.y + o.d + 0.4);
+    if (stand && !g.teacher) {
+      const tr = s.triggers.find(t => t.model === stand.model);
+      if (tr && inRect(tr, g.x, g.y)) { openModel(stand.model); return; }
+      g.pendingModel = stand.model; g.pendingBench = null; g.path = NL.findPath(s, g.x, g.y, stand.x + stand.w / 2, stand.y + stand.d + 0.5); g.followId = null; return;
+    }
     if (bench && !g.teacher) { g.pendingBench = bench.exp; g.path = NL.findPath(s, g.x, g.y, bench.x + bench.w / 2, bench.y + bench.d + 0.7); g.followId = null; return; }
     // chạm vào cửa thang máy
     const et = elevTrig(s);
@@ -208,7 +222,7 @@
       return Math.abs(e.clientX - sx) < 22 * zoom + 6 && e.clientY < sy + 8 && e.clientY > sy - 75 * zoom;
     });
     if (hit) { showInfo(hit); if (g.teacher) return; }
-    g.pendingBench = null; g.pendingElev = false;
+    g.pendingBench = null; g.pendingElev = false; g.pendingModel = null;
     g.path = NL.findPath(s, g.x, g.y, w.x, w.y);
     g.followId = null;
     if (g.path) clickMark = { x: w.x, y: w.y, t: 0 };
@@ -295,6 +309,17 @@
     if (on) { el.innerHTML = ''; const b = document.createElement('button'); b.className = 'btn pop'; b.textContent = '🔬 Làm thí nghiệm'; b.onclick = () => openLab(exp); el.appendChild(b); el.style.pointerEvents = 'auto'; el.classList.remove('hidden'); clearTimeout(guideTimer); }
     else { el.style.pointerEvents = 'none'; }
     $('btnLab').classList.toggle('hidden', !!on || !NL.scenes[g.scene].lab || g.teacher);
+  }
+  // bục mô hình 3D
+  function modelPrompt(id) {
+    const el = $('guide'), m = NL.MODELS.find(x => x.id === id);
+    el.innerHTML = ''; const b = document.createElement('button'); b.className = 'btn pop'; b.textContent = `${m.icon} Xem mô hình ${m.name}`; b.onclick = () => openModel(id);
+    el.appendChild(b); el.style.pointerEvents = 'auto'; el.classList.remove('hidden'); clearTimeout(guideTimer);
+  }
+  function openModel(id) {
+    if (g.teacher) return;
+    NL.audio.play('pop'); setGuide(null); benchPrompt(false); g.path = null; g.status = 'Xem mô hình ' + id;
+    NL.m3d.open(id);
   }
   function openLab(exp) {
     if (g.teacher) return;
@@ -383,7 +408,7 @@
 
   function update(dt) {
     const s = NL.scenes[g.scene];
-    const frozen = NL.lab.isOpen || NL.elevator.isOpen() || g.inElev || !$('tutorial').classList.contains('hidden') || !$('bigmsg').classList.contains('hidden') || (g.teacher && NL.teacher.filming);
+    const frozen = NL.lab.isOpen || NL.m3d.isOpen || NL.elevator.isOpen() || g.inElev || !$('tutorial').classList.contains('hidden') || !$('bigmsg').classList.contains('hidden') || (g.teacher && NL.teacher.filming);
     // hướng đi từ bàn phím / cần điều khiển
     let mx = 0, my = 0;
     if (!frozen) {
@@ -418,7 +443,7 @@
     if (!frozen) s.triggers.forEach(tr => {
       const inside = inRect(tr, g.x, g.y), was = insideTrig.has(tr);
       if (inside && !was) { insideTrig.add(tr); onTrigger(tr); }
-      if (!inside && was) { insideTrig.delete(tr); if (tr.type === 'bench') { benchPrompt(false); setGuide(null); } }
+      if (!inside && was) { insideTrig.delete(tr); if (tr.type === 'bench' || tr.type === 'model') { benchPrompt(false); setGuide(null); } }
     });
 
     // học sinh ảo
@@ -443,6 +468,7 @@
     else if (tr.type === 'elevator') { enterElevator(); }
     else if (tr.type === 'locked') { toast('Phòng này sắp có, quay lại sau nhé'); }
     else if (tr.type === 'bench' && !g.teacher) { if (!g.pendingBench) benchPrompt(true, tr.exp); }
+    else if (tr.type === 'model' && !g.teacher) { if (!g.pendingModel) modelPrompt(tr.model); else { g.pendingModel = null; openModel(tr.model); } }
     else if (tr.type === 'balcony') { if (!g.teacher) toast('🌤 Gió mát quá!', 1500); }
   }
 

@@ -66,5 +66,16 @@ NL.audio = (function () {
     if (master) master.gain.value = m ? 0 : 0.8;
   }
   function play(name) { if (!muted && sfx[name]) { init(); sfx[name](); } }
-  return { init, play, music, setMuted, get muted() { return muted; } };
+  // tiếng tự chọn tần số cho mô hình 3D: tone(Hz, giây, dạng sóng, âm lượng, trễ)
+  function beep(f, d, type, vol, when) { if (muted) return; init(); tone(f, d, type, vol, when); }
+  // tiếng xì (ho, gió, khò khè)
+  function noise(d, vol, freq) {
+    if (muted) return; init(); if (!ctx) return;
+    const n = Math.floor(ctx.sampleRate * d), b = ctx.createBuffer(1, n, ctx.sampleRate), a = b.getChannelData(0);
+    for (let k = 0; k < n; k++) a[k] = (Math.random() * 2 - 1) * (1 - k / n);
+    const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = b; f.type = 'bandpass'; f.frequency.value = freq || 900; g.gain.value = vol || 0.2;
+    src.connect(f); f.connect(g); g.connect(master); src.start();
+  }
+  return { init, play, music, setMuted, beep, noise, get muted() { return muted; } };
 })();

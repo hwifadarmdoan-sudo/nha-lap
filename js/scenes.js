@@ -56,6 +56,18 @@ window.NL = window.NL || {};
       NL.box(c, o.x, o.y, o.w, o.d, o.h, '#F6E7C1', { top: '#FFFFFF' });
       const p = i(o.x + o.w / 2, o.y + o.d / 2); NL.pill(c, p.x, p.y - o.h - 18, o.label, '#2F80C0', '#fff', 13);
     },
+    // bục trưng bày mô hình 3D: hình nổi lơ lửng phía trên
+    stand(c, o, t) {
+      NL.box(c, o.x, o.y, o.w, o.d, o.h, '#D7E6F2', { top: '#FFFFFF' });
+      const p = i(o.x + o.w / 2, o.y + o.d / 2), b = Math.sin(t * 2 + o.x * 1.7) * 4, top = p.y - o.h;
+      const gr = c.createRadialGradient(p.x, top - 30 + b, 4, p.x, top - 30 + b, 34);
+      gr.addColorStop(0, 'rgba(120,230,255,.55)'); gr.addColorStop(1, 'rgba(120,230,255,0)');
+      c.fillStyle = gr; c.beginPath(); c.arc(p.x, top - 30 + b, 34, 0, 7); c.fill();
+      c.fillStyle = 'rgba(120,220,255,.35)'; c.beginPath(); c.moveTo(p.x - 18, top - 4); c.lineTo(p.x + 18, top - 4); c.lineTo(p.x + 8, top - 26 + b); c.lineTo(p.x - 8, top - 26 + b); c.fill();
+      c.font = "30px 'Segoe UI Emoji','Apple Color Emoji',sans-serif"; c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText(o.icon, p.x, top - 32 + b);
+      NL.pill(c, p.x, top - 66, o.no + ' · ' + o.short, o.done ? '#3FB37F' : '#2F80C0', '#fff', 12);
+    },
     bench(c, o, t) {
       NL.box(c, o.x, o.y, o.w, o.d, o.h, '#E8EEF3', { top: '#FFFFFF' });
       const p = i(o.x + o.w / 2, o.y + o.d / 2), top = p.y - o.h;
@@ -317,8 +329,8 @@ window.NL = window.NL || {};
       },
       deco: [
         { kind: 'elevator', side: 'N', a: 12.9, b: 14.5, floorLabel: '2' },
-        { kind: 'board', side: 'W', a: 1.2, b: 3.8, lines: [sub.icon + ' ' + sub.name, '10 phòng thí nghiệm'], head: sub.color },
-        { kind: 'window', side: 'W', a: 4.6, b: 7 }
+        { kind: 'door', side: 'W', a: 1.4, b: 3.4, label: '🧊 Phòng Mô hình 3D', color: '#2F80C0' },
+        { kind: 'board', side: 'W', a: 4.9, b: 7.5, lines: [sub.icon + ' ' + sub.name, '10 phòng thí nghiệm', '10 mô hình 3D'], head: sub.color }
       ],
       objects: [
         { kind: 'railing', x1: 0, x2: W, y: 7.85 },
@@ -328,9 +340,10 @@ window.NL = window.NL || {};
       tags: [{ x: 3.3, y: 5.5, label: '🌤 Ban công' }, { x: 13.7, y: 5.6, label: '🌤 Ban công' }, { x: 24.5, y: 5.5, label: '🌤 Ban công' }],
       triggers: [
         { x1: 12.4, y1: 0, x2: 15.0, y2: 1.0, type: 'elevator' },
+        { x1: 0, y1: 1.3, x2: 0.75, y2: 3.5, type: 'goto', to: 'models', spawn: 'default' },
         { x1: 0, y1: 4.8, x2: W, y2: 7.6, type: 'balcony' }
       ],
-      spawns: { default: { x: 13.7, y: 1.6 }, fromElev: { x: 13.7, y: 1.6 } },
+      spawns: { default: { x: 13.7, y: 1.6 }, fromElev: { x: 13.7, y: 1.6 }, fromModels: { x: 1.6, y: 2.4 } },
       doors: {}
     };
     [1.6, 11, 17.2, 26.4].forEach(x => s.objects.push({ kind: 'plant', x, y: 6.3, w: 0.8, d: 0.8, solid: true }));
@@ -373,6 +386,35 @@ window.NL = window.NL || {};
     };
   }
   NL.EXPERIMENTS.filter(e => e.floor === 2 && e.ready).forEach(e => { S['lab-' + e.id] = labScene(e); });
+
+  // Phòng Mô hình 3D: 10 bục trưng bày, đi tới bục nào thì xem mô hình đó
+  function modelRoom() {
+    const s = {
+      id: 'models', title: 'Tầng 2 · Phòng Mô hình 3D', floor: 2, w: 14, d: 9, walls: true,
+      floorColor(x, y) { return (x + y) % 2 ? '#EEF4FA' : '#E2ECF5'; },
+      deco: [
+        { kind: 'board', side: 'N', a: 1, b: 4.4, lines: ['🧊 Phòng Mô hình 3D', 'Đi tới bục để xem'], head: '#2F80C0' },
+        { kind: 'window', side: 'N', a: 5.2, b: 8.4 },
+        { kind: 'window', side: 'N', a: 9.4, b: 12.6 },
+        { kind: 'window', side: 'W', a: 2, b: 4.6 }
+      ],
+      objects: [
+        { kind: 'plant', x: 0.3, y: 7.9, w: 0.8, d: 0.8, solid: true }, { kind: 'plant', x: 12.9, y: 7.9, w: 0.8, d: 0.8, solid: true },
+        { kind: 'plant', x: 12.9, y: 0.3, w: 0.8, d: 0.8, solid: true }
+      ],
+      triggers: [{ x1: 12.4, y1: 8.4, x2: 14, y2: 9, type: 'goto', to: 'f2', spawn: 'fromModels' }],
+      mats: [{ x: 12, y: 8, w: 2, label: 'Ra hành lang' }],
+      spawns: { default: { x: 13, y: 7.4 } },
+      guide: { x: 2.3, y: 2.7, text: 'Tới bục mô hình' }
+    };
+    NL.MODELS.forEach((m, k) => {
+      const row = k < 5 ? 0 : 1, x = 1 + (k % 5) * 2.4, y = row ? 4.9 : 1.2;
+      s.objects.push({ kind: 'stand', x, y, w: 1, d: 1, h: 26, icon: m.icon, no: m.no, short: m.short, model: m.id, solid: true });
+      s.triggers.push({ x1: x - 0.35, y1: y + 1, x2: x + 1.35, y2: y + 1.8, type: 'model', model: m.id });
+    });
+    return s;
+  }
+  if (NL.MODELS) S.models = modelRoom();
   NL.scenes = S;
 
   // ---------- đi lại ----------

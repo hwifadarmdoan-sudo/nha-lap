@@ -1023,3 +1023,1027 @@ NL.QUIZ = {
   }
  ]
 };
+
+// 10 câu hỏi cho mỗi mô hình 3D (M1–M10), lấy nguyên văn từ bản đặc tả "Môn Sinh".
+Object.assign(NL.QUIZ, {
+ "M1": [
+  {
+   "q": "Cấu trúc sinh học nào dưới đây có ở tế bào thực vật trưởng thành nhưng không tồn tại ở tế bào động vật?",
+   "o": [
+    "Thành tế bào bằng cellulose và lục lạp",
+    "Ti thể và lưới nội chất trơn",
+    "Màng sinh chất và ribosome",
+    "Bộ máy Golgi và nhân tế bào"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Bào quan nào đóng vai trò là trung tâm cung cấp năng lượng cho tế bào nhân thực thông qua quá trình hô hấp tế bào để tổng hợp ATP?",
+   "o": [
+    "Lục lạp",
+    "Ti thể",
+    "Ribosome",
+    "Lysosome"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Trong tế bào nhân thực, cấu trúc nào chứa hầu hết vật chất di truyền dưới dạng phân tử DNA và điều khiển mọi hoạt động sống của tế bào?",
+   "o": [
+    "Bộ máy Golgi",
+    "Nhân tế bào",
+    "Lưới nội chất hạt",
+    "Peroxisome"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Bào quan nào trực tiếp thực hiện quá trình dịch mã để tổng hợp chuỗi polypeptide từ thông tin trên phân tử RNA?",
+   "o": [
+    "Ribosome",
+    "Không bào",
+    "Trung thể",
+    "Tế bào chất"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Chức năng chính của bộ máy Golgi bên trong tế bào nhân thực là gì?",
+   "o": [
+    "Hấp thụ năng lượng ánh sáng mặt trời để tổng hợp glucose",
+    "Sửa đổi, phân loại, đóng gói và vận chuyển các sản phẩm protein và lipid",
+    "Duy trì áp suất thẩm thấu và chứa chất thải của tế bào",
+    "Phân hủy các tế bào già và bào quan bị tổn thương"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Bào quan chứa các enzyme thủy phân acid giúp tiêu hóa nội bào và phân hủy các bào quan bị tổn thương ở tế bào động vật là bào quan nào?",
+   "o": [
+    "Ti thể",
+    "Lưới nội chất trơn",
+    "Lysosome",
+    "Lục lạp"
+   ],
+   "a": 2
+  },
+  {
+   "q": "Không bào trung tâm ở tế bào thực vật trưởng thành đảm nhận vai trò sinh học chính nào sau đây?",
+   "o": [
+    "Tổng hợp lipid và chuyển hóa chất độc",
+    "Duy trì sức trương nước, tạo hình dạng tế bào và tích trữ chất dinh dưỡng",
+    "Hình thành thoi phân bào trong quá trình nguyên phân",
+    "Tự nhân đôi vật chất di truyền DNA"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Sự khác biệt căn bản về đặc điểm cấu trúc và chức năng giữa lưới nội chất hạt và lưới nội chất trơn là gì?",
+   "o": [
+    "Lưới nội chất hạt có đính các hạt ribosome chuyên tổng hợp protein, trong khi lưới nội chất trơn không có ribosome chuyên tổng hợp lipid và chuyển hóa chất độc",
+    "Lưới nội chất hạt nằm ngoài màng tế bào, còn lưới nội chất trơn nằm hoàn toàn bên trong nhân tế bào",
+    "Lưới nội chất hạt tổng hợp DNA, còn lưới nội chất trơn tổng hợp RNA",
+    "Lưới nội chất hạt chỉ xuất hiện ở thực vật, còn lưới nội chất trơn chỉ xuất hiện ở động vật"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Cấu trúc trung thể có vai trò quan trọng trong việc hình thành thoi phân bào để phân chia nhiễm sắc thể xuất hiện ở loại tế bào nào?",
+   "o": [
+    "Tế bào thực vật bậc cao",
+    "Tế bào động vật",
+    "Tế bào vi khuẩn nhân sơ",
+    "Tế bào nấm men"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Sắc tố diệp lục tham gia trực tiếp vào quá trình hấp thụ năng lượng ánh sáng trong quang hợp nằm tại vị trí cấu trúc nào bên trong lục lạp?",
+   "o": [
+    "Màng thylakoid",
+    "Chất nền stroma",
+    "Màng ngoài lục lạp",
+    "Màng trong lục lạp"
+   ],
+   "a": 0
+  }
+ ],
+ "M2": [
+  {
+   "q": "Đường pentose cấu tạo nên đơn phân nucleotide của phân tử DNA khác với đường pentose của phân tử RNA ở đặc điểm cấu tạo nào?",
+   "o": [
+    "Đường deoxyribose (C₅H₁₀O₄) trong DNA thiếu một nguyên tử oxygen ở vị trí carbon 2′ so với đường ribose (C₅H₁₀O₅) trong RNA",
+    "Đường trong DNA có 6 nguyên tử carbon, còn đường trong RNA có 5 nguyên tử carbon",
+    "Đường trong DNA chứa nhóm OH ở vị trí carbon 2′, còn đường trong RNA chỉ chứa nguyên tử H",
+    "Đường trong DNA có dạng mạch hở, còn đường trong RNA luôn có dạng mạch vòng 6 cạnh"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong quá trình tái bản DNA ở tế bào nhân thực, enzyme nào chịu trách nhiệm chính trong việc phá vỡ các liên kết hydrogen giữa hai mạch đơn để tách chạc tái bản hình chữ Y?",
+   "o": [
+    "DNA Polymerase",
+    "Helicase",
+    "DNA Ligase",
+    "Primase"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Enzyme RNA Polymerase thực hiện tổng hợp chuỗi mRNA trong quá trình phiên mã theo chiều sinh học nào và trượt trên mạch gốc DNA có chiều như thế nào?",
+   "o": [
+    "Tổng hợp mRNA theo chiều 5′ → 3′ và trượt trên mạch gốc DNA theo chiều 3′ → 5′",
+    "Tổng hợp mRNA theo chiều 3′ → 5′ và trượt trên mạch gốc DNA theo chiều 5′ → 3′",
+    "Tổng hợp mRNA theo chiều 5′ → 3′ và trượt trên mạch gốc DNA theo chiều 5′ → 3′",
+    "Tổng hợp mRNA theo chiều 3′ → 5′ và trượt trên mạch gốc DNA theo chiều 3′ → 5′"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Phân tử tRNA đút lót đóng vai trò vận chuyển amino acid trong quá trình dịch mã có cấu trúc không gian đặc trưng nào giúp nó nhận biết chính xác bộ ba mã hóa trên mRNA?",
+   "o": [
+    "Bộ ba mã mở đầu nằm ở đầu 3′ của phân tử",
+    "Bộ ba đối mã (Anticodon) nằm ở thùy giữa liên kết bổ sung với bộ ba mã hóa (Codon) trên mRNA",
+    "Vùng khung xương chứa liên kết peptide liên kết trực tiếp với Ribosome",
+    "Đoạn mạch kép dạng xoắn trái"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Một đột biến điểm làm thay thế 1 cặp nucleotide trên gene cấu trúc nhưng chuỗi polypeptide do gene đó quy định không bị thay đổi trình tự amino acid nào là do đặc tính nào của mã di truyền?",
+   "o": [
+    "Tính phổ biến của mã di truyền",
+    "Tính thoái hóa (dư thừa) của mã di truyền",
+    "Tính đặc hiệu của mã di truyền",
+    "Tính liên tục của mã di truyền"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Xét một phân tử DNA mạch kép có tỷ lệ A = 20% tổng số nucleotide. Tỷ lệ % số nucleotide loại G và chỉ số quy luật Chargaff (A + G)/(T + C) của phân tử này là bao nhiêu?",
+   "o": [
+    "G = 30% và (A + G)/(T + C) = 1.0",
+    "G = 20% và (A + G)/(T + C) = 0.5",
+    "G = 30% và (A + G)/(T + C) = 1.5",
+    "G = 40% và (A + G)/(T + C) = 1.0"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Tại sao đoạn phân tử DNA có tỷ lệ cặp G − C cao lại có nhiệt độ biến tính (nhiệt độ nóng chảy Tm) cao hơn đoạn DNA có cùng độ dài nhưng chứa tỷ lệ cặp A − T cao hơn?",
+   "o": [
+    "Cặp G − C liên kết với nhau bằng 3 liên kết hydrogen, trong khi cặp A − T chỉ có 2 liên kết hydrogen",
+    "Cặp G − C chứa đường ribose có độ bền nhiệt cao hơn đường deoxyribose",
+    "Cặp G − C tạo ra liên kết phosphodiester kép giữa các nucleotide",
+    "Cặp G − C làm cho chuỗi xoắn biến đổi hoàn toàn cấu trúc đường"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Khoảng cách giữa hai cặp base liên tiếp dọc theo trục của phân tử DNA chuẩn và chiều dài của một chu kỳ xoắn hoàn chỉnh (10 cặp base) đo được bằng công cụ thước đo 3D lần lượt là bao nhiêu?",
+   "o": [
+    "0.34 nm và 3.4 nm",
+    "2.0 nm và 20 nm",
+    "0.17 nm và 1.7 nm",
+    "0.34 nm và 2.0 nm"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Dạng đột biến gene nào sau đây thường gây ra hậu quả nghiêm trọng nhất đến cấu trúc của chuỗi polypeptide do làm thay đổi toàn bộ trình tự amino acid từ vị trí đột biến về sau?",
+   "o": [
+    "Đột biến thay thế 1 cặp nucleotide này bằng 1 cặp nucleotide khác ở bộ ba kết thúc",
+    "Đột biến thêm hoặc mất 1 cặp nucleotide trong vùng mã hóa của gene",
+    "Đột biến thay thế 1 cặp nucleotide làm xuất hiện mã đồng nghĩa",
+    "Đột biến đảo vị trí các cặp nucleotide trong cùng một bộ ba mã hóa"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Trong quá trình dịch mã tại Ribosome, liên kết hóa học nào được hình thành để nối các amino acid kế tiếp nhau tạo thành chuỗi polypeptide?",
+   "o": [
+    "Liên kết phosphodiester",
+    "Liên kết peptide",
+    "Liên kết hydrogen",
+    "Liên kết glycosidic"
+   ],
+   "a": 1
+  }
+ ],
+ "M3": [
+  {
+   "q": "Nút xoang nhĩ (SA node) trong hệ dẫn truyền tự động của tim đảm nhận vai trò sinh học cốt lõi nào sau đây?",
+   "o": [
+    "Tự động phát xung điện nhịp nhàng truyền ra toàn bộ tim để khởi đầu chu kỳ co bóp",
+    "Chứa các enzyme thủy phân làm tăng tốc độ trao đổi khí tại mao mạch",
+    "Điều hòa lưu lượng máu chảy từ tĩnh mạch chủ về tâm nhĩ phải",
+    "Đóng kín van 2 lá trong pha co tâm thất"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong đồ thị Điện tâm đồ (ECG) chuẩn thu được khi tim hoạt động, phức bộ sóng QRS phản ánh quá trình điện thế nào của tim?",
+   "o": [
+    "Quá trình khử cực (phát xung điện) hai tâm thất để chuẩn bị cho pha co tâm thất",
+    "Quá trình khử cực hai tâm nhĩ trong pha co tâm nhĩ",
+    "Quá trình tái cực (hồi phục) của hai tâm thất trong pha dãn chung",
+    "Sự đóng lại của các van động mạch chủ và van động mạch phổi"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Hiện tượng các tế bào hồng cầu hình đĩa lõm hai mặt phải xếp thành hàng đơn di chuyển từ từ qua lòng mao mạch hẹp mang lại ý nghĩa sinh học gì đối với quá trình trao đổi chất?",
+   "o": [
+    "Tối đa hóa diện tích tiếp xúc và kéo dài thời gian để quá trình khuếch tán khí O₂ và CO₂ diễn ra hiệu quả nhất",
+    "Ngăn cản sự thất thoát nước từ huyết tương vào tế bào mô",
+    "Làm giảm áp lực máu trong động mạch chủ về mức bằng không",
+    "Tăng tốc độ dòng chảy của máu lên gấp mười lần"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong mô phỏng xơ vữa động mạch, sự tích tụ mảng bám mỡ (plaque) trong lòng động mạch chủ gây ra hậu quả trực tiếp nào đối với tâm thất trái?",
+   "o": [
+    "Làm tăng sức cản dòng máu, buộc tâm thất trái phải co bóp mạnh hơn và lâu dần dẫn đến phì đại cơ tâm thất trái",
+    "Làm cho tâm thất trái ngừng nhận máu từ tâm nhĩ trái",
+    "Làm giảm áp lực máu ở toàn bộ hệ thống động mạch",
+    "Làm đứt gãy hoàn toàn hệ thống nút xoang nhĩ"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Hiện tượng một dòng máu trào ngược từ tâm thất trái trở lại tâm nhĩ trái trong pha co tâm thất kèm theo tiếng thổi tim bất thường là dấu hiệu bệnh lý của cấu trúc nào?",
+   "o": [
+    "Hở van 2 lá",
+    "Xơ vữa động mạch phổi",
+    "Tắc tĩnh mạch chủ dưới",
+    "Viêm nút nhĩ thất"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Máu giàu oxygen (O₂) có màu đỏ tươi từ phổi trở về tâm nhĩ trái sẽ đi tiếp vào ngăn nào của tim trước khi được bơm đi nuôi toàn cơ thể?",
+   "o": [
+    "Tâm thất trái",
+    "Tâm thất phải",
+    "Tâm nhĩ phải",
+    "Động mạch phổi"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Sự đóng lại đột ngột của van nhĩ - thất (van 2 lá và van 3 lá) khi hai tâm thất bắt đầu co bóp tạo ra âm thanh tiếng tim nào?",
+   "o": [
+    "Tiếng tim thứ nhất (\"LUB\")",
+    "Tiếng tim thứ hai (\"DUB\")",
+    "Tiếng thổi tâm thu",
+    "Tiếng rung tâm trương"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Tại sao thành cơ của tâm thất trái lại có cấu trúc dày hơn đáng kể so với thành cơ của tâm thất phải?",
+   "o": [
+    "Vì tâm thất trái phải tạo ra lực co bóp rất lớn để đẩy máu qua vòng tuần hoàn lớn đi khắp toàn bộ cơ thể",
+    "Vì tâm thất trái chứa lượng máu lớn gấp ba lần tâm thất phải",
+    "Vì tâm thất trái phải bơm máu lên phổi với vận tốc cao hơn",
+    "Vì tâm thất trái không có thời gian pha dãn chung"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong vòng tuần hoàn nhỏ (vòng tuần hoàn phổi), loại mạch máu nào đảm nhận chức năng vận chuyển máu giàu oxygen (O₂) chảy từ phổi trở về tim?",
+   "o": [
+    "Tĩnh mạch phổi",
+    "Động mạch phổi",
+    "Tĩnh mạch chủ trên",
+    "Động mạch chủ"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Sự trao đổi khí O₂, CO₂ và các chất dinh dưỡng giữa máu và các tế bào cơ quan diễn ra tại loại mạch máu nào trong hệ tuần hoàn?",
+   "o": [
+    "Mạng lưới mao mạch",
+    "Động mạch chủ",
+    "Tĩnh mạch chủ",
+    "Bó His"
+   ],
+   "a": 0
+  }
+ ],
+ "M4": [
+  {
+   "q": "Bộ phận nào của tế bào neuron đảm nhận chức năng sinh học cốt lõi là tiếp nhận tín hiệu thần kinh từ các tế bào khác truyền về thân neuron?",
+   "o": [
+    "Sợi nhánh (Dendrites)",
+    "Sợi trục (Axon)",
+    "Bao Myelin",
+    "Chùy màng trước synapse"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Tại sao vận tốc lan truyền xung thần kinh trên sợi trục có bao myelin lại nhanh hơn gấp nhiều lần so với trên sợi trục không có bao myelin?",
+   "o": [
+    "Vì xung thần kinh lan truyền theo cơ chế nhảy vọt từ eo Ranvier này sang eo Ranvier kế tiếp nhờ bao myelin có bản chất cô lập điện tốt",
+    "Vì sợi trục có bao myelin chứa nhiều phân tử Acetylcholine hơn",
+    "Vì đường kính của bao myelin liên tục co bóp đẩy xung điện đi",
+    "Vì các kênh Ca²⁺ nằm rải rác dày đặc khắp bề mặt bao myelin"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong giai đoạn mất phân cực và đảo cực của điện thế hoạt động trên màng sợi trục, sự di chuyển của dòng ion nào là nguyên nhân chính làm điện thế màng tăng vọt từ − 70 mV lên + 30 mV?",
+   "o": [
+    "Ion Na⁺ tràn nhanh từ ngoài dịch ngoại bào vào trong tế bào",
+    "Ion K⁺ đi từ trong tế bào ra ngoài dịch ngoại bào",
+    "Ion Ca²⁺ xuất bào ra ngoài tế bào",
+    "Ion Cl⁻ đi vào bên trong tế bào"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Sự xâm nhập của loại ion nào từ dịch ngoại bào vào bên trong chùy màng trước synapse là yếu tố trực tiếp kích thích các bóng chứa di chuyển hòa màng để giải phóng chất dẫn truyền thần kinh?",
+   "o": [
+    "Ion Ca²⁺",
+    "Ion Na⁺",
+    "Ion K⁺",
+    "Ion Fe²⁺"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Sau khi được giải phóng vào khe synapse, chất dẫn truyền thần kinh Acetylcholine khuếch tán sang màng sau và gắn vào thụ thể đặc hiệu sẽ làm mở loại kênh ion nào?",
+   "o": [
+    "Kênh Na⁺",
+    "Kênh K⁺",
+    "Kênh Ca²⁺",
+    "Kênh Cl⁻"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trạng thái điện thế nghỉ ( − 70 mV) ở tế bào neuron khi không bị kích thích được hình thành chủ yếu do sự chênh lệch nồng độ ion và tính thấm ưu tiên của màng tế bào đối với loại ion nào đi từ trong ra ngoài màng?",
+   "o": [
+    "Ion K⁺",
+    "Ion Na⁺",
+    "Ion Ca²⁺",
+    "Ion Mg²⁺"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Chức năng sinh học cốt lõi của enzyme Acetylcholinesterase có mặt tại khe synapse là gì?",
+   "o": [
+    "Phân hủy Acetylcholine thành acetate và choline để màng sau ngừng bị kích thích và màng trước tái hấp thu",
+    "Tổng hợp thêm Acetylcholine từ các ion Ca²⁺",
+    "Khóa hoàn toàn các kênh Na⁺ ở màng sau synapse",
+    "Đẩy xung thần kinh lan truyền ngược chiều trở lại thân neuron"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Giá trị điện thế nghỉ chuẩn ở màng tế bào neuron khi ở trạng thái không bị kích thích đo được bằng công cụ đo điện thế là bao nhiêu millivolt (mV)?",
+   "o": [
+    "− 70 mV",
+    "+ 30 mV",
+    "0 mV",
+    "− 120 mV"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Cấu trúc tiếp xúc chuyên hóa giữa chùy màng trước của neuron này với sợi nhánh hoặc thân của neuron khác đóng vai trò truyền thông tin một chiều được gọi là gì?",
+   "o": [
+    "Synapse",
+    "Eo Ranvier",
+    "Thể Nissl",
+    "Hạch thần kinh"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Nếu sử dụng độc tố Tetrodotoxin (TTX) tác động lên sợi trục neuron, hiện tượng sinh lý nào sẽ xảy ra do các kênh Na⁺ cảm ứng điện thế bị khóa hoàn toàn?",
+   "o": [
+    "Không thể xuất hiện giai đoạn mất phân cực để hình thành điện thế hoạt động, làm xung thần kinh bị ngưng trệ hoàn toàn",
+    "Tốc độ lan truyền xung thần kinh tăng lên gấp mười lần",
+    "Chất dẫn truyền thần kinh Acetylcholine bị giải phóng ồ ạt không kiểm soát",
+    "Màng tế bào neuron bị vỡ hoàn toàn do áp suất thẩm thấu"
+   ],
+   "a": 0
+  }
+ ],
+ "M5": [
+  {
+   "q": "Trong thí nghiệm mô hình chuông thủy tinh Donders mô phỏng cơ chế thông khí ở phổi, bộ phận màng cao su ở đáy chuông đại diện cho cấu trúc giải phẫu nào của cơ thể?",
+   "o": [
+    "Cơ hoành",
+    "Khung xương sườn",
+    "Nắp thanh quản",
+    "Cơ liên sườn trong"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Khi thực hiện động tác nuốt thức ăn, nắp thanh quản (Epiglottis) đảm nhận vai trò sinh học quan trọng nào sau đây?",
+   "o": [
+    "Hạ xuống cử động đậy kín đường dẫn khí (khí quản) để ngăn thức ăn rơi vào đường hô hấp",
+    "Mở rộng đường khí quản để tăng cường lượng khí O₂ đi vào phổi",
+    "Co bóp đẩy viên thức ăn trực tiếp xuống dạ dày",
+    "Tiết chất nhầy để tiêu hóa một phần starch trong thức ăn"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Giải thích nào sau đây đúng nhất về mặt sinh lý cho lời khuyên \"Không nên vừa ăn vừa nói hoặc vừa cười đùa\"?",
+   "o": [
+    "Khi nói nắp thanh quản sẽ mở ra, nếu nuốt cùng lúc thức ăn dễ rơi vào khí quản gây ho sặc hoặc tắc đường hô hấp",
+    "Lượng không khí đi vào dạ dày quá nhiều gây đau bụng",
+    "Thức ăn sẽ bị đẩy ngược trở lại khoang mũi",
+    "Cơ hoành bị co thắt vĩnh viễn không thể dãn"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong pha hít vào bình thường ở người, cử động co của cơ hoành và cơ liên sườn ngoài dẫn đến sự thay đổi thể tích và áp suất lồng ngực như thế nào?",
+   "o": [
+    "Cơ hoành co dẹt xuống làm tăng thể tích lồng ngực, áp suất phế nang giảm xuống thấp hơn áp suất khí quyển giúp không khí tràn vào phổi",
+    "Cơ hoành co vòm lên làm giảm thể tích lồng ngực và tăng áp suất phế nang",
+    "Thể tích lồng ngực giảm xuống làm nén không khí chui vào phế nang",
+    "Áp suất trong phế nang tăng vọt lên cao hơn áp suất khí quyển"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Tác hại trực tiếp của các chất độc hại trong khói thuốc lá đối với hệ thống lông rung (Cilia) trên bề mặt niêm mạc đường dẫn khí là gì?",
+   "o": [
+    "Làm tê liệt và phá hủy lớp lông rung, khiến khả năng lọc sạch bụi bẩn và đẩy chất nhầy ra khỏi đường hô hấp bị ngưng trệ",
+    "Làm tăng số lượng lông rung lên gấp mười lần gây tắc nghẽn khí quản",
+    "Biến đổi lông rung thành tế bào trao đổi khí",
+    "Làm cho lông rung đập nhanh hơn bình thường"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Dung tích sống (VC) của phổi – chỉ số phản ánh sức khỏe hô hấp của một người – được tính bằng tổng của những thể tích khí nào sau đây?",
+   "o": [
+    "VC = TV + IRV + ERV (Thể tích khí lưu thông + Thể tích khí hít vào dự trữ + Thể tích khí thở ra dự trữ)",
+    "VC = TV + RV (Thể tích khí lưu thông + Thể tích khí cặn)",
+    "VC = IRV + ERV + RV (Thể tích hít vào dự trữ + Thở ra dự trữ + Khí cặn)",
+    "VC = TV + RV + TLC"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Cấu trúc sinh học nào của hệ hô hấp là nơi trực tiếp diễn ra quá trình trao đổi khí O₂ và CO₂ giữa cơ thể với máu trong mao mạch?",
+   "o": [
+    "Phế nang",
+    "Khí quản",
+    "Phế quản thùy",
+    "Thanh quản"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Thể tích khí cặn (RV) còn lại trong phổi sau khi đã thở ra hết sức có ý nghĩa sinh học cốt lõi nào?",
+   "o": [
+    "Giúp các phế nang không bị xẹp hoàn toàn và duy trì sự trao đổi khí liên tục giữa hai nhịp thở",
+    "Cung cấp năng lượng cho cơ hoành co bóp",
+    "Làm giảm thể tích khoang màng phổi về mức bằng không",
+    "Đẩy toàn bộ khí độc CO₂ ra khỏi cơ thể"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Tại sao những người thường xuyên luyện tập thể dục thể thao hay bơi lội đúng cách lại sở hữu Dung tích sống (VC) lớn hơn đáng kể so với người ít vận động?",
+   "o": [
+    "Do các cơ hô hấp (cơ hoành, cơ liên sườn) phát triển khỏe mạnh hơn và lồng ngực dãn nở tốt hơn",
+    "Do số lượng phế nang trong phổi tự nhân đôi liên tục",
+    "Do thể tích khí cặn (RV) trong phổi giảm về bằng không",
+    "Do không khí đi vào phổi có áp suất cao hơn"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong thí nghiệm Donders, khi chúng ta kéo màng cao su ở đáy chuông thủy tinh xuống dưới, hiện tượng gì xảy ra với hai quả bóng bay bên trong chuông?",
+   "o": [
+    "Thể tích không khí trong bình tăng làm áp suất giảm, hai quả bóng bay tự động phồng lên hút không khí vào",
+    "Hai quả bóng bay bị ép xẹp hoàn toàn",
+    "Hai quả bóng bay vỡ ra do áp suất quá cao",
+    "Không có bất kỳ sự thay đổi nào xảy ra"
+   ],
+   "a": 0
+  }
+ ],
+ "M6": [
+  {
+   "q": "Một bông hoa được gọi là hoa lưỡng tính khi trên cùng một bông hoa đó bắt buộc phải có sự hiện diện của những bộ phận sinh sản cốt lõi nào?",
+   "o": [
+    "Có cả bộ nhị (cơ quan sinh sản nam) và bộ nhụy (cơ quan sinh sản nữ)",
+    "Chỉ có bộ nhị và các cánh hoa rực rỡ",
+    "Chỉ có bộ nhụy và đài hoa",
+    "Có nhiều hạt phấn nhưng không có bầu nhụy"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong quá trình nảy mầm của hạt phấn trên đầu nhụy, yếu tố nào định hướng cho ống phấn đâm chính xác qua vòi nhụy tiến về phía lỗ noãn của bầu nhụy?",
+   "o": [
+    "Hiện tượng hướng hóa học do bầu nhụy tiết ra dải nồng độ hóa chất dẫn đường",
+    "Ánh sáng mặt trời chiếu trực tiếp vào vòi nhụy",
+    "Lực hút trọng lực của Trái Đất",
+    "Sự co bóp cơ học của các tế bào chỉ nhị"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Cơ chế tự bất thụ (Self-incompatibility) ở nhiều loài hoa lưỡng tính mang lại ý nghĩa sinh học cốt lõi nào sau đây?",
+   "o": [
+    "Ngăn cản sự tự thụ phấn của hạt phấn cùng cây, ưu tiên thụ phấn chéo để duy trì tính đa dạng di truyền",
+    "Làm cho cánh hoa không bị héo sau khi thụ tinh",
+    "Tăng tốc độ mọc của ống phấn lên gấp mười lần",
+    "Biến đổi bầu nhụy thành quả mà không cần qua thụ tinh"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Khái niệm \"Thụ tinh kép\" ở thực vật hạt kín mô tả hai phản ứng kết hợp giao tử diễn ra đồng thời nào sau đây?",
+   "o": [
+    "Tinh tử 1 (n) + Trứng (n) → Hợp tử (2n); Tinh tử 2 (n) + 2 Nhân cực (2n) → Nhân tam bội (3n)",
+    "Hai tinh tử cùng kết hợp với một tế bào trứng tạo hợp tử tứ bội",
+    "Tinh tử kết hợp với tế bào kèm và tế bào đối cực",
+    "Hạt phấn kết hợp với đài hoa và cánh hoa"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Sau khi quá trình thụ tinh kép diễn ra thành công, hợp tử (2n) và nhân tam bội (3n) bên trong túi phôi sẽ lần lượt phát triển thành những cấu trúc nào?",
+   "o": [
+    "Hợp tử (2n) phát triển thành Phôi cây; Nhân tam bội (3n) phát triển thành Nội phôi (Phôi nhũ)",
+    "Hợp tử phát triển thành Vỏ hạt; Nhân tam bội phát triển thành Thịt quả",
+    "Hợp tử phát triển thành Phôi nhũ; Nhân tam bội phát triển thành Rễ mầm",
+    "Hợp tử phát triển thành Cánh hoa; Nhân tam bội phát triển thành Đế hoa"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong tiến trình phát triển sau thụ tinh, cấu trúc Bầu nhụy của bông hoa sẽ biến đổi căng phồng lên để hình thành nên bộ phận nào?",
+   "o": [
+    "Quả",
+    "Hạt",
+    "Phôi cây",
+    "Chồi mầm"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Bộ phận Noãn nằm bên trong bầu nhụy sau khi đã trải qua quá trình thụ tinh kép sẽ biến đổi phát triển thành cấu trúc nào?",
+   "o": [
+    "Hạt",
+    "Thịt quả",
+    "Cánh hoa",
+    "Đài hoa"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Những bông hoa thụ phấn nhờ côn trùng (như ong, bướm) thường sở hữu các đặc điểm hình thái thích nghi đặc trưng nào sau đây?",
+   "o": [
+    "Cánh hoa to, màu sắc rực rỡ, có tuyến mật thơm và hạt phấn to có gai dính",
+    "Cánh hoa tiêu giảm, hạt phấn cực nhẹ, khô và dễ bị gió thổi bay",
+    "Bao phấn treo lơ lửng ngoài hoa và đầu nhụy có dạng lông chim",
+    "Không có bầu nhụy và không tiết chất nhầy ở đầu nhụy"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Nội phôi (Phôi nhũ) mang bộ nhiễm sắc thể tam bội (3n) được hình thành trong hiện tượng thụ tinh kép đóng vai trò sinh học gì đối với sự sinh sản của cây?",
+   "o": [
+    "Tích lũy dồi dào các chất dinh dưỡng (tinh bột, lipid, protein) để nuôi dưỡng phôi phát triển trong quá trình hạt nảy mầm",
+    "Bảo vệ quả không bị các loài sâu bệnh tấn công",
+    "Giúp hạt có thể bay xa trong không khí",
+    "Dẫn đường cho ống phấn đâm vào lỗ noãn"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong thí nghiệm nhập vai vector thụ phấn nhờ gió, hạt phấn của hoa thụ phấn nhờ gió có đặc điểm gì giúp chúng dễ dàng phát tán xa?",
+   "o": [
+    "Kích thước cực nhỏ, khối lượng nhẹ, bề mặt trơn khô và được sản xuất với số lượng rất lớn",
+    "Kích thước rất lớn và có lớp keo dính chặt",
+    "Chứa nhiều mật hoa thơm ngọt",
+    "Có màu sắc đỏ rực để phản xạ ánh sáng"
+   ],
+   "a": 0
+  }
+ ],
+ "M7": [
+  {
+   "q": "Enzyme Amylase có trong nước bọt ở khoang miệng đảm nhận chức năng tiêu hóa hóa học biến đổi loại chất nào thành đường đôi Maltose?",
+   "o": [
+    "Tinh bột chín",
+    "Protein chuỗi dài",
+    "Lipid (Chất béo)",
+    "DNA và RNA"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Hoạt động tiêu hóa cơ học quan trọng nhất diễn ra tại dạ dày nhờ vào đặc điểm cấu trúc giải phẫu nào của cơ quan này?",
+   "o": [
+    "Thành dạ dày cấu tạo gồm 3 lớp cơ rất dày (cơ dọc, cơ vòng, cơ chéo) co bóp mạnh mẽ đảo trộn thức ăn",
+    "Niêm mạc dạ dày tiết ra lượng lớn hormone insulin",
+    "Dạ dày có nhiều lớp lông rung đẩy thức ăn đi",
+    "Thành dạ dày chứa mạng lưới mạch bạch huyết dày đặc"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Quá trình tiêu hóa hóa học phân giải hoàn toàn các chất dinh dưỡng và hoạt động hấp thụ dinh dưỡng diễn ra triệt để nhất tại bộ phận nào của ống tiêu hóa?",
+   "o": [
+    "Ruột non",
+    "Dạ dày",
+    "Ruột già",
+    "Khoang miệng"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Dịch mật do các tế bào gan sản xuất và tích trữ tại túi mật đóng vai trò sinh học cốt lõi nào trong quá trình tiêu hóa Lipid ở tá tràng?",
+   "o": [
+    "Nhũ hóa lipid thành các giọt mỡ nhỏ làm tăng diện tích tiếp xúc cho enzyme Lipase phân giải",
+    "Trực tiếp thủy phân lipid thành các axit amin",
+    "Chuyển hóa lipid thành glucose đi vào máu",
+    "Vô hiệu hóa toàn bộ các enzyme tụy"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Sự hiện diện của cấu trúc sinh học nào trên bề mặt niêm mạc ruột non giúp làm tăng diện tích bề mặt hấp thụ chất dinh dưỡng lên gấp hàng trăm lần (200 - 300 m²)?",
+   "o": [
+    "Mạng lưới nhung mao và vi nhung mao dày đặc",
+    "Các tuyến nước bọt phụ",
+    "Các nếp gấp nhẵn bóng không có tế bào",
+    "Lớp cơ dọc co bóp liên tục"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Môi trường pH tối ưu giúp cho enzyme Pepsin trong dịch vị dạ dày hoạt động phân giải Protein diễn ra hiệu quả nhất là bao nhiêu?",
+   "o": [
+    "pH = 1.5 − 2.0 (Môi trường axít mạnh)",
+    "pH = 7.0 (Môi trường trung tính)",
+    "pH = 8.5 (Môi trường kiềm)",
+    "pH = 12.0 (Môi trường kiềm mạnh)"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Các chất dinh dưỡng sau khi hấp thụ qua tế bào niêm mạc ruột non gồm Glucose, Amino acid, Vitamin tan trong nước (B, C) sẽ đi theo đường máu về cơ quan nào đầu tiên để được điều hòa và khử độc?",
+   "o": [
+    "Gan (qua Tĩnh mạch môn gan)",
+    "Thận",
+    "Phổi",
+    "Não bộ"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Các sản phẩm tiêu hóa lipid (Axit béo, Glycerol) và các vitamin tan trong dầu (A, D, E, K) sau khi được hấp thụ tại nhung mao ruột non sẽ vận chuyển theo con đường nào để trở về tim?",
+   "o": [
+    "Con đường Mạch bạch huyết",
+    "Con đường Động mạch chủ",
+    "Con đường Ống dẫn mật",
+    "Con đường Mạch nước bọt"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Chức năng sinh học chủ yếu của Ruột già (Đại tràng) trong hệ tiêu hóa của người là gì?",
+   "o": [
+    "Tái hấp thu nước, muối khoáng còn lại và nhờ vi khuẩn lên men cô đặc phân",
+    "Tiết enzyme Pepsin để tiêu hóa protein còn dư",
+    "Nhũ hóa toàn bộ chất béo chưa tiêu hóa",
+    "Hấp thụ vitamin tan trong dầu"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Cấu trúc cơ vòng nằm ở ranh giới giữa dạ dày và tá tràng có nhiệm vụ điều tiết từng đợt dưỡng trấp đi xuống ruột non được gọi là gì?",
+   "o": [
+    "Cơ vòng môn vị",
+    "Cơ vòng tâm vị",
+    "Cơ vòng hậu môn",
+    "Van nhĩ thất"
+   ],
+   "a": 0
+  }
+ ],
+ "M8": [
+  {
+   "q": "Loại tháp sinh thái nào sau đây luôn luôn có dạng chuẩn (đáy rộng, đỉnh nhọn) và không bao giờ xuất hiện dạng đảo ngược trong tự nhiên?",
+   "o": [
+    "Tháp Năng lượng",
+    "Tháp Số lượng",
+    "Tháp Sinh khối",
+    "Tháp Tuổi"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong một hệ sinh thái cạn, trung bình chỉ có khoảng bao nhiêu phần trăm năng lượng được truyền từ bậc dinh dưỡng phía dưới lên bậc dinh dưỡng phía trên liền kề?",
+   "o": [
+    "Khoảng 10%",
+    "Khoảng 30%",
+    "Khoảng 50%",
+    "Khoảng 70%"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Nguyên nhân chính dẫn đến sự thất thoát năng lượng lớn nhất (khoảng 70%) khi truyền qua các bậc dinh dưỡng trong tháp năng lượng là gì?",
+   "o": [
+    "Do hoạt động hô hấp và tỏa nhiệt của sinh vật ở bậc dinh dưỡng đó",
+    "Do sinh vật phân hủy tiêu thụ hết",
+    "Do chất thải và các phần rơi rụng của sinh vật",
+    "Do năng lượng bị phản xạ ngược lại môi trường"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Dạng tháp số lượng đảo ngược (đáy hẹp, đỉnh rộng) thường được quan sát thấy rõ nhất ở hệ sinh thái nào sau đây?",
+   "o": [
+    "Hệ sinh thái cây gỗ to và các loài vật ký sinh/sâu ăn lá",
+    "Hệ sinh thái đồng cỏ nhiệt đới",
+    "Hệ sinh thái rừng nguyên sinh",
+    "Hệ sinh thái sa mạc"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong hệ sinh thái dưới nước (như ao, biển mở), tháp sinh khối có thể xuất hiện dạng đảo ngược tạm thời do đặc điểm sinh học nào của thực vật phù du?",
+   "o": [
+    "Thực vật phù du có sinh khối tại một thời điểm rất nhỏ nhưng có tốc độ sinh sản và chu kỳ vòng đời cực kỳ nhanh",
+    "Thực vật phù du không có khả năng quang hợp",
+    "Động vật phù du không tiêu thụ thực vật phù du",
+    "Thực vật phù du có kích thước cơ thể lớn hơn động vật phù du"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Đơn vị đo lường tiêu chuẩn nào sau đây thường được sử dụng để xây dựng các tầng của Tháp Năng lượng?",
+   "o": [
+    "kcal/m²/năm hoặc J/m²/năm",
+    "cá thể/m²",
+    "g/m²",
+    "kg/ha"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong tháp sinh thái, bậc dinh dưỡng N₁ (cơ sở của tháp) luôn luôn được đảm nhận bởi nhóm sinh vật nào sau đây?",
+   "o": [
+    "Sinh vật sản xuất (Thực vật, tảo quang hợp)",
+    "Sinh vật tiêu thụ bậc 1 (Động vật ăn thực vật)",
+    "Sinh vật tiêu thụ bậc 2 (Động vật ăn thịt)",
+    "Sinh vật phân hủy (Nấm, vi khuẩn)"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Ưu điểm vượt trội nhất của Tháp Năng lượng so với Tháp Số lượng và Tháp Sinh khối khi nghiên cứu hệ sinh thái là gì?",
+   "o": [
+    "Cho biết chính xác tốc độ tạo thành năng lượng và mức độ thất thoát năng lượng theo thời gian tại mỗi bậc dinh dưỡng",
+    "Việc thu thập số liệu rất đơn giản và không tốn thời gian",
+    "Không cần phải cân hay đếm số lượng sinh vật",
+    "Có thể áp dụng chung một số liệu cho mọi mùa trong năm"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Xét hai bậc dinh dưỡng liền kề: bậc dinh dưỡng Nₙ có năng lượng tích lũy là Eₙ và bậc Nₙ₊₁ có năng lượng tích lũy là Eₙ₊₁. Công thức xác định hiệu suất sinh thái eff giữa hai bậc này là gì?",
+   "o": [
+    "eff = (Eₙ₊₁)/(Eₙ) × 100%",
+    "eff = (Eₙ)/(Eₙ₊₁) × 100%",
+    "eff = (Eₙ−Eₙ₊₁) × 100%",
+    "eff = (Eₙ + Eₙ₊₁)/(2) × 100%"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong một chuỗi thức ăn gồm các loài: Cỏ → Sâu ăn lá → Chim sâu → Diều hâu. Sinh vật thuộc bậc dinh dưỡng N₃ trong tháp sinh thái tương ứng là loài nào?",
+   "o": [
+    "Chim sâu (Sinh vật tiêu thụ bậc 2)",
+    "Cỏ",
+    "Sâu ăn lá",
+    "Diều hâu"
+   ],
+   "a": 0
+  }
+ ],
+ "M9": [
+  {
+   "q": "Khi học sinh di chuyển một vật thể từ xa tiến lại gần mắt, phản ứng điều tiết tự động của cơ thể mi và thủy tinh thể diễn ra như thế nào để giữ cho điểm ảnh rơi đúng trên võng mạc?",
+   "o": [
+    "Cơ thể mi co lại, dây treo chùng xuống làm thủy tinh thể phồng to (dày lên)",
+    "Cơ thể mi dãn ra, dây treo kéo căng làm thủy tinh thể xẹp phẳng xuống",
+    "Cơ thể mi co lại làm thủy tinh thể xẹp mỏng đi",
+    "Cơ thể mi không thay đổi và võng mạc tự lùi về phía sau"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Cấu trúc vi mô Cơ quan Corti – nơi trực tiếp biến đổi dao động cơ học thành xung thần kinh thính giác – nằm trên màng nào bên trong ốc tai?",
+   "o": [
+    "Màng cơ sở (Basilar membrane)",
+    "Màng nhĩ",
+    "Màng mái",
+    "Màng cửa sổ bầu dục"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Trong cơ quan Corti, sự bẻ cong của các lông tơ (stereocilia) trên tế bào lông khi cọ xát vào màng mái sẽ kích hoạt mở trực tiếp loại kênh ion nào sau đây để gây khử cực tế bào?",
+   "o": [
+    "Kênh ion K⁺",
+    "Kênh ion Na⁺",
+    "Kênh ion Ca²⁺",
+    "Kênh ion Cl⁻"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Loại tế bào thụ cảm thị giác nào tập trung chủ yếu ở vùng Hoàng điểm (Fovea) trên võng mạc, chịu trách nhiệm tiếp nhận ánh sáng mạnh và cảm nhận chi tiết màu sắc?",
+   "o": [
+    "Tế bào nón (Cone cells)",
+    "Tế bào que (Rod cells)",
+    "Tế bào hai cực",
+    "Tế bào hạch"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Chuỗi 3 xương nhỏ nằm trong khoang tai giữa (xương búa, xương đe, xương đạp) đảm nhận vai trò sinh học quan trọng nào đối với sự truyền âm?",
+   "o": [
+    "Khuếch đại lực cơ học của sóng âm từ màng nhĩ truyền vào cửa sổ bầu dục của tai trong",
+    "Trực tiếp biến đổi sóng âm thành xung thần kinh",
+    "Cân bằng áp suất không khí giữa tai giữa và vòm họng",
+    "Ngăn không cho dịch ốc tai chảy ra tai ngoài"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Sóng âm có tần số cao (âm bổng, ví dụ 15000 Hz) khi truyền vào ốc tai sẽ gây ra sự dao động biên độ cực đại ở vị trí nào của màng cơ sở trong cơ quan Corti?",
+   "o": [
+    "Phần đáy ốc tai (nằm gần cửa sổ bầu dục)",
+    "Phần đỉnh ốc tai (Helicotrema)",
+    "Dây thần kinh thính giác",
+    "Màng nhĩ tai ngoài"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Một người bị tật cận thị do cầu mắt quá dài khiến hình ảnh của vật ở xa hội tụ ở vị trí nào, và cần sử dụng loại thấu kính nào để khắc phục?",
+   "o": [
+    "Hội tụ phía trước võng mạc; cần đeo kính phân kỳ",
+    "Hội tụ phía sau võng mạc; cần đeo kính hội tụ",
+    "Hội tụ ngay tại điểm mù; cần đeo kính râm",
+    "Hội tụ trên mống mắt; không cần đeo kính"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Tiếp xúc thường xuyên với âm thanh có cường độ quá lớn (trên 85 dB) kéo dài gây ra tổn thương vĩnh viễn nào đối với cơ quan Corti?",
+   "o": [
+    "Làm gãy rụng và đứt gãy các lông tơ (stereocilia) của tế bào lông, dẫn đến giảm thính lực hoặc điếc không thể phục hồi",
+    "Làm rách hoàn toàn mống mắt",
+    "Làm xẹp toàn bộ thủy tinh thể",
+    "Làm đứt hoàn toàn dây thần kinh thị giác"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Sự biến đổi năng lượng diễn ra tại các tế bào thụ cảm trên võng mạc (tế bào que, tế bào nón) và tế bào lông trong cơ quan Corti có điểm chung bản chất là gì?",
+   "o": [
+    "Biến đổi Quang năng (mắt) và Cơ năng (tai) thành Điện năng (xung thần kinh) truyền về vỏ não",
+    "Biến đổi Nhiệt năng thành Hóa năng",
+    "Biến đổi Điện năng thành Âm năng",
+    "Biến đổi Hóa năng thành Cơ năng co cơ"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Đường truyền sóng âm và xung thần kinh thính giác qua cơ quan Corti diễn ra theo đúng trình tự sinh học nào sau đây?",
+   "o": [
+    "Vành tai → Màng nhĩ → Chuỗi xương tai → Cửa sổ bầu dục → Dịch ốc tai → Dao động Màng cơ sở → Tế bào lông cọ xát Màng mái → Dây thần kinh thính giác → Vỏ não thính giác",
+    "Màng nhĩ → Dây thần kinh thính giác → Tế bào lông → Chuỗi xương tai → Vỏ não",
+    "Cửa sổ bầu dục → Màng nhĩ → Tế bào lông → Chuỗi xương tai → Vỏ não",
+    "Vành tai → Dịch ốc tai → Màng nhĩ → Dây thần kinh → Tế bào lông"
+   ],
+   "a": 0
+  }
+ ],
+ "M10": [
+  {
+   "q": "Dạng đột biến cấu trúc nhiễm sắc thể nào sau đây làm giảm số lượng gen trên một nhiễm sắc thể?",
+   "o": [
+    "Lặp đoạn",
+    "Mất đoạn",
+    "Đảo đoạn",
+    "Chuyển đoạn tương hỗ"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Dạng đột biến cấu trúc nhiễm sắc thể nào làm thay đổi trật tự sắp xếp các gen nhưng không làm thay đổi chiều dài và số lượng gen trên nhiễm sắc thể đó?",
+   "o": [
+    "Mất đoạn",
+    "Lặp đoạn",
+    "Đảo đoạn",
+    "Chuyển đoạn không tương hỗ"
+   ],
+   "a": 2
+  },
+  {
+   "q": "Khi quan sát mô phỏng dạng đột biến Lặp đoạn, hậu quả nổi bật nhất đối với nhiễm sắc thể là gì?",
+   "o": [
+    "Nhiễm sắc thể bị ngắn đi một đoạn",
+    "Kích thước nhiễm sắc thể dài ra và gia tăng số lượng bản sao của gen",
+    "Nhiễm sắc thể biến thành dạng hình vòng",
+    "Mất hoàn toàn tâm động"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Hiện tượng một đoạn nhiễm sắc thể đứt ra từ NST số 1 và gắn vào NST số 2 (không tương đồng) được gọi là dạng đột biến nào?",
+   "o": [
+    "Chuyển đoạn giữa các nhiễm sắc thể không tương đồng",
+    "Trao đổi chéo giữa các nhiễm sắc thể tương đồng",
+    "Đảo đoạn chứa tâm động",
+    "Lặp đoạn dị thể"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Ở người, mất một đoạn nhỏ ở nhánh ngắn của nhiễm sắc thể số 5 gây ra hội chứng nào sau đây?",
+   "o": [
+    "Hội chứng Down",
+    "Hội chứng Turner",
+    "Hội chứng tiếng mèo kêu (Cri du chat)",
+    "Hội chứng Siêu nữ"
+   ],
+   "a": 2
+  },
+  {
+   "q": "Trong sản xuất bia, người ta ứng dụng dạng đột biến cấu trúc nhiễm sắc thể nào để làm tăng hoạt tính enzyme amylase ở đại mạch?",
+   "o": [
+    "Đột biến Mất đoạn",
+    "Đột biến Lặp đoạn",
+    "Đột biến Đảo đoạn",
+    "Đột biến Dị đa bội"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Loại đột biến cấu trúc nhiễm sắc thể nào thường dẫn đến hậu quả nghiêm trọng nhất, làm mất cân bằng hệ gen và dễ gây chết hoặc làm mất khả năng sinh sản của sinh vật?",
+   "o": [
+    "Đảo đoạn nhỏ",
+    "Mất đoạn lớn",
+    "Lặp đoạn nhỏ",
+    "Đột biến đồng nghĩa"
+   ],
+   "a": 1
+  },
+  {
+   "q": "Đặc điểm nào sau đây là ĐÚNG khi nói về đột biến Đảo đoạn chứa tâm động?",
+   "o": [
+    "Làm thay đổi hình dạng ngoại cảnh của nhiễm sắc thể do tâm động bị dịch chuyển vị trí",
+    "Làm mất đi tâm động của nhiễm sắc thể",
+    "Làm gia tăng gấp đôi số lượng tâm động",
+    "Không bao giờ xảy ra trong tự nhiên"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Sự trao đổi đoạn không cân giữa hai chromatid chị em trong cặp nhiễm sắc thể tương đồng trong quá trình giảm phân sẽ dẫn đến kết quả nào?",
+   "o": [
+    "Một chromatid bị mất đoạn và một chromatid bị lặp đoạn",
+    "Cả hai chromatid đều bị đảo đoạn",
+    "Cả hai chromatid đều bị mất đoạn",
+    "Tạo ra hai nhiễm sắc thể hoàn toàn bình thường"
+   ],
+   "a": 0
+  },
+  {
+   "q": "Ý nghĩa tiến hóa quan trọng nhất của đột biến Đảo đoạn nhiễm sắc thể là gì?",
+   "o": [
+    "Tạo ra các gen hoàn toàn mới chưa từng xuất hiện",
+    "Góp phần phân hóa nhóm gen, tạo sự đa dạng giữa các thứ trong cùng một loài",
+    "Làm cho sinh vật tăng kích thước cơ quan sinh dưỡng gấp đôi",
+    "Loại bỏ toàn bộ các gen lặn có hại ra khỏi quần thể"
+   ],
+   "a": 1
+  }
+ ]
+});

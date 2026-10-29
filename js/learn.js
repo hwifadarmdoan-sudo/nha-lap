@@ -105,7 +105,7 @@ NL.learn = (function () {
     box.innerHTML = `<div class="quiz-card"><div class="quiz-kick">${kick}</div><div class="quiz-q">${decorate(opt.q)}</div>
       <div class="quiz-opts">${opt.options.map((o, i) => `<button class="quiz-opt pop" data-i="${i}">${esc(o.t)}</button>`).join('')}</div>
       <div class="quiz-fb hidden"></div><button class="btn pop quiz-next hidden">Tiếp ➜</button></div>`;
-    $('lab').appendChild(box); bindTerms(box);
+    (opt.parent || $('lab')).appendChild(box); bindTerms(box);
     let wrongOnce = false, firstChoice = null;
     const fb = box.querySelector('.quiz-fb'), next = box.querySelector('.quiz-next');
     box.querySelectorAll('.quiz-opt').forEach(b => b.addEventListener('click', e => {
@@ -136,7 +136,7 @@ NL.learn = (function () {
   function card(opt, cb) {
     const box = document.createElement('div'); box.className = 'quiz';
     box.innerHTML = `<div class="quiz-card"><div class="quiz-kick">${opt.kicker}</div><div class="quiz-q">${decorate(opt.text)}</div>${opt.sub ? `<div class="quiz-sub">${decorate(opt.sub)}</div>` : ''}<button class="btn big pop quiz-next">${opt.btn || 'Tiếp ➜'}</button></div>`;
-    $('lab').appendChild(box); bindTerms(box);
+    (opt.parent || $('lab')).appendChild(box); bindTerms(box);
     box.querySelector('.quiz-next').addEventListener('click', () => { NL.audio.play('click'); box.remove(); cb && cb(); });
   }
   // Rút n câu ngẫu nhiên trong ngân hàng câu hỏi của một thí nghiệm, đảo thứ tự đáp án.
