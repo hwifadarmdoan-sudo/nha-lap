@@ -50,29 +50,31 @@ NL.lab = (function () {
   }
 
   // Kéo thả. Chỉ đồ vật đang sáng mới kéo được.
+  // Gọi lại draggable trên cùng đồ vật để đổi đích (ví dụ: hút dung dịch rồi nhỏ vào ống).
   function draggable(item, opt) {
-    item.classList.add('drag');
+    item.classList.add('drag'); item._dragOpt = opt; item._mode = 'drag';
     item._home = { x: item._x, y: item._y };
+    if (item._dragBound) return; item._dragBound = true;
     // vùng chạm rộng hơn hình để dễ cầm trên điện thoại
     try { const bb = item.getBBox(); item.insertBefore(el('rect', { x: bb.x - 14, y: bb.y - 14, width: bb.width + 28, height: bb.height + 28, fill: 'transparent' }), item.firstChild); } catch (e) { /* chưa vẽ */ }
     item.addEventListener('pointerdown', e => {
       if (!item._on) return;
+      const opt = item._dragOpt;
       e.preventDefault(); e.stopPropagation();
       layer.appendChild(item); layer.appendChild(handL); layer.appendChild(handR);
       item.setPointerCapture(e.pointerId);
       const p = toSvg(e), off = { x: item._x - p.x, y: item._y - p.y };
       NL.audio.play('click');
       const move = ev => { const q = toSvg(ev); place(item, q.x + off.x, q.y + off.y); moveHand(handR, q.x + 10, q.y + 46); if (opt.onMove) opt.onMove(item); };
-      const up = ev => {
+      const up = () => {
         item.removeEventListener('pointermove', move); item.removeEventListener('pointerup', up); item.removeEventListener('pointercancel', up);
-        const q = toSvg(ev);
         const tg = opt.target, hit = tg && Math.hypot(item._x - tg.x, item._y - tg.y) < (tg.r || 90);
         if (hit) {
           if (opt.snap !== false) tween(item, tg.sx !== undefined ? tg.sx : tg.x, tg.sy !== undefined ? tg.sy : tg.y, 180);
           setOn(item, false); NL.audio.play('drop');
           opt.onDrop && opt.onDrop(item);
         } else tween(item, item._home.x, item._home.y, 260);
-        restHands(); void q;
+        restHands();
       };
       item.addEventListener('pointermove', move); item.addEventListener('pointerup', up); item.addEventListener('pointercancel', up);
     });
@@ -93,15 +95,17 @@ NL.lab = (function () {
     requestAnimationFrame(f);
   }
   function tapable(item, cb) {
-    item.style.cursor = 'pointer';
+    item.style.cursor = 'pointer'; item._tapCb = cb; item._mode = 'tap';
+    if (item._tapBound) return; item._tapBound = true;
     try { const bb = item.getBBox(); item.insertBefore(el('rect', { x: bb.x - 10, y: bb.y - 10, width: bb.width + 20, height: bb.height + 20, fill: 'transparent' }), item.firstChild); } catch (e) { /* chưa vẽ */ }
-    item.addEventListener('pointerdown', e => { if (!item._on) return; e.stopPropagation(); setOn(item, false); NL.audio.play('click'); cb(item); });
+    item.addEventListener('pointerdown', e => { if (!item._on) return; e.stopPropagation(); setOn(item, false); NL.audio.play('click'); item._tapCb(item); });
   }
 
   // ---------- điều khiển bước ----------
   function setStep() {
     const st = cur.steps[stepIdx];
     active.forEach(a => setOn(a, false)); active = [];
+    if (cur.mod.clearSide) $('labSide').innerHTML = '';
     $('stepNo').textContent = st.label ? (typeof st.label === 'function' ? st.label() : st.label) : `Bước ${stepIdx + 1}/${cur.steps.length}`;
     say(st.text);
     $('btnNext').classList.add('hidden'); $('labHint').classList.add('hidden');
@@ -118,11 +122,88 @@ NL.lab = (function () {
     });
   }
   function askAll(list, done) { let k = 0; const nx = () => { if (k >= list.length) { done(); return; } ask(list[k++], nx); }; nx(); }
+
+  // ---------- công cụ chung cho các thí nghiệm ----------
+  let loops = [];
+  // vòng lặp hoạt hình, tự dừng khi đóng thí nghiệm; fn(dt) trả về false để dừng
+  function loop(fn) {
+    const o = { dead: false, stop() { o.dead = true; } }; let last = performance.now();
+    const f = now => { if (o.dead || !cur) return; const dt = Math.min(0.05, (now - last) / 1000); last = now; if (fn(dt, now) === false) { o.dead = true; return; } requestAnimationFrame(f); };
+    requestAnimationFrame(f); loops.push(o); return o;
+  }
+  function wait(sec, fn) { let t = 0; return loop(dt => { t += dt; if (t >= sec) { fn(); return false; } }); }
+  // thẻ bên phải
+  function panel(html, cls) {
+    const d = document.createElement('div'); d.className = cls || 'slider-card'; d.innerHTML = html || '';
+    $('labSide').appendChild(d); return d;
+  }
+  // thanh trượt kèm ô gõ số: { label, min, max, step, value, unit, onInput(v) }
+  function slider(o) {
+    const d = panel(`<div>${o.label}</div><div class="big-num"><input class="num-in" type="number" min="${o.min}" max="${o.max}" step="${o.step || 1}" value="${+(Math.round(o.value / (o.step || 1)) * (o.step || 1)).toFixed(3)}"> <small>${o.unit || ''}</small></div><input type="range" min="${o.min}" max="${o.max}" step="${o.step || 1}" value="${o.value}"><div class="warn-line"></div>`);
+    const r = d.querySelector('input[type=range]'), n = d.querySelector('.num-in');
+    const ctl = {
+      card: d, get value() { return +r.value; },
+      set(v) { const sp = o.step || 1; v = Math.max(o.min, Math.min(o.max, +(Math.round(+v / sp) * sp).toFixed(3))); r.value = v; n.value = v; o.onInput && o.onInput(v, ctl); },
+      warn(t) { d.querySelector('.warn-line').textContent = t || ''; },
+      remove() { d.remove(); }
+    };
+    r.addEventListener('input', () => ctl.set(r.value));
+    n.addEventListener('change', () => ctl.set(n.value));
+    if (o.onInput) o.onInput(+o.value, ctl);
+    return ctl;
+  }
+  // nhóm nút chọn một: { label, items:[{t, v}], value, onPick(v) }
+  function choices(o) {
+    const d = panel(`${o.label ? `<div>${o.label}</div>` : ''}<div class="seg">${o.items.map((it, i) => `<button class="seg-b pop" data-i="${i}">${it.t}</button>`).join('')}</div>`);
+    const bs = [...d.querySelectorAll('.seg-b')];
+    const ctl = {
+      card: d, value: o.value,
+      set(v) { ctl.value = v; bs.forEach((b, i) => b.classList.toggle('on', o.items[i].v === v)); o.onPick && o.onPick(v, ctl); },
+      remove() { d.remove(); }
+    };
+    bs.forEach((b, i) => b.addEventListener('click', () => { NL.audio.play('click'); ctl.set(o.items[i].v); }));
+    bs.forEach((b, i) => b.classList.toggle('on', o.items[i].v === o.value));
+    return ctl;
+  }
+  // bảng số liệu bên phải, gọi set(rows) mỗi khi có số mới
+  function table(head) {
+    const d = panel('', 'data-card');
+    const ctl = {
+      card: d,
+      set(rows) { d.innerHTML = `<table><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr>${rows.length ? rows.map(r => `<tr>${r.map(v => `<td>${v}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${head.length}">Chưa có số liệu</td></tr>`}</table>`; },
+      remove() { d.remove(); }
+    };
+    ctl.set([]); return ctl;
+  }
+  // biểu đồ kết quả giữa bàn, kèm nút tải bảng và lưu ảnh
+  function showChart(res) {
+    const fo = el('foreignObject', { x: 120, y: 14, width: 760, height: 440 }, layer);
+    const div = document.createElement('div');
+    div.className = 'lab-chart';
+    div.innerHTML = NL.chartSVG(res.chart, 720, 340).replace(/<animate[^>]*\/>/g, '') + `<div class="rep-dl"><button class="btn small pop">📥 Tải bảng (Excel)</button><button class="btn small pop">🖼 Lưu ảnh biểu đồ</button></div>`;
+    const [b1, b2] = div.querySelectorAll('button');
+    b1.onclick = () => NL.exportData.csv(res); b2.onclick = () => NL.exportData.jpg(res);
+    fo.appendChild(div); return fo;
+  }
+  // kết thúc: so với dự đoán, câu hỏi riêng, rồi n câu trong ngân hàng
+  function wrapUp(o) {
+    const pred = cur.predict;
+    const go = () => askAll((o.quiz || []).concat(NL.learn.bank(cur.id, o.bank === undefined ? 4 : o.bank)), () => api.finish(o.result));
+    if (!o.right) { go(); return; }
+    const okPred = pred && (Array.isArray(o.right) ? o.right.includes(pred) : pred === o.right);
+    api.card({
+      kicker: '🔁 So với điều em đoán',
+      text: pred ? `Em đoán "${pred}". ${okPred ? 'Đúng như em đoán! 🎯' : 'Kết quả đo: ' + o.truth}` : 'Kết quả đo: ' + o.truth,
+      sub: o.sub
+    }, go);
+  }
   const api = {
     say, ask, askAll, card: NL.learn.card,
     bank(n) { return NL.learn.bank(cur.id, n); },
     get prediction() { return cur.predict; },
     el, g, place, tween, draggable, setOn, tapable, moveHand, restHands,
+    loop, wait, panel, slider, choices, table, showChart, wrapUp,
+    hideNext() { $('btnNext').classList.add('hidden'); },
     get svg() { return layer; },
     get side() { return $('labSide'); },
     done(label) {
@@ -162,6 +243,7 @@ NL.lab = (function () {
   }
   function close() {
     $('lab').classList.add('hidden'); cancelAnimationFrame(rafId); NL.learn.closeAll();
+    loops.forEach(o => o.stop()); loops = [];
     if (cur && cur.mod.cleanup) cur.mod.cleanup();
     cur = null; NL.game.setStatus('');
   }
@@ -181,7 +263,18 @@ NL.lab = (function () {
     });
   });
 
+  // Dùng khi kiểm thử tự động: làm hộ một thao tác đang sáng.
+  function autoAct() {
+    const it = active.find(a => a._on);
+    if (!it) return cur && cur.mod.auto ? cur.mod.auto(api) : false;
+    if (it._mode === 'tap') { setOn(it, false); it._tapCb(it); return 'tap'; }
+    const o = it._dragOpt; if (!o) return false;
+    const tg = o.target; place(it, tg.sx !== undefined ? tg.sx : tg.x, tg.sy !== undefined ? tg.sy : tg.y);
+    setOn(it, false); o.onDrop && o.onDrop(it); return 'drag';
+  }
+
   return {
+    autoAct,
     register(id, mod) { modules[id] = mod; }, open, close, hint, showHint,
     get isOpen() { return !!cur; }, get current() { return cur && cur.id; }
   };

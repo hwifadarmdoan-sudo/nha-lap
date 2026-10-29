@@ -4,19 +4,27 @@
   let st;                          // trạng thái riêng của lần làm này
 
   // số bọt trong 15 giây: tăng theo cường độ sáng rồi chững lại (điểm bão hoà ánh sáng)
-  function rate(d) { const I = Math.pow(10 / d, 2); return 30 * I / (I + 0.35); }
+  // nhiệt độ: tối ưu khoảng 30 °C, trên 45 °C enzyme quang hợp bị biến tính
+  function fT(T) { if (T <= 0 || T > 45) return 0; const x = T / 30; let f = x * Math.exp(1 - x); if (T > 35) f *= (45 - T) / 10; return f; }
+  // NaHCO₃ cung cấp CO₂ cho quang hợp
+  function gC(C) { return 0.15 + 0.85 * C / (C + 0.8); }
+  function rate(d, T, C) {
+    const I = Math.pow(10 / d, 2);
+    return 40 * I / (I + 0.35) * fT(T === undefined ? st.T : T) * gC(C === undefined ? st.C : C);
+  }
+  const LX = cm => 560 + cm * 3.2;
   const DUR = 15; // mỗi lần đếm 15 giây
 
   function build(api) {
     const L = api.svg, el = api.el;
-    st = { d: 25, rows: [], lampOn: false, bubbles: [], timer: null };
+    st = { d: 25, T: 25, C: 2, auto: false, rows: [], lampOn: false, bubbles: [], timer: null };
     // thước đo
     const ruler = api.g(L, 0, 0);
     el('rect', { x: 548, y: 470, width: 380, height: 26, rx: 6, fill: '#FFF3C9', stroke: '#E2C779', 'stroke-width': 2 }, ruler);
-    for (let cm = 10; cm <= 50; cm += 5) {
-      const x = 560 + cm * 7;
+    for (let cm = 10; cm <= 100; cm += 5) {
+      const x = LX(cm);
       el('line', { x1: x, y1: 470, x2: x, y2: cm % 10 ? 478 : 484, stroke: '#8A6D1E', 'stroke-width': 2 }, ruler);
-      if (cm % 10 === 0) api.text(ruler, x, 494, cm + '', 13, '#8A6D1E', 700);
+      if (cm % 20 === 0 || cm === 10) api.text(ruler, x, 494, cm + '', 13, '#8A6D1E', 700);
     }
     api.text(ruler, 548, 512, 'cm', 13, '#8A6D1E', 700);
 
@@ -58,7 +66,7 @@
     st.tube = tube;
 
     // đèn
-    const lamp = api.g(L, 560 + st.d * 7, 0);
+    const lamp = api.g(L, LX(st.d), 0);
     el('rect', { x: -30, y: 440, width: 60, height: 14, rx: 7, fill: '#4A5A6A' }, lamp);
     el('rect', { x: -4, y: 250, width: 8, height: 192, fill: '#6B7B8B' }, lamp);
     el('path', { d: 'M4 236 L-46 216 L-46 300 L4 280 Z', fill: '#2F80C0' }, lamp);
@@ -83,8 +91,8 @@
       st.tableCard = document.createElement('div'); st.tableCard.className = 'data-card';
       side.appendChild(st.tableCard);
     }
-    const rows = st.rows.map(r => `<tr><td>${r.d} cm</td><td>${r.em}</td><td>${r.real}</td></tr>`).join('') || '<tr><td colspan="3">Chưa có số liệu</td></tr>';
-    st.tableCard.innerHTML = `<table><tr><th>Khoảng cách</th><th>Em đếm</th><th>Thực tế</th></tr>${rows}</table>`;
+    const rows = st.rows.map(r => `<tr><td>${r.d} cm</td><td>${r.T}°C</td><td>${r.C}%</td><td>${r.em}</td><td>${r.real}</td></tr>`).join('') || '<tr><td colspan="5">Chưa có số liệu</td></tr>';
+    st.tableCard.innerHTML = `<table><tr><th>Đèn</th><th>T</th><th>NaHCO₃</th><th>Em đếm</th><th>Thực tế</th></tr>${rows}</table>`;
   }
 
   const steps = [
@@ -112,26 +120,34 @@
     },
     {
       label: () => `Lần đo ${Math.min(3, st.rows.length + 1)}/3`,
-      text: 'Kéo thanh để chọn khoảng cách đèn', hint: 'Kéo thanh trượt bên phải. Mỗi lần đo chọn một khoảng cách khác nhau',
+      text: 'Chọn khoảng cách đèn, nhiệt độ và lượng NaHCO₃', hint: 'Mỗi lần đo chỉ đổi một yếu tố để so sánh, ví dụ chỉ đổi khoảng cách đèn',
       enter(api) {
         if (!st.rows.length && !api.prediction) api.ask({
           predict: true, q: 'Đèn càng gần cốc nước thì bọt khí sẽ…?',
           options: [{ t: 'Nhiều hơn' }, { t: 'Ít hơn' }, { t: 'Không thay đổi' }]
         });
-        const card = document.createElement('div'); card.className = 'slider-card';
-        card.innerHTML = `<div>Khoảng cách đèn</div><div class="big-num"><span id="dVal">${st.d}</span> cm</div><input type="range" min="10" max="50" step="1" value="${st.d}" id="dRange"><div id="dWarn" style="color:#E5534B;font-size:14px"></div>`;
-        api.side.prepend(card); st.slider = card;
-        const r = card.querySelector('#dRange');
+        let tWarned = false;
         const check = () => {
-          st.d = +r.value; card.querySelector('#dVal').textContent = st.d;
-          api.tween(st.lamp, 560 + st.d * 7, 0, 60, updateLight);
-          const dup = st.rows.some(x => Math.abs(x.d - st.d) < 5);
-          card.querySelector('#dWarn').textContent = dup ? 'Chọn khoảng cách khác lần trước nhé' : '';
-          if (dup) document.getElementById('btnNext').classList.add('hidden'); else api.done('Bắt đầu đếm ➜');
+          const dup = st.rows.some(x => Math.abs(x.d - st.d) < 5 && x.T === st.T && x.C === st.C);
+          st.ctls[0].warn(dup ? 'Lần trước đã đo như vậy, đổi một yếu tố nhé' : '');
+          if (dup) api.hideNext(); else api.done('Bắt đầu đếm ➜');
         };
-        r.addEventListener('input', check); check();
+        st.ctls = [
+          api.slider({ label: 'Khoảng cách đèn', min: 10, max: 100, value: st.d, unit: 'cm', onInput(v) { st.d = v; api.tween(st.lamp, LX(v), 0, 60, updateLight); st.ctls && check(); } }),
+          api.slider({
+            label: 'Nhiệt độ nước', min: 0, max: 60, value: st.T, unit: '°C', onInput(v, c) {
+              st.T = v; updateLight();
+              c.warn(v > 45 ? 'Quá nóng: enzyme bị biến tính, rong ngừng quang hợp' : v < 5 ? 'Quá lạnh: quang hợp gần như dừng' : '');
+              if (v > 45 && !tWarned) { tWarned = true; api.card({ kicker: '⚠️ Cảnh báo khoa học', text: 'Trên 45°C, enzyme tham gia quang hợp bị biến tính nên rong gần như không thải O₂ nữa.' }); }
+              st.ctls && check();
+            }
+          }),
+          api.slider({ label: 'NaHCO₃ (nguồn CO₂)', min: 0, max: 5, step: 0.5, value: st.C, unit: '%', onInput(v) { st.C = v; updateLight(); st.ctls && check(); } }),
+          api.choices({ label: 'Cách đếm', items: [{ t: '👆 Tự đếm', v: false }, { t: '🤖 Máy đếm', v: true }], value: st.auto, onPick(v) { st.auto = v; } })
+        ];
+        check();
       },
-      onNext(api) { if (st.slider) { st.slider.remove(); st.slider = null; } api.goto(4); }
+      onNext(api) { (st.ctls || []).forEach(c => c.remove()); st.ctls = null; api.goto(4); }
     },
     {
       label: () => `Lần đo ${Math.min(3, st.rows.length + 1)}/3`,
@@ -144,20 +160,15 @@
       enter(api) {
         sideCards(api);
         const need = 3 - st.rows.length;
-        document.getElementById('stepText').textContent = need > 0 ? `Đã ghi vào bảng. Đo thêm ${need} khoảng cách nữa` : 'Đủ 3 khoảng cách rồi!';
-        api.done(need > 0 ? 'Đo khoảng cách khác ➜' : 'Xem biểu đồ ➜');
+        document.getElementById('stepText').textContent = need > 0 ? `Đã ghi vào bảng. Đo thêm ${need} lần nữa, đổi một yếu tố` : 'Đủ 3 lần đo rồi!';
+        api.done(need > 0 ? 'Đo lần nữa ➜' : 'Xem biểu đồ ➜');
       },
       onNext(api) { api.goto(st.rows.length < 3 ? 3 : 6); }
     },
     {
       label: 'Kết quả', text: 'Biểu đồ số bọt khí theo khoảng cách đèn', hint: 'So cột xanh dương (em đếm) và cột xanh lá (thực tế)',
       enter(api) {
-        const res = result();
-        const fo = api.el('foreignObject', { x: 150, y: 20, width: 700, height: 420 }, api.svg);
-        const div = document.createElement('div');
-        div.style.cssText = 'background:#fff;border-radius:20px;padding:10px 16px;box-shadow:0 6px 0 rgba(31,78,121,.18);font-family:Baloo 2;height:100%;box-sizing:border-box';
-        div.innerHTML = NL.chartSVG(res.chart, 660, 360);
-        fo.appendChild(div);
+        api.showChart(result());
         api.done('Trả lời câu hỏi ➜');
       },
       onNext(api) { afterChart(api); }
@@ -178,6 +189,7 @@
         if (next <= 0) {
           next = (DUR / per) * (0.6 + Math.random() * 0.8);
           real++;
+          if (st.auto) { em++; card.querySelector('#cVal').textContent = em; }
           const gB = api.g(L, BX + (Math.random() * 12 - 6), 330);
           const r = 9 + Math.random() * 4;
           api.el('circle', { r: 32, fill: 'transparent' }, gB);
@@ -185,7 +197,7 @@
           api.el('circle', { r: r * 0.3, cx: -r * 0.3, cy: -r * 0.3, fill: '#fff' }, gB);
           gB.style.cursor = 'pointer';
           const b = { g: gB, vy: 70 + Math.random() * 30, wob: Math.random() * 6 };
-          gB.addEventListener('pointerdown', e => {
+          if (!st.auto) gB.addEventListener('pointerdown', e => {
             e.stopPropagation(); if (b.dead) return; b.dead = true; em++;
             NL.audio.play('bubble'); card.querySelector('#cVal').textContent = em;
             gB.style.transition = 'opacity .15s'; gB.style.opacity = 0; setTimeout(() => gB.remove(), 160);
@@ -202,7 +214,7 @@
       if (t < DUR + 2.5) st.raf = requestAnimationFrame(tick);
       else {
         bubbles.forEach(b => b.g.remove());
-        st.rows.push({ d: st.d, em, real }); st.rows.sort((a, b) => a.d - b.d);
+        st.rows.push({ d: st.d, T: st.T, C: st.C, auto: st.auto, em, real }); st.rows.sort((a, b) => a.d - b.d);
         card.remove(); NL.audio.play('pop');
         NL.game.toast(`Em đếm ${em} bọt, thực tế có ${real} bọt`);
         api.goto(5);
@@ -214,14 +226,14 @@
   function result() {
     const rows = st.rows.slice().sort((a, b) => a.d - b.d);
     return {
-      title: 'Đếm bọt khí rong', param: 'Khoảng cách đèn',
-      table: { head: ['Khoảng cách', 'Em đếm (15 giây)', 'Thực tế'], rows: rows.map(r => [r.d + ' cm', r.em, r.real]) },
+      title: 'Đếm bọt khí rong', param: 'Khoảng cách đèn, nhiệt độ, NaHCO₃',
+      table: { head: ['Lần', 'Khoảng cách đèn (cm)', 'Nhiệt độ (°C)', 'NaHCO₃ (%)', 'Thời gian (giây)', 'Em đếm', 'Thực tế', 'Cách đếm'], rows: rows.map((r, i) => [i + 1, r.d, r.T, r.C, DUR, r.em, r.real, r.auto ? 'Máy' : 'Tự đếm']) },
       chart: {
-        labels: rows.map(r => r.d + ' cm'), yLabel: 'Số bọt / 15 giây',
+        labels: rows.map(r => `${r.d}cm·${r.T}°·${r.C}%`), yLabel: 'Số bọt / 15 giây',
         series: [{ name: 'Em đếm', color: '#5BB4EA', values: rows.map(r => r.em) }, { name: 'Thực tế', color: '#3FB37F', values: rows.map(r => r.real) }]
       },
-      conclusion: 'Trong một giới hạn: đèn càng gần → ánh sáng càng mạnh → càng nhiều bọt khí O₂ → quang hợp càng mạnh',
-      note: 'Quá điểm bão hoà ánh sáng thì quang hợp không tăng nữa; đèn quá gần còn làm nóng nước.'
+      conclusion: 'Trong một giới hạn: ánh sáng càng mạnh (đèn càng gần), nhiệt độ thích hợp (khoảng 25–35°C) và đủ CO₂ (NaHCO₃) thì càng nhiều bọt khí O₂, quang hợp càng mạnh',
+      note: 'Quá điểm bão hoà ánh sáng thì quang hợp không tăng nữa. Trên 45°C enzyme bị biến tính nên quang hợp gần như dừng.'
     };
   }
 
@@ -232,7 +244,7 @@
       kicker: '🔁 So với điều em đoán',
       text: pred ? (pred === right ? `Em đoán "${pred}". Kết quả đo: đúng như em đoán! 🎯` : `Em đoán "${pred}". Kết quả đo: đèn gần thì bọt khí nhiều hơn.`) : 'Kết quả đo: đèn gần thì bọt khí nhiều hơn.',
       sub: 'Nhưng chỉ tăng trong một giới hạn: tới điểm bão hoà ánh sáng thì gần như không tăng nữa.'
-    }, () => api.askAll(QUIZ, () => api.finish(result())));
+    }, () => api.askAll(QUIZ.slice(0, 2).concat(api.bank(3)), () => api.finish(result())));
   }
   const QUIZ = [
     {

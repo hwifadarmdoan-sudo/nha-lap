@@ -88,7 +88,7 @@
   // Lối tắt vào thẳng thí nghiệm: ?tn=2A, ?tn=2B… hoặc số phòng ?tn=1 … ?tn=10
   const TN = (() => {
     const q = (params.get('tn') || '').toLowerCase(); if (!q) return null;
-    const alias = { bubbles: '2A', bot: '2A', plasmo: '2B', co: '2B' };
+    const alias = { bubbles: '2A', bot: '2A', plasmo: '2B', co: '2B', enzyme: '2C', mendel: '2D', dna: '2E', gel: '2E', hohap: '2F', tim: '2G', naymam: '2H', nguyenphan: '2I', quanthe: '2J' };
     const e = NL.EXPERIMENTS.find(x => x.ready && x.floor === 2 && (x.id.toLowerCase() === q || String(x.no) === q || alias[q] === x.id));
     return e ? e.id : null;
   })();

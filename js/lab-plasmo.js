@@ -1,16 +1,11 @@
 // Thí nghiệm 2B: co và phản co nguyên sinh ở tế bào biểu bì lá thài lài tía.
 (function () {
-  const SOL = {
-    nhuoc: { name: 'Nhược trương', color: '#BFE4FA', frac: 0, shrink: 1.0 },
-    dang: { name: 'Đẳng trương', color: '#FFE8A3', frac: 0.1, shrink: 0.8 },
-    uu: { name: 'Ưu trương', color: '#FFC9C9', frac: 0.9, shrink: 0.5 }
-  };
   const STAGE = { x: 850, y: 300 };
   let st;
 
   function build(api) {
     const L = api.svg, el = api.el;
-    st = { done: {}, cur: null, cells: [], needRecover: false };
+    st = { runs: [], C: 5, zoom: 10, cells: [], speed: 5 };
 
     // kính hiển vi
     const mic = api.g(L, 850, 0);
@@ -53,16 +48,14 @@
     api.text(lm, 0, 55, 'Lamen', 15, '#6C88A3', 700);
     st.lamen = lm;
 
-    // các lọ dung dịch + giấy thấm (hiện ra ở bước nhỏ dung dịch)
+    // lọ NaCl, nước cất, giấy thấm (hiện ra ở bước nhỏ dung dịch)
     st.bottles = {};
-    const kinds = [['nhuoc', 90], ['dang', 190], ['uu', 290], ['cat', 390]];
-    kinds.forEach(([k, x]) => {
+    [['nacl', 300, '#FFC9C9', 'NaCl'], ['cat', 400, '#E8F6FF', 'Nước cất']].forEach(([k, x, col, name]) => {
       const b = api.g(L, x, 0); b.style.display = 'none';
-      const col = k === 'cat' ? '#E8F6FF' : SOL[k].color;
       el('rect', { x: -30, y: 380, width: 60, height: 72, rx: 12, fill: col, stroke: '#9CC7E3', 'stroke-width': 3 }, b);
       el('rect', { x: -12, y: 350, width: 24, height: 34, rx: 4, fill: '#E5534B' }, b);
       el('ellipse', { cx: 0, cy: 346, rx: 13, ry: 9, fill: '#333' }, b);
-      api.text(b, 0, 480, k === 'cat' ? 'Nước cất' : SOL[k].name, 14, '#1F4E79', 800);
+      b.lab = api.text(b, 0, 480, name, 14, '#1F4E79', 800);
       st.bottles[k] = b;
     });
     const paper = api.g(L, 560, 470); paper.style.display = 'none';
@@ -75,44 +68,79 @@
     st.dropper = drop;
 
     // khung nhìn qua kính hiển vi
-    const view = api.g(L, 610, 190); view.style.display = 'none';
+    const view = api.g(L, 540, 190); view.style.display = 'none';
     const defs = el('defs', {}, L);
     const cp = el('clipPath', { id: 'microClip' }, defs); el('circle', { cx: 0, cy: 0, r: 150 }, cp);
     el('circle', { r: 160, fill: '#1F2A36' }, view);
     const inner = el('g', { 'clip-path': 'url(#microClip)' }, view);
     el('rect', { x: -160, y: -160, width: 320, height: 320, fill: '#F2F8E8' }, inner);
+    st.zoomG = el('g', {}, inner);
     let n = 0;
-    for (let r = -3; r <= 3; r++) for (let c = -3; c <= 3; c++) {
+    for (let r = -5; r <= 5; r++) for (let c = -4; c <= 4; c++) {
       const x = c * 62 + (r % 2 ? 31 : 0), y = r * 44;
-      if (Math.hypot(x, y) > 190) continue;
-      const cell = el('g', { transform: `translate(${x},${y})` }, inner);
-      el('rect', { x: -29, y: -20, width: 58, height: 40, rx: 8, fill: '#E6F2D6', stroke: '#7DB36A', 'stroke-width': 3 }, cell);
-      const pr = el('rect', { x: -25, y: -16, width: 50, height: 32, rx: 7, fill: '#9B4FC4' }, cell);
-      el('circle', { cx: -12, cy: -4, r: 4, fill: '#5E2A80' }, cell);
-      st.cells.push({ pr, cur: 1, target: 1, seed: (n++ * 37) % 10 });
+      if (Math.hypot(x, y) > 290) continue;
+      const cell = el('g', { transform: `translate(${x},${y})` }, st.zoomG);
+      el('rect', { x: -29, y: -20, width: 58, height: 40, rx: 4, fill: '#E6F2D6', stroke: '#6E9E5A', 'stroke-width': 3.2 }, cell);
+      const pr = el('path', { d: '', fill: '#9B4FC4' }, cell);
+      const nu = el('circle', { cx: -10, cy: -3, r: 4, fill: '#5E2A80' }, cell);
+      st.cells.push({ pr, nu, p: Object.assign({}, FORM.normal), tp: FORM.normal, sev: 0.85 + ((n++ * 37) % 10) / 33 });
     }
     el('circle', { r: 150, fill: 'none', stroke: '#1F2A36', 'stroke-width': 6 }, view);
+    // thước đo vi trường
+    const scale = api.g(view, -10, -16);
+    el('rect', { x: -66, y: 110, width: 150, height: 28, rx: 8, fill: 'rgba(255,255,255,.85)' }, scale);
+    el('line', { x1: -60, y1: 128, x2: 40, y2: 128, stroke: '#1F4E79', 'stroke-width': 3 }, scale);
+    for (let k = 0; k <= 10; k++) el('line', { x1: -60 + k * 10, y1: 122, x2: -60 + k * 10, y2: k % 5 ? 128 : 118, stroke: '#1F4E79', 'stroke-width': 1.5 }, scale);
+    st.scaleTxt = api.text(scale, 70, 133, '', 12, '#1F4E79', 800);
     st.viewLabel = api.text(view, 0, 186, '', 18, '#1F4E79', 800);
     st.view = view;
+    setZoom(10);
     st.raf = requestAnimationFrame(animCells);
   }
 
+  // hình chất nguyên sinh: nửa rộng w, nửa cao h, bo góc r, độ lõm cạnh k
+  const FORM = {
+    normal: { w: 25, h: 16, r: 6, k: 0 },
+    nhuoc: { w: 26, h: 17, r: 5, k: 0 },
+    dang: { w: 24.5, h: 15.5, r: 6, k: 0 },
+    goc: { w: 22.5, h: 14, r: 11, k: 0 },
+    lom: { w: 19, h: 11.5, r: 8, k: 7 },
+    loi: { w: 12.5, h: 10.5, r: 10.5, k: 0 }
+  };
+  const FORM_NAME = { nhuoc: 'Không co (trương nước)', dang: 'Không co', goc: 'Co góc', lom: 'Co lõm', loi: 'Co lồi' };
+  function formOf(C) { return C < 0.5 ? 'nhuoc' : C < 1.5 ? 'dang' : C < 5 ? 'goc' : C < 12.5 ? 'lom' : 'loi'; }
+  function pathOf(p) {
+    const { w, h, k } = p, r = Math.min(p.r, w, h);
+    return `M${-w + r} ${-h} Q0 ${-h + k * 2} ${w - r} ${-h} Q${w} ${-h} ${w} ${-h + r} Q${w - k * 2} 0 ${w} ${h - r} Q${w} ${h} ${w - r} ${h} Q0 ${h - k * 2} ${-w + r} ${h} Q${-w} ${h} ${-w} ${h - r} Q${-w + k * 2} 0 ${-w} ${-h + r} Q${-w} ${-h} ${-w + r} ${-h} Z`;
+  }
+  function setZoom(z) {
+    st.zoom = z;
+    st.zoomG.setAttribute('transform', `scale(${z === 10 ? 0.62 : 1.25})`);
+    st.scaleTxt.textContent = z === 10 ? '100 µm' : '25 µm';
+  }
+
+  // chất nguyên sinh co dần về hình đích; st.rate do đồng hồ đặt (tua nhanh thì co nhanh)
   function animCells() {
+    const k = st.rate || 0.035;
     st.cells.forEach(c => {
-      c.cur += (c.target - c.cur) * 0.035;
-      const s = c.cur, rx = 7 + (1 - s) * 30;
-      c.pr.setAttribute('transform', `scale(${s.toFixed(3)})`);
-      c.pr.setAttribute('rx', rx.toFixed(1));
+      ['w', 'h', 'r', 'k'].forEach(q => { c.p[q] += (c.tp[q] - c.p[q]) * k; });
+      c.pr.setAttribute('d', pathOf(c.p));
+      c.nu.setAttribute('cx', -10 * c.p.w / 25); c.nu.setAttribute('cy', -3 * c.p.h / 16);
     });
     st.raf = requestAnimationFrame(animCells);
   }
-  function setCells(kind) {
-    const s = SOL[kind];
-    st.cells.forEach(c => { c.target = c.seed < s.frac * 10 ? s.shrink : 1; });
-    const co = st.cells.filter(c => c.target < 0.9).length;
-    return Math.round(co / st.cells.length * 100);
+  // mỗi tế bào co mạnh nhẹ khác nhau một chút
+  // cùng một dạng co, nồng độ càng cao (trong khoảng của dạng đó) thì co mạnh hơn chút
+  const BAND = { goc: [1.5, 5], lom: [5, 12.5], loi: [12.5, 20] };
+  function setForm(f, C) {
+    const b = BAND[f], g = b && C != null ? 0.85 + 0.3 * Math.min(1, Math.max(0, (C - b[0]) / (b[1] - b[0]))) : 1;
+    st.cells.forEach(c => {
+      const t = FORM[f], n = FORM.normal, s = Math.min(1.25, c.sev * g);
+      c.tp = { w: n.w + (t.w - n.w) * s, h: n.h + (t.h - n.h) * s, r: n.r + (t.r - n.r) * s, k: t.k * s };
+    });
   }
-  function resetCells() { st.cells.forEach(c => { c.target = 1; }); }
+  const settled = () => st.cells.every(c => Math.abs(c.p.w - c.tp.w) < 0.25 && Math.abs(c.p.h - c.tp.h) < 0.25);
+  const shrinkPct = () => Math.round(100 * (1 - st.cells.reduce((a, c) => a + c.tp.w * c.tp.h, 0) / st.cells.length / (25 * 16)));
 
   function dropperTo(api, from, cb) {
     const d = st.dropper; d.style.display = '';
@@ -163,83 +191,141 @@
       }
     },
     {
-      label: () => `Thử lọ ${doneCount() + 1}/3`,
-      text: 'Chọn một lọ dung dịch để nhỏ vào mép lamen', hint: 'Chạm vào một lọ đang sáng. Lọ nào làm rồi sẽ không sáng nữa',
+      label: () => `Lần thử ${st.runs.length + 1}/3 · Nồng độ`,
+      text: 'Chọn nồng độ dung dịch NaCl để nhỏ vào mép lamen', hint: 'Kéo thanh nồng độ. Thử cả nồng độ thấp và cao, ví dụ 0.9%, 5%, 20%',
       enter(api) {
-        if (!doneCount() && !api.prediction) api.ask({
-          predict: true, q: 'Nhỏ dung dịch ưu trương vào, tế bào sẽ…?',
+        sideTable(api);
+        if (!st.runs.length && !api.prediction) api.ask({
+          predict: true, q: 'Nhỏ dung dịch NaCl 20% (ưu trương) vào, tế bào sẽ…?',
           options: [{ t: 'Co lại vì nước đi ra' }, { t: 'Trương to vì nước đi vào' }, { t: 'Không thay đổi' }]
         });
-        ['nhuoc', 'dang', 'uu'].forEach(k => {
-          const b = st.bottles[k]; b.style.display = '';
-          if (st.done[k] !== undefined) return;
-          api.setOn(b, true);
-          if (!b._tap) { b._tap = true; api.tapable(b, () => choose(api, k)); }
-        });
-        st.bottles.cat.style.display = '';
-      }
-    },
-    {
-      label: () => `Thử lọ ${doneCount() + 1}/3`, text: 'Đặt giấy thấm ở mép bên kia lamen', hint: 'Kéo giấy thấm lên bệ kính hiển vi để kéo dung dịch qua mẫu',
-      enter(api) {
-        const p = st.paper; p.style.display = ''; api.place(p, 560, 470);
-        api.setOn(p, true);
-        if (!p._drag) { p._drag = true; api.draggable(p, { target: { x: STAGE.x, y: STAGE.y, r: 120, sx: STAGE.x + 40, sy: STAGE.y - 4 }, onDrop: () => absorb(api) }); }
-        else p._home = { x: 560, y: 470 };
-      }
-    },
-    {
-      label: () => `Thử lọ ${doneCount()}/3`, text: 'Nhỏ nước cất, rồi đặt giấy thấm để xem tế bào phản co', hint: 'Chạm lọ nước cất, sau đó kéo giấy thấm lên bệ kính',
-      enter(api) {
-        const b = st.bottles.cat; api.setOn(b, true);
-        if (!b._tap) { b._tap = true; api.tapable(b, () => dropperTo(api, b, () => {
-          const p = st.paper; p.style.display = ''; api.place(p, 560, 470); api.setOn(p, true); p._home = { x: 560, y: 470 };
-          p._recover = true;
-        })); }
-      }
-    },
-    {
-      label: () => `Thử lọ ${doneCount()}/3`, text: '', hint: 'Bấm nút ở góc dưới để đi tiếp',
-      enter(api) {
-        const left = ['nhuoc', 'dang', 'uu'].filter(k => st.done[k] === undefined).length;
-        document.getElementById('stepText').textContent = left ? `Đã ghi kết quả. Còn ${left} lọ chưa thử` : 'Đã thử đủ 3 lọ!';
-        sideTable(api);
-        api.done(left ? 'Thử lọ khác ➜' : 'Xem biểu đồ ➜');
+        st.bottles.nacl.style.display = ''; st.bottles.cat.style.display = '';
+        st.ctl = [
+          api.slider({
+            label: 'Nồng độ NaCl', min: 0, max: 20, step: 0.1, value: st.C, unit: '%',
+            onInput(v, c) {
+              st.C = v; st.bottles.nacl.lab.textContent = `NaCl ${v}%`;
+              const dup = st.runs.some(r => Math.abs(r.C - v) < 1);
+              c.warn(dup ? 'Chọn nồng độ cách lần trước ít nhất 1% nhé' : v < 0.5 ? 'Nhược trương' : v < 1.5 ? 'Gần đẳng trương (0.9%)' : 'Ưu trương');
+              if (dup) api.hideNext(); else api.done('Nhỏ dung dịch ➜');
+            }
+          }),
+          api.choices({ label: 'Vật kính', items: [{ t: '10×', v: 10 }, { t: '40×', v: 40 }], value: st.zoom, onPick(v) { NL.audio.play('click'); setZoom(v); } })
+        ];
       },
       onNext(api) {
-        const left = ['nhuoc', 'dang', 'uu'].some(k => st.done[k] === undefined);
-        if (left) { resetCells(); st.viewLabel.textContent = 'Mẫu mới: tế bào bình thường'; NL.game.toast('Đã thay mẫu mới 🍃'); api.goto(4); }
-        else api.goto(8);
+        st.ctl.forEach(c => c.remove());
+        dropperTo(api, st.bottles.nacl, () => api.goto(5));
       }
     },
     {
-      label: 'Kết quả', text: 'Biểu đồ tỉ lệ tế bào co nguyên sinh', hint: 'So chiều cao 3 cột',
+      label: () => `Lần thử ${st.runs.length + 1}/3 · ${st.C}%`, text: 'Đặt giấy thấm ở mép bên kia lamen để kéo dung dịch qua mẫu', hint: 'Kéo giấy thấm lên bệ kính hiển vi',
+      enter(api) {
+        sideTable(api);
+        const p = st.paper; p.style.display = ''; api.place(p, 560, 470);
+        api.setOn(p, true);
+        api.draggable(p, { target: { x: STAGE.x, y: STAGE.y, r: 120, sx: STAGE.x + 40, sy: STAGE.y - 4 }, onDrop: () => soak(api) });
+      }
+    },
+    {
+      label: () => `Lần thử ${st.runs.length}/3 · xong`, text: '', hint: 'Bấm nút ở góc dưới để đi tiếp',
+      enter(api) {
+        sideTable(api);
+        const left = 3 - st.runs.length;
+        api.say(left ? `Đã ghi kết quả. Thử thêm ${left} nồng độ nữa` : 'Đã thử đủ 3 nồng độ! Giờ nhỏ nước cất xem tế bào có phản co không');
+        api.done(left ? 'Thử nồng độ khác ➜' : 'Nhỏ nước cất ➜');
+      },
+      onNext(api) {
+        if (st.runs.length < 3) { setForm('normal'); st.rate = 0.2; st.viewLabel.textContent = 'Mẫu mới: tế bào bình thường'; NL.game.toast('Đã thay mẫu mới 🍃'); api.goto(4); }
+        else api.goto(7);
+      }
+    },
+    {
+      label: 'Phản co nguyên sinh', text: 'Nhỏ nước cất vào mẫu vừa thử, rồi đặt giấy thấm', hint: 'Chạm lọ nước cất, sau đó kéo giấy thấm lên bệ kính',
+      enter(api) {
+        sideTable(api);
+        const b = st.bottles.cat; api.setOn(b, true);
+        api.tapable(b, () => dropperTo(api, b, () => {
+          const p = st.paper; p.style.display = ''; api.place(p, 560, 470); api.setOn(p, true);
+          api.draggable(p, {
+            target: { x: STAGE.x, y: STAGE.y, r: 120, sx: STAGE.x + 40, sy: STAGE.y - 4 }, onDrop: () => {
+              const last = st.runs[st.runs.length - 1];
+              st.rate = 0.03;
+              if (last.form === 'loi') {
+                st.recovered = false; st.viewLabel.textContent = 'Tế bào không phản co';
+                api.card({ kicker: '🔬 Giải thích khoa học', text: 'Ở dạng co lồi, chất nguyên sinh đã tách hẳn khỏi thành tế bào ở mọi phía. Tế bào bị tổn thương nặng nên không phản co được nữa.', sub: 'Thử với mẫu co góc hoặc co lõm thì tế bào sẽ phản co.' });
+              } else { setForm('normal'); st.recovered = true; st.viewLabel.textContent = 'Tế bào phản co nguyên sinh'; }
+              api.wait(1.8, () => { st.paper.style.display = 'none'; api.done('Xem biểu đồ ➜'); });
+            }
+          });
+        }));
+      },
+      onNext(api) { api.goto(8); }
+    },
+    {
+      label: 'Kết quả', text: 'Mức co của chất nguyên sinh theo nồng độ NaCl', hint: 'Nồng độ càng cao, chất nguyên sinh co càng nhiều',
       enter(api) {
         st.view.style.display = 'none';
         Object.values(st.bottles).forEach(b => { b.style.display = 'none'; });
         st.paper.style.display = 'none';
-        const res = result();
-        const fo = api.el('foreignObject', { x: 150, y: 20, width: 700, height: 420 }, api.svg);
-        const div = document.createElement('div');
-        div.style.cssText = 'background:#fff;border-radius:20px;padding:10px 16px;box-shadow:0 6px 0 rgba(31,78,121,.18);font-family:Baloo 2;height:100%;box-sizing:border-box';
-        div.innerHTML = NL.chartSVG(res.chart, 660, 360);
-        fo.appendChild(div);
+        api.showChart(result());
         api.done('Trả lời câu hỏi ➜');
       },
       onNext(api) { afterChart(api); }
     }
   ];
 
-  const doneCount = () => ['nhuoc', 'dang', 'uu'].filter(k => st.done[k] !== undefined).length;
+  // dung dịch ngấm dần qua mẫu: đếm giờ tới khi tế bào ổn định, rồi em gọi tên dạng co
+  function soak(api) {
+    st.paper.style.display = 'none';
+    const f = formOf(st.C);
+    setForm(f, st.C); st.viewLabel.textContent = 'Dung dịch đang ngấm…';
+    const card = api.panel(`<div>⏱ Thời gian tác động</div><div class="big-num"><span id="plT">0</span> giây</div>`);
+    st.speed = 5;
+    const sp = api.choices({ label: 'Tốc độ', items: [{ t: '1×', v: 1 }, { t: '5×', v: 5 }, { t: '10×', v: 10 }], value: 5, onPick(v) { st.speed = v; } });
+    let t = 0;
+    api.loop(dt => {
+      t += dt * st.speed; st.rate = Math.min(0.5, 0.004 * st.speed);
+      card.querySelector('#plT').textContent = Math.floor(t);
+      if (t > 20 && settled()) {
+        card.remove(); sp.remove(); st.rate = 0.035;
+        st.viewLabel.textContent = 'Tế bào đã ổn định';
+        const right = f === 'nhuoc' || f === 'dang' ? 'Không co' : FORM_NAME[f];
+        api.ask({
+          kicker: '🔬 Em quan sát', q: 'Chất nguyên sinh của tế bào đang ở dạng nào?',
+          options: ['Không co', 'Co góc', 'Co lõm', 'Co lồi'].map(x => ({ t: x, ok: x === right, why: WHY[f] })),
+          explain: EXPLAIN[f]
+        }, r => {
+          st.runs.push({ C: st.C, sec: Math.round(t), form: f, pct: Math.max(0, shrinkPct()), em: r.answer });
+          st.viewLabel.textContent = `NaCl ${st.C}%: ${FORM_NAME[f]}`;
+          api.goto(6);
+        });
+        return false;
+      }
+    });
+  }
+  const WHY = {
+    nhuoc: 'Chất nguyên sinh vẫn áp sát thành tế bào, thậm chí hơi phình ra: tế bào không co.',
+    dang: 'Chất nguyên sinh vẫn áp sát thành tế bào: tế bào không co.',
+    goc: 'Nhìn kỹ các góc tế bào: màng sinh chất chỉ tách khỏi thành ở các góc.',
+    lom: 'Các cạnh của chất nguyên sinh bị lõm vào phía trong, nhưng vẫn còn vài điểm bám vào thành.',
+    loi: 'Chất nguyên sinh co tròn thành một khối ở giữa, tách hẳn khỏi thành ở mọi phía.'
+  };
+  const EXPLAIN = {
+    nhuoc: 'Nhược trương: nước đi vào, tế bào trương nước, không co.',
+    dang: 'Gần đẳng trương: nước ra vào cân bằng, tế bào giữ nguyên.',
+    goc: 'Co góc: ưu trương nhẹ, màng sinh chất tách khỏi thành ở các góc trước vì ở đó bám yếu hơn.',
+    lom: 'Co lõm: ưu trương trung bình, nước thoát ra nhiều, các mặt bên của màng lõm sâu vào trong.',
+    loi: 'Co lồi: ưu trương mạnh, chất nguyên sinh co cụm thành khối tròn, tách khỏi thành ở mọi phía.'
+  };
 
-  // Sau biểu đồ: so với điều em đã đoán, hỏi vì sao, rồi câu kiểm tra.
+  // Sau biểu đồ: so với điều em đã đoán, hỏi vì sao, rồi câu trong ngân hàng.
   function afterChart(api) {
-    const pred = api.prediction, right = 'Co lại vì nước đi ra';
-    api.card({
-      kicker: '🔁 So với điều em đoán',
-      text: pred ? (pred === right ? `Em đoán "${pred}". Kết quả: đúng như em đoán! 🎯` : `Em đoán "${pred}". Kết quả: trong dung dịch ưu trương, tế bào co nguyên sinh.`) : 'Kết quả: trong dung dịch ưu trương, tế bào co nguyên sinh.',
-      sub: 'Khi nhỏ nước cất vào, tế bào phản co trở lại như cũ.'
-    }, () => api.askAll(QUIZ, () => api.finish(result())));
+    api.wrapUp({
+      right: 'Co lại vì nước đi ra', truth: 'trong dung dịch ưu trương, tế bào co nguyên sinh; nồng độ càng cao co càng mạnh (góc → lõm → lồi).',
+      sub: st.recovered === false ? 'Mẫu co lồi không phản co khi nhỏ nước cất vì tế bào đã bị tổn thương.' : 'Khi nhỏ nước cất vào, tế bào phản co trở lại như cũ.',
+      quiz: QUIZ, bank: 3, result: result()
+    });
   }
   const QUIZ = [
     {
@@ -247,71 +333,39 @@
       options: [
         { t: 'Bên ngoài đậm chất tan hơn nên nước đi ra khỏi tế bào, chất nguyên sinh co lại', ok: true },
         { t: 'Chất tan đi vào làm tế bào nặng và co lại', why: 'Thứ di chuyển qua màng nhiều nhất ở đây là nước. Nước đi từ nơi loãng sang nơi đậm hay ngược lại?' },
-        { t: 'Thành tế bào bị vỡ', why: 'Nếu thành tế bào vỡ thì tế bào có phản co được khi thêm nước cất không?' }
+        { t: 'Thành tế bào bị vỡ', why: 'Thành tế bào vẫn giữ nguyên hình. Chỉ có phần bên trong co lại.' }
       ],
       explain: 'Nước đi từ nơi có nồng độ chất tan thấp sang nơi có nồng độ chất tan cao. Dung dịch ưu trương đậm hơn dịch tế bào nên kéo nước ra.'
     },
     {
-      q: 'Dung dịch nhược trương có nồng độ chất tan … so với dịch tế bào',
-      options: [{ t: 'Thấp hơn', ok: true }, { t: 'Cao hơn', why: '"Nhược" nghĩa là yếu, ít. Dung dịch có ít hay nhiều chất tan?' }, { t: 'Bằng', why: 'Bằng dịch tế bào là dung dịch đẳng trương.' }],
-      explain: 'Nhược trương: ít chất tan hơn nên nước đi vào tế bào, tế bào không co.'
-    },
-    {
-      q: 'Tế bào đã co mà nhỏ nước cất vào lại phản co. Điều đó cho thấy…',
+      q: 'Vì sao khi co nguyên sinh, thành tế bào vẫn giữ nguyên hình dạng?',
       options: [
-        { t: 'Tế bào vẫn còn sống', ok: true },
-        { t: 'Tế bào đã chết', why: 'Tế bào chết thì màng sinh chất không còn điều khiển nước ra vào. Nó có trở lại như cũ được không?' },
-        { t: 'Nước cất rất đậm chất tan', why: 'Nước cất gần như không có chất tan, nó là dung dịch nhược trương.' }
+        { t: 'Thành cellulose cứng, chỉ chất nguyên sinh co lại', ok: true },
+        { t: 'Thành tế bào cũng co theo nhưng chậm hơn', why: 'Nhìn lại vi trường: khung thành tế bào có nhỏ đi không?' },
+        { t: 'Thành tế bào hút nước vào', why: 'Trong dung dịch ưu trương nước đi ra chứ không đi vào.' }
       ],
-      explain: 'Chỉ tế bào sống mới co và phản co nguyên sinh được. Đây cũng là cách kiểm tra tế bào sống hay chết.'
+      explain: 'Thành tế bào bằng cellulose khá cứng nên giữ hình; màng sinh chất và chất nguyên sinh mất nước, tách khỏi thành.'
     }
   ];
 
-  function choose(api, k) {
-    st.cur = k;
-    ['nhuoc', 'dang', 'uu'].forEach(x => { if (x !== k) api.setOn(st.bottles[x], false); });
-    dropperTo(api, st.bottles[k], () => api.goto(5));
-  }
-
-  function absorb(api) {
-    if (st.paper._recover) { // phản co
-      st.paper._recover = false;
-      resetCells(); st.viewLabel.textContent = 'Tế bào phản co nguyên sinh';
-      st.recovered = true;
-      setTimeout(() => { st.paper.style.display = 'none'; api.done(); }, 1600);
-      return;
-    }
-    const pct = setCells(st.cur);
-    st.done[st.cur] = pct;
-    st.viewLabel.textContent = 'Đang quan sát…';
-    setTimeout(() => {
-      st.viewLabel.textContent = `${SOL[st.cur].name}: ${pct}% tế bào co nguyên sinh`;
-      st.paper.style.display = 'none';
-      if (st.cur === 'uu') { document.getElementById('stepText').textContent = 'Tế bào co nguyên sinh rồi!'; st.needRecover = true; api.done(); }
-      else api.done();
-    }, 2200);
-  }
-
-  // Sau bước giấy thấm: nếu vừa nhỏ ưu trương thì sang bước phản co, không thì sang bước ghi kết quả.
-  steps[5].onNext = api => { if (st.needRecover) { st.needRecover = false; api.goto(6); } else api.goto(7); };
-  steps[6].onNext = api => api.goto(7);
-
   function sideTable(api) {
-    let card = api.side.querySelector('.data-card');
-    if (!card) { card = document.createElement('div'); card.className = 'data-card'; api.side.appendChild(card); }
-    const rows = ['nhuoc', 'dang', 'uu'].map(k => `<tr><td>${SOL[k].name}</td><td>${st.done[k] === undefined ? '…' : st.done[k] + '%'}</td></tr>`).join('');
-    card.innerHTML = `<table><tr><th>Dung dịch</th><th>Tế bào co</th></tr>${rows}</table>`;
+    if (!st.tbl || !st.tbl.card.isConnected) st.tbl = api.table(['NaCl', 'Thời gian', 'Dạng co', 'Co rút']);
+    st.tbl.set(st.runs.map(r => [r.C + '%', r.sec + ' s', FORM_NAME[r.form].replace(' (trương nước)', ''), r.pct + '%']));
   }
 
   function result() {
-    const ks = ['nhuoc', 'dang', 'uu'];
+    const rows = st.runs.slice().sort((a, b) => a.C - b.C);
     return {
-      title: 'Co và phản co nguyên sinh', param: 'Loại dung dịch',
-      table: { head: ['Dung dịch', 'Tế bào co'], rows: ks.map(k => [SOL[k].name, (st.done[k] || 0) + '%']).concat([['Nước cất sau ưu trương', st.recovered ? 'Phản co ✓' : '…']]) },
-      chart: { labels: ks.map(k => SOL[k].name), yLabel: '% tế bào co', max: 100, series: [{ name: 'Tế bào co nguyên sinh', color: '#9B4FC4', values: ks.map(k => st.done[k] || 0) }] },
-      conclusion: 'Dung dịch ưu trương → nước đi ra khỏi tế bào → co nguyên sinh; thêm nước cất → nước đi vào → phản co'
+      title: 'Co và phản co nguyên sinh', param: 'Nồng độ NaCl: ' + rows.map(r => r.C + '%').join(', '),
+      table: {
+        head: ['Lần', 'Nồng độ NaCl (%)', 'Thời gian tác động (giây)', 'Dạng co nguyên sinh', 'Em nhận ra', 'Thể tích chất nguyên sinh co rút (%)'],
+        rows: st.runs.map((r, i) => [i + 1, r.C, r.sec, FORM_NAME[r.form], r.em, r.pct]).concat([['Nước cất', 0, '', st.recovered ? 'Phản co ✓' : st.recovered === false ? 'Không phản co (đã co lồi)' : '…', '', '']])
+      },
+      chart: { labels: rows.map(r => `${r.C}% · ${FORM_NAME[r.form].split(' (')[0]}`), yLabel: '% thể tích chất nguyên sinh co rút', max: 100, series: [{ name: 'Mức co rút', color: '#9B4FC4', values: rows.map(r => r.pct) }] },
+      conclusion: 'Trong dung dịch ưu trương nước đi ra khỏi tế bào nên tế bào co nguyên sinh; nồng độ càng cao co càng mạnh: co góc → co lõm → co lồi. Nhỏ nước cất (nhược trương) thì nước đi vào, tế bào phản co (trừ khi đã co lồi và bị tổn thương)',
+      note: 'Chỉ tế bào sống mới co và phản co nguyên sinh được.'
     };
   }
 
-  NL.lab.register('2B', { goal: 'Tế bào thay đổi thế nào khi ở trong dung dịch đậm hơn hoặc loãng hơn dịch tế bào?', build, steps, cleanup() { if (st && st.raf) cancelAnimationFrame(st.raf); } });
+  NL.lab.register('2B', { goal: 'Tế bào thay đổi thế nào khi dung dịch bên ngoài đậm dần lên?', clearSide: true, build, steps, cleanup() { if (st && st.raf) cancelAnimationFrame(st.raf); } });
 })();

@@ -244,3 +244,26 @@ body.film #hud,body.film #teacher,body.film .t-alert{display:none!important}
 .tut-box .btn{align-self:center}
 @media (max-height:500px){.tut-row{font-size:16px}.tagline{font-size:15px}}
 @media (max-height:500px){.login-box{padding:12px 24px;gap:8px}.login-box .big-emoji{display:none}.login-box input{padding:6px 14px;font-size:18px}}
+
+/* Công cụ chung các thí nghiệm */
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg-b{background:#EEF4FA;color:var(--navy);font-weight:800;font-size:15px;padding:6px 12px;border-radius:999px;box-shadow:0 3px 0 #C9D8E6}
+.seg-b.on{background:var(--blue);color:#fff;box-shadow:0 3px 0 var(--blue-d)}
+.num-in{width:86px;font:inherit;font-size:28px;font-weight:800;color:var(--navy);border:2px solid #DCE7F1;border-radius:10px;padding:0 6px;text-align:center}
+.slider-card small{font-size:16px}
+.warn-line{color:var(--red);font-size:14px;min-height:0}
+.warn-line:empty{display:none}
+.lab-chart{background:#fff;border-radius:20px;padding:10px 16px;box-shadow:0 6px 0 rgba(31,78,121,.18);font-family:'Baloo 2';height:100%;box-sizing:border-box}
+.rep-dl{display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.lab-side .data-card{max-height:46vh;overflow:auto}
+@media (max-width:760px){.lab-side{transform:scale(.82);transform-origin:top right}}
+.lugol-scale{display:flex;gap:3px}
+.lugol-scale span{width:20px;height:20px;border-radius:50%;font-size:11px;color:#fff;display:grid;place-items:center;text-shadow:0 1px 1px rgba(0,0,0,.5)}
+.rep-dl .btn,.lab-chart{font-family:'Baloo 2',sans-serif}
+.cond-card{gap:6px;max-width:330px}
+.cond-row{display:flex;flex-direction:column;gap:3px;font-size:14px}
+.cond-row .seg-b{font-size:13px;padding:4px 9px}
+.cond-row input[type=range]{height:22px}
+.slider-card input.num-in{width:84px;height:auto;font-size:24px;padding:0 4px}
+.slider-card .big-num{display:flex;align-items:baseline;gap:6px}
+.lab-side .slider-card{padding:6px 12px;gap:2px}
