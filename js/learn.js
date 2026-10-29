@@ -139,7 +139,17 @@ NL.learn = (function () {
     $('lab').appendChild(box); bindTerms(box);
     box.querySelector('.quiz-next').addEventListener('click', () => { NL.audio.play('click'); box.remove(); cb && cb(); });
   }
+  // Rút n câu ngẫu nhiên trong ngân hàng câu hỏi của một thí nghiệm, đảo thứ tự đáp án.
+  function bank(id, n) {
+    const all = (NL.QUIZ && NL.QUIZ[id]) || [];
+    const pick = all.map(q => [Math.random(), q]).sort((a, b) => a[0] - b[0]).slice(0, n).map(x => x[1]);
+    return pick.map(q => {
+      const opts = q.o.map((t, i) => ({ t, ok: i === q.a })).map(o => [Math.random(), o]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+      opts.forEach(o => { if (!o.ok) o.why = 'Chưa đúng. Em nhớ lại điều vừa quan sát trong thí nghiệm rồi chọn lại nhé'; });
+      return { q: q.q, options: opts, explain: 'Chính xác!' };
+    });
+  }
   function closeAll() { document.querySelectorAll('#lab .quiz').forEach(b => b.remove()); const p = $('termPop'); if (p) p.classList.add('hidden'); }
 
-  return { TERMS, decorate, bindTerms, showTerm, ask, card, closeAll, esc };
+  return { TERMS, decorate, bindTerms, showTerm, ask, card, bank, closeAll, esc };
 })();

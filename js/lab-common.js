@@ -120,6 +120,7 @@ NL.lab = (function () {
   function askAll(list, done) { let k = 0; const nx = () => { if (k >= list.length) { done(); return; } ask(list[k++], nx); }; nx(); }
   const api = {
     say, ask, askAll, card: NL.learn.card,
+    bank(n) { return NL.learn.bank(cur.id, n); },
     get prediction() { return cur.predict; },
     el, g, place, tween, draggable, setOn, tapable, moveHand, restHands,
     get svg() { return layer; },
