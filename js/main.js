@@ -191,10 +191,10 @@
     const e = findRoom(alias[q] || q);
     return e ? e.id : null;
   })();
-  // ?mh=1 … ?mh=10 (hoặc ?mh=M3): vào thẳng phòng Mô hình 3D và mở mô hình đó
+  // ?mh=1 … ?mh=10 (hoặc ?mh=M3, mô hình Hóa ?mh=HM3): vào thẳng phòng Mô hình 3D và mở mô hình đó
   const MH = (() => {
     const q = (params.get('mh') || '').toUpperCase(); if (!q) return null;
-    const m = NL.MODELS.find(x => x.id === q || String(x.no) === q || 'M' + q === x.id);
+    const m = NL.MODELS.find(x => x.id === q || 'M' + q === x.id || (x.floor === 4 && String(x.no) === q));
     return m ? m.id : null;
   })();
   function enterGame() {
@@ -204,7 +204,7 @@
     if (g.unlocked) $('emoSpecial').classList.remove('locked');
     if (isTouch) $('joy').classList.add('on');
     if (TN) { g.tut.elevator = 1; goScene('lab-' + TN, 'default'); $('btnLab').click(); return; }
-    if (MH) { g.tut.elevator = 1; goScene('models', 'default'); openModel(MH); return; }
+    if (MH) { g.tut.elevator = 1; goScene(NL.MODELS.find(m => m.id === MH).floor === 3 ? 'models3' : 'models', 'default'); openModel(MH); return; }
     goScene('outside', 'default');
     if (!g.tutDone) {
       $('tutMove').textContent = isTouch ? 'Kéo cần tròn ở góc trái để đi, hoặc chạm xuống sàn' : 'Đi bằng phím mũi tên hoặc W A S D, hoặc bấm chuột xuống sàn';
@@ -261,7 +261,7 @@
       const e = left[0], d = s.doors[e.id];
       return { x: d.x, y: d.y, text: `Vào phòng ${e.no} · ${e.short}` };
     }
-    if (s.floor > 1 && s.floor < 4 && !s.doors) return { x: 8, y: 0.7, text: 'Tầng này sắp có. Quay lại thang máy nhé' };
+    if (s.floor > 1 && s.floor < 4 && !s.doors && !/^models/.test(g.scene)) return { x: 8, y: 0.7, text: 'Tầng này sắp có. Quay lại thang máy nhé' };
     return null;
   }
   function showGuide() {

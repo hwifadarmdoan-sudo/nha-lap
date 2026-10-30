@@ -335,7 +335,7 @@ window.NL = window.NL || {};
 
   // Tầng môn học có 10 phòng (Sinh tầng 4, Hóa tầng 3): hành lang dài, 5 phòng mỗi bên thang máy.
   function subjectFloor(f) {
-    const sub = NL.SUBJECTS[f], W = 28, exps = NL.EXPERIMENTS.filter(e => e.floor === f), hasModels = f === 4;
+    const sub = NL.SUBJECTS[f], W = 28, exps = NL.EXPERIMENTS.filter(e => e.floor === f), hasModels = !!(NL.MODELS && NL.MODELS.some(m => m.floor === f)), roomId = f === 4 ? 'models' : 'models' + f;
     const doorX = k => k < 5 ? 0.6 + k * 2.45 : 15.6 + (k - 5) * 2.45;
     const s = {
       id: 'f' + f, title: `Tầng ${f} · ${sub.name}`, floor: f, w: W, d: 8, walls: true, subject: sub,
@@ -356,7 +356,7 @@ window.NL = window.NL || {};
       tags: [{ x: 3.3, y: 5.5, label: '🌤 Ban công' }, { x: 13.7, y: 5.6, label: '🌤 Ban công' }, { x: 24.5, y: 5.5, label: '🌤 Ban công' }],
       triggers: [
         { x1: 12.4, y1: 0, x2: 15.0, y2: 1.0, type: 'elevator' },
-        { x1: 0, y1: 1.3, x2: 0.75, y2: 3.5, type: hasModels ? 'goto' : 'locked', to: 'models', spawn: 'default' },
+        { x1: 0, y1: 1.3, x2: 0.75, y2: 3.5, type: hasModels ? 'goto' : 'locked', to: roomId, spawn: 'default' },
         { x1: 0, y1: 4.8, x2: W, y2: 7.6, type: 'balcony' }
       ],
       spawns: { default: { x: 13.7, y: 1.6 }, fromElev: { x: 13.7, y: 1.6 }, fromModels: { x: 1.6, y: 2.4 } },
@@ -405,9 +405,9 @@ window.NL = window.NL || {};
   NL.EXPERIMENTS.filter(e => e.ready).forEach(e => { S['lab-' + e.id] = labScene(e); });
 
   // Phòng Mô hình 3D: 10 bục trưng bày, đi tới bục nào thì xem mô hình đó
-  function modelRoom() {
+  function modelRoom(f) {
     const s = {
-      id: 'models', title: 'Tầng 4 · Phòng Mô hình 3D', floor: 4, w: 14, d: 9, walls: true,
+      id: f === 4 ? 'models' : 'models' + f, title: `Tầng ${f} · Phòng Mô hình 3D`, floor: f, w: 14, d: 9, walls: true,
       floorColor(x, y) { return (x + y) % 2 ? '#EEF4FA' : '#E2ECF5'; },
       deco: [
         { kind: 'board', side: 'N', a: 1, b: 4.4, lines: ['🧊 Phòng Mô hình 3D', 'Đi tới bục để xem'], head: '#2F80C0' },
@@ -419,19 +419,19 @@ window.NL = window.NL || {};
         { kind: 'plant', x: 0.3, y: 7.9, w: 0.8, d: 0.8, solid: true }, { kind: 'plant', x: 12.9, y: 7.9, w: 0.8, d: 0.8, solid: true },
         { kind: 'plant', x: 12.9, y: 0.3, w: 0.8, d: 0.8, solid: true }
       ],
-      triggers: [{ x1: 12.4, y1: 8.4, x2: 14, y2: 9, type: 'goto', to: 'f4', spawn: 'fromModels' }],
+      triggers: [{ x1: 12.4, y1: 8.4, x2: 14, y2: 9, type: 'goto', to: 'f' + f, spawn: 'fromModels' }],
       mats: [{ x: 12, y: 8, w: 2, label: 'Ra hành lang' }],
       spawns: { default: { x: 13, y: 7.4 } },
       guide: { x: 2.3, y: 2.7, text: 'Tới bục mô hình' }
     };
-    NL.MODELS.forEach((m, k) => {
+    NL.MODELS.filter(m => m.floor === f).forEach((m, k) => {
       const row = k < 5 ? 0 : 1, x = 1 + (k % 5) * 2.4, y = row ? 4.9 : 1.2;
       s.objects.push({ kind: 'stand', x, y, w: 1, d: 1, h: 26, icon: m.icon, no: m.no, short: m.short, model: m.id, solid: true });
       s.triggers.push({ x1: x - 0.35, y1: y + 1, x2: x + 1.35, y2: y + 1.8, type: 'model', model: m.id });
     });
     return s;
   }
-  if (NL.MODELS) S.models = modelRoom();
+  if (NL.MODELS) { S.models = modelRoom(4); S.models3 = modelRoom(3); }
   NL.scenes = S;
 
   // ---------- đi lại ----------

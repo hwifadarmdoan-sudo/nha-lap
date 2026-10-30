@@ -1,18 +1,29 @@
-// Khung xem mô hình 3D dùng chung cho 10 mô hình Sinh (phòng Mô hình 3D, tầng 4).
+// Khung xem mô hình 3D dùng chung cho 10 mô hình Sinh (tầng 4) và 10 mô hình Hóa (tầng 3).
 // Mỗi mô hình gọi NL.m3d.register(id, { title, tabs, build(api, tab), data(api), quizKey }).
 // three.js chỉ được tải khi mở mô hình đầu tiên để trò chơi vào nhanh.
 window.NL = window.NL || {};
 NL.MODELS = [
-  { id: 'M1', no: 1, short: 'Tế bào', name: 'Tế bào nhân thực', icon: '🧫' },
-  { id: 'M2', no: 2, short: 'DNA & RNA', name: 'Phân tử DNA và RNA', icon: '🧬' },
-  { id: 'M3', no: 3, short: 'Tim mạch', name: 'Tim và hệ tuần hoàn', icon: '🫀' },
-  { id: 'M4', no: 4, short: 'Neuron', name: 'Neuron và synapse', icon: '⚡' },
-  { id: 'M5', no: 5, short: 'Hô hấp', name: 'Hệ hô hấp và thông khí', icon: '🫁' },
-  { id: 'M6', no: 6, short: 'Hoa', name: 'Hoa lưỡng tính và thụ phấn', icon: '🌺' },
-  { id: 'M7', no: 7, short: 'Tiêu hóa', name: 'Hệ tiêu hóa', icon: '🍽️' },
-  { id: 'M8', no: 8, short: 'Tháp sinh thái', name: 'Tháp sinh thái', icon: '🔺' },
-  { id: 'M9', no: 9, short: 'Mắt & tai', name: 'Mắt và tai người', icon: '👁️' },
-  { id: 'M10', no: 10, short: 'Đột biến NST', name: 'Đột biến cấu trúc NST', icon: '🧶' }
+  { id: 'M1', no: 1, floor: 4, short: 'Tế bào', name: 'Tế bào nhân thực', icon: '🧫' },
+  { id: 'M2', no: 2, floor: 4, short: 'DNA & RNA', name: 'Phân tử DNA và RNA', icon: '🧬' },
+  { id: 'M3', no: 3, floor: 4, short: 'Tim mạch', name: 'Tim và hệ tuần hoàn', icon: '🫀' },
+  { id: 'M4', no: 4, floor: 4, short: 'Neuron', name: 'Neuron và synapse', icon: '⚡' },
+  { id: 'M5', no: 5, floor: 4, short: 'Hô hấp', name: 'Hệ hô hấp và thông khí', icon: '🫁' },
+  { id: 'M6', no: 6, floor: 4, short: 'Hoa', name: 'Hoa lưỡng tính và thụ phấn', icon: '🌺' },
+  { id: 'M7', no: 7, floor: 4, short: 'Tiêu hóa', name: 'Hệ tiêu hóa', icon: '🍽️' },
+  { id: 'M8', no: 8, floor: 4, short: 'Tháp sinh thái', name: 'Tháp sinh thái', icon: '🔺' },
+  { id: 'M9', no: 9, floor: 4, short: 'Mắt & tai', name: 'Mắt và tai người', icon: '👁️' },
+  { id: 'M10', no: 10, floor: 4, short: 'Đột biến NST', name: 'Đột biến cấu trúc NST', icon: '🧶' },
+  // Tầng 3 Hóa: mã HM1–HM10 theo bản đặc tả "Môn Hoá" 30/10
+  { id: 'HM1', no: 1, floor: 3, short: 'Tinh thể', name: 'Mạng tinh thể', icon: '💎' },
+  { id: 'HM2', no: 2, floor: 3, short: 'Hình học phân tử', name: 'Hình học phân tử (VSEPR)', icon: '🔺' },
+  { id: 'HM3', no: 3, floor: 3, short: 'Bảng tuần hoàn', name: 'Bảng tuần hoàn và nguyên tử Bohr', icon: '🧮' },
+  { id: 'HM4', no: 4, floor: 3, short: 'Pin Daniell', name: 'Pin điện hóa Zn – Cu', icon: '🔋' },
+  { id: 'HM5', no: 5, floor: 3, short: 'Orbital', name: 'Orbital nguyên tử', icon: '⚛️' },
+  { id: 'HM6', no: 6, floor: 3, short: 'Hydrocarbon', name: 'Cấu trúc hydrocarbon', icon: '⬡' },
+  { id: 'HM7', no: 7, floor: 3, short: 'Lò cao', name: 'Lò cao luyện gang', icon: '🏭' },
+  { id: 'HM8', no: 8, floor: 3, short: 'Protein & đường', name: 'Protein và carbohydrate', icon: '🍞' },
+  { id: 'HM9', no: 9, floor: 3, short: 'Điện phân', name: 'Bình điện phân', icon: '⚡' },
+  { id: 'HM10', no: 10, floor: 3, short: 'Nhà kính', name: 'Hiệu ứng nhà kính', icon: '🌍' }
 ];
 
 NL.m3d = (function () {
