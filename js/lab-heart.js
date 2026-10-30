@@ -1,10 +1,11 @@
 // Thí nghiệm 2G: nhịp tim, huyết áp và điện tâm đồ khi nghỉ, đi bộ, chạy.
 (function () {
   const ACT = {
-    rest: { t: '🧍 Nghỉ ngơi', met: 1, leg: 0, f: 0, belt: 0 },
-    walk: { t: '🚶 Đi bộ 4 km/h', met: 3.5, leg: 22, f: 1.7, belt: 60 },
-    run: { t: '🏃 Chạy 10 km/h', met: 8, leg: 42, f: 2.8, belt: 160 }
+    rest: { t: '🧍 Nghỉ ngơi', met: 1, leg: 0, f: 0, belt: 0, kmh: 0 },
+    walk: { t: '🚶 Đi bộ 4 km/h', met: 3.5, leg: 22, f: 1.7, belt: 60, kmh: 4 },
+    run: { t: '🏃 Chạy 10 km/h', met: 8, leg: 42, f: 2.8, belt: 160, kmh: 10 }
   };
+  const ORDER = ['rest', 'walk', 'run']; // lần 1 nghỉ, lần 2 đi bộ, lần 3 chạy để thấy rõ sự thay đổi
   const PROF = { normal: { t: 'Bình thường', hr: 72, run: 78, walk: 30 }, athlete: { t: 'Vận động viên', hr: 54, run: 72, walk: 25 } };
   const NEED = 60; // giữ một trạng thái ít nhất 60 giây cho nhịp tim ổn định
   let st;
@@ -40,13 +41,28 @@
   function build(api) {
     const L = api.svg, el = api.el;
     st = { act: 'rest', prof: 'normal', speed: 5, t: 0, held: 0, HR: 72, SBP: 113, DBP: 77, log: [], meas: [], ecgBuf: new Array(300).fill(0), cur: 0, ph: 0, cuffed: false };
-    // máy chạy bộ
-    el('path', { d: 'M40 452 L300 452 L290 424 L60 424 Z', fill: '#4A5A6A' }, L);
-    st.belt = api.g(L, 0, 0);
-    for (let k = 0; k < 12; k++) el('rect', { x: 64 + k * 20, y: 426, width: 8, height: 6, fill: '#6B7B8B' }, st.belt);
-    el('rect', { x: 286, y: 300, width: 10, height: 128, fill: '#6B7B8B' }, L);
-    el('rect', { x: 262, y: 288, width: 60, height: 22, rx: 6, fill: '#334455' }, L);
-    st.man = person(api, 170, 424);
+    // máy chạy bộ kiểu phòng gym: sàn chạy, nắp động cơ, cột, tay vịn, bảng điều khiển
+    el('ellipse', { cx: 180, cy: 458, rx: 160, ry: 9, fill: '#000', opacity: 0.12 }, L);
+    el('line', { x1: 292, y1: 412, x2: 318, y2: 300, stroke: '#7D889B', 'stroke-width': 12, 'stroke-linecap': 'round' }, L);
+    el('rect', { x: 38, y: 422, width: 262, height: 26, rx: 12, fill: '#3B4250' }, L);
+    el('rect', { x: 46, y: 438, width: 246, height: 4, rx: 2, fill: '#5BB4EA' }, L);
+    el('rect', { x: 52, y: 448, width: 18, height: 8, rx: 3, fill: '#2A2F38' }, L);
+    el('rect', { x: 268, y: 448, width: 18, height: 8, rx: 3, fill: '#2A2F38' }, L);
+    el('rect', { x: 50, y: 416, width: 214, height: 10, rx: 5, fill: '#1F242C' }, L);
+    const clip = el('clipPath', { id: 'beltClip' }, L); el('rect', { x: 52, y: 416, width: 210, height: 10, rx: 5 }, clip);
+    const beltWrap = api.g(L, 0, 0); beltWrap.setAttribute('clip-path', 'url(#beltClip)');
+    st.belt = api.g(beltWrap, 0, 0);
+    for (let k = 0; k < 13; k++) el('rect', { x: 52 + k * 20, y: 418, width: 3, height: 6, fill: '#3E4653' }, st.belt);
+    el('rect', { x: 256, y: 398, width: 52, height: 50, rx: 16, fill: '#4A5262' }, L);
+    el('rect', { x: 266, y: 410, width: 32, height: 6, rx: 3, fill: '#5BB4EA', opacity: 0.8 }, L);
+    st.man = person(api, 160, 416);
+    el('line', { x1: 298, y1: 412, x2: 326, y2: 300, stroke: '#9AA5B8', 'stroke-width': 12, 'stroke-linecap': 'round' }, L);
+    el('path', { d: 'M318 312 L222 322', stroke: '#B8C2D0', 'stroke-width': 8, 'stroke-linecap': 'round', fill: 'none' }, L);
+    el('path', { d: 'M262 318 L226 322', stroke: '#2B3240', 'stroke-width': 10, 'stroke-linecap': 'round', fill: 'none' }, L);
+    el('rect', { x: 290, y: 270, width: 84, height: 44, rx: 10, fill: '#2B3240' }, L);
+    el('rect', { x: 298, y: 277, width: 56, height: 24, rx: 5, fill: '#10221A' }, L);
+    el('circle', { cx: 364, cy: 289, r: 5, fill: '#E5534B' }, L);
+    st.kmh = api.text(L, 326, 294, '0 km/h', 13, '#59F28A', 800);
     // màn hình ECG
     el('rect', { x: 360, y: 96, width: 330, height: 180, rx: 14, fill: '#0E1A14', stroke: '#33475B', 'stroke-width': 5 }, L);
     for (let i = 0; i <= 30; i++) el('line', { x1: 375 + i * 10, y1: 110, x2: 375 + i * 10, y2: 262, stroke: i % 5 ? '#123A24' : '#1E5A36', 'stroke-width': 1 }, L);
@@ -83,9 +99,10 @@
       const sw = Math.sin(legT) * a.leg;
       st.legF._extra = ` rotate(${sw})`; st.legB._extra = ` rotate(${-sw})`; st.armF._extra = ` rotate(${-sw * 0.8})`; st.armB._extra = ` rotate(${sw * 0.8})`;
       [st.legF, st.legB, st.armF, st.armB].forEach(e => api.place(e));
-      st.man._y = 424 - Math.abs(Math.sin(legT)) * (a.leg / 6); api.place(st.man);
+      st.man._y = 416 - Math.abs(Math.sin(legT)) * (a.leg / 6); api.place(st.man);
       st.sweat.style.opacity = st.HR > 120 ? 1 : st.HR > 95 ? 0.5 : 0;
       beltX = (beltX - a.belt * dt) % 20; st.belt._x = beltX; api.place(st.belt);
+      st.kmh.textContent = a.kmh + ' km/h';
       // điện tâm đồ quét 4 giây trên màn
       if (st.cuffed) {
         const px = dt * 75;
@@ -126,29 +143,31 @@
       }
     },
     {
-      label: () => `Lần đo ${st.meas.length + 1}/3 · Vận động`, text: 'Chọn mức vận động, đợi nhịp tim ổn định', hint: 'Mỗi lần đo chọn một mức vận động khác nhau',
+      label: () => `Lần đo ${st.meas.length + 1}/3 · ${ACT[ORDER[st.meas.length]].t.split(' ')[1]}`,
+      get text() { return ['Lần 1: bạn đứng yên trên máy. Đợi nhịp tim ổn định rồi đo', 'Lần 2: máy chạy 4 km/h, bạn đi bộ. Đợi ổn định rồi đo', 'Lần 3: máy chạy 10 km/h, bạn chạy. Đợi ổn định rồi đo'][Math.min(2, st.meas.length)]; },
+      hint: 'Nhìn số bpm trên màn hình: tăng dần rồi đứng yên là ổn định',
       enter(api) {
         logTable(api);
+        const want = ORDER[Math.min(2, st.meas.length)];
+        if (st.act !== want) { st.act = want; st.held = 0; }
         if (!st.meas.length && !api.prediction) api.ask({
           predict: true, q: 'Khi chuyển từ nghỉ ngơi sang chạy nhanh, nhịp tim sẽ…?',
           options: [{ t: 'Tăng lên' }, { t: 'Giảm xuống' }, { t: 'Không đổi' }]
         });
-        const card = api.panel(`<div>⏱ Giữ trạng thái</div><div class="big-num"><span id="htHeld">0</span> giây</div><div class="rep-sub" style="font-size:13px" id="htNote"></div>`);
+        const card = api.panel(`<div>${ACT[st.act].t}</div><div>⏱ Giữ trạng thái</div><div class="big-num"><span id="htHeld">0</span> giây</div><div class="rep-sub" style="font-size:13px" id="htNote"></div>`);
         const ready = () => {
-          const dup = st.meas.some(m => m.act === st.act && m.prof === st.prof);
           card.querySelector('#htHeld').textContent = Math.floor(st.held);
-          card.querySelector('#htNote').textContent = dup ? 'Đã đo trạng thái này, chọn mức khác' : st.held < NEED ? 'Đợi đủ 60 giây cho nhịp tim ổn định' : 'Ổn định rồi, đo được!';
-          if (!dup && st.held >= NEED) { if (document.getElementById('btnNext').classList.contains('hidden')) api.done('Đo huyết áp ➜'); } else api.hideNext();
+          card.querySelector('#htNote').textContent = st.held < NEED ? 'Đợi đủ 60 giây cho nhịp tim ổn định' : 'Ổn định rồi, đo được!';
+          if (st.held >= NEED) { if (document.getElementById('btnNext').classList.contains('hidden')) api.done('Đo huyết áp ➜'); } else api.hideNext();
         };
         st.onTick = ready;
-        api.choices({ label: 'Mức vận động', items: Object.keys(ACT).map(k => ({ t: ACT[k].t, v: k })), value: st.act, onPick(v) { if (v !== st.act) { st.act = v; st.held = 0; } } });
-        api.choices({ label: 'Thể trạng', items: Object.keys(PROF).map(k => ({ t: PROF[k].t, v: k })), value: st.prof, onPick(v) { if (v !== st.prof) { st.prof = v; st.held = 0; } } });
+        if (!st.meas.length) api.choices({ label: 'Thể trạng', items: Object.keys(PROF).map(k => ({ t: PROF[k].t, v: k })), value: st.prof, onPick(v) { if (v !== st.prof) { st.prof = v; st.held = 0; } } });
         api.choices({ label: 'Tốc độ thời gian', items: [1, 5, 10].map(n => ({ t: n + '×', v: n })), value: st.speed, onPick(v) { st.speed = v; } });
       },
       onNext(api) { st.onTick = null; api.goto(2); }
     },
     {
-      label: () => `Lần đo ${st.meas.length + 1}/3 · Huyết áp`, text: 'Bóp bóng bơm băng quấn lên khoảng 180 mmHg', hint: 'Bóp bóng nhiều lần, rồi bấm Xả khí. Nghe tiếng đập đầu tiên: bấm Tâm thu. Hết tiếng: bấm Tâm trương',
+      label: () => `Lần đo ${st.meas.length + 1}/3 · Huyết áp`, text: 'Bấm Đo trên máy đo huyết áp', hint: 'Băng quấn tự bơm căng rồi xả dần. Máy ghi tâm thu (số trên) và tâm trương (số dưới)',
       enter(api) { measure(api); }
     },
     {
@@ -156,8 +175,8 @@
       enter(api) {
         logTable(api);
         const need = 3 - st.meas.length;
-        api.say(need > 0 ? `Đã ghi. Đổi mức vận động và đo thêm ${need} lần` : 'Đủ 3 lần! Giờ cho bạn nghỉ và xem tim hồi phục');
-        api.done(need > 0 ? 'Đo lần nữa ➜' : 'Xem hồi phục ➜');
+        api.say(need > 0 ? `Đã ghi. Tiếp theo: ${need === 2 ? 'cho bạn đi bộ 4 km/h' : 'cho bạn chạy 10 km/h'}` : 'Đủ 3 lần! Giờ cho bạn nghỉ và xem tim hồi phục');
+        api.done(need > 0 ? (need === 2 ? 'Bật máy chạy 4 km/h ➜' : 'Tăng lên 10 km/h ➜') : 'Xem hồi phục ➜');
       },
       onNext(api) { api.goto(st.meas.length < 3 ? 1 : 4); }
     },
@@ -190,46 +209,37 @@
     }
   ];
 
-  // đo huyết áp bằng tay: bơm, xả khí, nghe tiếng Korotkoff
+  // đo huyết áp bằng máy tự động: băng quấn bơm lên 180 mmHg rồi xả dần
   function measure(api) {
     logTable(api);
     st.measuring = true;
-    const tSBP = Math.round(st.SBP * (0.98 + Math.random() * 0.04)), tDBP = Math.round(st.DBP * (0.98 + Math.random() * 0.04)), hr = Math.round(st.HR);
-    let P = 0, phase = 'pump', sys = null, dia = null, warned = false;
+    const tSBP = Math.round(st.SBP * (0.99 + Math.random() * 0.02)), tDBP = Math.round(st.DBP * (0.99 + Math.random() * 0.02)), hr = Math.round(st.HR);
+    let P = 0, phase = 'idle', gotS = false;
     const card = api.panel(`<div>Áp suất băng quấn</div><div class="big-num"><span id="htP">0</span> <small>mmHg</small></div>
-      <button class="btn small pop hidden" id="htRel">Xả khí 💨</button><button class="btn small pop" id="htPump">Bóp bóng 💪</button>
-      <button class="btn small pop hidden" id="htSys">Tâm thu (tiếng đầu tiên)</button><button class="btn small pop hidden" id="htDia">Tâm trương (hết tiếng)</button><div class="warn-line" id="htW"></div>`);
+      <button class="btn small pop" id="htGo">Đo ▶</button><div class="rep-sub" style="font-size:13px" id="htS"></div>`);
     const $c = s => card.querySelector(s);
     const show = () => { $c('#htP').textContent = Math.round(P); st.pTxt.textContent = `Áp suất ${Math.round(P)} mmHg`; st.cuffOn.setAttribute('width', 18 + Math.min(10, P / 20)); st.cuffOn.setAttribute('x', -9 - Math.min(5, P / 40)); };
-    $c('#htPump').onclick = () => {
-      P += 30; NL.audio.play('pop'); show();
-      if (P >= 150) $c('#htRel').classList.remove('hidden');
-      if (P > 220 && !warned) { warned = true; api.card({ kicker: '⚠️ Cảnh báo an toàn', text: 'Bơm áp suất quá cao gây chèn ép cơ và động mạch cánh tay, làm người đo bị đau!', btn: 'Xả bớt ➜' }); P = 200; show(); }
-    };
-    $c('#htRel').onclick = () => {
-      phase = 'release';
-      $c('#htW').textContent = P < tSBP + 10 ? 'Bơm chưa đủ cao nên có thể nghe tiếng đập ngay từ đầu. Lần sau bơm cao hơn nhé' : '';
-      ['#htRel', '#htPump'].forEach(s => $c(s).classList.add('hidden'));
-      $c('#htSys').classList.remove('hidden'); $c('#htDia').classList.remove('hidden');
-      api.say('Đang xả khí… Lắng nghe tiếng đập (Korotkoff)');
-      let beat = 0;
+    $c('#htGo').onclick = () => {
+      if (phase !== 'idle') return;
+      phase = 'pump'; $c('#htGo').classList.add('hidden'); st.bpTxt.textContent = '--- / ---';
+      $c('#htS').textContent = 'Đang bơm căng băng quấn…'; NL.audio.play('click');
       const lp = api.loop(dt => {
-        P = Math.max(0, P - dt * 9); show();
-        beat += dt * hr / 60;
-        if (beat >= 1) { beat -= 1; if (P <= tSBP && P >= tDBP) { NL.audio.play('tick'); st.man.style.filter = 'drop-shadow(0 0 6px #F2C94C)'; setTimeout(() => { st.man.style.filter = ''; }, 120); } }
-        if (P <= 40) { lp.stop(); finish(); }
+        if (phase === 'pump') { P = Math.min(180, P + dt * 70); if (P >= 180) { phase = 'release'; $c('#htS').textContent = 'Đang xả khí, máy nghe mạch đập…'; } }
+        else if (phase === 'release') {
+          P -= dt * 14;
+          if (!gotS && P <= tSBP) { gotS = true; NL.audio.play('tick'); $c('#htS').textContent = `Mạch bắt đầu đập: tâm thu ${tSBP}`; st.bpTxt.textContent = `${tSBP} / ---`; }
+          if (P <= tDBP) { lp.stop(); finish(); return; }
+        }
+        show();
       });
-      st.relLoop = lp;
     };
-    $c('#htSys').onclick = () => { sys = Math.round(P); $c('#htSys').disabled = true; $c('#htSys').textContent = `Tâm thu: ${sys}`; NL.audio.play('click'); };
-    $c('#htDia').onclick = () => { if (sys === null) return; dia = Math.round(P); $c('#htDia').disabled = true; $c('#htDia').textContent = `Tâm trương: ${dia}`; NL.audio.play('click'); if (st.relLoop) st.relLoop.stop(); finish(); };
     const finish = () => {
-      if (phase === 'done') return; phase = 'done';
-      st.measuring = false; P = 0; show(); card.remove();
-      st.bpTxt.textContent = `${tSBP} / ${tDBP}`;
-      const okS = sys !== null && Math.abs(sys - tSBP) <= 8, okD = dia !== null && Math.abs(dia - tDBP) <= 8;
-      st.meas.push({ act: st.act, prof: st.prof, hr, sbp: tSBP, dbp: tDBP, emS: sys, emD: dia, min: +(st.held / 60).toFixed(1) });
-      NL.game.toast(okS && okD ? `Chính xác! Huyết áp ${tSBP}/${tDBP} mmHg` : `Máy đo: ${tSBP}/${tDBP} mmHg. Em ghi: ${sys ?? '–'}/${dia ?? '–'}`);
+      phase = 'done'; st.measuring = false; P = 0; show(); card.remove();
+      st.bpTxt.textContent = `${tSBP} / ${tDBP}`; st.pTxt.textContent = `Mạch ${hr} lần/phút`;
+      st.meas.push({ act: st.act, prof: st.prof, hr, sbp: tSBP, dbp: tDBP, min: +(st.held / 60).toFixed(1) });
+      const r = st.meas[0], d = (a, b) => (a - b >= 0 ? '+' : '') + (a - b);
+      NL.audio.play('ting');
+      NL.game.toast(st.meas.length === 1 ? `Lúc nghỉ: huyết áp ${tSBP}/${tDBP} mmHg, nhịp tim ${hr}` : `So với lúc nghỉ: nhịp tim ${d(hr, r.hr)}, tâm thu ${d(tSBP, r.sbp)}, tâm trương ${d(tDBP, r.dbp)}`);
       api.goto(3);
     };
   }
@@ -239,9 +249,9 @@
     return {
       title: 'Nhịp tim và huyết áp khi vận động', param: st.meas.map(m => ACT[m.act].t.split(' ').slice(1, 3).join(' ')).join(', ') + ' · ' + PROF[st.prof].t,
       table: {
-        head: ['Lần', 'Trạng thái', 'Luyện tập', 'Thời gian (phút)', 'HR (bpm)', 'SBP (mmHg)', 'DBP (mmHg)', 'R−R (s)', 'Em đo'],
-        rows: st.meas.map((m, i) => [i + 1, ACT[m.act].t.split(' ').slice(1, 3).join(' '), PROF[m.prof].t, m.min, m.hr, m.sbp, m.dbp, (60 / m.hr).toFixed(2), `${m.emS ?? '–'}/${m.emD ?? '–'}`])
-          .concat(st.rec3 ? [['', 'Hồi phục 3 phút', '', 3, `${st.peak} → ${st.rec3}`, '', '', '', '']] : [])
+        head: ['Lần', 'Trạng thái', 'Luyện tập', 'Thời gian (phút)', 'HR (bpm)', 'SBP (mmHg)', 'DBP (mmHg)', 'R−R (s)'],
+        rows: st.meas.map((m, i) => [i + 1, ACT[m.act].t.split(' ').slice(1, 3).join(' '), PROF[m.prof].t, m.min, m.hr, m.sbp, m.dbp, (60 / m.hr).toFixed(2)])
+          .concat(st.rec3 ? [['', 'Hồi phục 3 phút', '', 3, `${st.peak} → ${st.rec3}`, '', '', '']] : [])
       },
       chart: {
         type: 'line', xLabel: 'Thời gian (phút)', yLabel: 'bpm · mmHg', yMin: 40, yMax: 200,
