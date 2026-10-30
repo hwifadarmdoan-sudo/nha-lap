@@ -46,7 +46,39 @@ NL.lab = (function () {
       const tx = h._tx !== undefined ? h._tx : h._rest.x, ty = (h._ty !== undefined ? h._ty : h._rest.y) + Math.sin(t * 2 + k) * 3;
       h._x += (tx - h._x) * 0.25; h._y += (ty - h._y) * 0.25; place(h);
     });
+    ghostTick();
     rafId = requestAnimationFrame(animHands);
+  }
+  // Đứng yên vài giây mà chưa làm gì: hiện bàn tay mờ làm mẫu (kéo từ đồ vật tới đích, hoặc chạm vào đồ vật)
+  let lastAct = 0, ghost = null, ghostRing = null, ghostHinted = false;
+  const IDLE_GHOST = 6;
+  function poke() { lastAct = performance.now(); hideGhost(); }
+  function hideGhost() { if (ghost) ghost.style.display = 'none'; if (ghostRing) ghostRing.remove(); ghostRing = null; }
+  function ghostTick() {
+    const it = active.find(a => a._on && a.isConnected);
+    const idle = (performance.now() - lastAct) / 1000;
+    if (!it || idle < IDLE_GHOST || picked || document.querySelector('#lab .quiz') || NL.learn.busy) { hideGhost(); return; }
+    if (!ghost || !ghost.isConnected) {
+      ghost = el('text', { 'font-size': 46, 'text-anchor': 'middle', opacity: .85, 'pointer-events': 'none' }, svg); ghost.textContent = '👆';
+    }
+    svg.appendChild(ghost); ghost.style.display = '';
+    if (!ghostHinted) { ghostHinted = true; showHint(); }
+    const k = ((idle - IDLE_GHOST) % 2.2) / 2.2, tg = it._mode === 'drag' && it._dragOpt && it._dragOpt.target;
+    const p0 = abs(it);
+    let x = p0.x, y = p0.y;
+    if (tg) {
+      if (!ghostRing) ghostRing = el('circle', { cx: tg.x, cy: tg.y, r: Math.min(tg.r || 90, 60), class: 'drop-ring' }, svg);
+      const e = k < 0.15 ? 0 : k > 0.8 ? 1 : (k - 0.15) / 0.65, ee = e * e * (3 - 2 * e);
+      x = p0.x + (tg.x - p0.x) * ee; y = p0.y + (tg.y - p0.y) * ee;
+      ghost.setAttribute('opacity', k > 0.9 ? (1 - k) * 8 : .85);
+    } else { y += Math.sin(k * Math.PI * 4) * 8; ghost.setAttribute('opacity', .85); }
+    ghost.setAttribute('x', x + 6); ghost.setAttribute('y', y + 44);
+  }
+  // toạ độ đồ vật trên toàn khung svg (cộng dồn translate của các nhóm cha)
+  function abs(e) {
+    let x = 0, y = 0, n = e;
+    while (n && n !== svg) { if (n._x !== undefined) { x += n._x; y += n._y; } n = n.parentNode; }
+    return { x, y };
   }
 
   // Kéo thả. Chỉ đồ vật đang sáng mới kéo được.
@@ -126,7 +158,7 @@ NL.lab = (function () {
   // ---------- điều khiển bước ----------
   function setStep() {
     const st = cur.steps[stepIdx];
-    unpick(); active.forEach(a => setOn(a, false)); active = [];
+    unpick(); poke(); unpick(); active.forEach(a => setOn(a, false)); active = [];
     if (cur.mod.clearSide) $('labSide').innerHTML = '';
     $('stepNo').textContent = st.label ? (typeof st.label === 'function' ? st.label() : st.label) : `Bước ${stepIdx + 1}/${cur.steps.length}`;
     say(st.text);
@@ -213,6 +245,7 @@ NL.lab = (function () {
     const go = () => askAll((o.quiz || []).concat(NL.learn.bank(cur.id, o.bank === undefined ? 4 : o.bank)), () => api.finish(o.result));
     if (!o.right) { go(); return; }
     const okPred = pred && (Array.isArray(o.right) ? o.right.includes(pred) : pred === o.right);
+    if (pred && o.result) o.result.predOk = !!okPred;
     api.card({
       kicker: '🔁 So với điều em đoán',
       text: pred ? `Em đoán "${pred}". ${okPred ? 'Đúng như em đoán! 🎯' : 'Kết quả đo: ' + o.truth}` : 'Kết quả đo: ' + o.truth,
@@ -258,6 +291,7 @@ NL.lab = (function () {
     const stage = $('labStage'); stage.innerHTML = ''; $('labSide').innerHTML = '';
     svg = el('svg', { viewBox: '0 0 1000 560', preserveAspectRatio: 'xMidYMid meet' }, stage);
     svg.addEventListener('pointerdown', tapPlace); unpick();
+    $('lab').addEventListener('pointerdown', poke, true); poke(); ghostHinted = false; ghost = null;
     // mặt bàn
     el('rect', { x: -400, y: 330, width: 1800, height: 400, fill: '#E9DCC0' }, svg);
     el('rect', { x: -400, y: 322, width: 1800, height: 14, fill: '#F7EEDB' }, svg);
@@ -267,7 +301,7 @@ NL.lab = (function () {
     buildHands(NL.game.look.coat === '#FFFFFF' ? '#F4F8FB' : NL.game.look.coat);
     cancelAnimationFrame(rafId); animHands();
     stepIdx = 0; setStep();
-    if (mod.goal) { const ex = NL.EXPERIMENTS.find(x => x.id === id); NL.learn.card({ kicker: '🔎 Mình đang tìm hiểu', text: mod.goal, sub: ex && ex.grade ? '📘 ' + ex.grade : '', btn: 'Bắt đầu ➜' }); }
+    if (mod.goal) { const ex = NL.EXPERIMENTS.find(x => x.id === id); NL.learn.card({ kicker: '🔎 Mình đang tìm hiểu', lead: ex && ex.hook, text: mod.goal, sub: ex && ex.grade ? '📘 ' + ex.grade : '', btn: 'Bắt đầu ➜' }); }
     return true;
   }
   function close() {

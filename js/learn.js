@@ -66,6 +66,58 @@ NL.learn = (function () {
       text: 'Kim có đầu dẹt và nhọn như mũi giáo, dùng để bóc lớp biểu bì mỏng của lá.',
       pic: P('<rect x="10" y="36" width="60" height="8" rx="4" fill="#C99A6B"/><path d="M70 34 L110 40 L70 46Z" fill="#9AA9B7"/>')
     },
+    thangchuan: {
+      words: ['thang chuẩn'], name: 'Thang chuẩn (thang DNA)',
+      text: 'Hỗn hợp các đoạn DNA đã biết trước kích thước. Chạy cạnh mẫu để so, giống cây thước đo chiều dài DNA.', pic: ''
+    },
+    gieng: {
+      words: ['giếng'], name: 'Giếng',
+      text: 'Lỗ nhỏ đúc sẵn ở đầu bản gel, nơi bơm mẫu DNA vào. Giếng L dành cho thang chuẩn.', pic: ''
+    },
+    bp: {
+      words: ['bp', 'cặp base'], name: 'bp (cặp base)',
+      text: 'Đơn vị đo chiều dài DNA: 1 bp là một cặp nucleotide bắt cặp với nhau. Đoạn 1000 bp dài gấp 10 lần đoạn 100 bp.', pic: ''
+    },
+    pipette: {
+      words: ['pipette'], name: 'Pipette',
+      text: 'Ống hút nhỏ để lấy và bơm một lượng dung dịch rất ít, cỡ vài giọt.', pic: ''
+    },
+    diendi: {
+      words: ['điện di'], name: 'Điện di',
+      text: 'Dùng dòng điện kéo DNA chạy qua bản gel. Đoạn ngắn luồn qua lỗ gel nhanh nên đi xa hơn đoạn dài.', pic: ''
+    },
+    enzyme: {
+      words: ['enzyme'], name: 'Enzyme',
+      text: 'Chất xúc tác sinh học (thường là protein) giúp phản ứng trong cơ thể xảy ra nhanh hơn rất nhiều.', pic: ''
+    },
+    amylase: {
+      words: ['amylase'], name: 'Amylase',
+      text: 'Enzyme có trong nước bọt, cắt tinh bột thành đường. Vì thế nhai cơm lâu thấy ngọt.', pic: ''
+    },
+    lugol: {
+      words: ['lugol'], name: 'Thuốc thử Lugol',
+      text: 'Dung dịch iodine. Gặp tinh bột thì chuyển màu xanh tím, hết tinh bột thì giữ màu vàng nâu.', pic: ''
+    },
+    allele: {
+      words: ['allele', 'alen'], name: 'Allele (alen)',
+      text: 'Các phiên bản khác nhau của cùng một gene, ví dụ A và a.', pic: ''
+    },
+    tamthu: {
+      words: ['tâm thu'], name: 'Huyết áp tâm thu',
+      text: 'Số trên của huyết áp: áp lực máu khi tim co bóp đẩy máu đi.', pic: ''
+    },
+    tamtruong: {
+      words: ['tâm trương'], name: 'Huyết áp tâm trương',
+      text: 'Số dưới của huyết áp: áp lực máu khi tim giãn ra nghỉ giữa hai nhịp.', pic: ''
+    },
+    kytg: {
+      words: ['kỳ trung gian'], name: 'Kỳ trung gian',
+      text: 'Giai đoạn tế bào lớn lên và nhân đôi DNA, trước khi bước vào nguyên phân. Đây là phần dài nhất của chu kỳ tế bào.', pic: ''
+    },
+    nguyenphan: {
+      words: ['nguyên phân'], name: 'Nguyên phân',
+      text: 'Cách tế bào chia một thành hai tế bào con giống hệt nhau, gồm kỳ đầu, giữa, sau, cuối.', pic: ''
+    },
     giaytham: {
       words: ['giấy thấm'], name: 'Giấy thấm',
       text: 'Đặt ở mép bên kia lamen để hút nước, kéo dung dịch vừa nhỏ chảy qua mẫu vật.',
@@ -80,7 +132,7 @@ NL.learn = (function () {
     let html = esc(text);
     const marks = [];
     ORDER.forEach(([w, k]) => {
-      const re = new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+      const re = new RegExp('(?<![\\p{L}\\d])' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![\\p{L}\\d])', 'giu');
       html = html.replace(re, m => { marks.push(`<button class="term" data-term="${k}">${m}</button>`); return `\u0001${marks.length - 1}\u0002`; });
     });
     return html.replace(/\u0001(\d+)\u0002/g, (_, n) => marks[n]);
@@ -93,14 +145,14 @@ NL.learn = (function () {
     NL.audio.play('pop');
     let pop = $('termPop');
     if (!pop) { pop = document.createElement('div'); pop.id = 'termPop'; pop.className = 'term-pop'; document.body.appendChild(pop); pop.addEventListener('click', () => pop.classList.add('hidden')); }
-    pop.innerHTML = `<div class="term-box">${t.pic}<div><b>${t.name}</b><p>${t.text}</p></div><span class="term-x">✕</span></div>`;
+    pop.innerHTML = `<div class="term-box">${t.pic || ''}<div><b>${t.name}</b><p>${t.text}</p></div><span class="term-x">✕</span></div>`;
     pop.classList.remove('hidden');
   }
 
   // Một câu hỏi trắc nghiệm hiện đè lên bàn thí nghiệm.
   // opt: { q, options: [{ t, ok, why }], predict, explain, kicker } ; cb({ chosen, firstTry })
   function ask(opt, cb) {
-    const box = document.createElement('div'); box.className = 'quiz';
+    const box = document.createElement('div'); box.className = 'quiz' + (opt.dock ? ' dock' : '');
     const kick = opt.kicker || (opt.predict ? '🤔 Em đoán xem' : '❓ Câu hỏi');
     box.innerHTML = `<div class="quiz-card"><div class="quiz-kick">${kick}</div><div class="quiz-q">${decorate(opt.q)}</div>
       <div class="quiz-opts">${opt.options.map((o, i) => `<button class="quiz-opt pop" data-i="${i}">${esc(o.t)}</button>`).join('')}</div>
@@ -114,7 +166,7 @@ NL.learn = (function () {
       if (firstChoice === null) firstChoice = i;
       if (opt.predict) {
         box.querySelectorAll('.quiz-opt').forEach(x => { x.disabled = true; x.classList.toggle('picked', x === b); });
-        fb.innerHTML = '📝 Đã ghi lại dự đoán của em. Làm xong mình so với kết quả nhé!'; fb.className = 'quiz-fb ok';
+        fb.innerHTML = '📝 Đã ghi lại dự đoán của em. Làm xong mình so với kết quả nhé!'; fb.className = 'quiz-fb note';
         NL.audio.play('pop'); next.classList.remove('hidden'); return;
       }
       if (!o.ok) {
@@ -135,7 +187,7 @@ NL.learn = (function () {
   // Một thẻ thông tin có một nút (mở đầu thí nghiệm, so sánh với dự đoán).
   function card(opt, cb) {
     const box = document.createElement('div'); box.className = 'quiz';
-    box.innerHTML = `<div class="quiz-card"><div class="quiz-kick">${opt.kicker}</div><div class="quiz-q">${decorate(opt.text)}</div>${opt.sub ? `<div class="quiz-sub">${decorate(opt.sub)}</div>` : ''}<button class="btn big pop quiz-next">${opt.btn || 'Tiếp ➜'}</button></div>`;
+    box.innerHTML = `<div class="quiz-card"><div class="quiz-kick">${opt.kicker}</div>${opt.lead ? `<div class="quiz-lead">${decorate(opt.lead)}</div>` : ''}<div class="quiz-q">${decorate(opt.text)}</div>${opt.sub ? `<div class="quiz-sub">${decorate(opt.sub)}</div>` : ''}<button class="btn big pop quiz-next">${opt.btn || 'Tiếp ➜'}</button></div>`;
     (opt.parent || $('lab')).appendChild(box); bindTerms(box);
     box.querySelector('.quiz-next').addEventListener('click', () => { NL.audio.play('click'); box.remove(); cb && cb(); });
   }
@@ -145,8 +197,8 @@ NL.learn = (function () {
     const pick = all.map(q => [Math.random(), q]).sort((a, b) => a[0] - b[0]).slice(0, n).map(x => x[1]);
     return pick.map(q => {
       const opts = q.o.map((t, i) => ({ t, ok: i === q.a })).map(o => [Math.random(), o]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
-      opts.forEach(o => { if (!o.ok) o.why = 'Chưa đúng. Em nhớ lại điều vừa quan sát trong thí nghiệm rồi chọn lại nhé'; });
-      return { q: q.q, options: opts, explain: 'Chính xác!' };
+      opts.forEach(o => { if (!o.ok) o.why = q.h ? 'Chưa đúng. ' + q.h : 'Chưa đúng. Em nhớ lại điều vừa quan sát trong thí nghiệm rồi chọn lại nhé'; });
+      return { q: q.q, options: opts, explain: q.e ? 'Chính xác! ' + q.e : 'Chính xác!' };
     });
   }
   function closeAll() { document.querySelectorAll('#lab .quiz').forEach(b => b.remove()); const p = $('termPop'); if (p) p.classList.add('hidden'); }

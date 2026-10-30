@@ -439,7 +439,7 @@ NL.w3 = (function () {
         lines.forEach((ln, k) => {
           const head = k === 0 && lines.length > 1, y = Hh / 2 + (k - (lines.length - 1) / 2) * 66;
           if (head) { x.fillStyle = w.head || '#2F80C0'; x.beginPath(); x.roundRect ? x.roundRect(40, y - 30, W - 80, 60, 30) : x.rect(40, y - 30, W - 80, 60); x.fill(); }
-          x.fillStyle = head ? '#fff' : '#1F4E79'; x.font = `800 ${head ? 40 : 36}px 'Baloo 2', sans-serif`; x.fillText(ln, W / 2, y + 3);
+          x.fillStyle = head ? '#fff' : '#1F4E79'; let fs = head ? 40 : 36; do { x.font = `800 ${fs}px 'Baloo 2', sans-serif`; fs -= 2; } while (x.measureText(ln).width > W - (head ? 100 : 60) && fs > 16); x.fillText(ln, W / 2, y + 3);
         });
       });
       const bm = new T.MeshStandardMaterial({ map: tex, roughness: 0.6 });

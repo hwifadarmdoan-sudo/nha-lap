@@ -443,3 +443,21 @@ canvas#world3d{position:fixed;inset:0;width:100%;height:100%;display:block}
 .tres-scroll th,.tres-scroll td{border-bottom:1px solid #E1EDF6;padding:4px 8px;text-align:center;white-space:nowrap}
 .tres-scroll td:first-child,.tres-scroll th:first-child{text-align:left;position:sticky;left:0;background:#fff}
 .tres-miss{font-size:14px}.tres-miss ol{margin:6px 0 0 18px;padding:0}
+.quiz-lead{font-weight:700;font-size:17px;color:#2F6E9E;background:#EEF6FD;border-radius:14px;padding:8px 12px}
+/* câu hỏi cần nhìn bàn thí nghiệm: nép sang phải, không phủ tối */
+.quiz.dock{background:none;justify-content:flex-end;align-items:center;pointer-events:none}
+.quiz.dock .quiz-card{width:min(340px,38vw);pointer-events:auto}
+.quiz.dock .quiz-q{font-size:18px}.quiz.dock .quiz-opt{font-size:15px}
+/* lúc đoán: màu trung tính, chưa phải khen đúng */
+.quiz-opt.picked{border-color:#5BB4EA;background:#EEF6FD}
+.quiz-fb.note{background:#EEF6FD;color:#2F6E9E}
+.icon-btn.pulse{animation:pulse 1.2s infinite;box-shadow:0 0 0 4px #FFD54A,0 4px 0 #BFDDF2}
+.rot-pc{font-size:16px;font-weight:600;color:#4A6A8A;margin-top:-10px}
+@media (pointer:coarse){.rot-pc{display:none}}
+/* khung xem trước nhân vật có nền riêng, mây không lướt qua người */
+#lookPreview,#backPreview{background:radial-gradient(circle at 50% 45%,#FFFFFF 0,#E8F4FC 70%);border-radius:24px}
+/* điện thoại ngang thấp: thu gọn hàng cảm xúc, chữ dẫn đường nhỏ lại */
+@media (max-height:500px) and (pointer:coarse){
+  .hud-br .emo:nth-child(n+4){display:none}
+  .guide{font-size:13px!important;padding:4px 12px!important;top:auto!important;bottom:62px!important}
+}

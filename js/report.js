@@ -63,15 +63,17 @@ NL.lineSVG = function (spec, W, H) {
   const xMax = spec.xMax || nice(Math.max(...pts.map(p => p[0]), 1)) * 4, xMin = spec.xMin || 0;
   const yMax = spec.yMax || nice(Math.max(...pts.map(p => p[1]), 0.0001) * 1.1) * 4, yMin = spec.yMin || 0;
   const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
-  const X = x => pad.l + (x - xMin) / (xMax - xMin) * iw, Y = y => pad.t + ih - (y - yMin) / (yMax - yMin) * ih;
+  const L = spec.xLog, lg = Math.log10;
+  const X = L ? x => pad.l + (lg(x) - lg(L[0])) / (lg(L[1]) - lg(L[0])) * iw : x => pad.l + (x - xMin) / (xMax - xMin) * iw, Y = y => pad.t + ih - (y - yMin) / (yMax - yMin) * ih;
   const fmt = v => Number.isInteger(+v.toFixed(6)) ? Math.round(v) : +v.toFixed(2);
   let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-height:${H}px;font-family:'Baloo 2',sans-serif">`;
   for (let k = 0; k <= 4; k++) {
     const v = yMin + (yMax - yMin) * k / 4, y = Y(v), xv = xMin + (xMax - xMin) * k / 4;
     s += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y}" y2="${y}" stroke="#E3ECF4"/>`;
     s += `<text x="${pad.l - 8}" y="${y + 4}" font-size="12" fill="#6C88A3" text-anchor="end">${fmt(v)}</text>`;
-    s += `<text x="${X(xv)}" y="${H - pad.b + 18}" font-size="12" fill="#6C88A3" text-anchor="middle">${fmt(xv)}</text>`;
+    if (!L) s += `<text x="${X(xv)}" y="${H - pad.b + 18}" font-size="12" fill="#6C88A3" text-anchor="middle">${fmt(xv)}</text>`;
   }
+  if (L) (spec.xTicks || []).forEach(v => { s += `<line x1="${X(v)}" x2="${X(v)}" y1="${pad.t}" y2="${pad.t + ih}" stroke="#EEF3F8"/><text x="${X(v)}" y="${H - pad.b + 18}" font-size="12" fill="#6C88A3" text-anchor="middle">${v}</text>`; });
   (spec.marks || []).forEach(m => { s += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${Y(m.y)}" y2="${Y(m.y)}" stroke="${m.color || '#E5534B'}" stroke-dasharray="6 5" stroke-width="2"/><text x="${W - pad.r}" y="${Y(m.y) - 5}" font-size="12" font-weight="800" fill="${m.color || '#E5534B'}" text-anchor="end">${m.label || ''}</text>`; });
   spec.series.forEach(se => {
     if (!se.points.length) return;
@@ -187,10 +189,15 @@ NL.report = (function () {
     p0.innerHTML = `<div class="rep-head"><div id="repAv"></div><div><h3>Báo cáo của ${esc(g.name)}</h3><div class="rep-sub">Nhà Láp · Đã hoàn thành ${done}/${ready.length} thí nghiệm</div><div class="rep-sub">${new Date().toLocaleDateString('vi-VN')}</div></div></div>
       <ul class="rep-list">${ready.map(e => {
         const r = g.results[e.id], ord = g.order.indexOf(e.id);
-        return `<li><span class="st ${r ? 'ok' : ''}">${r ? '✓' : ''}</span>Tầng ${e.floor} · ${e.name}${r ? ` <span class="rep-sub">(lần ${ord + 1})</span>` : ''}</li>`;
+        return `<li class="rep-go" data-go="${e.id}"><span class="st ${r ? 'ok' : ''}">${r ? '✓' : ''}</span>Phòng ${e.no} · ${e.name}${r && r.stars ? ' ' + '⭐'.repeat(r.stars) : ''}${r ? ` <span class="rep-sub">(lần ${ord + 1})</span>` : ''} <span class="rep-arrow">${r ? 'Làm lại' : 'Đến phòng'} ➜</span></li>`;
       }).join('')}<li class="rep-sub">Tầng 2 Lý, tầng 3 Hóa: sắp có</li></ul>`;
     box.appendChild(p0);
     p0.querySelector('#repAv').appendChild(avatar(g.look));
+    p0.querySelectorAll('[data-go]').forEach(li => li.onclick = () => {
+      if (g.teacher || !NL.helpers.jumpTo) return;
+      NL.audio.play('click'); $('report').classList.add('hidden'); NL.lab.close();
+      NL.helpers.jumpTo(NL.EXPERIMENTS.find(e => e.id === li.dataset.go));
+    });
     g.order.forEach(id => {
       const r = g.results[id]; if (!r) return;
       const p = document.createElement('div'); p.className = 'rep-page';

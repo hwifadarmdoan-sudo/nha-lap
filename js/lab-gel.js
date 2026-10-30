@@ -6,7 +6,7 @@
   const DYE = '#3A62D9';
   let st;
 
-  // quãng đường tương đối: tỉ lệ nghịch với log kích thước; đoạn 300 bp đi cùng vạch màu nạp mẫu
+  // quãng đường tương đối: giảm tuyến tính theo log kích thước; đoạn 300 bp đi cùng vạch màu nạp mẫu
   const mob = bp => (Math.log10(30000) - Math.log10(bp)) / (Math.log10(30000) - Math.log10(300));
   const laneX = k => X0 + k * DX;
   const yOf = (bp, prog) => WELL_Y + 6 + mob(bp) * prog * (GEL_END - WELL_Y - 6);
@@ -85,11 +85,12 @@
 
   function loadWell(api, k, then) {
     const t = st.tubes[k], w = st.wells[k];
+    st.tubes.forEach(x => x.classList.remove('glow')); t.classList.add('glow');
     w.setAttribute('stroke', '#F2C94C'); w.setAttribute('stroke-width', 3);
     api.setOn(st.pip, true);
     api.draggable(st.pip, {
       target: { x: t._x, y: t._y - 40, r: 60, sx: t._x, sy: t._y - 30 }, onDrop: () => {
-        st.pip.fill('rgba(90,120,230,.8)'); NL.audio.play('bubble');
+        st.pip.fill('rgba(90,120,230,.8)'); NL.audio.play('bubble'); t.classList.remove('glow');
         api.tween(st.pip, st.pip._x, st.pip._y - 50, 200, () => {
           api.setOn(st.pip, true);
           api.draggable(st.pip, {
@@ -105,7 +106,7 @@
   }
   function loadStep(k, text) {
     return {
-      label: `Nạp mẫu ${k + 1}/3`, text, hint: 'Kéo pipette vào ống đang chọn để hút, rồi bơm vào giếng sáng viền vàng',
+      label: `Nạp mẫu ${k + 1}/3`, text, hint: 'Kéo pipette (hoặc chạm pipette rồi chạm ống) vào ống đang nhấp nháy để hút, rồi đưa vào giếng viền vàng',
       enter(api) { loadWell(api, k, () => api.done()); }
     };
   }
@@ -122,7 +123,7 @@
   }
 
   const steps = [
-    loadStep(0, 'Hút thang chuẩn (Thang) và bơm vào giếng L'),
+    loadStep(0, 'Hút thang chuẩn ở ống L, bơm vào giếng L'),
     loadStep(1, 'Hút mẫu 1, bơm vào giếng 1'),
     loadStep(2, 'Hút mẫu 2, bơm vào giếng 2'),
     {
@@ -191,7 +192,7 @@
           const pool = ['Nhỏ hơn 500 bp', 'Từ 500 đến 1000 bp', 'Từ 1000 đến 1500 bp', 'Từ 1500 đến 2000 bp', 'Từ 2000 đến 3000 bp', 'Từ 3000 đến 5000 bp', 'Từ 5000 đến 10000 bp'].filter(x => x !== right);
           const wrong = pool.sort(() => Math.random() - 0.5).slice(0, 2);
           return {
-            kicker: '📏 Thước đo phân tử', q: `Băng có viền vàng ở giếng ${k + 1} có kích thước khoảng bao nhiêu?`,
+            dock: true, kicker: '📏 Thước đo phân tử', q: `Băng có viền vàng ở giếng ${k + 1} có kích thước khoảng bao nhiêu?`,
             options: [{ t: right, ok: true }].concat(wrong.map(t => ({ t, why: 'Nhìn theo vạch vàng sang cột L: băng nằm giữa hai vạch nào của thang chuẩn?' }))).sort(() => Math.random() - 0.5),
             explain: `Đúng rồi, đoạn này dài ${bp} bp.`
           };
@@ -209,7 +210,7 @@
       }
     },
     {
-      label: 'Kết quả', text: 'Quãng đường di chuyển theo kích thước đoạn DNA', hint: 'Đoạn càng ngắn càng đi xa',
+      label: 'Kết quả', text: 'Trục kích thước chia theo logarit: các điểm gần như thẳng hàng!', hint: 'Đoạn càng ngắn càng đi xa. Trên trục logarit, đoạn từ 1000 tới 10000 dài bằng đoạn từ 500 tới 5000',
       enter(api) { st.mark && st.mark.remove(); api.showChart(result()); api.done('Trả lời câu hỏi ➜'); },
       onNext(api) {
         api.wrapUp({
@@ -223,19 +224,20 @@
 
   function result() {
     const p = Math.min(1, st.prog), dist = bp => +(mob(bp) * p * MM).toFixed(1);
+    const flaw = st.prog > 1 ? 'Vạch màu chạy ra khỏi gel làm mất băng nhỏ: lần sau tắt nguồn khi vạch gần tới đáy' : '';
     const rows = [['L (thang chuẩn)', LADDER.join(', '), LADDER.map(dist).join(', ')]].concat(st.samples.map((s, i) => ['Mẫu ' + (i + 1), s.join(', '), s.map(dist).join(', ')]));
     const sm = st.samples.flat().sort((a, b) => a - b);
     return {
-      title: 'Điện di DNA trên gel agarose', param: `${st.V} V, chạy ${Math.floor(st.t)} phút`,
+      flaw, title: 'Điện di DNA trên gel agarose', param: `${st.V} V, chạy ${Math.floor(st.t)} phút`,
       table: { head: ['Giếng', 'Kích thước đoạn (bp)', 'Quãng đường (mm)'], rows },
       chart: {
-        type: 'line', xLabel: 'Kích thước (bp)', yLabel: 'Quãng đường (mm)', xMax: 10000,
+        type: 'line', xLabel: 'Kích thước (bp), trục logarit', yLabel: 'Quãng đường (mm)', xLog: [300, 12000], xTicks: [500, 1000, 2000, 5000, 10000],
         series: [
           { name: 'Thang chuẩn', color: '#9B6BD6', points: LADDER.slice().reverse().map(bp => [bp, dist(bp)]) },
           { name: 'Mẫu của em', color: '#F2994A', points: sm.map(bp => [bp, dist(bp)]) }
         ]
       },
-      conclusion: 'DNA tích điện âm nên chạy về cực dương. Đoạn càng ngắn đi càng xa; quãng đường tỉ lệ nghịch với logarit kích thước đoạn DNA',
+      conclusion: 'DNA tích điện âm nên chạy về cực dương. Đoạn càng ngắn đi càng xa; quãng đường giảm gần tuyến tính theo logarit kích thước (d ≈ a − b·log bp), nên trên trục logarit các điểm gần thẳng hàng',
       note: 'So với thang chuẩn đã biết kích thước, ta ước lượng được kích thước các đoạn DNA chưa biết.'
     };
   }

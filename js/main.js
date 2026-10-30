@@ -162,10 +162,12 @@
     L.body = pick([0, 1, 1, 2]); L.expr = pick([0, 1, 2, 3, 4]); L.outfit = pick([0, 0, 1, 2]); L.coat = pick(W.COATS); L.shirt = pick(W.SHIRTS);
   }
   function intro() {
-    showStep('introLogo');
-    setTimeout(() => showStep('introTitle'), 1600);
+    // vừa đổi 2D/3D: bỏ màn logo, vào thẳng bước tiếp
+    const skip = params.has('go');
+    showStep(skip ? 'introTitle' : 'introLogo');
+    if (skip) setTimeout(() => $('btnStart').click(), 60); else setTimeout(() => showStep('introTitle'), 1600);
     $('btnTry3d').textContent = USE3D ? 'Máy chạy chậm? Mở bản 2D' : '🧊 Mở bản 3D';
-    $('btnTry3d').onclick = () => { const q = new URLSearchParams(location.search); q.delete('3d'); if (USE3D) q.set('2d', '1'); else q.delete('2d'); location.search = q.toString(); };
+    $('btnTry3d').onclick = () => { const q = new URLSearchParams(location.search); q.delete('3d'); if (USE3D) q.set('2d', '1'); else q.delete('2d'); q.set('go', '1'); location.search = q.toString(); };
     $('btnStart').onclick = () => {
       NL.audio.init(); NL.audio.play('pop'); NL.audio.music('calm');
       if (g.name) { $('backName').textContent = g.name; showStep('introBack'); drawPreview($('backPreview'), 1.6); }
@@ -226,6 +228,8 @@
     showGuide();
     benchPrompt(false);
     $('btnLab').classList.toggle('hidden', !s.lab || g.teacher);
+    $('btnJump').classList.toggle('pulse', id === 'f4');
+    if (id === 'f4' && !g.teacher && !g.f4Told) { g.f4Told = true; setTimeout(() => toast('Đi theo chấm vàng, hoặc bấm 🧭 để chọn 1 trong 10 phòng', 4000), 900); }
     $('btnElev').classList.toggle('hidden', !s.triggers.some(tr => tr.type === 'elevator'));
   }
   const inRect = (r, x, y) => x >= r.x1 && x <= r.x2 && y >= r.y1 && y <= r.y2;
@@ -264,7 +268,7 @@
     const el = $('toast'); el.textContent = msg; el.classList.add('show');
     clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), ms || 2600);
   }
-  function bigMsg(emoji, text, cb, btn, alt) {
+  function bigMsg(emoji, text, cb, btn, alt, alt2) {
     $('bigEmoji').textContent = emoji; $('bigText').textContent = text; $('bigOk').textContent = btn || 'OK';
     $('bigmsg').classList.remove('hidden');
     $('bigOk').onclick = () => { NL.audio.play('click'); $('bigmsg').classList.add('hidden'); cb && cb(); };
@@ -272,6 +276,10 @@
     if (!b2) { b2 = document.createElement('button'); b2.id = 'bigAlt'; b2.className = 'btn big ghost pop'; $('bigOk').after(b2); }
     b2.classList.toggle('hidden', !alt);
     if (alt) { b2.textContent = alt[0]; b2.onclick = () => { NL.audio.play('click'); $('bigmsg').classList.add('hidden'); alt[1](); }; }
+    let b3 = $('bigAlt2');
+    if (!b3) { b3 = document.createElement('button'); b3.id = 'bigAlt2'; b3.className = 'btn ghost pop'; b2.after(b3); }
+    b3.classList.toggle('hidden', !alt2);
+    if (alt2) { b3.textContent = alt2[0]; b3.onclick = () => { NL.audio.play('click'); $('bigmsg').classList.add('hidden'); alt2[1](); }; }
   }
 
   // ---------- điều khiển ----------
@@ -374,11 +382,12 @@
     NL.audio.play('help');
     const teacherOn = [...remote.values()].some(r => r.teacher && NL.net.peers.has(r.id));
     if (teacherOn) { toast('Đã báo cô. Cô sẽ tới chỗ em!'); return; }
+    $('btnHelp').textContent = '💡 Cô chưa online'; $('labHelp').classList.remove('on');
     // không có cô online: tự hiện gợi ý của bước đang làm
     if (NL.lab.isOpen) NL.lab.showHint();
     const gd = nextGuide();
     toast('Cô chưa online. ' + (NL.lab.isOpen ? 'Xem gợi ý bên dưới nhé 💡' : gd ? '💡 ' + gd.text : 'Em thử đi tiếp nhé'), 4500);
-    setTimeout(() => { if (g.help) setHelp(false); }, 6000);
+    setTimeout(() => { if (g.help) setHelp(false); }, 3500);
   }
   $('btnSound').addEventListener('click', () => {
     NL.audio.setMuted(!NL.audio.muted); $('btnSound').textContent = NL.audio.muted ? '🔇' : '🔊';
@@ -468,22 +477,41 @@
   }
   $('labExit').addEventListener('click', () => { NL.audio.play('click'); NL.lab.close(); });
 
+  // Chấm sao: thao tác đúng, đoán đúng, trả lời đúng ngay lần đầu (từ 80% số câu)
+  function starsOf(r) {
+    const q = r.quiz || [], okQ = q.filter(x => x.ok).length;
+    const crit = [
+      [!r.flaw, r.flaw || ''],
+      [r.predOk !== false, 'Lần sau thử đoán lại trước khi làm'],
+      [!q.length || okQ >= q.length * 0.8, `Trả lời đúng ngay ${okQ}/${q.length} câu, cần từ ${Math.ceil(q.length * 0.8)} câu`]
+    ];
+    return { n: Math.max(1, crit.filter(c => c[0]).length), miss: crit.filter(c => !c[0]).map(c => c[1]) };
+  }
   function finishExperiment(id, result) {
-    const first = !g.results[id];
+    const prev = g.results[id], sc = starsOf(result);
+    result.stars = Math.max(sc.n, (prev && prev.stars) || 0);
+    if (prev && prev.stars > sc.n) result.stars = prev.stars;
     g.results[id] = result;
     g.order = g.order.filter(x => x !== id).concat(id);
     const wasLocked = !g.unlocked; g.unlocked = true; persist();
     NL.audio.play('success');
     confetti();
-    bigMsg('🎉', `Thành công!\n${result.title}`, () => {
-      NL.lab.close();
+    const starTxt = '⭐'.repeat(sc.n) + '☆'.repeat(3 - sc.n);
+    const head = sc.n === 3 ? 'Xuất sắc!' : 'Hoàn thành!';
+    const tips = sc.miss.length ? '\n' + sc.miss.map(t => '• ' + t).join('\n') + '\nLàm lại để lấy đủ 3 sao nhé' : '';
+    const nextE = NL.EXPERIMENTS.find(e => e.floor === 4 && e.ready && !g.results[e.id]);
+    const celebrate = () => {
       g.danceT = 4.5; g.danceKind = 'dance'; g.emote = 'dance'; g.emoteT = 0; NL.audio.music('dance');
       g.status = `Xong TN ${id} 🎉`;
       if (wasLocked) setTimeout(() => { $('emoSpecial').classList.remove('locked'); NL.audio.play('unlock'); toast('Mở khóa điệu nhảy riêng 🕺'); }, 1200);
-      setTimeout(() => toast('Mệt quá, ra ban công hóng gió nhé 🌿', 3500), wasLocked ? 4200 : 2500);
       setTimeout(() => { g.status = ''; }, 8000);
-      void first;
-    }, 'Nhảy ăn mừng 💃', ['🔁 Làm lại thí nghiệm', () => { NL.lab.close(); NL.lab.open(id); }]);
+    };
+    bigMsg(starTxt, `${head}\n${result.title}${tips}`, () => {
+      NL.lab.close(); celebrate();
+      if (nextE) { toast(`Phòng tiếp theo: ${nextE.no} · ${nextE.short}`, 1800); setTimeout(() => jumpTo(nextE), 1600); }
+      else setTimeout(() => toast('Em đã làm hết 10 phòng! Ra ban công hóng gió nhé 🌿', 3500), 2500);
+    }, nextE ? `Sang phòng ${nextE.no} ➜` : 'Nhảy ăn mừng 💃', ['🔁 Làm lại thí nghiệm', () => { NL.lab.close(); NL.lab.open(id); }],
+    nextE ? ['💃 Ăn mừng tại chỗ', () => { NL.lab.close(); celebrate(); setTimeout(() => toast('Mệt quá, ra ban công hóng gió nhé 🌿', 3500), 2500); }] : null);
   }
   function confetti() {
     const box = document.createElement('div'); box.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden';
@@ -547,7 +575,7 @@
   }
   let botView = [];
   const botPos = new Map();
-  NL.helpers = { visibleOthers, allPeople, get remote() { return remote; }, get botView() { return botView; }, goScene, toast, setZoom: z => { zoom = z; }, get zoom() { return zoom; }, get baseZoom() { return baseZoom; } };
+  NL.helpers = { jumpTo, visibleOthers, allPeople, get remote() { return remote; }, get botView() { return botView; }, goScene, toast, setZoom: z => { zoom = z; }, get zoom() { return zoom; }, get baseZoom() { return baseZoom; } };
 
   // ---------- vòng lặp ----------
   let last = performance.now(), t = 0, sendAcc = 0, stepAcc = 0;
@@ -719,7 +747,7 @@
     const gd = nextGuide();
     if (gd && !insideTrig.size && !g.inElev) {
       // lần đầu: tô sáng đường đi tới chỗ cần đến
-      if (!g.order.length && (g.scene === 'outside' || g.scene === 'lobby')) {
+      if (g.scene === 'f4' || (!g.order.length && (g.scene === 'outside' || g.scene === 'lobby'))) {
         if (!guidePath || t - guidePath.t > 0.4) guidePath = { t, pts: NL.findPath(s, g.x, g.y, gd.x, gd.y) || [] };
         guidePath.pts.forEach((q, k) => { if (k % 2) return; const p = NL.iso(q.x, q.y); c.fillStyle = `rgba(255,213,74,${0.55 + 0.35 * Math.sin(t * 5 - k * 0.5)})`; c.beginPath(); c.ellipse(p.x, p.y, 9, 4.5, 0, 0, 7); c.fill(); });
       }
@@ -734,7 +762,7 @@
     if (g.teacher) { const f = NL.teacher.focus(); if (f) { fx = f.x; fy = f.y; } }
     const gd = nextGuide(), showGd = gd && !insideTrig.size && !g.inElev;
     let pts = null;
-    if (showGd && !g.order.length && (g.scene === 'outside' || g.scene === 'lobby')) {
+    if (showGd && (g.scene === 'f4' || (!g.order.length && (g.scene === 'outside' || g.scene === 'lobby')))) {
       if (!guidePath || t - guidePath.t > 0.4) guidePath = { t, pts: NL.findPath(s, g.x, g.y, gd.x, gd.y) || [] };
       pts = guidePath.pts;
     }

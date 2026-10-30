@@ -74,7 +74,7 @@ NL.bots = (function () {
         const to = pick(['outside', 'lobby', 'f4', 'f4'].concat(LABS));
         b.scene = to; const ns = NL.scenes[to];
         if (ns.lab) { b.x = 5; b.y = 6.6; const q = benchSide(); walkTo(b, q.x, q.y); b.mode = 'lab'; b.step = 1; b.status = `TN ${ns.lab} · bước 1/7`; }
-        else { const sp = ns.spawns.fromElev || ns.spawns.default; b.x = sp.x; b.y = sp.y; b.status = ''; }
+        else { const sp = ns.spawns.fromElev || ns.spawns.default; b.x = sp.x + (Math.random() < 0.5 ? -1 : 1) * (1 + Math.random()); b.y = sp.y + 0.4 + Math.random() * 0.8; if (!NL.walkable(ns, b.x, b.y)) { b.x = sp.x; b.y = sp.y + 1.2; } b.status = ''; }
       }
       b.timer = 2 + rnd() * 4;
     });
