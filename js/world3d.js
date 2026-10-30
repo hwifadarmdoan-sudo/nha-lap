@@ -112,83 +112,121 @@ NL.w3 = (function () {
   const HAIRS = ['Ngắn', 'Dài', 'Búi', 'Đuôi ngựa', 'Rẽ ngôi', 'Xoăn'];
   const HAIR_COLS = ['#1E1A17', '#3B2618', '#6B4226', '#A8743A', '#D8B66A', '#8C8C8C'];
   const BODIES = ['Gầy', 'Vừa', 'Đầy đặn'];
+  const FACES = ['😊 Cười', '😁 Cười tươi', '😉 Nháy mắt', '😮 Ngạc nhiên', '😎 Ngầu', '🥰 Đáng yêu'];
+  // mặt vẽ bằng canvas: mắt to long lanh, má hồng, miệng theo biểu cảm
+  const faceTex = {};
+  function faceTexture(face, browC, teacher) {
+    const k = face + browC + (teacher ? 't' : '');
+    if (faceTex[k]) return faceTex[k];
+    faceTex[k] = canvasTex(512, 512, (x, W, H) => {
+      const cx = W / 2, ey = 250, ex = 92;
+      // má hồng
+      x.fillStyle = 'rgba(255,120,140,.35)'; [-1, 1].forEach(s => { x.beginPath(); x.ellipse(cx + s * 128, ey + 70, 40, 24, 0, 0, 7); x.fill(); });
+      // lông mày
+      x.strokeStyle = browC; x.lineWidth = 12; x.lineCap = 'round';
+      [-1, 1].forEach(s => { x.beginPath(); const lift = face === 3 ? -22 : 0; x.moveTo(cx + s * (ex - 34), ey - 70 + lift); x.quadraticCurveTo(cx + s * ex, ey - 86 + lift, cx + s * (ex + 34), ey - 72 + lift); x.stroke(); });
+      // mắt
+      const eye = s => {
+        const X = cx + s * ex;
+        if ((face === 2 && s > 0) || face === 1) { // mắt cười cong
+          x.strokeStyle = '#2A1D14'; x.lineWidth = 14; x.beginPath(); x.arc(X, ey + 12, 30, Math.PI * 1.1, Math.PI * 1.9); x.stroke(); return;
+        }
+        if (face === 5) { // mắt trái tim
+          x.fillStyle = '#E8436A'; x.beginPath(); x.moveTo(X, ey + 34); x.bezierCurveTo(X - 52, ey - 4, X - 30, ey - 50, X, ey - 22); x.bezierCurveTo(X + 30, ey - 50, X + 52, ey - 4, X, ey + 34); x.fill(); return;
+        }
+        if (face === 4) { // kính râm
+          x.fillStyle = '#1B2430'; x.beginPath(); x.ellipse(X, ey, 52, 36, 0, 0, 7); x.fill(); x.fillStyle = 'rgba(255,255,255,.5)'; x.beginPath(); x.ellipse(X - 18, ey - 12, 14, 7, -0.4, 0, 7); x.fill(); return;
+        }
+        const r = face === 3 ? 42 : 38;
+        x.fillStyle = '#2A1D14'; x.beginPath(); x.ellipse(X, ey, r * 0.78, r, 0, 0, 7); x.fill();
+        x.fillStyle = '#5A3A22'; x.beginPath(); x.ellipse(X, ey + 10, r * 0.55, r * 0.6, 0, 0, 7); x.fill();
+        x.fillStyle = '#fff'; x.beginPath(); x.arc(X - 10, ey - 14, 12, 0, 7); x.fill(); x.beginPath(); x.arc(X + 10, ey + 14, 5, 0, 7); x.fill();
+      };
+      eye(-1); eye(1);
+      if (face === 4) { x.strokeStyle = '#1B2430'; x.lineWidth = 10; x.beginPath(); x.moveTo(cx - 40, ey - 8); x.lineTo(cx + 40, ey - 8); x.stroke(); }
+      if (teacher) { x.strokeStyle = '#2B3440'; x.lineWidth = 7; [-1, 1].forEach(s => { x.beginPath(); x.arc(cx + s * ex, ey, 52, 0, 7); x.stroke(); }); x.beginPath(); x.moveTo(cx - 40, ey); x.lineTo(cx + 40, ey); x.stroke(); }
+      // miệng
+      const my = ey + 100;
+      x.lineWidth = 11; x.strokeStyle = '#8E3B3B';
+      if (face === 0 || face === 2) { x.beginPath(); x.arc(cx, my - 22, 30, Math.PI * 0.18, Math.PI * 0.82); x.stroke(); }
+      else if (face === 1 || face === 5) { x.fillStyle = '#9C3A3A'; x.beginPath(); x.moveTo(cx - 42, my - 10); x.quadraticCurveTo(cx, my + 60, cx + 42, my - 10); x.closePath(); x.fill(); x.fillStyle = '#fff'; x.fillRect(cx - 30, my - 9, 60, 12); x.fillStyle = '#F07C8C'; x.beginPath(); x.ellipse(cx, my + 22, 18, 10, 0, 0, 7); x.fill(); }
+      else if (face === 3) { x.fillStyle = '#9C3A3A'; x.beginPath(); x.ellipse(cx, my + 4, 20, 26, 0, 0, 7); x.fill(); }
+      else if (face === 4) { x.beginPath(); x.moveTo(cx - 26, my + 4); x.quadraticCurveTo(cx + 10, my + 16, cx + 34, my - 8); x.stroke(); }
+    });
+    return faceTex[k];
+  }
+  // Nhân vật chibi mặc áo blouse: đầu to, mắt to, tươi cười
   function makeChar(look, o = {}) {
     look = look || {};
-    const fem = look.gender === 'f', bw = [0.86, 1, 1.28][look.body == null ? 1 : look.body];
-    const ht = fem ? 0.95 : 1, skin = mat(look.skin || SKINS[1], { roughness: 0.6 });
+    const fem = look.gender === 'f', bw = [0.88, 1, 1.22][look.body == null ? 1 : look.body];
+    const skinC = look.skin || SKINS[1], skin = mat(skinC, { roughness: 0.55 });
     const coatC = o.teacher ? '#2F80C0' : (look.coat || '#FFFFFF');
-    const coat = mat(coatC, { roughness: 0.7 }), coatEdge = mat(coatC === '#FFFFFF' ? '#E4ECF2' : coatC, { roughness: 0.75 });
-    const shirt = mat(fem ? '#9FC4E6' : '#7FA7D0'), pants = mat(o.teacher ? '#2E3A4A' : '#33435C'), shoe = mat('#2A2A2E', { roughness: 0.5 });
-    const hairM = mat(look.hairColor && /^#/.test(look.hairColor) ? look.hairColor : '#2B2B2B', { roughness: 0.55 });
-    const root = new T.Group(), body = new T.Group(); root.add(body); body.scale.set(1, ht, 1);
-    const sw = (fem ? 0.17 : 0.2) * bw, hipW = (fem ? 0.15 : 0.14) * bw;
-    // chân
+    const coat = mat(coatC, { roughness: 0.65 }), coatEdge = mat(coatC === '#FFFFFF' ? '#DDE8F0' : coatC, { roughness: 0.7 });
+    const shirt = mat(fem ? '#FF9FB4' : '#7FC4F0'), pants = mat(o.teacher ? '#2E3A4A' : '#3E5C8A'), shoe = mat(fem ? '#E8607A' : '#3A4A6A', { roughness: 0.45 });
+    const hairC = look.hairColor && /^#/.test(look.hairColor) ? look.hairColor : '#2B2B2B', hairM = mat(hairC, { roughness: 0.5 });
+    const root = new T.Group(), body = new T.Group(); root.add(body);
+    // chân ngắn + giày tròn
     const leg = side => {
-      const g = new T.Group(); g.position.set(side * hipW * 0.6, 0.9, 0); body.add(g);
-      mesh(new T.CapsuleGeometry(0.068 * Math.sqrt(bw), 0.72, 4, 10), pants, g, [0, -0.42, 0]);
-      mesh(rbox(0.11, 0.08, 0.26, 0.03), shoe, g, [0, -0.86, 0.04]);
+      const g = new T.Group(); g.position.set(side * 0.075 * bw, 0.4, 0); body.add(g);
+      mesh(new T.CapsuleGeometry(0.055 * Math.sqrt(bw), 0.22, 4, 10), pants, g, [0, -0.18, 0]);
+      const sh = mesh(new T.SphereGeometry(0.075, 14, 10), shoe, g, [0, -0.35, 0.03]); sh.scale.set(0.9, 0.6, 1.3);
       return g;
     };
     const legL = leg(-1), legR = leg(1);
-    // thân + áo sơ mi
-    const torso = new T.Group(); torso.position.y = 0.9; body.add(torso);
-    const tg = new T.CapsuleGeometry(1, 1, 6, 16); const tm = mesh(tg, shirt, torso, [0, 0.3, 0]); tm.scale.set(sw * 0.9, 0.2, 0.12 * bw);
-    // áo blouse: hình trụ loe dài tới gối, hở phía trước
-    const prof = [[sw * 0.55, 0.62], [sw * 1.02, 0.58], [sw * 1.04, 0.45], [sw * 0.98 + 0.01, 0.15], [hipW * 1.15 + 0.07, -0.05], [hipW * 1.2 + 0.11, -0.42], [hipW * 1.2 + 0.12, -0.44]].map(([r, y]) => new T.Vector2(r, y));
-    const coatG = new T.LatheGeometry(prof, 28, 0.32, Math.PI * 2 - 0.64); const cm = mesh(coatG, new T.MeshStandardMaterial({ color: coatC, roughness: 0.7, side: T.DoubleSide }), torso, [0, 0, 0]);
-    cm.scale.z = 0.62 * Math.max(1, bw * 0.92);
-    // ve áo + túi + bảng tên
-    [-1, 1].forEach(s => { const l = mesh(new T.BoxGeometry(0.05, 0.3, 0.012), coatEdge, torso, [s * 0.06, 0.42, sw * 0.62 * Math.max(1, bw * 0.92) + 0.005]); l.rotation.z = s * 0.28; });
-    mesh(new T.BoxGeometry(0.11, 0.09, 0.01), coatEdge, torso, [-0.1 * bw, -0.12, (hipW * 1.15 + 0.08) * 0.62 * Math.max(1, bw * 0.92) + 0.004]);
-    mesh(new T.BoxGeometry(0.11, 0.09, 0.01), coatEdge, torso, [0.1 * bw, -0.12, (hipW * 1.15 + 0.08) * 0.62 * Math.max(1, bw * 0.92) + 0.004]);
-    mesh(new T.BoxGeometry(0.07, 0.025, 0.008), mat('#2F80C0'), torso, [-0.09 * bw, 0.4, sw * 0.62 * Math.max(1, bw * 0.92) + 0.002]);
-    // tay (ống tay áo blouse + bàn tay)
+    // thân tròn + áo blouse xoè
+    const torso = new T.Group(); torso.position.y = 0.4; body.add(torso);
+    const tb = mesh(new T.SphereGeometry(0.16, 20, 16), shirt, torso, [0, 0.17, 0]); tb.scale.set(1.05 * bw, 1.15, 0.85 * bw);
+    const prof = [[0.08, 0.36], [0.15 * bw, 0.33], [0.175 * bw, 0.22], [0.19 * bw, 0.06], [0.22 * bw, -0.06], [0.225 * bw, -0.075]].map(([r, y]) => new T.Vector2(r, y));
+    const cm = mesh(new T.LatheGeometry(prof, 28, 0.42, Math.PI * 2 - 0.84), new T.MeshStandardMaterial({ color: coatC, roughness: 0.65, side: T.DoubleSide }), torso, [0, 0, 0]); cm.scale.z = 0.85;
+    const fz = 0.15 * bw * 0.85;
+    [-1, 1].forEach(s => { const l = mesh(new T.BoxGeometry(0.035, 0.14, 0.01), coatEdge, torso, [s * 0.05, 0.27, fz + 0.012]); l.rotation.z = s * 0.35; });
+    mesh(new T.BoxGeometry(0.07, 0.055, 0.01), coatEdge, torso, [0.1 * bw, 0.05, 0.19 * bw * 0.85 + 0.01]);
+    const pen = mesh(new T.CylinderGeometry(0.008, 0.008, 0.07, 6), mat('#2F80C0'), torso, [0.1 * bw, 0.09, 0.19 * bw * 0.85 + 0.015], false);
+    void pen;
+    // tay ngắn, bàn tay tròn
     const arm = side => {
-      const g = new T.Group(); g.position.set(side * (sw + 0.035), 0.53, 0); torso.add(g);
-      mesh(new T.CapsuleGeometry(0.058 * Math.sqrt(bw), 0.5, 4, 10), coat, g, [0, -0.27, 0]);
-      mesh(new T.CylinderGeometry(0.064 * Math.sqrt(bw), 0.064 * Math.sqrt(bw), 0.05, 10), coatEdge, g, [0, -0.54, 0]);
-      const hand = mesh(new T.SphereGeometry(0.048, 12, 10), skin, g, [0, -0.62, 0]); hand.scale.set(0.8, 1.15, 0.6);
+      const g = new T.Group(); g.position.set(side * 0.17 * bw, 0.31, 0); torso.add(g);
+      mesh(new T.CapsuleGeometry(0.05 * Math.sqrt(bw), 0.16, 4, 10), coat, g, [0, -0.11, 0]);
+      mesh(new T.SphereGeometry(0.048, 12, 10), skin, g, [0, -0.25, 0]);
       return g;
     };
     const armL = arm(-1), armR = arm(1);
-    // cổ, đầu, mặt
-    const head = new T.Group(); head.position.y = 1.58; body.add(head);
-    mesh(new T.CylinderGeometry(0.045, 0.05, 0.1, 10), skin, body, [0, 1.5, 0]);
-    const skull = mesh(new T.SphereGeometry(0.105, 24, 18), skin, head, [0, 0.07, 0]); skull.scale.set(0.92, 1.12, 1);
-    const jaw = mesh(new T.SphereGeometry(0.08, 18, 12), skin, head, [0, 0.0, 0.02]); jaw.scale.set(0.95, 0.9, 1);
-    [-1, 1].forEach(s => { const e = mesh(new T.SphereGeometry(0.022, 10, 8), skin, head, [s * 0.098, 0.06, 0]); e.scale.set(0.5, 1, 0.8); });
-    const eyeW = mat('#FFFFFF', { roughness: 0.3 }), eyeD = mat('#2A1D14', { roughness: 0.2 }), brow = hairM;
-    [-1, 1].forEach(s => {
-      const ew = mesh(new T.SphereGeometry(0.016, 12, 10), eyeW, head, [s * 0.036, 0.075, 0.09], false); ew.scale.set(1.2, 0.8, 0.6);
-      mesh(new T.SphereGeometry(0.0095, 10, 8), eyeD, head, [s * 0.036, 0.075, 0.1], false);
-      const b = mesh(new T.BoxGeometry(0.036, 0.007, 0.01), brow, head, [s * 0.037, 0.1, 0.096], false); b.rotation.z = -s * 0.12;
-    });
-    const nose = mesh(new T.ConeGeometry(0.012, 0.035, 8), skin, head, [0, 0.045, 0.103], false); nose.rotation.x = Math.PI / 2.4;
-    const mouth = mesh(new T.TorusGeometry(0.018, 0.0035, 6, 16, Math.PI), mat('#B5564F'), head, [0, 0.012, 0.094], false); mouth.rotation.z = Math.PI;
-    if (o.teacher) { const gl = mat('#222831', { metalness: 0.4, roughness: 0.3 }); [-1, 1].forEach(s => mesh(new T.TorusGeometry(0.02, 0.003, 6, 18), gl, head, [s * 0.036, 0.075, 0.105], false)); }
-    // tóc
+    // đầu to
+    const head = new T.Group(); head.position.y = 0.98; body.add(head);
+    const HR = 0.25;
+    const skull = mesh(new T.SphereGeometry(HR, 32, 24), skin, head, [0, 0, 0]); skull.scale.set(1.04, 0.98, 0.96);
+    [-1, 1].forEach(s => mesh(new T.SphereGeometry(0.045, 12, 10), skin, head, [s * HR * 1.02, -0.01, 0]));
+    // mặt (dán lên nửa trước của đầu)
+    const fm = new T.MeshStandardMaterial({ map: faceTexture(look.face || 0, NL.shade ? NL.shade(hairC, -10) : hairC, o.teacher), transparent: true, roughness: 0.5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
+    const face = new T.Mesh(new T.SphereGeometry(HR * 1.004, 40, 30, Math.PI / 2 - 0.95, 1.9, Math.PI / 2 - 0.8, 1.6), fm);
+    face.scale.copy(skull.scale); head.add(face); face.renderOrder = 2;
+    const nose = mesh(new T.SphereGeometry(0.014, 10, 8), mat(NL.shade ? NL.shade(skinC, -8) : skinC), head, [0, -0.045, HR * 0.97], false); void nose;
+    // tóc: phủ đỉnh và sau đầu, mái ngắn ở trên mắt
     const hs = look.hair || 0;
-    const cap = mesh(new T.SphereGeometry(0.115, 24, 16, 0, Math.PI * 2, 0, Math.PI * (hs === 5 ? 0.62 : 0.55)), hairM, head, [0, 0.085, -0.005]); cap.scale.set(0.97, 1.12, 1.04);
-    const back = mesh(new T.SphereGeometry(0.112, 18, 12, Math.PI * 0.62, Math.PI * 0.76, Math.PI * 0.3, Math.PI * 0.45), hairM, head, [0, 0.07, -0.006]); back.scale.set(0.98, 1.15, 1.05);
-    if (hs === 1) { const lg = mesh(new T.CylinderGeometry(0.1, 0.12, 0.3, 18, 1, true, Math.PI * 0.55, Math.PI * 0.9), new T.MeshStandardMaterial({ color: hairM.color, roughness: 0.55, side: T.DoubleSide }), head, [0, -0.07, -0.02]); lg.scale.z = 0.9; }
-    if (hs === 2) mesh(new T.SphereGeometry(0.055, 14, 12), hairM, head, [0, 0.17, -0.09]);
-    if (hs === 3) { const p = mesh(new T.CapsuleGeometry(0.032, 0.18, 4, 10), hairM, head, [0, 0.03, -0.13]); p.rotation.x = 0.35; }
-    if (hs === 4) { const f = mesh(new T.SphereGeometry(0.06, 14, 10), hairM, head, [-0.04, 0.17, 0.06]); f.scale.set(1.4, 0.45, 0.9); }
-    if (hs === 5) for (let k = 0; k < 14; k++) { const a = k / 14 * Math.PI * 2; mesh(new T.SphereGeometry(0.04, 10, 8), hairM, head, [Math.cos(a) * 0.1, 0.12 + Math.sin(k * 1.7) * 0.03, Math.sin(a) * 0.09 - 0.01]); }
-    if (fem && (hs === 0 || hs === 4)) { [-1, 1].forEach(s => { const sd = mesh(new T.CapsuleGeometry(0.03, 0.1, 4, 8), hairM, head, [s * 0.095, 0.0, -0.02]); }); }
+    const cap = mesh(new T.SphereGeometry(HR * 1.07, 32, 20, 0, Math.PI * 2, 0, Math.PI * 0.42), hairM, head, [0, 0.015, -0.01]); cap.scale.set(1.04, 1.0, 1.0);
+    const back = mesh(new T.SphereGeometry(HR * 1.06, 28, 18, Math.PI * 1.15, Math.PI * 0.7, Math.PI * 0.25, Math.PI * 0.5), hairM, head, [0, 0, -0.005]); back.scale.set(1.03, 1, 1);
+    // mái: vài lọn bo tròn, đáy cao hơn mắt
+    for (let k = -2; k <= 2; k++) { const f = mesh(new T.SphereGeometry(0.07, 12, 10), hairM, head, [k * 0.075, 0.15 - Math.abs(k) * 0.012, HR * 0.83 - Math.abs(k) * 0.03]); f.scale.set(1.1, 0.62, 0.7); f.rotation.z = -k * 0.2; }
+    [-1, 1].forEach(s => { const sd = mesh(new T.SphereGeometry(0.07, 12, 10), hairM, head, [s * HR * 0.95, 0.06, -0.02]); sd.scale.set(0.55, 1.1, 0.9); });
+    if (hs === 1) { const lg = mesh(new T.CapsuleGeometry(0.17, 0.2, 6, 16), hairM, head, [0, -0.16, -0.1]); lg.scale.set(1.45, 1, 0.75); }
+    if (hs === 2) mesh(new T.SphereGeometry(0.1, 16, 12), hairM, head, [0, 0.24, -0.12]);
+    if (hs === 3) { const p = mesh(new T.CapsuleGeometry(0.06, 0.22, 6, 10), hairM, head, [0, -0.02, -0.3]); p.rotation.x = 0.5; mesh(new T.TorusGeometry(0.04, 0.015, 8, 14), mat('#FF6B8A'), head, [0, 0.1, -0.26]).rotation.x = 1.1; }
+    if (hs === 4) { const f = mesh(new T.SphereGeometry(0.12, 16, 12), hairM, head, [-0.09, 0.2, 0.12]); f.scale.set(1.3, 0.5, 0.9); }
+    if (hs === 5) for (let k = 0; k < 16; k++) { const a = k / 16 * Math.PI * 2; mesh(new T.SphereGeometry(0.075, 10, 8), hairM, head, [Math.cos(a) * 0.22, 0.13 + Math.sin(k * 1.7) * 0.03, Math.sin(a) * 0.21 - 0.03]); }
+    if (fem && hs !== 1 && hs !== 5) mesh(new T.SphereGeometry(0.035, 10, 8), mat('#FF6B8A'), head, [HR * 0.75, 0.17, 0.08]);
     root.traverse(m => { if (m.isMesh) m.userData.char = true; });
     const st = { root, legL, legR, armL, armR, body, head, heading: 0 };
     st.pose = (anim, t, emote) => {
-      const w = anim === 'walk' ? Math.sin(t * 9) : 0;
-      legL.rotation.x = w * 0.55; legR.rotation.x = -w * 0.55;
-      armL.rotation.x = -w * 0.45; armR.rotation.x = w * 0.45; armL.rotation.z = -0.06; armR.rotation.z = 0.06;
-      body.position.y = anim === 'walk' ? Math.abs(Math.sin(t * 9)) * 0.03 : Math.sin(t * 2) * 0.004;
-      body.rotation.z = 0; body.rotation.y = 0; head.rotation.set(0, 0, 0);
-      if (anim === 'dance') { body.position.y = Math.abs(Math.sin(t * 8)) * 0.08; body.rotation.z = Math.sin(t * 4) * 0.12; armL.rotation.z = -2.4 + Math.sin(t * 8) * 0.4; armR.rotation.z = 2.4 + Math.sin(t * 8 + 1) * 0.4; legL.rotation.x = Math.sin(t * 8) * 0.3; legR.rotation.x = -Math.sin(t * 8) * 0.3; }
-      if (anim === 'special') { body.position.y = Math.abs(Math.sin(t * 6)) * 0.14; body.rotation.y = t * 6; armL.rotation.z = -1.6; armR.rotation.z = 1.6; }
-      if (anim === 'jump') { body.position.y = Math.abs(Math.sin(t * 6)) * 0.18; armR.rotation.z = 2.7 + Math.sin(t * 12) * 0.2; }
-      if (emote === 'wave' || emote === 'five') { armR.rotation.z = 2.5; armR.rotation.x = 0; armR.rotation.y = Math.sin(t * 12) * 0.4; }
-      if (emote === 'poke') { armR.rotation.x = -1.4; }
+      const w = anim === 'walk' ? Math.sin(t * 10) : 0;
+      legL.rotation.x = w * 0.7; legR.rotation.x = -w * 0.7;
+      armL.rotation.x = -w * 0.6; armR.rotation.x = w * 0.6; armL.rotation.z = -0.25; armR.rotation.z = 0.25; armR.rotation.y = 0;
+      body.position.y = anim === 'walk' ? Math.abs(Math.sin(t * 10)) * 0.04 : Math.sin(t * 2.2) * 0.008;
+      body.rotation.z = 0; body.rotation.y = 0; head.rotation.set(0, 0, anim === 'idle' ? Math.sin(t * 1.3) * 0.05 : 0);
+      if (anim === 'dance') { body.position.y = Math.abs(Math.sin(t * 8)) * 0.1; body.rotation.z = Math.sin(t * 4) * 0.15; armL.rotation.z = -2.4 + Math.sin(t * 8) * 0.4; armR.rotation.z = 2.4 + Math.sin(t * 8 + 1) * 0.4; legL.rotation.x = Math.sin(t * 8) * 0.4; legR.rotation.x = -Math.sin(t * 8) * 0.4; }
+      if (anim === 'special') { body.position.y = Math.abs(Math.sin(t * 6)) * 0.16; body.rotation.y = t * 6; armL.rotation.z = -1.6; armR.rotation.z = 1.6; }
+      if (anim === 'jump') { body.position.y = Math.abs(Math.sin(t * 6)) * 0.2; armR.rotation.z = 2.7 + Math.sin(t * 12) * 0.2; }
+      if (emote === 'wave' || emote === 'five') { armR.rotation.z = 2.6; armR.rotation.x = 0; armR.rotation.y = Math.sin(t * 12) * 0.4; }
+      if (emote === 'poke') armR.rotation.x = -1.4;
       if (emote === 'haha') head.rotation.x = -0.2 + Math.sin(t * 16) * 0.08;
     };
     root.scale.setScalar(o.scale || 1);
@@ -431,13 +469,23 @@ NL.w3 = (function () {
       for (let k = 0; k < 3; k++) mesh(new T.BoxGeometry(0.06, 1.4, 0.6), glassM, g, [x0 + w + 0.02, y + 0.7, z0 + 0.7 + k * 1.1], false);
       label(['Tầng 1 · Sảnh', 'Tầng 2 · Lý', 'Tầng 3 · Hóa', 'Tầng 4 · Sinh'][f], { parent: g, pos: [x0 + w + 0.6, y + 0.7, z0 + d - 0.2], h: 0.3, bg: f === 3 ? '#3FB37F' : 'rgba(255,255,255,.92)', color: f === 3 ? '#fff' : '#1F4E79' });
     }
-    // cửa chính, mái hiên, biển A1
-    mesh(new T.BoxGeometry(1.3, 2.3, 0.06), mat('#5FA6D6', { roughness: 0.1, metalness: 0.3 }), g, [x0 + 6, 1.15, z0 + d + 0.03], false);
-    mesh(new T.BoxGeometry(0.03, 2.3, 0.08), mat('#FFFFFF'), g, [x0 + 6, 1.15, z0 + d + 0.05], false);
-    mesh(new T.BoxGeometry(2.4, 0.14, 1.0), mat('#FFFFFF'), g, [x0 + 6, 2.75, z0 + d + 0.5]);
-    [-1, 1].forEach(s => mesh(new T.CylinderGeometry(0.06, 0.06, 2.7, 10), mat('#FFFFFF'), g, [x0 + 6 + s * 1.05, 1.35, z0 + d + 0.92]));
-    label('A1', { parent: g, pos: [x0 + 6, 3.25, z0 + d + 0.4], h: 0.6, bg: '#2F80C0', color: '#fff' });
-    label('Trường Đại học Sư phạm Hà Nội', { parent: g, pos: [x0 + 6, 3.95, z0 + d + 0.4], h: 0.32 });
+    // sảnh vào: bậc thềm, cửa kính đôi lớn, 4 cột tròn, mái đón có biển A1
+    const fz = z0 + d, gx = x0 + 6, wh = mat('#FFFFFF', { roughness: 0.5 });
+    [[4.8, 0.1, 2.0], [4.4, 0.2, 1.6], [4.0, 0.3, 1.2]].forEach(([w2, h2, d2]) => mesh(new T.BoxGeometry(w2, h2, d2), mat('#E9E2D0'), g, [gx, h2 / 2, fz + d2 / 2 - 0.1]));
+    mesh(new T.BoxGeometry(3.0, 3.0, 0.18), mat('#D9CFB5'), g, [gx, 1.8, fz + 0.06], false);
+    mesh(new T.BoxGeometry(2.5, 2.7, 0.06), mat('#5FA6D6', { roughness: 0.08, metalness: 0.35, emissive: '#4F96C6', emissiveIntensity: 0.15 }), g, [gx, 1.65, fz + 0.16], false);
+    [-0.62, 0, 0.62].forEach(dx => mesh(new T.BoxGeometry(0.06, 2.7, 0.09), wh, g, [gx + dx * 2, 1.65, fz + 0.18], false));
+    mesh(new T.BoxGeometry(2.6, 0.08, 0.1), wh, g, [gx, 3.0, fz + 0.18], false);
+    [-0.5, 0.5].forEach(dx => mesh(new T.BoxGeometry(0.04, 0.5, 0.06), mat('#C9A227', { metalness: 0.7, roughness: 0.3 }), g, [gx + dx * 0.22, 1.4, fz + 0.22], false));
+    [-2.05, -1.25, 1.25, 2.05].forEach(dx => {
+      mesh(new T.CylinderGeometry(0.15, 0.17, 3.5, 20), wh, g, [gx + dx * 1.0, 0.3 + 1.75, fz + 1.75]);
+      mesh(new T.BoxGeometry(0.42, 0.12, 0.42), wh, g, [gx + dx, 0.36, fz + 1.75]);
+    });
+    mesh(new T.BoxGeometry(5.2, 0.36, 2.4), wh, g, [gx, 3.98, fz + 1.05]);
+    mesh(new T.BoxGeometry(5.3, 0.08, 2.5), mat('#2F80C0'), g, [gx, 4.2, fz + 1.05]);
+    label('A1', { parent: g, pos: [gx, 4.75, fz + 2.3], h: 0.75, bg: '#2F80C0', color: '#fff' });
+    label('Trường Đại học Sư phạm Hà Nội', { parent: g, pos: [gx, 3.95, fz + 2.36], h: 0.3 });
+    label('🚪 Lối vào', { parent: g, pos: [gx, 3.25, fz + 0.4], h: 0.26, bg: '#3FB37F', color: '#fff' });
   }
 
   // ---------- mũi tên dẫn đường ----------
@@ -501,15 +549,15 @@ NL.w3 = (function () {
       const emo = o.emote && EMO[o.emote] ? EMO[o.emote] : '';
       const html = `${o.help ? '<i class="w3-help">🆘</i>' : ''}${emo ? `<i class="w3-emo">${emo}</i>` : ''}<b class="${me ? 'me' : ''}${o.teacher ? ' tch' : ''}">${esc(o.name || '')}${me && !st.teacher ? ' (em)' : o.bot ? ' (ảo)' : ''}${o.teacher ? ' 👩‍🏫' : ''}</b>${st.teacher && !o.teacher && o.status ? `<small>${esc(o.status)}</small>` : ''}`;
       if (html !== c.tagHtml) { c.tag.innerHTML = html; c.tagHtml = html; }
-      const p = new T.Vector3(x, 2.0, y).project(camera);
+      const p = new T.Vector3(x, 1.5, y).project(camera);
       c.tag.style.transform = `translate(${(p.x * 0.5 + 0.5) * innerWidth}px,${(-p.y * 0.5 + 0.5) * innerHeight}px) translate(-50%,-100%)`;
       c.tag.style.display = p.z < 1 ? '' : 'none';
     });
     chars.forEach((c, id) => { if (!live.has(id)) { c.st.root.visible = false; c.tag.style.display = 'none'; } });
     // camera: nhìn chéo từ phía +x +z giống bản 2D, bám theo nhân vật
     const f = st.focus;
-    const dist = (s.walls ? 6.6 : 10.5) * zoomK * (st.zoomRel || 1), elev = s.walls ? 0.62 : 0.48;
-    const tgt = new T.Vector3(f.x, 0.9, f.y);
+    const dist = (s.walls ? 5.8 : 9.5) * zoomK * (st.zoomRel || 1), elev = s.walls ? 0.62 : 0.48;
+    const tgt = new T.Vector3(f.x, 0.7, f.y);
     const pos = new T.Vector3(f.x + dist * Math.cos(elev) * 0.7071, 0.9 + dist * Math.sin(elev), f.y + dist * Math.cos(elev) * 0.7071);
     if (!camPos || st.snap) { camPos = pos.clone(); camTgt = tgt.clone(); }
     const k = Math.min(1, st.dt * 5); camPos.lerp(pos, k); camTgt.lerp(tgt, k);
@@ -537,7 +585,7 @@ NL.w3 = (function () {
   function hitChar(sx, sy, list) {
     if (!ready) return null;
     return list.find(o => {
-      const a = new T.Vector3(o.rx, 0, o.ry).project(camera), b = new T.Vector3(o.rx, 1.8, o.ry).project(camera);
+      const a = new T.Vector3(o.rx, 0, o.ry).project(camera), b = new T.Vector3(o.rx, 1.3, o.ry).project(camera);
       const ax = (a.x * 0.5 + 0.5) * innerWidth, ay = (-a.y * 0.5 + 0.5) * innerHeight, by = (-b.y * 0.5 + 0.5) * innerHeight;
       const half = Math.max(16, (ay - by) * 0.22);
       return Math.abs(sx - ax) < half && sy < ay + 6 && sy > by - 6;
@@ -553,7 +601,7 @@ NL.w3 = (function () {
         const r = new T.WebGLRenderer({ canvas, antialias: true, alpha: true }); r.setPixelRatio(Math.min(2, devicePixelRatio || 1)); r.setSize(canvas.width, canvas.height, false);
         r.outputColorSpace = T.SRGBColorSpace; r.toneMapping = T.ACESFilmicToneMapping;
         const sc = new T.Scene(); sc.add(new T.HemisphereLight(0xFFFFFF, 0xC8D8E8, 1.1)); const dl = new T.DirectionalLight(0xFFFFFF, 1.4); dl.position.set(2, 3, 4); sc.add(dl);
-        const cam = new T.PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 20); cam.position.set(0, 1.1, 3.4); cam.lookAt(0, 0.92, 0);
+        const cam = new T.PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 20); cam.position.set(0, 0.85, 3.6); cam.lookAt(0, 0.66, 0);
         p = { r, sc, cam, key: '', ch: null }; previews.set(canvas, p);
         const loop = () => {
           if (!canvas.isConnected) return;
@@ -568,5 +616,5 @@ NL.w3 = (function () {
     });
   }
 
-  return { on, init, render, pick, hitChar, preview, get ready() { return ready; }, SKINS, HAIRS, HAIR_COLS, BODIES, makeChar };
+  return { on, init, render, pick, hitChar, preview, get ready() { return ready; }, SKINS, HAIRS, HAIR_COLS, BODIES, FACES, makeChar };
 })();

@@ -85,6 +85,7 @@
     mk(row('optGender', 'Giới tính'), [['m', 'Nam'], ['f', 'Nữ']], it => L.gender === it[0], it => { L.gender = it[0]; if (it[0] === 'f' && L.hair === 0) L.hair = 1; }, (b, it) => wide(b, it[1]));
     mk(row('optBody', 'Dáng người'), W.BODIES, (it, k) => L.body === k, (it, k) => { L.body = k; }, (b, it) => wide(b, it));
     mk(row('optSkin', 'Màu da'), W.SKINS, it => L.skin === it, it => { L.skin = it; }, (b, it) => { b.style.background = it; });
+    mk(row('optFace', 'Biểu cảm'), W.FACES, (it, k) => (L.face || 0) === k, (it, k) => { L.face = k; }, (b, it) => { b.textContent = it.split(' ')[0]; b.title = it.split(' ').slice(1).join(' '); b.style.fontSize = '22px'; });
     mk($('optHair'), W.HAIRS, (it, k) => L.hair === k, (it, k) => { L.hair = k; }, (b, it) => wide(b, it));
     mk($('optHairColor'), W.HAIR_COLS, it => L.hairColor === it, it => { L.hairColor = it; }, (b, it) => { b.style.background = it; });
     mk($('optCoat'), NL.COAT_COLORS, it => L.coat === it, it => { L.coat = it; }, (b, it) => { b.style.background = it; });
