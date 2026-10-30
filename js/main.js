@@ -415,7 +415,8 @@
     if (NL.lab.isOpen || g.inElev) return;
     NL.audio.play('click');
     const grid = $('jumpGrid'); grid.innerHTML = '';
-    [4, 3].forEach(f => {
+    const curF = (NL.scenes[g.scene] || {}).floor;
+    (curF === 3 ? [3, 4] : [4, 3]).forEach(f => {
       const list = NL.EXPERIMENTS.filter(e => e.floor === f && e.ready); if (!list.length) return;
       const h = document.createElement('div'); h.className = 'jump-floor'; h.textContent = `${NL.SUBJECTS[f].icon} Tầng ${f} · ${NL.SUBJECTS[f].name}`; grid.appendChild(h);
       list.forEach(e => {
