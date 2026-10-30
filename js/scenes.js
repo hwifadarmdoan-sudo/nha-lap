@@ -27,10 +27,10 @@ window.NL = window.NL || {};
     { id: 'H4', floor: 3, no: 4, short: 'Khí O₂ và CO₂', name: 'Điều chế và thử khí O₂, CO₂', icon: '🔥', grade: 'KHTN THCS · Oxygen và carbon dioxide', hook: 'Que đóm còn tàn đỏ bùng cháy trong khí O₂, còn bình chữa cháy CO₂ lại dập tắt lửa.', ready: true },
     { id: 'H5', floor: 3, no: 5, short: 'Trao đổi ion', name: 'Phản ứng trao đổi ion trong dung dịch', icon: '🌈', grade: 'KHTN 8 · Muối · Hóa 11 · Sự điện li', hook: 'Trộn hai dung dịch trong suốt lại ra chất rắn có màu. Chuyện gì đã xảy ra?', ready: true },
     { id: 'H6', floor: 3, no: 6, short: 'Ester hóa', name: 'Điều chế ethyl acetate', icon: '🍌', grade: 'Hóa 12 · Ester', hook: 'Mùi thơm của chuối chín, dứa chín phần lớn đến từ các ester.', ready: true },
-    { id: 'H7', floor: 3, no: 7, short: 'Ăn mòn điện hóa', name: 'Ăn mòn điện hóa', icon: '🔩', grade: 'Hóa 12 · Ăn mòn kim loại', hook: 'Hàng rào sắt gần biển gỉ rất nhanh, nhất là chỗ nối với kim loại khác.', ready: false },
-    { id: 'H8', floor: 3, no: 8, short: 'Đốt hydrocarbon', name: 'Đốt cháy hydrocarbon', icon: '🕯️', grade: 'Hóa 11 · Hydrocarbon', hook: 'Bếp gas cháy lửa xanh, còn nến cháy lại có muội đen. Vì sao?', ready: false },
-    { id: 'H9', floor: 3, no: 9, short: 'Thám tử ion', name: 'Thám tử ion kim loại', icon: '🕵️', grade: 'Hóa 12 · Nhận biết ion kim loại', hook: 'Phòng kiểm nghiệm nhận ra kim loại lạ trong nước nhờ màu kết tủa đặc trưng.', ready: false },
-    { id: 'H10', floor: 3, no: 10, short: 'Đinh sắt + CuSO₄', name: 'Đinh sắt trong dung dịch CuSO₄', icon: '🟤', grade: 'KHTN 9 · Dãy hoạt động hóa học của kim loại', hook: 'Ngày xưa người ta lấy đồng bằng cách ngâm sắt vụn trong nước mỏ có muối đồng.', ready: false },
+    { id: 'H7', floor: 3, no: 7, short: 'Ăn mòn điện hóa', name: 'Ăn mòn điện hóa', icon: '🔩', grade: 'Hóa 12 · Ăn mòn kim loại', hook: 'Hàng rào sắt gần biển gỉ rất nhanh, nhất là chỗ nối với kim loại khác.', ready: true },
+    { id: 'H8', floor: 3, no: 8, short: 'Đốt hydrocarbon', name: 'Đốt cháy hydrocarbon', icon: '🕯️', grade: 'Hóa 11 · Hydrocarbon', hook: 'Bếp gas cháy lửa xanh, còn nến cháy lại có muội đen. Vì sao?', ready: true },
+    { id: 'H9', floor: 3, no: 9, short: 'Thám tử ion', name: 'Thám tử ion kim loại', icon: '🕵️', grade: 'Hóa 12 · Nhận biết ion kim loại', hook: 'Phòng kiểm nghiệm nhận ra kim loại lạ trong nước nhờ màu kết tủa đặc trưng.', ready: true },
+    { id: 'H10', floor: 3, no: 10, short: 'Đinh sắt + CuSO₄', name: 'Đinh sắt trong dung dịch CuSO₄', icon: '🟤', grade: 'KHTN 9 · Dãy hoạt động hóa học của kim loại', hook: 'Ngày xưa người ta lấy đồng bằng cách ngâm sắt vụn trong nước mỏ có muối đồng.', ready: true },
     { id: '4A', floor: 2, name: 'Con lắc đơn', ready: false },
     { id: '4B', floor: 2, name: 'Khúc xạ qua lăng kính', ready: false }
   ];

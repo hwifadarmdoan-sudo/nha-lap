@@ -13,7 +13,7 @@ NL.chem = (function () {
     'Fe²⁺': '#6FA86A', 'Fe³⁺': '#B5532E', 'Zn²⁺': '#6C7A89', 'Mg²⁺': '#8E6CC9', 'Al³⁺': '#7F8C9A', 'Ag⁺': '#8A9BA8',
     'Ba²⁺': '#2A9D8F', 'Ca²⁺': '#D07A2B', 'SO₄²⁻': '#C9A100', 'NO₃⁻': '#3D6FD9', 'CO₃²⁻': '#555555',
     'CH₃COO⁻': '#E07B00', 'H₂O': '#9CC7E3', 'H₂': '#C9D3DC', 'N₂': '#3D6FD9', 'O₂': '#E5534B', 'CO₂': '#555555',
-    'C₁₂H₂₂O₁₁': '#E8B04B', 'Cu(OH)₂': '#1565C0', 'BaSO₄': '#9AA8B2', 'BaCO₃': '#7F8F99', 'CuCO₃': '#26A69A', 'Fe(OH)₃': '#A0461E', 'Fe(OH)₂': '#5E8C5A', 'Al(OH)₃': '#AAB4BE', 'CH₃COOC₂H₅': '#E8A33D', 'CH₄': '#3B3B3B', 'C₂H₂': '#5A5A5A', 'Fe²⁺(aq)': '#6FA86A', 'CH₃COOH': '#E07B00', 'C₂H₅OH': '#5FA8D3', 'Cu': '#C8743A', 'Fe': '#8C8C8C', 'e⁻': '#FFD54A'
+    'C₁₂H₂₂O₁₁': '#E8B04B', 'Cu(OH)₂': '#1565C0', 'BaSO₄': '#9AA8B2', 'BaCO₃': '#7F8F99', 'CuCO₃': '#26A69A', 'Fe(OH)₃': '#A0461E', 'Fe(OH)₂': '#5E8C5A', 'Al(OH)₃': '#AAB4BE', 'CH₃COOC₂H₅': '#E8A33D', 'CH₄': '#3B3B3B', 'C': '#222222', 'C₂₅H₅₂': '#C9B47A', 'Al(OH)₄⁻': '#8FA0AE', 'FeCl₃': '#B5532E', 'C₂H₂': '#5A5A5A', 'Fe²⁺(aq)': '#6FA86A', 'CH₃COOH': '#E07B00', 'C₂H₅OH': '#5FA8D3', 'Cu': '#C8743A', 'Fe': '#8C8C8C', 'e⁻': '#FFD54A'
   };
   const SYM = Object.keys(EL).sort((a, b) => b.length - a.length);
   const PART = '(?:' + SYM.join('|') + ')[₀-₉]*';
@@ -55,7 +55,7 @@ NL.chem = (function () {
     let parts = [];
     function dot(f) {
       const d = api.g(inner, (Math.random() * 2 - 1) * r * 0.7, (Math.random() * 2 - 1) * r * 0.7);
-      const big = f.length > 3, huge = f.length > 6, rr = huge ? 25 : big ? 17 : 13;
+      const big = f.length > 3, huge = f.length > 8, rr = huge ? 25 : big ? 17 : 13;
       api.el('circle', { r: rr, fill: SP[f] || '#999', stroke: '#fff', 'stroke-width': 2 }, d);
       const t = api.text(d, 0, 4, f, huge ? 7 : big ? 8 : 10, '#fff', 800); t.setAttribute('pointer-events', 'none');
       d._vx = (Math.random() * 2 - 1) * 40; d._vy = (Math.random() * 2 - 1) * 40; d._f = f; d._a = 0; d._ta = 1;

@@ -165,7 +165,7 @@
   function chips(api) {
     const r = st.rule, ions = SOL[st.a].ions.concat(SOL[st.b].ions);
     const picked = {};
-    const d = st.chip = api.panel(`<div>Chạm 2 ion kết hợp với nhau</div><div class="seg">${ions.map((f, i) => `<button class="seg-b pop" data-i="${i}">${C(f)}</button>`).join('')}</div>`);
+    const d = st.chip = api.panel(`<div>Chạm 2 ion kết hợp với nhau</div><div class="seg">${ions.map((f, i) => `<button class="seg-b pop ion-chip" data-i="${i}">${C(f)}</button>`).join('')}</div>`);
     d.querySelectorAll('.seg-b').forEach(btn => btn.addEventListener('click', () => {
       const f = ions[+btn.dataset.i];
       if (f === r.a || f === r.b) {
