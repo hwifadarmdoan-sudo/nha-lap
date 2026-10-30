@@ -5,7 +5,7 @@ window.NL = window.NL || {};
   const WALL_C = '#FBF3DC', WALL_SIDE = '#F1E5C2';
   NL.SUBJECTS = {
     4: { name: 'Sinh học', color: '#3FB37F', icon: '🌿', A: 'Đếm bọt khí rong', B: 'Co nguyên sinh', ready: true },
-    3: { name: 'Hóa học', color: '#9B6BD6', icon: '⚗️', A: 'Chuẩn độ acid – base', B: 'Màu ngọn lửa', ready: false },
+    3: { name: 'Hóa học', color: '#9B6BD6', icon: '⚗️', ready: true },
     2: { name: 'Vật lí', color: '#3D8BD9', icon: '🧲', A: 'Con lắc đơn', B: 'Khúc xạ ánh sáng', ready: false }
   };
   // Tầng 4 Sinh: 10 phòng theo thứ tự trong bản đặc tả "Môn Sinh" (29/10). Mã phòng 2A, 2B giữ như cũ để không mất kết quả đã lưu.
@@ -20,8 +20,17 @@ window.NL = window.NL || {};
     { id: '2H', floor: 4, hook: 'Giá đỗ ngoài chợ được ủ trong tối nên trắng và dài. Ra nắng thì sao?', grade: 'Sinh 11 · Sinh trưởng ở thực vật', no: 8, short: 'Nảy mầm', name: 'Điều kiện nảy mầm của hạt', icon: '🌱', ready: true },
     { id: '2I', floor: 4, hook: 'Mỗi năm em cao thêm vì tế bào trong cơ thể liên tục phân chia.', grade: 'Sinh 10 · Chu kỳ tế bào, nguyên phân', no: 9, short: 'Nguyên phân', name: 'Quan sát nguyên phân', icon: '🔍', ready: true },
     { id: '2J', floor: 4, hook: 'Thế kỷ 19 ở Anh, khói nhà máy làm đen thân cây và bướm màu đen dần nhiều hơn.', grade: 'Sinh 12 · Di truyền quần thể', no: 10, short: 'Quần thể', name: 'Tần số allele qua các thế hệ', icon: '🦋', ready: true },
-    { id: '3A', floor: 3, name: 'Chuẩn độ acid – base', ready: false },
-    { id: '3B', floor: 3, name: 'Thử màu ngọn lửa', ready: false },
+    // Tầng 3 Hóa: 10 phòng theo bản đề xuất Linh duyệt 30/10 (mã H1–H10).
+    { id: 'H1', floor: 3, no: 1, short: 'Kim loại + acid', name: 'Kim loại tác dụng với acid', icon: '🧪', grade: 'KHTN 8 · Acid', hook: 'Không nên để giấm, nước chanh lâu trong nồi nhôm hay xoong sắt: kim loại sẽ bị "ăn" dần.', ready: true },
+    { id: 'H2', floor: 3, no: 2, short: 'Chuẩn độ', name: 'Chuẩn độ acid – base', icon: '💧', grade: 'Hóa 11 · Cân bằng trong dung dịch nước', hook: 'Không cần máy đo, chỉ đếm từng giọt mà vẫn tìm ra nồng độ acid. Đó là chuẩn độ.', ready: true },
+    { id: 'H3', floor: 3, no: 3, short: 'Chất điện li', name: 'Chất điện li mạnh, yếu và không điện li', icon: '💡', grade: 'Hóa 11 · Sự điện li', hook: 'Tay ướt chạm ổ điện rất nguy hiểm, vậy mà nước cất gần như không dẫn điện. Vì sao?', ready: true },
+    { id: 'H4', floor: 3, no: 4, short: 'Khí O₂ và CO₂', name: 'Điều chế và thử khí O₂, CO₂', icon: '🔥', grade: 'KHTN THCS · Oxygen và carbon dioxide', hook: 'Que đóm còn tàn đỏ bùng cháy trong khí O₂, còn bình chữa cháy CO₂ lại dập tắt lửa.', ready: false },
+    { id: 'H5', floor: 3, no: 5, short: 'Trao đổi ion', name: 'Phản ứng trao đổi ion trong dung dịch', icon: '🌈', grade: 'KHTN 8 · Muối · Hóa 11 · Sự điện li', hook: 'Trộn hai dung dịch trong suốt lại ra chất rắn có màu. Chuyện gì đã xảy ra?', ready: false },
+    { id: 'H6', floor: 3, no: 6, short: 'Ester hóa', name: 'Điều chế ethyl acetate', icon: '🍌', grade: 'Hóa 12 · Ester', hook: 'Mùi thơm của chuối chín, dứa chín phần lớn đến từ các ester.', ready: false },
+    { id: 'H7', floor: 3, no: 7, short: 'Ăn mòn điện hóa', name: 'Ăn mòn điện hóa', icon: '🔩', grade: 'Hóa 12 · Ăn mòn kim loại', hook: 'Hàng rào sắt gần biển gỉ rất nhanh, nhất là chỗ nối với kim loại khác.', ready: false },
+    { id: 'H8', floor: 3, no: 8, short: 'Đốt hydrocarbon', name: 'Đốt cháy hydrocarbon', icon: '🕯️', grade: 'Hóa 11 · Hydrocarbon', hook: 'Bếp gas cháy lửa xanh, còn nến cháy lại có muội đen. Vì sao?', ready: false },
+    { id: 'H9', floor: 3, no: 9, short: 'Thám tử ion', name: 'Thám tử ion kim loại', icon: '🕵️', grade: 'Hóa 12 · Nhận biết ion kim loại', hook: 'Phòng kiểm nghiệm nhận ra kim loại lạ trong nước nhờ màu kết tủa đặc trưng.', ready: false },
+    { id: 'H10', floor: 3, no: 10, short: 'Đinh sắt + CuSO₄', name: 'Đinh sắt trong dung dịch CuSO₄', icon: '🟤', grade: 'KHTN 9 · Dãy hoạt động hóa học của kim loại', hook: 'Ngày xưa người ta lấy đồng bằng cách ngâm sắt vụn trong nước mỏ có muối đồng.', ready: false },
     { id: '4A', floor: 2, name: 'Con lắc đơn', ready: false },
     { id: '4B', floor: 2, name: 'Khúc xạ qua lăng kính', ready: false }
   ];
@@ -322,21 +331,21 @@ window.NL = window.NL || {};
       spawns: { default: { x: 8, y: 1.6 }, fromElev: { x: 8, y: 1.6 }, fromLabA: { x: 2.25, y: 1.5 }, fromLabB: { x: 13.75, y: 1.5 } }
     };
   }
-  [2, 3].forEach(f => { S['f' + f] = floorScene(f); });
+  S.f2 = floorScene(2);
 
-  // Tầng 4 Sinh (đúng khoa Sinh ở tòa A1): hành lang dài, 5 phòng mỗi bên thang máy.
-  function sinhFloor() {
-    const sub = NL.SUBJECTS[4], W = 28, exps = NL.EXPERIMENTS.filter(e => e.floor === 4);
+  // Tầng môn học có 10 phòng (Sinh tầng 4, Hóa tầng 3): hành lang dài, 5 phòng mỗi bên thang máy.
+  function subjectFloor(f) {
+    const sub = NL.SUBJECTS[f], W = 28, exps = NL.EXPERIMENTS.filter(e => e.floor === f), hasModels = f === 4;
     const doorX = k => k < 5 ? 0.6 + k * 2.45 : 15.6 + (k - 5) * 2.45;
     const s = {
-      id: 'f4', title: `Tầng 4 · ${sub.name}`, floor: 4, w: W, d: 8, walls: true, subject: sub,
+      id: 'f' + f, title: `Tầng ${f} · ${sub.name}`, floor: f, w: W, d: 8, walls: true, subject: sub,
       floorColor(x, y) {
         if (y >= 5) return (x + y) % 2 ? '#E2C499' : '#D9B988';
         return (x + y) % 2 ? '#F7F7F2' : '#EDEEE8';
       },
       deco: [
-        { kind: 'elevator', side: 'N', a: 12.9, b: 14.5, floorLabel: '4' },
-        { kind: 'door', side: 'W', a: 1.4, b: 3.4, label: '🧊 Phòng Mô hình 3D', color: '#2F80C0' },
+        { kind: 'elevator', side: 'N', a: 12.9, b: 14.5, floorLabel: String(f) },
+        { kind: 'door', side: 'W', a: 1.4, b: 3.4, label: '🧊 Phòng Mô hình 3D', color: '#2F80C0', locked: !hasModels, sub: hasModels ? null : 'Sắp có' },
         { kind: 'board', side: 'W', a: 4.9, b: 7.5, lines: [sub.icon + ' ' + sub.name, '10 phòng thí nghiệm', '10 mô hình 3D'], head: sub.color }
       ],
       objects: [
@@ -347,7 +356,7 @@ window.NL = window.NL || {};
       tags: [{ x: 3.3, y: 5.5, label: '🌤 Ban công' }, { x: 13.7, y: 5.6, label: '🌤 Ban công' }, { x: 24.5, y: 5.5, label: '🌤 Ban công' }],
       triggers: [
         { x1: 12.4, y1: 0, x2: 15.0, y2: 1.0, type: 'elevator' },
-        { x1: 0, y1: 1.3, x2: 0.75, y2: 3.5, type: 'goto', to: 'models', spawn: 'default' },
+        { x1: 0, y1: 1.3, x2: 0.75, y2: 3.5, type: hasModels ? 'goto' : 'locked', to: 'models', spawn: 'default' },
         { x1: 0, y1: 4.8, x2: W, y2: 7.6, type: 'balcony' }
       ],
       spawns: { default: { x: 13.7, y: 1.6 }, fromElev: { x: 13.7, y: 1.6 }, fromModels: { x: 1.6, y: 2.4 } },
@@ -363,7 +372,8 @@ window.NL = window.NL || {};
     });
     return s;
   }
-  S.f4 = sinhFloor();
+  S.f4 = subjectFloor(4);
+  S.f3 = subjectFloor(3);
 
 
   function labScene(e) {
@@ -392,7 +402,7 @@ window.NL = window.NL || {};
       guide: { x: 5, y: 4.9, text: 'Tới bàn thí nghiệm' }
     };
   }
-  NL.EXPERIMENTS.filter(e => e.floor === 4 && e.ready).forEach(e => { S['lab-' + e.id] = labScene(e); });
+  NL.EXPERIMENTS.filter(e => e.ready).forEach(e => { S['lab-' + e.id] = labScene(e); });
 
   // Phòng Mô hình 3D: 10 bục trưng bày, đi tới bục nào thì xem mô hình đó
   function modelRoom() {

@@ -461,3 +461,5 @@ canvas#world3d{position:fixed;inset:0;width:100%;height:100%;display:block}
   .hud-br .emo:nth-child(n+4){display:none}
   .guide{font-size:13px!important;padding:4px 12px!important;top:auto!important;bottom:62px!important}
 }
+.jump-floor{grid-column:1/-1;font-weight:800;color:var(--navy);font-size:15px;margin-top:4px}
+.chem b{font-weight:800}

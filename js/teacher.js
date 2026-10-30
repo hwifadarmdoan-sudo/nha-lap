@@ -2,9 +2,10 @@
 window.NL = window.NL || {};
 NL.teacher = (function () {
   const $ = id => document.getElementById(id);
-  const LABS = NL.EXPERIMENTS.filter(e => e.floor === 4 && e.ready);
-  const FLOORS = [['outside', 'Ngoài'], ['lobby', 'T1'], ['f4', 'T4 Sinh']].concat(LABS.map(e => ['lab-' + e.id, 'P' + e.no + ' ' + e.short]), [['f2', 'T2 Lý'], ['f3', 'T3 Hóa']]);
-  const SCENE_SHORT = Object.assign({ outside: 'Ngoài', lobby: 'T1', f2: 'T2', f3: 'T3', f4: 'T4' }, Object.fromEntries(LABS.map(e => ['lab-' + e.id, 'P' + e.no])));
+  const LABS = NL.EXPERIMENTS.filter(e => e.ready);
+  const pn = e => (e.floor === 4 ? 'P' + e.no : e.id);
+  const FLOORS = [['outside', 'Ngoài'], ['lobby', 'T1'], ['f4', 'T4 Sinh']].concat(LABS.filter(e => e.floor === 4).map(e => ['lab-' + e.id, pn(e) + ' ' + e.short]), [['f3', 'T3 Hóa']], LABS.filter(e => e.floor === 3).map(e => ['lab-' + e.id, pn(e) + ' ' + e.short]), [['f2', 'T2 Lý']]);
+  const SCENE_SHORT = Object.assign({ outside: 'Ngoài', lobby: 'T1', f2: 'T2', f3: 'T3', f4: 'T4' }, Object.fromEntries(LABS.map(e => ['lab-' + e.id, pn(e)])));
   const IDLE_MS = 3 * 60 * 1000;
   let acc = 0, filming = false, filmT = 0, filmIdx = 0, knownHelp = new Set(), alertTarget = null;
   const FILM = ['outside', 'lobby', 'f4'].concat(LABS.flatMap(e => ['lab-' + e.id, 'f4']));

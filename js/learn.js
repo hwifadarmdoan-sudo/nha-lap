@@ -135,6 +135,7 @@ NL.learn = (function () {
       const re = new RegExp('(?<![\\p{L}\\d])' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![\\p{L}\\d])', 'giu');
       html = html.replace(re, m => { marks.push(`<button class="term" data-term="${k}">${m}</button>`); return `\u0001${marks.length - 1}\u0002`; });
     });
+    if (NL.chem) html = NL.chem.colorize(html, out => { marks.push(out); return `\u0001${marks.length - 1}\u0002`; });
     return html.replace(/\u0001(\d+)\u0002/g, (_, n) => marks[n]);
   }
   function bindTerms(root) {

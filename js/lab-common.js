@@ -254,6 +254,12 @@ NL.lab = (function () {
   }
   const api = {
     say, ask, askAll, card: NL.learn.card,
+    // FAIL FAST (Linh chốt 30/10): làm sai thao tác thì thấy hậu quả ngay, rút bài học, làm lại. Không trừ sao, chỉ ghi vào báo cáo.
+    lesson(o, cb) {
+      if (cur && !cur.lessons.includes(o.title)) cur.lessons.push(o.title);
+      NL.audio.play('pop');
+      NL.learn.card({ kicker: '💥 Sai nhanh, học nhanh', text: o.text, sub: o.sub, btn: o.btn || '🔁 Làm lại' }, cb);
+    },
     bank(n) { return NL.learn.bank(cur.id, n); },
     get prediction() { return cur.predict; },
     el, g, place, tween, draggable, setOn, tapable, moveHand, restHands,
@@ -276,6 +282,7 @@ NL.lab = (function () {
     get step() { return stepIdx; },
     finish(result) {
       result.quiz = cur.quiz.slice(); if (cur.predict) result.predict = cur.predict;
+      if (cur.lessons.length) result.lessons = cur.lessons.slice();
       NL.game.finishExperiment(cur.id, result);
     },
     text(parent, x, y, str, size, color, weight) {
@@ -286,7 +293,7 @@ NL.lab = (function () {
 
   function open(id) {
     const mod = modules[id]; if (!mod) return false;
-    cur = { id, steps: mod.steps, mod, quiz: [], predict: null };
+    cur = { id, steps: mod.steps, mod, quiz: [], predict: null, lessons: [] };
     $('lab').classList.remove('hidden');
     const stage = $('labStage'); stage.innerHTML = ''; $('labSide').innerHTML = '';
     svg = el('svg', { viewBox: '0 0 1000 560', preserveAspectRatio: 'xMidYMid meet' }, stage);

@@ -204,7 +204,7 @@ NL.report = (function () {
       const tb = `<table><tr>${r.table.head.map(h => `<th>${h}</th>`).join('')}</tr>${r.table.rows.map(row => `<tr>${row.map(v => `<td>${v}</td>`).join('')}</tr>`).join('')}</table>`;
       p.innerHTML = `<h3>✓ ${r.title}</h3><div class="rep-sub">Thông số em chọn: ${r.param} · ${esc(g.name)}</div>
         <div class="rep-flex"><div>${tb}</div><div style="flex:1;min-width:260px">${NL.chartSVG(r.chart, 420, 200)}</div></div>
-        <div style="font-weight:800;color:#1F4E79;margin-top:6px">Kết luận: ${r.conclusion}</div>${r.note ? `<div class="rep-sub">${r.note}</div>` : ''}${quizBlock(r)}
+        <div style="font-weight:800;color:#1F4E79;margin-top:6px">Kết luận: ${r.conclusion}</div>${r.note ? `<div class="rep-sub">${r.note}</div>` : ''}${(r.lessons || []).length ? `<div class="rep-sub">💥 Bài học từ lần làm sai: ${r.lessons.map(esc).join(' · ')}</div>` : ''}${quizBlock(r)}
         <div class="rep-dl"><button class="btn small pop" data-csv="${id}">📥 Tải file Excel</button><button class="btn small pop" data-jpg="${id}">🖼 Lưu ảnh biểu đồ</button></div>`;
       p.querySelector('[data-csv]').onclick = () => NL.exportData.csv(r);
       p.querySelector('[data-jpg]').onclick = () => NL.exportData.jpg(r);

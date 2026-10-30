@@ -187,8 +187,8 @@
   // Lối tắt vào thẳng thí nghiệm: ?tn=2A, ?tn=2B… hoặc số phòng ?tn=1 … ?tn=10
   const TN = (() => {
     const q = (params.get('tn') || '').toLowerCase(); if (!q) return null;
-    const alias = { bubbles: '2A', bot: '2A', plasmo: '2B', co: '2B', enzyme: '2C', mendel: '2D', dna: '2E', gel: '2E', hohap: '2F', tim: '2G', naymam: '2H', nguyenphan: '2I', quanthe: '2J' };
-    const e = NL.EXPERIMENTS.find(x => x.ready && x.floor === 4 && (x.id.toLowerCase() === q || String(x.no) === q || alias[q] === x.id));
+    const alias = { bubbles: '2A', bot: '2A', plasmo: '2B', co: '2B', enzyme: '2C', mendel: '2D', dna: '2E', gel: '2E', hohap: '2F', tim: '2G', naymam: '2H', nguyenphan: '2I', quanthe: '2J', kimloai: 'H1', chuando: 'H2', dienli: 'H3', khi: 'H4', traodoi: 'H5', ester: 'H6', anmon: 'H7', dotchay: 'H8', thamtu: 'H9', dinhsat: 'H10' };
+    const e = findRoom(alias[q] || q);
     return e ? e.id : null;
   })();
   // ?mh=1 … ?mh=10 (hoặc ?mh=M3): vào thẳng phòng Mô hình 3D và mở mô hình đó
@@ -228,8 +228,9 @@
     showGuide();
     benchPrompt(false);
     $('btnLab').classList.toggle('hidden', !s.lab || g.teacher);
-    $('btnJump').classList.toggle('pulse', id === 'f4');
-    if (id === 'f4' && !g.teacher && !g.f4Told) { g.f4Told = true; setTimeout(() => toast('Đi theo chấm vàng, hoặc bấm 🧭 để chọn 1 trong 10 phòng', 4000), 900); }
+    const roomsHere = NL.EXPERIMENTS.some(e => e.ready && 'f' + e.floor === id);
+    $('btnJump').classList.toggle('pulse', roomsHere);
+    if (roomsHere && !g.teacher && !(g.floorTold || (g.floorTold = {}))[id]) { g.floorTold[id] = 1; setTimeout(() => toast('Đi theo chấm vàng, hoặc bấm 🧭 để chọn 1 trong 10 phòng', 4000), 900); }
     $('btnElev').classList.toggle('hidden', !s.triggers.some(tr => tr.type === 'elevator'));
   }
   const inRect = (r, x, y) => x >= r.x1 && x <= r.x2 && y >= r.y1 && y <= r.y2;
@@ -247,6 +248,12 @@
     if (g.teacher) return null;
     const left = NL.EXPERIMENTS.filter(e => e.floor === 4 && e.ready && !r[e.id]);
     if (s.lab) return r[s.lab] ? null : s.guide;
+    const leftHere = NL.EXPERIMENTS.filter(e => e.floor === s.floor && e.ready && !r[e.id]);
+    if (s.doors && s.floor !== 4) {
+      if (!leftHere.length) return null;
+      const e = leftHere[0], d = s.doors[e.id];
+      return { x: d.x, y: d.y, text: `Vào phòng ${e.no} · ${e.short}` };
+    }
     if (g.scene === 'outside') return left.length ? s.guide : null;
     if (g.scene === 'lobby') return left.length ? { x: 6, y: 0.9, text: 'Vào thang máy, lên tầng 4' } : null;
     if (g.scene === 'f4') {
@@ -254,7 +261,7 @@
       const e = left[0], d = s.doors[e.id];
       return { x: d.x, y: d.y, text: `Vào phòng ${e.no} · ${e.short}` };
     }
-    if (s.floor > 1 && s.floor < 4) return { x: 8, y: 0.7, text: 'Tầng này sắp có. Quay lại thang máy nhé' };
+    if (s.floor > 1 && s.floor < 4 && !s.doors) return { x: 8, y: 0.7, text: 'Tầng này sắp có. Quay lại thang máy nhé' };
     return null;
   }
   function showGuide() {
@@ -396,8 +403,8 @@
   $('btnReport').addEventListener('click', () => { NL.audio.play('click'); NL.report.open(); });
   // Đi nhanh: chọn phòng hoặc nhập mã phòng thầy cô gửi (số phòng 1–10 hoặc 2A…), vào thẳng bàn thí nghiệm
   function findRoom(q) {
-    q = String(q || '').trim().toLowerCase().replace(/^phòng\s*/, '');
-    return NL.EXPERIMENTS.find(x => x.ready && x.floor === 4 && (x.id.toLowerCase() === q || String(x.no) === q));
+    q = String(q || '').trim().toLowerCase().replace(/^phòng\s*/, '').replace(/\s+/g, '');
+    return NL.EXPERIMENTS.find(x => x.ready && (x.id.toLowerCase() === q || (x.floor === 4 && String(x.no) === q)));
   }
   function jumpTo(e) {
     $('jump').classList.add('hidden'); NL.audio.play('pop');
@@ -408,17 +415,21 @@
     if (NL.lab.isOpen || g.inElev) return;
     NL.audio.play('click');
     const grid = $('jumpGrid'); grid.innerHTML = '';
-    NL.EXPERIMENTS.filter(e => e.floor === 4 && e.ready).forEach(e => {
-      const b = document.createElement('button'); b.className = 'jump-room pop' + (g.results[e.id] ? ' done' : '');
-      b.innerHTML = `<b>${e.icon} ${e.no} · ${e.short}${g.results[e.id] ? ' ✓' : ''}</b><span>${e.grade || ''}</span>`;
-      b.onclick = () => jumpTo(e); grid.appendChild(b);
+    [4, 3].forEach(f => {
+      const list = NL.EXPERIMENTS.filter(e => e.floor === f && e.ready); if (!list.length) return;
+      const h = document.createElement('div'); h.className = 'jump-floor'; h.textContent = `${NL.SUBJECTS[f].icon} Tầng ${f} · ${NL.SUBJECTS[f].name}`; grid.appendChild(h);
+      list.forEach(e => {
+        const b = document.createElement('button'); b.className = 'jump-room pop' + (g.results[e.id] ? ' done' : '');
+        b.innerHTML = `<b>${e.icon} ${f === 4 ? e.no : e.id} · ${e.short}${g.results[e.id] ? ' ✓' : ''}</b><span>${e.grade || ''}</span>`;
+        b.onclick = () => jumpTo(e); grid.appendChild(b);
+      });
     });
-    $('jumpNote').textContent = 'Thầy cô gửi link vào thẳng phòng: ' + location.origin + location.pathname + '?tn=<số phòng>';
+    $('jumpNote').textContent = 'Thầy cô gửi link vào thẳng phòng: ' + location.origin + location.pathname + '?tn=<mã phòng, ví dụ 3 hoặc H3>';
     $('jumpIn').value = ''; $('jump').classList.remove('hidden');
   });
   $('jumpForm').addEventListener('submit', ev => {
     ev.preventDefault(); const e = findRoom($('jumpIn').value);
-    if (e) jumpTo(e); else $('jumpNote').textContent = 'Không có phòng này. Nhập số từ 1 đến 10 nhé';
+    if (e) jumpTo(e); else $('jumpNote').textContent = 'Không có phòng này. Phòng Sinh nhập số 1–10, phòng Hóa nhập H1–H10 nhé';
   });
   $('jumpClose').addEventListener('click', () => { NL.audio.play('click'); $('jump').classList.add('hidden'); });
 
@@ -480,12 +491,13 @@
   // Chấm sao: thao tác đúng, đoán đúng, trả lời đúng ngay lần đầu (từ 80% số câu)
   function starsOf(r) {
     const q = r.quiz || [], okQ = q.filter(x => x.ok).length;
+    // FAIL FAST: thao tác sai (flaw, lessons) không trừ sao, chỉ câu dự đoán và câu hỏi mới tính. Làm xong là có 1 sao.
     const crit = [
-      [!r.flaw, r.flaw || ''],
       [r.predOk !== false, 'Lần sau thử đoán lại trước khi làm'],
       [!q.length || okQ >= q.length * 0.8, `Trả lời đúng ngay ${okQ}/${q.length} câu, cần từ ${Math.ceil(q.length * 0.8)} câu`]
     ];
-    return { n: Math.max(1, crit.filter(c => c[0]).length), miss: crit.filter(c => !c[0]).map(c => c[1]) };
+    const learned = (r.lessons || []).concat(r.flaw ? [r.flaw] : []);
+    return { n: 1 + crit.filter(c => c[0]).length, miss: crit.filter(c => !c[0]).map(c => c[1]), learned };
   }
   function finishExperiment(id, result) {
     const prev = g.results[id], sc = starsOf(result);
@@ -498,8 +510,9 @@
     confetti();
     const starTxt = '⭐'.repeat(sc.n) + '☆'.repeat(3 - sc.n);
     const head = sc.n === 3 ? 'Xuất sắc!' : 'Hoàn thành!';
-    const tips = sc.miss.length ? '\n' + sc.miss.map(t => '• ' + t).join('\n') + '\nLàm lại để lấy đủ 3 sao nhé' : '';
-    const nextE = NL.EXPERIMENTS.find(e => e.floor === 4 && e.ready && !g.results[e.id]);
+    const tips = (sc.learned.length ? '\n💥 Bài học thu được: ' + sc.learned.length : '') + (sc.miss.length ? '\n' + sc.miss.map(t => '• ' + t).join('\n') + '\nLàm lại để lấy đủ 3 sao nhé' : '');
+    const fl = (NL.EXPERIMENTS.find(e => e.id === id) || {}).floor;
+    const nextE = NL.EXPERIMENTS.find(e => e.floor === fl && e.ready && !g.results[e.id]);
     const celebrate = () => {
       g.danceT = 4.5; g.danceKind = 'dance'; g.emote = 'dance'; g.emoteT = 0; NL.audio.music('dance');
       g.status = `Xong TN ${id} 🎉`;
@@ -509,7 +522,7 @@
     bigMsg(starTxt, `${head}\n${result.title}${tips}`, () => {
       NL.lab.close(); celebrate();
       if (nextE) { toast(`Phòng tiếp theo: ${nextE.no} · ${nextE.short}`, 1800); setTimeout(() => jumpTo(nextE), 1600); }
-      else setTimeout(() => toast('Em đã làm hết 10 phòng! Ra ban công hóng gió nhé 🌿', 3500), 2500);
+      else setTimeout(() => toast(`Em đã làm hết các phòng ${NL.SUBJECTS[fl].name}! Ra ban công hóng gió nhé 🌿`, 3500), 2500);
     }, nextE ? `Sang phòng ${nextE.no} ➜` : 'Nhảy ăn mừng 💃', ['🔁 Làm lại thí nghiệm', () => { NL.lab.close(); NL.lab.open(id); }],
     nextE ? ['💃 Ăn mừng tại chỗ', () => { NL.lab.close(); celebrate(); setTimeout(() => toast('Mệt quá, ra ban công hóng gió nhé 🌿', 3500), 2500); }] : null);
   }
@@ -747,7 +760,7 @@
     const gd = nextGuide();
     if (gd && !insideTrig.size && !g.inElev) {
       // lần đầu: tô sáng đường đi tới chỗ cần đến
-      if (g.scene === 'f4' || (!g.order.length && (g.scene === 'outside' || g.scene === 'lobby'))) {
+      if (NL.scenes[g.scene].doors || (!g.order.length && (g.scene === 'outside' || g.scene === 'lobby'))) {
         if (!guidePath || t - guidePath.t > 0.4) guidePath = { t, pts: NL.findPath(s, g.x, g.y, gd.x, gd.y) || [] };
         guidePath.pts.forEach((q, k) => { if (k % 2) return; const p = NL.iso(q.x, q.y); c.fillStyle = `rgba(255,213,74,${0.55 + 0.35 * Math.sin(t * 5 - k * 0.5)})`; c.beginPath(); c.ellipse(p.x, p.y, 9, 4.5, 0, 0, 7); c.fill(); });
       }
@@ -762,7 +775,7 @@
     if (g.teacher) { const f = NL.teacher.focus(); if (f) { fx = f.x; fy = f.y; } }
     const gd = nextGuide(), showGd = gd && !insideTrig.size && !g.inElev;
     let pts = null;
-    if (showGd && (g.scene === 'f4' || (!g.order.length && (g.scene === 'outside' || g.scene === 'lobby')))) {
+    if (showGd && (s.doors || (!g.order.length && (g.scene === 'outside' || g.scene === 'lobby')))) {
       if (!guidePath || t - guidePath.t > 0.4) guidePath = { t, pts: NL.findPath(s, g.x, g.y, gd.x, gd.y) || [] };
       pts = guidePath.pts;
     }
