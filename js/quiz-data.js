@@ -34,7 +34,7 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Tại sao khi tăng nhiệt độ môi trường nước vượt quá ngưỡng 45^(∘)C, số lượng bọt khí thoát ra lại giảm mạnh và dừng hẳn?",
+   "q": "Tại sao khi tăng nhiệt độ môi trường nước vượt quá ngưỡng 45°C, số lượng bọt khí thoát ra lại giảm mạnh và dừng hẳn?",
    "o": [
     "Vì nước trong ống nghiệm bị bay hơi hoàn toàn",
     "Vì các enzyme tham gia vào chuỗi phản ứng quang hợp bị biến tính ở nhiệt độ cao",
@@ -87,8 +87,8 @@ NL.QUIZ = {
    "q": "Trong quá trình quang hợp của thực vật, phân tử khí oxygen (O₂) được giải phóng ra ngoài có nguồn gốc trực tiếp từ phân tử nào dưới đây?",
    "o": [
     "Phân tử khí carbon dioxide (CO₂) được hấp thụ từ môi trường",
-    "Phân tử nước (H₂O) thông qua quá trình quang phân li ở pha sáng",
-    "Phân tử đường glucose (C₆H₁₂O₆) được tổng hợp ở pha tối",
+    "Phân tử nước (H₂ O) thông qua quá trình quang phân li ở pha sáng",
+    "Phân tử đường glucose (C₆ H₁₂ O₆) được tổng hợp ở pha tối",
     "Phân tử muối khoáng hòa tan NaHCO₃ trong nước"
    ],
    "a": 1
@@ -116,7 +116,7 @@ NL.QUIZ = {
    "a": 0
   },
   {
-   "q": "Tại sao ở mức nhiệt độ 0^(∘)C, dung dịch chứa tinh bột và enzyme amylase sau khi nhỏ Lugol vẫn giữ màu xanh tím đậm sau thời gian dài?",
+   "q": "Tại sao ở mức nhiệt độ 0°C, dung dịch chứa tinh bột và enzyme amylase sau khi nhỏ Lugol vẫn giữ màu xanh tím đậm sau thời gian dài?",
    "o": [
     "Vì cấu trúc không gian của enzyme đã bị phá vỡ hoàn toàn",
     "Vì ở nhiệt độ thấp, hoạt tính xúc tác của enzyme bị ức chế tạm thời, phản ứng thủy phân diễn ra cực kỳ chậm",
@@ -126,7 +126,7 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Tại sao ở mức nhiệt độ đun sôi 100^(∘)C, enzyme amylase bị mất hoàn toàn hoạt tính xúc tác thủy phân tinh bột?",
+   "q": "Tại sao ở mức nhiệt độ đun sôi 100°C, enzyme amylase bị mất hoàn toàn hoạt tính xúc tác thủy phân tinh bột?",
    "o": [
     "Vì nhiệt độ cao làm phân tử nước bay hơi hết",
     "Vì cấu trúc không gian ba chiều của protein enzyme bị phá hủy hoàn toàn (bị biến tính)",
@@ -138,10 +138,10 @@ NL.QUIZ = {
   {
    "q": "Khoảng nhiệt độ tối ưu nào giúp enzyme amylase trong cơ thể người đạt tốc độ hoạt động xúc tác cao nhất?",
    "o": [
-    "Từ 0^(∘)C đến 10^(∘)C",
-    "Từ 37^(∘)C đến 40^(∘)C",
-    "Từ 60^(∘)C đến 70^(∘)C",
-    "Từ 90^(∘)C đến 100^(∘)C"
+    "Từ 0°C đến 10°C",
+    "Từ 37°C đến 40°C",
+    "Từ 60°C đến 70°C",
+    "Từ 90°C đến 100°C"
    ],
    "a": 1
   },
@@ -208,7 +208,7 @@ NL.QUIZ = {
  ],
  "2B": [
   {
-   "q": "Khi quan sát tế bào biểu bì thực vật màu xanh lá dưới kính hiển vi ảo ở mức dung dịch muối NaCl nhược trương (0%), hiện tượng gì xảy ra với tế bào?",
+   "q": "Khi quan sát tế bào biểu bì lá thài lài tía trong nước cất (dung dịch nhược trương), hiện tượng gì xảy ra với tế bào?",
    "o": [
     "Tế bào bị mất nước nghiêm trọng làm màng sinh chất co rút lại",
     "Tế bào hút nước trương phồng lên, màng sinh chất ép sát chặt vào thành tế bào cellulose",
@@ -228,12 +228,12 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Tại sao trong thí nghiệm này, tế bào thực vật được yêu cầu hiển thị với màu xanh lá đặc trưng có kèm theo các hạt lục lạp bên trong?",
+   "q": "Vì sao thí nghiệm chọn tế bào biểu bì mặt dưới lá thài lài tía để quan sát co nguyên sinh?",
    "o": [
-    "Vì lục lạp giúp tế bào tự tổng hợp thức ăn trong suốt quá trình quan sát",
-    "Vì màu xanh của lục lạp và cấu trúc thành tế bào giúp dễ dàng nhận biết hình thái và sự dịch chuyển của chất nguyên sinh",
-    "Vì tế bào không có lục lạp thì không bao giờ xảy ra hiện tượng co nguyên sinh",
-    "Vì ánh sáng từ đèn kính hiển vi chỉ phản chiếu được màu xanh lá"
+    "Vì tế bào biểu bì chứa rất nhiều lục lạp màu xanh dễ quan sát",
+    "Vì dịch không bào có sắc tố tím, giúp thấy rõ khối chất nguyên sinh co lại tách khỏi thành tế bào",
+    "Vì tế bào thài lài tía không có thành tế bào nên co rất nhanh",
+    "Vì ánh sáng kính hiển vi chỉ nhìn rõ được màu tím"
    ],
    "a": 1
   },
@@ -278,12 +278,12 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Nếu ngay sau khi quan sát hiện tượng co lồi ở nồng độ muối cao, học sinh tiến hành nhỏ nước cất vào tiêu bản, hiện tượng sinh học nào sẽ xảy ra tiếp theo?",
+   "q": "Nhỏ nước cất vào tiêu bản ngay sau khi tế bào đã co lồi ở nồng độ muối cao. Nhận định nào hợp lý nhất?",
    "o": [
-    "Tế bào sẽ tiếp tục bị teo nhỏ lại rồi tiêu hủy hoàn toàn",
-    "Hiện tượng phản co nguyên sinh xảy ra, nước thấm ngược vào làm màng sinh chất phồng lên áp sát lại thành tế bào",
-    "Tế bào chuyển sang hình thức phân bào nguyên phân",
-    "Không có bất kỳ sự thay đổi nào xảy ra trên tiêu bản"
+    "Tế bào chắc chắn phản co nhanh và hoàn toàn như ban đầu",
+    "Tế bào thường phản co rất chậm hoặc không phản co, tùy mức tổn thương và thời gian ngâm trong muối",
+    "Tế bào chuyển sang phân bào nguyên phân",
+    "Tế bào luôn vỡ tung ngay khi gặp nước cất"
    ],
    "a": 1
   },
@@ -298,14 +298,14 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Yếu tố kỹ thuật nào trên giao diện kính hiển vi ảo giúp học sinh quan sát rõ nét từng chi tiết màng sinh chất co lại và các bào quan bên trong tế bào?",
+   "q": "Dung dịch NaCl 0,9% là đẳng trương với tế bào máu người. Với tế bào biểu bì lá thài lài tía, nhận định nào đúng?",
    "o": [
-    "Nút điều chỉnh độ phóng đại vật kính (10× và 40×) kết hợp núm lấy nét tinh",
-    "Nút bật tắt nguồn điện tổng của máy tính",
-    "Chức năng thay đổi màu sắc giao diện trang web",
-    "Bảng nhập số liệu thống kê kết quả đo"
+    "NaCl 0,9% chắc chắn cũng là đẳng trương với mọi tế bào thực vật",
+    "Không nhất thiết: dung dịch đẳng trương phụ thuộc nồng độ chất tan bên trong từng loại tế bào",
+    "Tế bào thực vật không bao giờ có dung dịch đẳng trương",
+    "Mọi dung dịch muối đều là ưu trương với tế bào thực vật"
    ],
-   "a": 0
+   "a": 1
   }
  ],
  "2D": [
@@ -350,12 +350,12 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Trong công thức tính giá trị Chi-square $\\chi^{2} = \\sum_{}^{}\\frac{\\left( O_{i} - E_{i} \\right)^{2}}{E_{i}}$, ký hiệu O_(i) và E_(i) lần lượt đại diện cho các giá trị nào?",
+   "q": "Trong công thức tính giá trị Chi-square χ² = Σ (Oᵢ − Eᵢ)² / Eᵢ, ký hiệu Oᵢ và Eᵢ lần lượt đại diện cho các giá trị nào?",
    "o": [
-    "O_(i) là số cá thể lý thuyết, E_(i) là số cá thể thực tế",
-    "O_(i) là số cá thể thực tế quan sát được, E_(i) là số cá thể kỳ vọng theo lý thuyết",
-    "O_(i) là nồng độ dung dịch, E_(i) là nhiệt độ môi trường",
-    "O_(i) là số lượng hạt vàng, E_(i) là số lượng hạt xanh"
+    "Oᵢ là số cá thể lý thuyết, Eᵢ là số cá thể thực tế",
+    "Oᵢ là số cá thể thực tế quan sát được, Eᵢ là số cá thể kỳ vọng theo lý thuyết",
+    "Oᵢ là nồng độ dung dịch, Eᵢ là nhiệt độ môi trường",
+    "Oᵢ là số lượng hạt vàng, Eᵢ là số lượng hạt xanh"
    ],
    "a": 1
   },
@@ -390,7 +390,7 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Khi thực hiện kiểm định Chi-square cho phép lai AaBb × aabb với dung lượng mẫu N = 400 cá thể, số lượng cá thể lý thuyết kỳ vọng (E_(i)) cho mỗi loại kiểu hình trong 4 loại kiểu hình là bao nhiêu?",
+   "q": "Khi thực hiện kiểm định Chi-square cho phép lai AaBb × aabb với dung lượng mẫu N = 400 cá thể, số lượng cá thể lý thuyết kỳ vọng (Eᵢ) cho mỗi loại kiểu hình trong 4 loại kiểu hình là bao nhiêu?",
    "o": [
     "50 cá thể",
     "100 cá thể",
@@ -514,11 +514,11 @@ NL.QUIZ = {
  ],
  "2F": [
   {
-   "q": "Trong thí nghiệm đo tốc độ hô hấp của hạt nảy mầm bằng giọt mực, vai trò chính của dung dịch KOHđặt trong bình kín là gì?",
+   "q": "Trong thí nghiệm đo tốc độ hô hấp của hạt nảy mầm bằng giọt mực, vai trò chính của dung dịch KOH đặt trong bình kín là gì?",
    "o": [
     "Cung cấp thêm độ ẩm cho hạt đậu nhanh nảy mầm",
-    "Hấp thụ toàn bộ khí CO₂do hạt nảy mầm thải ra",
-    "Hấp thụ khí O₂để tạo môi trường kị khí cho hạt",
+    "Hấp thụ toàn bộ khí CO₂ do hạt nảy mầm thải ra",
+    "Hấp thụ khí O₂ để tạo môi trường kị khí cho hạt",
     "Phản ứng với giọt mực để làm giọt mực di chuyển"
    ],
    "a": 1
@@ -527,18 +527,18 @@ NL.QUIZ = {
    "q": "Nguyên nhân trực tiếp nào làm cho giọt mực đỏ trong ống mao dẫn dịch chuyển về phía bình chứa hạt nảy mầm?",
    "o": [
     "Do hạt hút nước làm giảm thể tích dung dịch trong bình",
-    "Do hạt hấp thụ O₂và khí CO₂thải ra bị KOHhấp thụ làm giảm áp suất khí trong bình",
+    "Do hạt hấp thụ O₂ và khí CO₂ thải ra bị KOH hấp thụ làm giảm áp suất khí trong bình",
     "Do nhiệt độ trong bình giảm xuống làm không khí co lại",
     "Do lực hút tĩnh điện sinh ra từ quá trình nảy mầm của hạt"
    ],
    "a": 1
   },
   {
-   "q": "Nếu không đặt cốc dung dịch KOHvào trong bình kín chứa hạt nảy mầm thì vị trí của giọt mực đỏ sẽ thay đổi như thế nào trong quá trình thí nghiệm?",
+   "q": "Nếu không đặt cốc dung dịch KOH vào trong bình kín chứa hạt nảy mầm thì vị trí của giọt mực đỏ sẽ thay đổi như thế nào trong quá trình thí nghiệm?",
    "o": [
     "Giọt mực di chuyển về phía bình chứa hạt nhanh hơn",
     "Giọt mực di chuyển ra xa bình chứa hạt",
-    "Giọt mực hầu như không di chuyển vì thể tích CO₂thải ra bằng thể tích O₂hấp thụ",
+    "Giọt mực hầu như không di chuyển vì thể tích CO₂ thải ra bằng thể tích O₂ hấp thụ",
     "Giọt mực bị vỡ tan ngay lập tức"
    ],
    "a": 2
@@ -554,7 +554,7 @@ NL.QUIZ = {
    "a": 0
   },
   {
-   "q": "Hiện tượng dung dịch nước vôi trong Ca(OH)₂chuyển sang màu vẩn đục khi sục khí từ bình chứa hạt nảy mầm vào chứng minh cho kết luận nào sau đây?",
+   "q": "Hiện tượng dung dịch nước vôi trong Ca(OH)₂ chuyển sang màu vẩn đục khi sục khí từ bình chứa hạt nảy mầm vào chứng minh cho kết luận nào sau đây?",
    "o": [
     "Quá trình hô hấp tế bào của hạt nảy mầm đã tiêu thụ khí O₂",
     "Quá trình hô hấp tế bào của hạt nảy mầm đã thải ra khí CO₂",
@@ -564,7 +564,7 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Khi tăng nhiệt độ môi trường từ 25^(∘)Clên 35^(∘)C(trong giới hạn sinh lý), tốc độ di chuyển của giọt mực đỏ thay đổi như thế nào?",
+   "q": "Khi tăng nhiệt độ môi trường từ 25°C lên 35°C (trong giới hạn sinh lý), tốc độ di chuyển của giọt mực đỏ thay đổi như thế nào?",
    "o": [
     "Tăng lên do nhiệt độ tối ưu làm tăng hoạt tính các enzyme hô hấp",
     "Giảm đi do hạt bị mất nước nhanh chóng",
@@ -584,27 +584,27 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Nếu tăng khối lượng hạt đậu xanh nảy mầm từ 20 glên 60 gtrong cùng điều kiện thể tích bình và nhiệt độ, kết quả đo thể tích O₂tiêu thụ trong 10 phútsẽ thay đổi ra sao?",
+   "q": "Nếu tăng khối lượng hạt đậu xanh nảy mầm từ 20 g lên 60 g trong cùng điều kiện thể tích bình và nhiệt độ, kết quả đo thể tích O₂ tiêu thụ trong 10 phút sẽ thay đổi ra sao?",
    "o": [
-    "Thể tích O₂tiêu thụ giảm đi một ba",
-    "Thể tích O₂tiêu thụ tăng lên khoảng gấp ba lần",
-    "Thể tích O₂tiêu thụ không thay đổi",
+    "Thể tích O₂ tiêu thụ giảm đi một ba",
+    "Thể tích O₂ tiêu thụ tăng lên khoảng gấp ba lần",
+    "Thể tích O₂ tiêu thụ không thay đổi",
     "Giọt mực di chuyển theo chiều ngược lại"
    ],
    "a": 1
   },
   {
-   "q": "Trong cùng một điều kiện khối lượng và nhiệt độ, tại sao nhóm hạt đậu đang nảy mầm lại có tốc độ tiêu thụ O₂cao hơn rất nhiều so với nhóm hạt đậu khô màng nảy mầm?",
+   "q": "Trong cùng một điều kiện khối lượng và nhiệt độ, tại sao nhóm hạt đậu đang nảy mầm lại có tốc độ tiêu thụ O₂ cao hơn rất nhiều so với nhóm hạt đậu khô chưa nảy mầm?",
    "o": [
     "Vì hạt nảy mầm có hàm lượng nước cao làm kích hoạt các enzyme hô hấp hoạt động mạnh",
     "Vì hạt khô không có cấu trúc tế bào hoàn chỉnh",
-    "Vì hạt khô bị mất hoàn bộ khí O₂bên trong",
+    "Vì hạt khô bị mất hoàn bộ khí O₂ bên trong",
     "Vì hạt khô chỉ thực hiện quá trình quang hợp"
    ],
    "a": 0
   },
   {
-   "q": "Trong công thức tính tốc độ hô hấp dựa vào quãng đường di chuyển của giọt mực (s), nếu đường kính trong của ống mao dẫn tăng lên gấp đôi thì quãng đường sthu được cho cùng một thể tích O₂tiêu thụ sẽ thay đổi như thế nào?",
+   "q": "Trong công thức tính tốc độ hô hấp dựa vào quãng đường di chuyển của giọt mực (s), nếu đường kính trong của ống mao dẫn tăng lên gấp đôi thì quãng đường s thu được cho cùng một thể tích O₂ tiêu thụ sẽ thay đổi như thế nào?",
    "o": [
     "Quãng đường s tăng lên gấp đôi",
     "Quãng đường s giảm đi bốn lần",
@@ -646,11 +646,11 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Âm thanh Korotkoff đầu tiên mà học sinh nghe thấy qua ống nghe khi xả van khí áp quấn tay tương ứng với chỉ số nào?",
+   "q": "Máy đo huyết áp tự động hiện kết quả 120/80 mmHg. Số 120 cho biết điều gì?",
    "o": [
     "Huyết áp tâm trương",
     "Huyết áp tâm thu",
-    "Nhịp tim trung bình",
+    "Nhịp tim trong một phút",
     "Áp suất khí quyển trong phòng"
    ],
    "a": 1
@@ -748,7 +748,7 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Nếu đặt đĩa Petri chứa hạt đậu đã đủ ẩm và không khí vào trong ngăn đá tủ lạnh (0^(∘)C), hiện tượng gì sẽ xảy ra với hạt?",
+   "q": "Nếu đặt đĩa Petri chứa hạt đậu đã đủ ẩm và không khí vào trong ngăn đá tủ lạnh (0°C), hiện tượng gì sẽ xảy ra với hạt?",
    "o": [
     "Hạt nảy mầm nhanh hơn gấp hai lần",
     "Hạt không nảy mầm được do nhiệt độ quá thấp làm các enzyme đình trệ hoạt động",
@@ -758,17 +758,17 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Khi kéo dài thời gian thí nghiệm trong điều kiện \"Tối hoàn toàn\", tại sao thân cây mầm lại phát triển rất dài và có màu vàng nhạt so với cây ngoài sáng?",
+   "q": "Trong điều kiện \"Tối hoàn toàn\", vì sao thân cây mầm mọc rất dài, mảnh và có màu vàng nhạt so với cây ngoài sáng?",
    "o": [
-    "Do cây tập trung kéo dài tế bào thân để vươn lên tìm ánh sáng và chưa tổng hợp được diệp lục trong tối",
-    "Do cây trong tối hấp thụ được nhiều khí Oxygen hơn",
-    "Do nhiệt độ trong bóng tối luôn cao hơn ngoài sáng",
-    "Do cây trong tối bị nấm mốc kích thích sinh trưởng"
+    "Thiếu ánh sáng nên tế bào thân kéo dài mạnh (hiện tượng mọc vống) và không tổng hợp được diệp lục",
+    "Cây trong tối hấp thụ được nhiều khí oxygen hơn",
+    "Nhiệt độ trong bóng tối luôn cao hơn ngoài sáng",
+    "Cây trong tối bị nấm mốc kích thích sinh trưởng"
    ],
    "a": 0
   },
   {
-   "q": "Trước khi gieo hạt, người nông dân thường làm đất tơi xốp và phơi màu nhằm mục đích chính nào liên quan đến điều kiện nảy mầm?",
+   "q": "Trước khi gieo hạt, người nông dân thường làm đất tơi xốp và phơi ải nhằm mục đích chính nào liên quan đến điều kiện nảy mầm?",
    "o": [
     "Tăng cường khả năng giữ nhiệt và cung cấp đầy đủ không khí (O₂) cho hạt hô hấp nảy mầm",
     "Tăng độ chiếu sáng cho hạt dưới lòng đất",
@@ -800,10 +800,10 @@ NL.QUIZ = {
   {
    "q": "Khoảng nhiệt độ môi trường nào sau đây thường là thích hợp nhất (nhiệt độ tối ưu) cho sự nảy mầm của hầu hết các loại hạt cây trồng vùng nhiệt đới?",
    "o": [
-    "0^(∘)C − 5^(∘)C",
-    "25^(∘)C − 30^(∘)C",
-    "55^(∘)C − 60^(∘)C",
-    "80^(∘)C − 100^(∘)C"
+    "0°C − 5°C",
+    "25°C − 30°C",
+    "55°C − 60°C",
+    "80°C − 100°C"
    ],
    "a": 1
   },
@@ -830,7 +830,7 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Trong các kỳ của quá trình nguyên phân quan sát dưới kính hiển vi trên vi trường có mật độ tế bào cao, kỳ nào xuất hiện với tần suất cao nhất?",
+   "q": "Trên tiêu bản đầu rễ hành, phần lớn tế bào quan sát được đang ở giai đoạn nào của chu kỳ tế bào?",
    "o": [
     "Kỳ trung gian",
     "Kỳ đầu",
@@ -840,12 +840,12 @@ NL.QUIZ = {
    "a": 0
   },
   {
-   "q": "Khi nhấp giữ chuột trái và kéo trực tiếp trên màn hình thị kính ảo, thao tác này tương ứng với hoạt động thực tế nào trên kính hiển vi quang học?",
+   "q": "Theo SGK Sinh học 10 (chương trình 2018), nhận định nào đúng về kỳ trung gian?",
    "o": [
-    "Thay đổi độ phóng đại của vật kính",
-    "Xoay núm di chuyển bàn kính (X-Y Stage Control) để trượt vi trường tìm tế bào",
-    "Xoay ốc vi cấp để lấy nét",
-    "Tắt nguồn điện đèn chiếu sáng"
+    "Kỳ trung gian là kỳ đầu tiên của nguyên phân",
+    "Kỳ trung gian thuộc chu kỳ tế bào, diễn ra trước nguyên phân; nguyên phân gồm kỳ đầu, kỳ giữa, kỳ sau, kỳ cuối",
+    "Kỳ trung gian diễn ra sau kỳ cuối của nguyên phân",
+    "Kỳ trung gian chỉ có ở tế bào động vật"
    ],
    "a": 1
   },
@@ -853,7 +853,7 @@ NL.QUIZ = {
    "q": "Dấu hiệu hình thái đặc trưng nhất để nhận biết một tế bào đang ở Kỳ giữa của quá trình nguyên phân dưới vật kính 40x là gì?",
    "o": [
     "Các nhiễm sắc thể bắt đầu dồn về hai cực của tế bào",
-    "Các nhiễm sắc thể co xoắn cực đại và xếp thành một hàng trên mặt phẳng xơ tơ",
+    "Các nhiễm sắc thể co xoắn cực đại và xếp thành một hàng trên mặt phẳng xích đạo của thoi phân bào",
     "Màng nhân bắt đầu tái xuất hiện bao bọc lấy bộ nhiễm sắc thể",
     "Vách ngăn tế bào hình thành chia đôi tế bào"
    ],
@@ -893,7 +893,7 @@ NL.QUIZ = {
    "q": "Tại sao ở Kỳ trung gian, nhiễm sắc thể trong nhân tế bào lại khó quan sát thấy các hình thái co xoắn rõ rệt như ở Kỳ giữa?",
    "o": [
     "Vì nhiễm sắc thể đã bị tiêu hủy hoàn toàn",
-    "Vì nhiễm sắc thể ở dạng sợi mảnh duỗi xoắn duỗi dài trong nhân",
+    "Vì nhiễm sắc thể ở dạng sợi mảnh, dài, đang duỗi xoắn trong nhân",
     "Vì nhiễm sắc thể bị màng nhân che khuất hoàn toàn",
     "Vì nhiễm sắc thể chuyển ra ngoài tế bào chất"
    ],
@@ -910,19 +910,19 @@ NL.QUIZ = {
    "a": 0
   },
   {
-   "q": "Trong công thức tính độ mờ ảnh dưới kính hiển vi ảo, khi khoảng cách tiêu cự điều chỉnh Z_(thực tế) trùng khớp hoàn toàn với Z_(chuẩn), hình ảnh tiêu bản hiển thị trên màn hình sẽ có đặc điểm gì?",
+   "q": "Sự kiện quan trọng nào diễn ra ở kỳ trung gian để chuẩn bị cho nguyên phân?",
    "o": [
-    "Hình ảnh bị đen hoàn toàn",
-    "Hình ảnh đạt độ phân giải sắc nét tuyệt đối (In-focus)",
-    "Hình ảnh chuyển sang màu trắng bệch",
-    "Hình ảnh tự động phóng đại lên 1000 lần"
+    "DNA nhân đôi, mỗi nhiễm sắc thể trở thành nhiễm sắc thể kép gồm 2 chromatid",
+    "Nhiễm sắc thể co xoắn cực đại và xếp hàng ở mặt phẳng xích đạo",
+    "Các nhiễm sắc thể đơn phân li về hai cực tế bào",
+    "Màng nhân tái xuất hiện bao bọc hai bộ nhiễm sắc thể"
    ],
-   "a": 1
+   "a": 0
   }
  ],
  "2J": [
   {
-   "q": "Trong quần thể bướm đêm, kiểu gene AA quy định bướm đen, Aa quy định bướm xám, aa quy định bướm trắng. Trong một quần thể ngẫu phối lý tưởng không chịu tác động của các nhân tố tiến hóa, thành phần kiểu hình bướm sẽ thay đổi như thế nào qua các thế hệ?",
+   "q": "Giả định trong mô phỏng (trội không hoàn toàn): AA bướm đen, Aa bướm xám, aa bướm trắng. Ở bướm bạch dương thật, allele đen trội hoàn toàn nên Aa có màu đen. Trong một quần thể ngẫu phối lý tưởng không chịu tác động của các nhân tố tiến hóa, thành phần kiểu hình bướm sẽ thay đổi như thế nào qua các thế hệ?",
    "o": [
     "Tỷ lệ bướm đen tăng dần, bướm trắng giảm dần",
     "Duy trì ổn định không đổi qua các thế hệ theo định luật Hardy-Weinberg",
@@ -952,9 +952,9 @@ NL.QUIZ = {
    "a": 1
   },
   {
-   "q": "Trong môi trường thân cây bị bám muội than đen, chim ăn thịt dễ phát hiện và bắt bướm trắng (aa). Nếu thiết lập hệ số chọn lọc s_(aa) = 1.0 (giá trị thích nghi w_(aa) = 0.0) duy trì qua các thế hệ, tần số allele a trong quần thể sẽ biến đổi như thế nào?",
+   "q": "Trong môi trường thân cây bị bám muội than đen, chim ăn thịt dễ phát hiện và bắt bướm trắng (aa). Nếu thiết lập hệ số chọn lọc s(aa) = 1.0 (giá trị thích nghi w(aa) = 0.0) duy trì qua các thế hệ, tần số allele a trong quần thể sẽ biến đổi như thế nào?",
    "o": [
-    "Tần số allele a giảm dần qua các thế hệ nhưng rất khó bị loại bỏ hoàn toàn vì còn ẩn trong bướm xám dị hợp Aa",
+    "Tần số allele a giảm dần qua các thế hệ nhưng khó bị loại bỏ hoàn toàn vì vẫn còn trong bướm xám Aa không bị chọn lọc",
     "Tần số allele a bằng 0 ngay ở thế hệ F₁",
     "Tần số allele a tăng lên gấp đôi",
     "Tần số allele a không bị ảnh hưởng"
@@ -1002,7 +1002,7 @@ NL.QUIZ = {
    "a": 0
   },
   {
-   "q": "Trong biểu đồ mô phỏng, khi chọn lọc tự nhiên chống lại bướm đen và bướm xám (s_(AA) = 1.0, s_(Aa) = 1.0), allele A sẽ bị loại bỏ khỏi quần thể như thế nào qua các thế hệ so với trường hợp chọn lọc chống lại bướm trắng (aa)?",
+   "q": "Trong biểu đồ mô phỏng, khi chọn lọc tự nhiên chống lại bướm đen và bướm xám (s(AA) = 1.0, s(Aa) = 1.0), allele A sẽ bị loại bỏ khỏi quần thể như thế nào qua các thế hệ so với trường hợp chọn lọc chống lại bướm trắng (aa)?",
    "o": [
     "Allele A bị loại bỏ nhanh hơn nhiều và bị biến mất hoàn toàn ngay trong một số ít thế hệ",
     "Allele A bị loại bỏ chậm hơn allele a",
@@ -1132,7 +1132,7 @@ Object.assign(NL.QUIZ, {
   {
    "q": "Đường pentose cấu tạo nên đơn phân nucleotide của phân tử DNA khác với đường pentose của phân tử RNA ở đặc điểm cấu tạo nào?",
    "o": [
-    "Đường deoxyribose (C₅H₁₀O₄) trong DNA thiếu một nguyên tử oxygen ở vị trí carbon 2′ so với đường ribose (C₅H₁₀O₅) trong RNA",
+    "Đường deoxyribose (C₅ H₁₀ O₄) trong DNA thiếu một nguyên tử oxygen ở vị trí carbon 2′ so với đường ribose (C₅ H₁₀ O₅) trong RNA",
     "Đường trong DNA có 6 nguyên tử carbon, còn đường trong RNA có 5 nguyên tử carbon",
     "Đường trong DNA chứa nhóm OH ở vị trí carbon 2′, còn đường trong RNA chỉ chứa nguyên tử H",
     "Đường trong DNA có dạng mạch hở, còn đường trong RNA luôn có dạng mạch vòng 6 cạnh"
@@ -1160,7 +1160,7 @@ Object.assign(NL.QUIZ, {
    "a": 0
   },
   {
-   "q": "Phân tử tRNA đút lót đóng vai trò vận chuyển amino acid trong quá trình dịch mã có cấu trúc không gian đặc trưng nào giúp nó nhận biết chính xác bộ ba mã hóa trên mRNA?",
+   "q": "Phân tử tRNA đóng vai trò vận chuyển amino acid trong quá trình dịch mã có cấu trúc không gian đặc trưng nào giúp nó nhận biết chính xác bộ ba mã hóa trên mRNA?",
    "o": [
     "Bộ ba mã mở đầu nằm ở đầu 3′ của phân tử",
     "Bộ ba đối mã (Anticodon) nằm ở thùy giữa liên kết bổ sung với bộ ba mã hóa (Codon) trên mRNA",
@@ -2018,7 +2018,7 @@ Object.assign(NL.QUIZ, {
   {
    "q": "Đặc điểm nào sau đây là ĐÚNG khi nói về đột biến Đảo đoạn chứa tâm động?",
    "o": [
-    "Làm thay đổi hình dạng ngoại cảnh của nhiễm sắc thể do tâm động bị dịch chuyển vị trí",
+    "Làm thay đổi hình thái của nhiễm sắc thể do tâm động bị dịch chuyển vị trí",
     "Làm mất đi tâm động của nhiễm sắc thể",
     "Làm gia tăng gấp đôi số lượng tâm động",
     "Không bao giờ xảy ra trong tự nhiên"
@@ -2026,7 +2026,7 @@ Object.assign(NL.QUIZ, {
    "a": 0
   },
   {
-   "q": "Sự trao đổi đoạn không cân giữa hai chromatid chị em trong cặp nhiễm sắc thể tương đồng trong quá trình giảm phân sẽ dẫn đến kết quả nào?",
+   "q": "Sự trao đổi đoạn không cân giữa hai chromatid không chị em trong cặp nhiễm sắc thể tương đồng trong quá trình giảm phân sẽ dẫn đến kết quả nào?",
    "o": [
     "Một chromatid bị mất đoạn và một chromatid bị lặp đoạn",
     "Cả hai chromatid đều bị đảo đoạn",
