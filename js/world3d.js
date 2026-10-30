@@ -747,10 +747,13 @@ NL.w3 = (function () {
     load().then(() => {
       let p = previews.get(canvas);
       if (!p) {
-        const r = new T.WebGLRenderer({ canvas, antialias: true, alpha: true }); r.setPixelRatio(Math.min(2, devicePixelRatio || 1)); r.setSize(canvas.width, canvas.height, false);
+        // giữ kích thước hiển thị theo số đo gốc của canvas; màn hình nét chỉ tăng độ phân giải, không phóng to hình
+        const cw = canvas.width, chh = canvas.height;
+        canvas.style.height = `min(${chh}px, 52vh)`; canvas.style.width = 'auto'; canvas.style.aspectRatio = `${cw} / ${chh}`;
+        const r = new T.WebGLRenderer({ canvas, antialias: true, alpha: true }); r.setPixelRatio(Math.min(2, devicePixelRatio || 1)); r.setSize(cw, chh, false);
         r.outputColorSpace = T.SRGBColorSpace; r.toneMapping = T.ACESFilmicToneMapping;
         const sc = new T.Scene(); sc.add(new T.HemisphereLight(0xFFFFFF, 0xC8D8E8, 1.1)); const dl = new T.DirectionalLight(0xFFFFFF, 1.4); dl.position.set(2, 3, 4); sc.add(dl);
-        const cam = new T.PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 20); const near = canvas.width >= 280; cam.position.set(0, 0.85, near ? 3.3 : 3.6); cam.lookAt(0, 0.66, 0);
+        const cam = new T.PerspectiveCamera(30, cw / chh, 0.1, 20); const near = cw >= 280; cam.position.set(0, 0.85, near ? 3.3 : 3.6); cam.lookAt(0, 0.66, 0);
         p = { r, sc, cam, key: '', ch: null, rot: 0, drag: null, touched: 0 }; previews.set(canvas, p);
         // kéo để xoay nhân vật 360°
         canvas.style.touchAction = 'none'; canvas.style.cursor = 'grab';
