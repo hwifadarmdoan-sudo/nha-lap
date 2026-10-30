@@ -5,8 +5,8 @@ NL.bots = (function () {
   const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
   const pick = a => a[Math.floor(rnd() * a.length)];
   const NAMES = ['Minh', 'Lan', 'Huy', 'Mai', 'Tú', 'Ngọc', 'Khoa', 'Vy', 'Phúc', 'An'];
-  const LABS = NL.EXPERIMENTS.filter(e => e.floor === 2 && e.ready).map(e => 'lab-' + e.id);
-  const HOME = ['lobby', 'outside', 'f2', 'f2', 'lobby', 'f2', LABS[0], LABS[1 % LABS.length], 'f2', LABS[2 % LABS.length]];
+  const LABS = NL.EXPERIMENTS.filter(e => e.floor === 4 && e.ready).map(e => 'lab-' + e.id);
+  const HOME = ['lobby', 'outside', 'f4', 'f4', 'lobby', 'f4', LABS[0], LABS[1 % LABS.length], 'f4', LABS[2 % LABS.length]];
   const HELP = {
     'lab-2A': ['Bọt nổi nhanh quá, đếm không kịp', 'Chưa biết chỉnh khoảng cách đèn'],
     'lab-2B': ['Không biết nhỏ lọ nào trước', 'Chưa hiểu vì sao tế bào co lại'],
@@ -71,7 +71,7 @@ NL.bots = (function () {
       else if (r < 0.78) { b.mode = 'dance'; b.timer = 3; }
       else if (r < 0.84 && !s.lab && NL.game.teacher) { b.help = true; b.helpReason = pick(HELP.other); b.timer = 25; }
       else if (r < 0.92) { // đổi tầng
-        const to = pick(['outside', 'lobby', 'f2', 'f2'].concat(LABS));
+        const to = pick(['outside', 'lobby', 'f4', 'f4'].concat(LABS));
         b.scene = to; const ns = NL.scenes[to];
         if (ns.lab) { b.x = 5; b.y = 6.6; const q = benchSide(); walkTo(b, q.x, q.y); b.mode = 'lab'; b.step = 1; b.status = `TN ${ns.lab} · bước 1/7`; }
         else { const sp = ns.spawns.fromElev || ns.spawns.default; b.x = sp.x; b.y = sp.y; b.status = ''; }

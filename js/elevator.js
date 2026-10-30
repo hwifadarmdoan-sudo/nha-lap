@@ -3,7 +3,7 @@ window.NL = window.NL || {};
 NL.elevator = (function () {
   const SVGNS = 'http://www.w3.org/2000/svg';
   const $ = id => document.getElementById(id);
-  const NAMES = { 1: 'Sảnh', 2: 'Sinh học', 3: 'Hóa học', 4: 'Vật lí' };
+  const NAMES = { 1: 'Sảnh', 2: 'Vật lí', 3: 'Hóa học', 4: 'Sinh học' };
   const COLS = { 1: '#5BB4EA', 2: '#3FB37F', 3: '#9B6BD6', 4: '#3D8BD9' };
   let svg, busy = false, cur = 1, opts = null, hand, screen, outsideSign, outsideWall;
 
@@ -87,7 +87,7 @@ NL.elevator = (function () {
     moveHand(778 + 19, b._y + 46, 280, () => {
       b.querySelector('.face').setAttribute('fill', b._ready ? '#FFE9A8' : '#FFD6D6');
       setTimeout(() => moveHand(880, 620, 400), 250);
-      if (!b._ready) { NL.helpers.toast('Tầng ' + f + ' sắp có, em lên tầng 2 nhé'); setTimeout(() => b.querySelector('.face').setAttribute('fill', '#F7F9FB'), 600); return; }
+      if (!b._ready) { NL.helpers.toast('Tầng ' + f + ' sắp có, em lên tầng 4 nhé'); setTimeout(() => b.querySelector('.face').setAttribute('fill', '#F7F9FB'), 600); return; }
       if (f === cur) { $('elevTip').textContent = 'Em đang ở tầng này rồi'; setTimeout(() => b.querySelector('.face').setAttribute('fill', '#F7F9FB'), 600); return; }
       ride(f, b);
     });

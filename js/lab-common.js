@@ -3,7 +3,7 @@ window.NL = window.NL || {};
 NL.lab = (function () {
   const SVGNS = 'http://www.w3.org/2000/svg';
   const $ = id => document.getElementById(id);
-  let svg, layer, handR, handL, cur = null, stepIdx = 0, active = [], nextCb = null, rafId = 0;
+  let autoT = 0, svg, layer, handR, handL, cur = null, stepIdx = 0, active = [], nextCb = null, rafId = 0;
   const modules = {};
 
   function el(tag, attrs, parent) {
@@ -30,7 +30,7 @@ NL.lab = (function () {
       // 4 ngón + ngón cái = 5 ngón
       [[-20, -30, 20], [-10, -38, 26], [0, -38, 26], [10, -33, 22]].forEach(([fx, fy, fh]) => el('rect', { x: fx, y: fy, width: 9, height: fh, rx: 4.5, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 1.5 }, inner));
       el('rect', { x: 16, y: -14, width: 9, height: 20, rx: 4.5, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 1.5, transform: 'rotate(40 20 -4)' }, inner);
-      h.style.pointerEvents = 'none';
+      h.style.pointerEvents = 'none'; h.style.display = 'none'; // góp ý 30/10: bỏ bàn tay vì vướng, em dùng chuột trực tiếp
       return h;
     };
     handL = mk(true); handR = mk(false);
@@ -108,7 +108,7 @@ NL.lab = (function () {
     if (cur.mod.clearSide) $('labSide').innerHTML = '';
     $('stepNo').textContent = st.label ? (typeof st.label === 'function' ? st.label() : st.label) : `Bước ${stepIdx + 1}/${cur.steps.length}`;
     say(st.text);
-    $('btnNext').classList.add('hidden'); $('labHint').classList.add('hidden');
+    clearTimeout(autoT); $('btnNext').classList.add('hidden'); $('labHint').classList.add('hidden');
     NL.game.setStatus(`TN ${cur.id} · ${$('stepNo').textContent.toLowerCase()}`);
     st.enter(api);
   }
@@ -203,13 +203,19 @@ NL.lab = (function () {
     get prediction() { return cur.predict; },
     el, g, place, tween, draggable, setOn, tapable, moveHand, restHands,
     loop, wait, panel, slider, choices, table, showChart, wrapUp,
-    hideNext() { $('btnNext').classList.add('hidden'); },
+    hideNext() { clearTimeout(autoT); $('btnNext').classList.add('hidden'); },
     get svg() { return layer; },
     get side() { return $('labSide'); },
+    // Xong thao tác: tự sang bước sau, không bắt bấm xác nhận.
+    // Chỉ giữ nút khi bên phải đang có thanh trượt / lựa chọn để em còn chỉnh tiếp.
     done(label) {
       const b = $('btnNext');
       b.textContent = label || 'Bước tiếp theo ➜';
-      b.classList.remove('hidden');
+      clearTimeout(autoT);
+      if ($('labSide').querySelector('input, select, .seg button, .choice')) { b.classList.remove('hidden'); return; }
+      const at = stepIdx, who = cur;
+      $('labHint').textContent = '✅ Xong! Sang bước tiếp…'; $('labHint').classList.remove('hidden');
+      autoT = setTimeout(() => { if (cur === who && stepIdx === at && !NL.learn.busy) b.click(); else if (cur === who && stepIdx === at) b.classList.remove('hidden'); }, 1100);
     },
     goto(idx) { stepIdx = idx; setStep(); },
     get step() { return stepIdx; },
@@ -256,7 +262,8 @@ NL.lab = (function () {
   document.addEventListener('DOMContentLoaded', () => {
     $('btnNext').addEventListener('click', () => {
       NL.audio.play('click');
-      $('btnNext').classList.add('hidden');
+      $('btnNext').classList.add('hidden'); $('labHint').classList.add('hidden'); clearTimeout(autoT);
+      if (!cur) return;
       const st = cur.steps[stepIdx];
       if (st.onNext) { st.onNext(api); return; }
       if (stepIdx < cur.steps.length - 1) { stepIdx++; setStep(); }

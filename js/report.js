@@ -149,9 +149,12 @@ NL.exportData = {
     this.save(new Blob([NL.zipStore(files)], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), this.fileName(res, 'xlsx'));
   },
   csv(res) { this.xlsx(res); },
-  jpg(res) {
+  jpg(res) { this.svgJpg(NL.chartSVG(res.chart, 900, 440), res); },
+  // Vẽ SVG biểu đồ lên canvas rồi lưu .jpg. Thẻ <svg> phải là XML hợp lệ: bỏ width/height/style cũ (trùng thuộc tính làm ảnh không tải được).
+  svgJpg(svg, res) {
     const W = 900, H = 500;
-    let svg = NL.chartSVG(res.chart, W, H - 60).replace('<svg ', `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H - 60}" `).replace(/<animate[^>]*\/>/g, '');
+    svg = svg.replace(/<animate[^>]*\/>/g, '').replace(/&nbsp;/g, '&#160;')
+      .replace(/<svg([^>]*)>/, (m, at) => '<svg xmlns="http://www.w3.org/2000/svg"' + at.replace(/\s(xmlns|width|height|style)="[^"]*"/g, '') + ` width="${W}" height="${H - 60}" font-family="Baloo 2, sans-serif">`);
     const img = new Image();
     img.onload = () => {
       const c = document.createElement('canvas'); c.width = W * 2; c.height = H * 2;
@@ -159,7 +162,9 @@ NL.exportData = {
       x.fillStyle = '#1F4E79'; x.font = "800 24px 'Baloo 2', sans-serif"; x.fillText(res.title || '', 20, 36);
       x.drawImage(img, 0, 50, W, H - 60);
       c.toBlob(b => this.save(b, this.fileName(res, 'jpg')), 'image/jpeg', 0.92);
+      NL.helpers && NL.helpers.toast && NL.helpers.toast('Đã lưu ảnh biểu đồ 🖼');
     };
+    img.onerror = () => { NL.helpers && NL.helpers.toast && NL.helpers.toast('Chưa lưu được ảnh, em thử lại nhé'); };
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   }
 };
@@ -183,7 +188,7 @@ NL.report = (function () {
       <ul class="rep-list">${ready.map(e => {
         const r = g.results[e.id], ord = g.order.indexOf(e.id);
         return `<li><span class="st ${r ? 'ok' : ''}">${r ? '✓' : ''}</span>Tầng ${e.floor} · ${e.name}${r ? ` <span class="rep-sub">(lần ${ord + 1})</span>` : ''}</li>`;
-      }).join('')}<li class="rep-sub">Tầng 3 Hóa, tầng 4 Lý: sắp có</li></ul>`;
+      }).join('')}<li class="rep-sub">Tầng 2 Lý, tầng 3 Hóa: sắp có</li></ul>`;
     box.appendChild(p0);
     p0.querySelector('#repAv').appendChild(avatar(g.look));
     g.order.forEach(id => {

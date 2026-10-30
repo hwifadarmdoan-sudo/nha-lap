@@ -1,4 +1,4 @@
-// Khung xem mô hình 3D dùng chung cho 10 mô hình Sinh (phòng Mô hình 3D, tầng 2).
+// Khung xem mô hình 3D dùng chung cho 10 mô hình Sinh (phòng Mô hình 3D, tầng 4).
 // Mỗi mô hình gọi NL.m3d.register(id, { title, tabs, build(api, tab), data(api), quizKey }).
 // three.js chỉ được tải khi mở mô hình đầu tiên để trò chơi vào nhanh.
 window.NL = window.NL || {};
@@ -515,19 +515,7 @@ NL.m3d = (function () {
     if (st.def.liveData) dataTimer = setInterval(() => { if (dataBox && !dataBox.matches(':hover')) draw(); }, 1000);
   }
   function closeData() { clearInterval(dataTimer); if (dataBox) { dataBox.remove(); dataBox = null; } }
-  function chartJpg(res) {
-    if (!res.chart.svg) return NL.exportData.jpg(res);
-    const W = 900, H = 500, svg = res.chart.svg.replace('<svg ', `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H - 60}" `);
-    const img = new Image();
-    img.onload = () => {
-      const c = document.createElement('canvas'); c.width = W * 2; c.height = H * 2;
-      const x = c.getContext('2d'); x.scale(2, 2); x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
-      x.fillStyle = '#1F4E79'; x.font = "800 24px 'Baloo 2', sans-serif"; x.fillText(res.title || '', 20, 36);
-      x.drawImage(img, 0, 50, W, H - 60);
-      c.toBlob(b => NL.exportData.save(b, NL.exportData.fileName(res, 'jpg')), 'image/jpeg', 0.92);
-    };
-    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-  }
+  function chartJpg(res) { NL.exportData.svgJpg(res.chart.svg || NL.chartSVG(res.chart, 900, 440), res); }
 
   // ---------- lưu ảnh mô hình ----------
   function screenshot() {

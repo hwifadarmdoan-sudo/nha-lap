@@ -4,26 +4,26 @@ window.NL = window.NL || {};
   const i = NL.iso;
   const WALL_C = '#FBF3DC', WALL_SIDE = '#F1E5C2';
   NL.SUBJECTS = {
-    2: { name: 'Sinh học', color: '#3FB37F', icon: '🌿', A: 'Đếm bọt khí rong', B: 'Co nguyên sinh', ready: true },
+    4: { name: 'Sinh học', color: '#3FB37F', icon: '🌿', A: 'Đếm bọt khí rong', B: 'Co nguyên sinh', ready: true },
     3: { name: 'Hóa học', color: '#9B6BD6', icon: '⚗️', A: 'Chuẩn độ axit–bazơ', B: 'Màu ngọn lửa', ready: false },
-    4: { name: 'Vật lí', color: '#3D8BD9', icon: '🧲', A: 'Con lắc đơn', B: 'Khúc xạ ánh sáng', ready: false }
+    2: { name: 'Vật lí', color: '#3D8BD9', icon: '🧲', A: 'Con lắc đơn', B: 'Khúc xạ ánh sáng', ready: false }
   };
-  // Tầng 2 Sinh: 10 phòng theo thứ tự trong bản đặc tả "Môn Sinh" (29/10). Mã phòng 2A, 2B giữ như cũ để không mất kết quả đã lưu.
+  // Tầng 4 Sinh: 10 phòng theo thứ tự trong bản đặc tả "Môn Sinh" (29/10). Mã phòng 2A, 2B giữ như cũ để không mất kết quả đã lưu.
   NL.EXPERIMENTS = [
-    { id: '2A', floor: 2, no: 1, short: 'Quang hợp', name: 'Đếm bọt khí rong', icon: '🌿', ready: true },
-    { id: '2C', floor: 2, no: 2, short: 'Enzyme', name: 'Nhiệt độ và enzyme amylase', icon: '🧪', ready: true },
-    { id: '2B', floor: 2, no: 3, short: 'Co nguyên sinh', name: 'Co và phản co nguyên sinh', icon: '🔬', ready: true },
-    { id: '2D', floor: 2, no: 4, short: 'Mendel', name: 'Di truyền Mendel ở đậu Hà Lan', icon: '🫛', ready: true },
-    { id: '2E', floor: 2, no: 5, short: 'Điện di DNA', name: 'Điện di DNA', icon: '🧬', ready: true },
-    { id: '2F', floor: 2, no: 6, short: 'Hô hấp hạt', name: 'Hô hấp tế bào ở hạt nảy mầm', icon: '🌰', ready: true },
-    { id: '2G', floor: 2, no: 7, short: 'Nhịp tim', name: 'Huyết áp và nhịp tim', icon: '❤️', ready: true },
-    { id: '2H', floor: 2, no: 8, short: 'Nảy mầm', name: 'Điều kiện nảy mầm của hạt', icon: '🌱', ready: true },
-    { id: '2I', floor: 2, no: 9, short: 'Nguyên phân', name: 'Quan sát nguyên phân', icon: '🔍', ready: true },
-    { id: '2J', floor: 2, no: 10, short: 'Quần thể', name: 'Tần số allele qua các thế hệ', icon: '🦋', ready: true },
+    { id: '2A', floor: 4, no: 1, short: 'Quang hợp', name: 'Đếm bọt khí rong', icon: '🌿', ready: true },
+    { id: '2C', floor: 4, no: 2, short: 'Enzyme', name: 'Nhiệt độ và enzyme amylase', icon: '🧪', ready: true },
+    { id: '2B', floor: 4, no: 3, short: 'Co nguyên sinh', name: 'Co và phản co nguyên sinh', icon: '🔬', ready: true },
+    { id: '2D', floor: 4, no: 4, short: 'Mendel', name: 'Di truyền Mendel ở đậu Hà Lan', icon: '🫛', ready: true },
+    { id: '2E', floor: 4, no: 5, short: 'Điện di DNA', name: 'Điện di DNA', icon: '🧬', ready: true },
+    { id: '2F', floor: 4, no: 6, short: 'Hô hấp hạt', name: 'Hô hấp tế bào ở hạt nảy mầm', icon: '🌰', ready: true },
+    { id: '2G', floor: 4, no: 7, short: 'Nhịp tim', name: 'Huyết áp và nhịp tim', icon: '❤️', ready: true },
+    { id: '2H', floor: 4, no: 8, short: 'Nảy mầm', name: 'Điều kiện nảy mầm của hạt', icon: '🌱', ready: true },
+    { id: '2I', floor: 4, no: 9, short: 'Nguyên phân', name: 'Quan sát nguyên phân', icon: '🔍', ready: true },
+    { id: '2J', floor: 4, no: 10, short: 'Quần thể', name: 'Tần số allele qua các thế hệ', icon: '🦋', ready: true },
     { id: '3A', floor: 3, name: 'Chuẩn độ axit–bazơ', ready: false },
     { id: '3B', floor: 3, name: 'Thử màu ngọn lửa', ready: false },
-    { id: '4A', floor: 4, name: 'Con lắc đơn', ready: false },
-    { id: '4B', floor: 4, name: 'Khúc xạ qua lăng kính', ready: false }
+    { id: '4A', floor: 2, name: 'Con lắc đơn', ready: false },
+    { id: '4B', floor: 2, name: 'Khúc xạ qua lăng kính', ready: false }
   ];
 
   // ---------- vẽ đồ vật ----------
@@ -51,6 +51,11 @@ window.NL = window.NL || {};
     sofa(c, o) {
       NL.box(c, o.x, o.y, o.w, o.d, 18, '#7FB6E0');
       NL.box(c, o.x, o.y, o.w, 0.3, 40, '#6AA6D6');
+    },
+    // chị lễ tân ở sảnh: đứng sau quầy, vẫy tay
+    npc(c, o, t) {
+      const p = i(o.x + o.w / 2, o.y + o.d / 2);
+      NL.drawChar(c, p.x, p.y, o.look, { t, anim: 'idle', facing: 1, emote: Math.sin(t * 0.8) > 0.6 ? 'wave' : null });
     },
     desk(c, o) {
       NL.box(c, o.x, o.y, o.w, o.d, o.h, '#F6E7C1', { top: '#FFFFFF' });
@@ -261,20 +266,22 @@ window.NL = window.NL || {};
     id: 'lobby', title: 'Tầng 1 · Sảnh', floor: 1, w: 12, d: 9, walls: true,
     floorColor(x, y) { return (x + y) % 2 ? '#F7F2E6' : '#EFE8D6'; },
     deco: [
-      { kind: 'board', side: 'N', a: 1.2, b: 3.6, lines: ['Bảng tin', 'Chào mừng đến Nhà Láp!', 'Tầng 2 Sinh · 3 Hóa · 4 Lý'] },
+      { kind: 'board', side: 'N', a: 1.2, b: 3.6, lines: ['Bảng tin', 'Chào mừng đến Nhà Láp!', 'Tầng 2 Lý · 3 Hóa · 4 Sinh'] },
       { kind: 'elevator', side: 'N', a: 5.2, b: 6.8, floorLabel: '1' },
       { kind: 'window', side: 'N', a: 8.4, b: 11.2 },
       { kind: 'board', side: 'W', a: 2.5, b: 6.5, lines: ['NHÀ A1', 'Trường ĐHSP Hà Nội'], head: '#2F80C0' }
     ],
     objects: [
-      { kind: 'desk', x: 1.2, y: 4, w: 1.1, d: 2.6, h: 40, label: 'Lễ tân', solid: true },
+      { kind: 'desk', x: 1.2, y: 4, w: 1.1, d: 2.6, h: 40, label: '💬 Lễ tân', solid: true },
+      { kind: 'npc', x: 0.35, y: 4.9, w: 0.6, d: 0.6, label: 'Chị lễ tân', look: { hair: 1, hairColor: '#3A2618', coat: '#2F4A6D', gender: 'f' }, solid: true },
       { kind: 'sofa', x: 8.5, y: 5.2, w: 2.4, d: 1, solid: true },
       { kind: 'plant', x: 0.3, y: 0.3, w: 0.8, d: 0.8, solid: true }, { kind: 'plant', x: 11, y: 0.3, w: 0.8, d: 0.8, solid: true },
       { kind: 'plant', x: 4.2, y: 0.3, w: 0.8, d: 0.8, solid: true }, { kind: 'plant', x: 7.2, y: 0.3, w: 0.8, d: 0.8, solid: true }
     ],
     triggers: [
       { x1: 4.7, y1: 0, x2: 7.3, y2: 1.0, type: 'elevator' },
-      { x1: 4.8, y1: 8.4, x2: 7.2, y2: 9, type: 'goto', to: 'outside', spawn: 'fromLobby' }
+      { x1: 4.8, y1: 8.4, x2: 7.2, y2: 9, type: 'goto', to: 'outside', spawn: 'fromLobby' },
+      { x1: 2.3, y1: 3.9, x2: 3.5, y2: 6.7, type: 'npc' }
     ],
     mats: [{ x: 5, y: 8, w: 2, label: 'Lối ra' }],
     spawns: { default: { x: 6, y: 7.4 }, fromOut: { x: 6, y: 7.6 }, fromElev: { x: 6, y: 1.5 } },
@@ -315,20 +322,20 @@ window.NL = window.NL || {};
       spawns: { default: { x: 8, y: 1.6 }, fromElev: { x: 8, y: 1.6 }, fromLabA: { x: 2.25, y: 1.5 }, fromLabB: { x: 13.75, y: 1.5 } }
     };
   }
-  [3, 4].forEach(f => { S['f' + f] = floorScene(f); });
+  [2, 3].forEach(f => { S['f' + f] = floorScene(f); });
 
-  // Tầng 2 Sinh: hành lang dài, 5 phòng mỗi bên thang máy.
+  // Tầng 4 Sinh (đúng khoa Sinh ở tòa A1): hành lang dài, 5 phòng mỗi bên thang máy.
   function sinhFloor() {
-    const sub = NL.SUBJECTS[2], W = 28, exps = NL.EXPERIMENTS.filter(e => e.floor === 2);
+    const sub = NL.SUBJECTS[4], W = 28, exps = NL.EXPERIMENTS.filter(e => e.floor === 4);
     const doorX = k => k < 5 ? 0.6 + k * 2.45 : 15.6 + (k - 5) * 2.45;
     const s = {
-      id: 'f2', title: `Tầng 2 · ${sub.name}`, floor: 2, w: W, d: 8, walls: true, subject: sub,
+      id: 'f4', title: `Tầng 4 · ${sub.name}`, floor: 4, w: W, d: 8, walls: true, subject: sub,
       floorColor(x, y) {
         if (y >= 5) return (x + y) % 2 ? '#E2C499' : '#D9B988';
         return (x + y) % 2 ? '#F7F7F2' : '#EDEEE8';
       },
       deco: [
-        { kind: 'elevator', side: 'N', a: 12.9, b: 14.5, floorLabel: '2' },
+        { kind: 'elevator', side: 'N', a: 12.9, b: 14.5, floorLabel: '4' },
         { kind: 'door', side: 'W', a: 1.4, b: 3.4, label: '🧊 Phòng Mô hình 3D', color: '#2F80C0' },
         { kind: 'board', side: 'W', a: 4.9, b: 7.5, lines: [sub.icon + ' ' + sub.name, '10 phòng thí nghiệm', '10 mô hình 3D'], head: sub.color }
       ],
@@ -356,7 +363,7 @@ window.NL = window.NL || {};
     });
     return s;
   }
-  S.f2 = sinhFloor();
+  S.f4 = sinhFloor();
 
 
   function labScene(e) {
@@ -385,12 +392,12 @@ window.NL = window.NL || {};
       guide: { x: 5, y: 4.9, text: 'Tới bàn thí nghiệm' }
     };
   }
-  NL.EXPERIMENTS.filter(e => e.floor === 2 && e.ready).forEach(e => { S['lab-' + e.id] = labScene(e); });
+  NL.EXPERIMENTS.filter(e => e.floor === 4 && e.ready).forEach(e => { S['lab-' + e.id] = labScene(e); });
 
   // Phòng Mô hình 3D: 10 bục trưng bày, đi tới bục nào thì xem mô hình đó
   function modelRoom() {
     const s = {
-      id: 'models', title: 'Tầng 2 · Phòng Mô hình 3D', floor: 2, w: 14, d: 9, walls: true,
+      id: 'models', title: 'Tầng 4 · Phòng Mô hình 3D', floor: 4, w: 14, d: 9, walls: true,
       floorColor(x, y) { return (x + y) % 2 ? '#EEF4FA' : '#E2ECF5'; },
       deco: [
         { kind: 'board', side: 'N', a: 1, b: 4.4, lines: ['🧊 Phòng Mô hình 3D', 'Đi tới bục để xem'], head: '#2F80C0' },
@@ -402,7 +409,7 @@ window.NL = window.NL || {};
         { kind: 'plant', x: 0.3, y: 7.9, w: 0.8, d: 0.8, solid: true }, { kind: 'plant', x: 12.9, y: 7.9, w: 0.8, d: 0.8, solid: true },
         { kind: 'plant', x: 12.9, y: 0.3, w: 0.8, d: 0.8, solid: true }
       ],
-      triggers: [{ x1: 12.4, y1: 8.4, x2: 14, y2: 9, type: 'goto', to: 'f2', spawn: 'fromModels' }],
+      triggers: [{ x1: 12.4, y1: 8.4, x2: 14, y2: 9, type: 'goto', to: 'f4', spawn: 'fromModels' }],
       mats: [{ x: 12, y: 8, w: 2, label: 'Ra hành lang' }],
       spawns: { default: { x: 13, y: 7.4 } },
       guide: { x: 2.3, y: 2.7, text: 'Tới bục mô hình' }

@@ -99,6 +99,8 @@
     api.label('Tâm nhĩ phải', s.RA, { off: [-0.6, 1.0, 0] }); api.label('Tâm nhĩ trái', s.LA, { off: [0.6, 1.0, 0] });
     api.label('Tâm thất phải', s.RV, { off: [-0.8, -0.6, 0.5] }); api.label('Tâm thất trái', s.LV, { off: [0.9, -0.8, 0.5] });
     api.label('Động mạch chủ', [0.2, 3.5, 0], { cls: 'tag', color: '#E8343A' }); api.label('Động mạch phổi', [2.6, 2.95, 0], { cls: 'tag', color: '#4D6FD6' });
+    api.label('Tĩnh mạch chủ trên', [-1.7, 4.45, 0], { cls: 'tag', color: '#4D6FD6' }); api.label('Tĩnh mạch chủ dưới', [-2.0, -3.05, -0.8], { cls: 'tag', color: '#4D6FD6' });
+    api.label('Tĩnh mạch phổi', [3.75, 1.45, 0], { cls: 'tag', color: '#E8343A' });
     // hạt máu
     const mkFlow = (pts, color, n) => {
       const curve = new T.CatmullRomCurve3(pts.map(p => V(...p)));
@@ -254,9 +256,11 @@
       const o2 = k % 2 === 0, m = api.group();
       api.sphere(0.09, o2 ? 0xFF4D4D : 0x555555, [-0.07, 0, 0], m, 8); api.sphere(0.09, o2 ? 0xFF4D4D : 0x222222, [0.07, 0, 0], m, 8); if (!o2) api.sphere(0.07, 0x111111, [0, 0.08, 0], m, 8);
       m.userData.noPick = true; m.traverse(c => { c.userData.noPick = true; });
+      if (k % 3 === 0 || k % 3 === 1 && k % 2) { const sp = api.textSprite(o2 ? 'O₂' : 'CO₂', { h: 0.34, parent: m, pos: [0, 0.3, 0], color: '#FFFFFF', bg: o2 ? 'rgba(220,40,40,.85)' : 'rgba(40,40,40,.85)' }); sp.userData.noPick = true; }
       mols.push({ m, o2, t: R(), x: (R() - 0.5) * 14, z: (R() - 0.5) * 1.6 });
     }
     api.label(lungSide ? 'O₂ vào máu, CO₂ ra phế nang' : 'O₂ ra tế bào, CO₂ vào máu', [0, -1.7, 0], { cls: 'tag', color: '#2F80C0' });
+    api.label('<span style="color:#E03030">●● O₂ (oxy)</span> &nbsp; <span style="color:#C9CED6">●●● CO₂ (cacbon điôxit)</span>', [0, -2.4, 0], { cls: 'plain' });
     api.onFrame(dt => {
       cells.forEach(c => {
         c.m.position.x += dt * 0.9; if (c.m.position.x > 8.5) { c.m.position.x = -8.5; c.sat = lungSide ? 0 : 1; }

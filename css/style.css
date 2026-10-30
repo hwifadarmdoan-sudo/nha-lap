@@ -387,3 +387,23 @@ body.film #hud,body.film #teacher,body.film .t-alert{display:none!important}
 .m3d-cb i{display:inline-block;width:24px;height:24px;border-radius:7px}
 .m3d-fact{position:absolute;left:12px;bottom:62px;right:280px;max-width:520px;background:#fffdf6;border:1px solid #e6dcc4;border-radius:12px;padding:8px 12px;font-size:13px;line-height:1.45;box-shadow:0 4px 14px rgba(0,0,0,.12);pointer-events:none}
 .m3d-fact b{color:#b5462f}
+.npc-talk{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:40;display:flex;gap:12px;align-items:flex-start;width:min(560px,calc(100vw - 32px));background:#fff;border-radius:20px;padding:14px 16px;box-shadow:0 10px 30px rgba(31,78,121,.25);border:3px solid #F4B740;animation:npcIn .35s cubic-bezier(.34,1.56,.64,1)}
+.npc-talk.hidden{display:none}
+.npc-face{font-size:40px;line-height:1}
+.npc-body{flex:1}.npc-name{color:#B07A00;font-size:14px}
+.npc-body p{margin:4px 0 10px;font-size:16px;line-height:1.45;color:#1F4E79}
+.npc-btns{display:flex;gap:8px;justify-content:flex-end}
+@keyframes npcIn{from{transform:translate(-50%,30px) scale(.9);opacity:0}to{transform:translate(-50%,0) scale(1);opacity:1}}
+/* bản 3D thử nghiệm (?3d) */
+canvas#world3d{position:fixed;inset:0;width:100%;height:100%;display:block}
+.w3-tags{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+.w3-tag{position:absolute;left:0;top:0;display:flex;flex-direction:column;align-items:center;gap:2px;white-space:nowrap}
+.w3-tag b{background:rgba(255,255,255,.92);color:var(--navy);font-size:13px;padding:1px 10px;border-radius:999px;box-shadow:0 2px 6px rgba(31,78,121,.18)}
+.w3-tag b.me{background:#2F80C0;color:#fff}.w3-tag b.tch{background:#1F4E79;color:#fff}
+.w3-tag small{background:#FFF3C4;color:#7A5A00;font-size:11px;padding:0 8px;border-radius:999px}
+.w3-tag i{font-style:normal;font-size:26px;animation:w3pop .35s cubic-bezier(.34,1.56,.64,1)}
+.w3-tag .w3-help{animation:w3bob .6s ease-in-out infinite alternate}
+@keyframes w3pop{from{transform:scale(.3)}to{transform:scale(1)}}
+@keyframes w3bob{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+.chip-opt.wide{width:auto;min-width:42px;padding:0 12px;border-radius:999px;font-size:14px}
+.try3d{display:block;margin:14px auto 0;font-size:15px}

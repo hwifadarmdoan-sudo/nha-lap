@@ -151,5 +151,5 @@ NL.learn = (function () {
   }
   function closeAll() { document.querySelectorAll('#lab .quiz').forEach(b => b.remove()); const p = $('termPop'); if (p) p.classList.add('hidden'); }
 
-  return { TERMS, decorate, bindTerms, showTerm, ask, card, bank, closeAll, esc };
+  return { TERMS, decorate, bindTerms, showTerm, ask, card, bank, closeAll, esc, get busy() { return !!document.querySelector('#lab .quiz'); } };
 })();
