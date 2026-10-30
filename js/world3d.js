@@ -1,9 +1,10 @@
-// Bản 3D thử nghiệm (mở bằng ?3d): vẽ lại các khung cảnh bằng three.js.
+// Bản 3D (bản chính; ?2d mở bản 2D): vẽ lại các khung cảnh bằng three.js.
 // Logic đi lại, thang máy, thí nghiệm, nhiều người chơi vẫn dùng chung với bản 2D (main.js, scenes.js).
 // Toạ độ: ô (x, y) của bản 2D = (X, Z) trong 3D, trục Y hướng lên, 1 ô = 1 mét.
 window.NL = window.NL || {};
 NL.w3 = (function () {
-  const on = new URLSearchParams(location.search).has('3d');
+  // bản 3D là bản chính; ?2d mở lại bản 2D, máy không có WebGL cũng tự về 2D
+  const on = !new URLSearchParams(location.search).has('2d') && (() => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch (e) { return false; } })();
   let T, renderer, scene, camera, cv, sky, sun, hemi, ready = false, loading = null;
   let built = {}, curId = null, curGroup = null, anims = [], pickables = [], active = [], shellV = 1, doorOpen = 0, seamT = 0, skyBg = null, skyFog = null, sunDisc = null;
   const chars = new Map(); let tagBox = null, arrow = null, ring = null, dots = [];
@@ -419,16 +420,17 @@ NL.w3 = (function () {
       const dr = onWall(g, w.side, m + 0.01, w.b, 0, 2.15, 0.08, mat('#DCE4EC', { metalness: 0.6, roughness: 0.25 }));
       picks.push(dl, dr);
       const disp = onWall(g, w.side, m - 0.22, m + 0.22, 2.2, 2.36, 0.1, mat('#14273A'));
-      wallSign(g, w.side, m, 2.28, w.floorLabel || '▲', { h: 0.13, bg: '#14273A', color: '#7CF29A', out: 0.16 });
-      wallSign(g, w.side, m, 2.62, '🛗 Thang máy', { h: 0.28, bg: '#FFFFFF', color: '#1F4E79', maxW: (w.b - w.a) + 0.6 });
+      wallSign(g, w.side, m, 2.26, w.floorLabel || '▲', { h: 0.12, bg: '#14273A', color: '#7CF29A', out: 0.16 });
+      wallSign(g, w.side, m, 2.5, '🛗 Thang máy', { h: 0.24, bg: '#FFFFFF', color: '#1F4E79', maxW: (w.b - w.a) + 0.4 });
       void disp;
     } else if (w.kind === 'door') {
       onWall(g, w.side, w.a - 0.1, w.b + 0.1, 0, 2.3, 0.06, mat('#FFFFFF'));
       const d = onWall(g, w.side, w.a, w.b, 0, 2.18, 0.08, mat(w.locked ? '#C9D3DD' : '#9FD3F2', { roughness: 0.4 })); picks.push(d);
       onWall(g, w.side, w.a + 0.15, w.b - 0.15, 1.05, 1.95, 0.09, mat('#E8F6FF', { roughness: 0.1, emissive: '#CFEFFF', emissiveIntensity: 0.3 }));
       const hx = w.b - 0.22; onWall(g, w.side, hx - 0.03, hx + 0.03, 0.95, 1.12, 0.12, mat('#C9A227', { metalness: 0.7, roughness: 0.3 }));
-      wallSign(g, w.side, m, 2.52, w.label, { h: 0.3, bg: w.locked ? '#9AA9B7' : (w.color || '#2F80C0'), maxW: (w.b - w.a) + 0.55 });
-      if (w.sub) wallSign(g, w.side, m, 1.45, w.sub, { h: 0.22, bg: '#FFFFFF', color: '#1F4E79', out: 0.11 });
+      // biển tên gắn ngay trên ô kính của cửa: nằm trong khung nhìn, không bị cắt chữ ở mép màn hình
+      wallSign(g, w.side, m, w.sub ? 1.68 : 1.5, w.label, { h: 0.26, bg: w.locked ? '#9AA9B7' : (w.color || '#2F80C0'), maxW: (w.b - w.a) - 0.2, out: 0.12 });
+      if (w.sub) wallSign(g, w.side, m, 1.3, w.sub, { h: 0.2, bg: '#FFFFFF', color: '#1F4E79', maxW: (w.b - w.a) - 0.3, out: 0.12 });
     } else if (w.kind === 'board') {
       const lines = w.lines || [];
       const tex = canvasTex(512, 320, (x, W, Hh) => {
@@ -667,7 +669,7 @@ NL.w3 = (function () {
     }
     // vỏ tòa A1 mờ dần khi vào sảnh, hiện lại khi ra sân; cửa kính tự mở khi đến gần
     if (built.outside && active.includes('outside')) {
-      const tf = curId === 'outside' ? 1 : 0; shellV += (tf - shellV) * Math.min(1, st.dt * 3); if (Math.abs(tf - shellV) < 0.01) shellV = tf; shellFade(shellV);
+      const tf = curId === 'outside' ? 1 : 0; shellV += (tf - shellV) * Math.min(1, st.dt * 7); if (Math.abs(tf - shellV) < 0.01) shellV = tf; shellFade(shellV);
       if (built.lobby) built.lobby.visible = shellV < 0.98;
       const me = st.self, o0 = offOf(curId), near = me && doorAt && Math.hypot(me.x + o0[0] - doorAt[0], me.y + o0[1] - doorAt[1]) < 2.6;
       doorOpen += ((near ? 1 : 0) - doorOpen) * Math.min(1, st.dt * 5);
@@ -700,7 +702,7 @@ NL.w3 = (function () {
     // camera: nhìn chéo từ phía +x +z giống bản 2D, bám theo nhân vật
     const f0 = st.focus, oo = offOf(curId), f = { x: f0.x + oo[0], y: f0.y + oo[1] };
     const dist = (s.walls ? 5.8 : 9.5) * zoomK * (st.zoomRel || 1), elev = s.walls ? 0.62 : 0.48;
-    const tgt = new T.Vector3(f.x, 0.7, f.y);
+    const tgt = new T.Vector3(f.x, s.walls ? 1.0 : 0.7, f.y);
     const pos = new T.Vector3(f.x + dist * Math.cos(elev) * 0.7071, 0.9 + dist * Math.sin(elev), f.y + dist * Math.cos(elev) * 0.7071);
     if (!camPos || st.snap) { camPos = pos.clone(); camTgt = tgt.clone(); }
     seamT = Math.max(0, seamT - st.dt);

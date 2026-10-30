@@ -5,7 +5,7 @@
   const isTouch = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
   const params = new URLSearchParams(location.search);
   const wantTeacher = params.has('dieuhanh') || location.hash === '#dieuhanh';
-  // ?3d: bản 3D thử nghiệm (world3d.js), dùng chung toàn bộ logic với bản 2D
+  // bản 3D (world3d.js) là bản chính, ?2d mở bản 2D; hai bản dùng chung toàn bộ logic
   const USE3D = !!(NL.w3 && NL.w3.on);
   if (USE3D) NL.w3.init().catch(e => { console.error(e); });
 
@@ -111,6 +111,7 @@
     const TABS = [
       ['basic', '🙂 Cơ bản', [
         ['Giới tính', [['m', 'Nam'], ['f', 'Nữ'], ['n', 'Trung tính']].map(([v, t]) => tx(t, L.gender === v, () => { L.gender = v; L.bottom = v === 'f' ? 'skirt' : 'pants'; }))],
+        ['Dáng người', W.BODIES.map((t, k) => tx(t, L.body === k, () => { L.body = k; }))],
         ['Màu da', W.SKINS.map(c => sw(c, L.skin === c, () => { L.skin = c; }))],
         ['Phần dưới', [['pants', 'Quần dài'], ['skirt', 'Váy']].map(([v, t]) => tx(t, L.bottom === v, () => { L.bottom = v; }))],
       ]],
@@ -158,13 +159,13 @@
     L.skin = pick(W.SKINS); L.hair = pick(L.gender === 'm' ? [0, 5, 6, 0] : W.HAIR_UI);
     L.hairColor = Math.random() < 0.6 ? pick(W.HAIR_COLS.slice(0, 4)) : pick(W.HAIR_COLS);
     L.eyes = pick([0, 1, 2, 3]); L.eyeColor = pick(W.EYE_COLS); L.brows = pick([0, 1, 2, 3]); L.mouth = pick([0, 1, 2, 3]);
-    L.expr = pick([0, 1, 2, 3, 4]); L.outfit = pick([0, 0, 1, 2]); L.coat = pick(W.COATS); L.shirt = pick(W.SHIRTS);
+    L.body = pick([0, 1, 1, 2]); L.expr = pick([0, 1, 2, 3, 4]); L.outfit = pick([0, 0, 1, 2]); L.coat = pick(W.COATS); L.shirt = pick(W.SHIRTS);
   }
   function intro() {
     showStep('introLogo');
     setTimeout(() => showStep('introTitle'), 1600);
-    $('btnTry3d').textContent = USE3D ? '↩ Về bản 2D' : '🧊 Thử bản 3D (đang thử nghiệm)';
-    $('btnTry3d').onclick = () => { const q = new URLSearchParams(location.search); if (USE3D) q.delete('3d'); else q.set('3d', '1'); location.search = q.toString(); };
+    $('btnTry3d').textContent = USE3D ? 'Máy chạy chậm? Mở bản 2D' : '🧊 Mở bản 3D';
+    $('btnTry3d').onclick = () => { const q = new URLSearchParams(location.search); q.delete('3d'); if (USE3D) q.set('2d', '1'); else q.delete('2d'); location.search = q.toString(); };
     $('btnStart').onclick = () => {
       NL.audio.init(); NL.audio.play('pop'); NL.audio.music('calm');
       if (g.name) { $('backName').textContent = g.name; showStep('introBack'); drawPreview($('backPreview'), 1.6); }
@@ -263,10 +264,14 @@
     const el = $('toast'); el.textContent = msg; el.classList.add('show');
     clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), ms || 2600);
   }
-  function bigMsg(emoji, text, cb, btn) {
+  function bigMsg(emoji, text, cb, btn, alt) {
     $('bigEmoji').textContent = emoji; $('bigText').textContent = text; $('bigOk').textContent = btn || 'OK';
     $('bigmsg').classList.remove('hidden');
     $('bigOk').onclick = () => { NL.audio.play('click'); $('bigmsg').classList.add('hidden'); cb && cb(); };
+    let b2 = $('bigAlt');
+    if (!b2) { b2 = document.createElement('button'); b2.id = 'bigAlt'; b2.className = 'btn big ghost pop'; $('bigOk').after(b2); }
+    b2.classList.toggle('hidden', !alt);
+    if (alt) { b2.textContent = alt[0]; b2.onclick = () => { NL.audio.play('click'); $('bigmsg').classList.add('hidden'); alt[1](); }; }
   }
 
   // ---------- điều khiển ----------
@@ -441,7 +446,7 @@
       setTimeout(() => toast('Mệt quá, ra ban công hóng gió nhé 🌿', 3500), wasLocked ? 4200 : 2500);
       setTimeout(() => { g.status = ''; }, 8000);
       void first;
-    }, 'Nhảy ăn mừng 💃');
+    }, 'Nhảy ăn mừng 💃', ['🔁 Làm lại thí nghiệm', () => { NL.lab.close(); NL.lab.open(id); }]);
   }
   function confetti() {
     const box = document.createElement('div'); box.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden';
