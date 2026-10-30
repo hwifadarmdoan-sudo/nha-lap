@@ -67,28 +67,98 @@
         box.appendChild(b);
       });
     };
-    if (USE3D) { buildChips3D(mk); return; }
+    if (USE3D) { buildChips3D(); return; }
     mk($('optHair'), NL.HAIR_STYLES, (it, k) => g.look.hair === k, (it, k) => { g.look.hair = k; }, (b, it, k) => { b.textContent = k + 1; b.title = it; });
     mk($('optHairColor'), NL.HAIR_COLORS, it => g.look.hairColor === it, it => { g.look.hairColor = it; }, (b, it) => { b.style.background = it; });
     mk($('optCoat'), NL.COAT_COLORS, it => g.look.coat === it, it => { g.look.coat = it; }, (b, it) => { b.style.background = it; });
   }
   // bản 3D: chọn giới tính, dáng người, kiểu tóc, màu tóc, màu da; áo blouse mặc định trắng
-  function buildChips3D(mk) {
+  // bản 3D: bảng chọn 5 nhóm như bản demo Student Chibi, nhân vật vẫn là chibi cute cũ
+  let tab3d = 'basic';
+  function upgradeLook3D(L) {
+    const W = NL.w3;
+    if (L.v3) return;
+    L.v3 = 1;
+    L.gender = L.gender || 'n'; L.body = L.body == null ? 1 : L.body;
+    if (!W.SKINS.includes(L.skin)) L.skin = W.SKINS[1];
+    if (!W.HAIR_COLS.includes(L.hairColor)) L.hairColor = W.HAIR_COLS[1];
+    if (L.hair == null) L.hair = 0;
+    L.bottom = L.bottom || (L.gender === 'f' ? 'skirt' : 'pants');
+    L.eyes = L.eyes || 0; L.eyeColor = L.eyeColor || W.EYE_COLS[0]; L.brows = L.brows || 0;
+    if (L.mouth == null) L.mouth = L.face === 1 || L.face === 5 ? 1 : 0;
+    if (L.expr == null) L.expr = L.face === 3 ? 2 : 0;
+    L.outfit = L.outfit || 0; L.coat = L.coat || W.COATS[0]; L.shirt = L.shirt || W.SHIRTS[0];
+  }
+  function buildChips3D() {
     const W = NL.w3, L = g.look;
-    if (L.gender == null) { L.gender = 'm'; L.body = 1; L.skin = W.SKINS[1]; L.coat = '#FFFFFF'; if (!W.HAIR_COLS.includes(L.hairColor)) L.hairColor = W.HAIR_COLS[0]; }
-    const row = (id, name) => {
-      if ($(id)) return $(id);
-      const r = document.createElement('div'); r.className = 'opt-row'; r.innerHTML = `<span>${name}</span><div id="${id}" class="chips"></div>`;
-      $('optHair').closest('.opt-row').before(r); return $(id);
-    };
-    const wide = (b, t) => { b.textContent = t; b.classList.add('wide'); };
-    mk(row('optGender', 'Giới tính'), [['m', 'Nam'], ['f', 'Nữ']], it => L.gender === it[0], it => { L.gender = it[0]; if (it[0] === 'f' && L.hair === 0) L.hair = 1; }, (b, it) => wide(b, it[1]));
-    mk(row('optBody', 'Dáng người'), W.BODIES, (it, k) => L.body === k, (it, k) => { L.body = k; }, (b, it) => wide(b, it));
-    mk(row('optSkin', 'Màu da'), W.SKINS, it => L.skin === it, it => { L.skin = it; }, (b, it) => { b.style.background = it; });
-    mk(row('optFace', 'Biểu cảm'), W.FACES, (it, k) => (L.face || 0) === k, (it, k) => { L.face = k; }, (b, it) => { b.textContent = it.split(' ')[0]; b.title = it.split(' ').slice(1).join(' '); b.style.fontSize = '22px'; });
-    mk($('optHair'), W.HAIRS, (it, k) => L.hair === k, (it, k) => { L.hair = k; }, (b, it) => wide(b, it));
-    mk($('optHairColor'), W.HAIR_COLS, it => L.hairColor === it, it => { L.hairColor = it; }, (b, it) => { b.style.background = it; });
-    mk($('optCoat'), NL.COAT_COLORS, it => L.coat === it, it => { L.coat = it; }, (b, it) => { b.style.background = it; });
+    upgradeLook3D(L);
+    const opts = document.querySelector('.look-opts');
+    opts.querySelectorAll(':scope > .opt-row').forEach(r => r.classList.add('hidden'));
+    let box = $('look3d');
+    if (!box) {
+      box = document.createElement('div'); box.id = 'look3d'; box.className = 'look3d';
+      opts.insertBefore(box, $('btnLook'));
+      const bar = document.createElement('div'); bar.className = 'row-btns l3-btns';
+      const rnd = document.createElement('button'); rnd.className = 'btn big ghost pop'; rnd.id = 'btnRand3d'; rnd.textContent = '🎲 Ngẫu nhiên';
+      rnd.onclick = () => { randomLook3D(); NL.audio.play('pop'); NL.w3.spin($('lookPreview')); buildChips3D(); };
+      opts.insertBefore(bar, $('btnLook')); bar.appendChild(rnd); bar.appendChild($('btnLook'));
+      $('btnLook').textContent = 'Xác nhận nhân vật';
+      const cv = $('lookPreview'); cv.width = 300; cv.height = 380;
+    }
+    const sw = (hex, on, set, title) => { const b = document.createElement('button'); b.className = 'chip-opt pop' + (on ? ' on' : ''); b.style.background = hex; if (title) b.title = title; b.onclick = () => { set(); redraw(); }; return b; };
+    const tx = (text, on, set) => { const b = document.createElement('button'); b.className = 'chip-opt wide pop' + (on ? ' on' : ''); b.textContent = text; b.onclick = () => { set(); redraw(); }; return b; };
+    const redraw = () => { NL.audio.play('pop'); buildChips3D(); };
+    const TABS = [
+      ['basic', '🙂 Cơ bản', [
+        ['Giới tính', [['m', 'Nam'], ['f', 'Nữ'], ['n', 'Trung tính']].map(([v, t]) => tx(t, L.gender === v, () => { L.gender = v; L.bottom = v === 'f' ? 'skirt' : 'pants'; }))],
+        ['Màu da', W.SKINS.map(c => sw(c, L.skin === c, () => { L.skin = c; }))],
+        ['Phần dưới', [['pants', 'Quần dài'], ['skirt', 'Váy']].map(([v, t]) => tx(t, L.bottom === v, () => { L.bottom = v; }))],
+      ]],
+      ['hair', '💇 Tóc', [
+        ['Kiểu tóc', W.HAIR_UI.map(k => tx(W.HAIRS[k], L.hair === k, () => { L.hair = k; }))],
+        ['Màu tóc', W.HAIR_COLS.map((c, k) => sw(c, L.hairColor === c, () => { L.hairColor = c; }, W.HAIR_NAMES[k]))],
+      ]],
+      ['face', '👀 Gương mặt', [
+        ['Mắt', W.EYES.map((t, k) => tx(t, L.eyes === k, () => { L.eyes = k; }))],
+        ['Màu mắt', W.EYE_COLS.map(c => sw(c, L.eyeColor === c, () => { L.eyeColor = c; }))],
+        ['Lông mày', W.BROWS.map((t, k) => tx(t, L.brows === k, () => { L.brows = k; }))],
+        ['Miệng', W.MOUTHS.map((t, k) => tx(t, L.mouth === k, () => { L.mouth = k; }))],
+      ]],
+      ['expr', '✨ Biểu cảm', [
+        ['Biểu cảm', W.EXPRS.map((t, k) => tx(t, L.expr === k, () => { L.expr = k; }))],
+      ]],
+      ['outfit', '🥼 Trang phục', [
+        ['Trang phục', W.OUTFITS.map((t, k) => tx(t, L.outfit === k, () => { L.outfit = k; }))],
+        L.outfit === 0 && ['Màu blouse', W.COATS.map((c, k) => sw(c, L.coat === c, () => { L.coat = c; }, W.COAT_NAMES[k])).concat([(() => {
+          const lb = document.createElement('label'); lb.className = 'chip-opt pop l3-custom' + (W.COATS.includes(L.coat) ? '' : ' on'); lb.title = 'Tự chọn màu';
+          const inp = document.createElement('input'); inp.type = 'color'; inp.value = /^#[0-9a-f]{6}$/i.test(L.coat) ? L.coat : '#ffffff';
+          inp.oninput = () => { L.coat = inp.value.toUpperCase(); lb.classList.add('on'); }; inp.onchange = () => buildChips3D();
+          lb.appendChild(inp); return lb;
+        })()])],
+        [L.outfit === 0 ? 'Áo bên trong' : 'Màu áo', W.SHIRTS.map(c => sw(c, L.shirt === c, () => { L.shirt = c; }))],
+      ].filter(Boolean)],
+    ];
+    box.innerHTML = '';
+    const tabs = document.createElement('div'); tabs.className = 'l3-tabs'; box.appendChild(tabs);
+    TABS.forEach(([id, name, rows]) => {
+      const b = document.createElement('button'); b.className = 'l3-tab pop' + (tab3d === id ? ' on' : ''); b.textContent = name;
+      b.onclick = () => { tab3d = id; NL.audio.play('pop'); buildChips3D(); }; tabs.appendChild(b);
+      if (tab3d !== id) return;
+      const pane = document.createElement('div'); pane.className = 'l3-pane'; box.appendChild(pane);
+      rows.forEach(([title, items]) => {
+        const r = document.createElement('div'); r.className = 'opt-row'; r.innerHTML = `<span>${title}</span>`;
+        const c = document.createElement('div'); c.className = 'chips'; items.forEach(it => c.appendChild(it)); r.appendChild(c); pane.appendChild(r);
+      });
+      if (id === 'face') { const n = document.createElement('div'); n.className = 'l3-note'; n.textContent = 'Biểu cảm Ngạc nhiên và Suy nghĩ tự đổi dáng miệng'; pane.appendChild(n); }
+    });
+  }
+  function randomLook3D() {
+    const W = NL.w3, L = g.look, pick = a => a[Math.floor(Math.random() * a.length)];
+    L.gender = pick(['m', 'f', 'n']); L.bottom = L.gender === 'f' ? pick(['skirt', 'skirt', 'pants']) : 'pants';
+    L.skin = pick(W.SKINS); L.hair = pick(L.gender === 'm' ? [0, 5, 6, 0] : W.HAIR_UI);
+    L.hairColor = Math.random() < 0.6 ? pick(W.HAIR_COLS.slice(0, 4)) : pick(W.HAIR_COLS);
+    L.eyes = pick([0, 1, 2, 3]); L.eyeColor = pick(W.EYE_COLS); L.brows = pick([0, 1, 2, 3]); L.mouth = pick([0, 1, 2, 3]);
+    L.expr = pick([0, 1, 2, 3, 4]); L.outfit = pick([0, 0, 1, 2]); L.coat = pick(W.COATS); L.shirt = pick(W.SHIRTS);
   }
   function intro() {
     showStep('introLogo');

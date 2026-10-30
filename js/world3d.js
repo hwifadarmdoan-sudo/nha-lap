@@ -110,51 +110,76 @@ NL.w3 = (function () {
     const sp = new T.Sprite(new T.SpriteMaterial({ map: tex, transparent: true, depthWrite: false })); sp.scale.set(size, size, 1); if (pos) sp.position.set(...pos); parent.add(sp); return sp;
   }
 
-  // ---------- nhân vật người thật mặc áo blouse ----------
-  const SKINS = ['#F6D7BE', '#EDC3A0', '#D9A47C', '#B57B55', '#8A5A3C'];
-  const HAIRS = ['Ngắn', 'Dài', 'Búi', 'Đuôi ngựa', 'Rẽ ngôi', 'Xoăn'];
-  const HAIR_COLS = ['#1E1A17', '#3B2618', '#6B4226', '#A8743A', '#D8B66A', '#8C8C8C'];
+  // ---------- nhân vật chibi: bảng chọn giống bản demo Student Chibi ----------
+  const SKINS = ['#FBE3D0', '#F2C6A5', '#E2AC86', '#C68B62', '#9F6845', '#6F4631'];
+  // chỉ số kiểu tóc giữ như cũ để nhân vật đã lưu không đổi; HAIR_UI là 5 kiểu hiện ở bảng chọn
+  const HAIRS = ['Ngắn', 'Dài', 'Búi', 'Đuôi ngựa', 'Rẽ ngôi', 'Xoăn', 'Mái bằng'];
+  const HAIR_UI = [0, 1, 5, 3, 6];
+  const HAIR_COLS = ['#2A2321', '#6B4330', '#E4BE76', '#B5442E', '#5B7FD6', '#F09ABD', '#69BB89'];
+  const HAIR_NAMES = ['Đen', 'Nâu', 'Vàng', 'Đỏ', 'Xanh dương', 'Hồng', 'Xanh lá'];
+  const EYE_COLS = ['#4A3025', '#1F1A1A', '#B07A2A', '#4E8B63', '#4A72B5'];
+  const EYES = ['Tròn', 'Long lanh', 'Hiền', 'Cười híp'];
+  const BROWS = ['Tự nhiên', 'Mảnh', 'Đậm', 'Cong'];
+  const MOUTHS = ['Cười nhẹ', 'Cười tươi', 'Chữ O', 'Nhếch môi'];
+  const EXPRS = ['😄 Vui vẻ', '🧐 Tò mò', '😮 Ngạc nhiên', '😎 Tự tin', '🤔 Suy nghĩ'];
+  const OUTFITS = ['🥼 Áo blouse', '👔 Sơ mi', '👕 Áo phông'];
+  const COATS = ['#FFFFFF', '#BCD5F6', '#F8C6D7', '#C3E8D0', '#D7C9F4'];
+  const COAT_NAMES = ['Trắng', 'Xanh dương', 'Hồng', 'Xanh lá', 'Tím'];
+  const SHIRTS = ['#F3B8C8', '#F2F2EE', '#B9D4F2', '#F6DC97', '#A9DCC4', '#4E5D82'];
   const BODIES = ['Gầy', 'Vừa', 'Đầy đặn'];
-  const FACES = ['😊 Cười', '😁 Cười tươi', '😉 Nháy mắt', '😮 Ngạc nhiên', '😎 Ngầu', '🥰 Đáng yêu'];
-  // mặt vẽ bằng canvas: mắt to long lanh, má hồng, miệng theo biểu cảm
+  const FACES = EXPRS;
+  // biểu cảm: lông mày [trong, ngoài] dịch lên (+) xuống (−) cho mắt trái/phải, hướng nhìn, miệng thay thế
+  const EXPR_FACE = [
+    { brow: [[6, 6], [6, 6]], gaze: [0, 0], cheek: 0.5 },
+    { brow: [[-8, 2], [16, 20]], gaze: [12, -2], cheek: 0.35 },
+    { brow: [[24, 18], [24, 18]], gaze: [0, 0], cheek: 0.3, mouth: 2, big: true },
+    { brow: [[-12, 2], [-12, 2]], gaze: [0, 0], cheek: 0.35, squint: true },
+    { brow: [[-8, 0], [14, 18]], gaze: [-12, -12], cheek: 0.3, mouth: 4 },
+  ];
+  // mặt vẽ bằng canvas: mắt to long lanh, má hồng, lông mày, miệng theo lựa chọn và biểu cảm
   const faceTex = {};
-  function faceTexture(face, browC, teacher) {
-    const k = face + browC + (teacher ? 't' : '');
+  function faceTexture(f) {
+    const k = JSON.stringify(f);
     if (faceTex[k]) return faceTex[k];
     faceTex[k] = canvasTex(512, 512, (x, W, H) => {
-      const cx = W / 2, ey = 250, ex = 92;
+      const cx = W / 2, ey = 250, ex = 92, E = EXPR_FACE[f.expr] || EXPR_FACE[0];
+      let eyes = f.eyes; if (E.big && eyes > 1) eyes = 0;
       // má hồng
-      x.fillStyle = 'rgba(255,120,140,.35)'; [-1, 1].forEach(s => { x.beginPath(); x.ellipse(cx + s * 128, ey + 70, 40, 24, 0, 0, 7); x.fill(); });
+      x.fillStyle = `rgba(255,120,140,${E.cheek})`; [-1, 1].forEach(s => { x.beginPath(); x.ellipse(cx + s * 128, ey + 70, 40, 24, 0, 0, 7); x.fill(); });
       // lông mày
-      x.strokeStyle = browC; x.lineWidth = 12; x.lineCap = 'round';
-      [-1, 1].forEach(s => { x.beginPath(); const lift = face === 3 ? -22 : 0; x.moveTo(cx + s * (ex - 34), ey - 70 + lift); x.quadraticCurveTo(cx + s * ex, ey - 86 + lift, cx + s * (ex + 34), ey - 72 + lift); x.stroke(); });
+      x.strokeStyle = f.browC; x.lineCap = 'round'; x.lineWidth = [12, 7, 19, 11][f.brows] * (f.gender === 'm' ? 1.15 : 1);
+      [-1, 1].forEach((s, i) => {
+        const [up, upO] = E.brow[i], arch = f.brows === 3 ? 34 : 16;
+        x.beginPath(); x.moveTo(cx + s * (ex - 36), ey - 70 - up); x.quadraticCurveTo(cx + s * ex, ey - 70 - arch - (up + upO) / 2, cx + s * (ex + 36), ey - 72 - upO); x.stroke();
+      });
       // mắt
+      const [gx, gy] = E.gaze;
       const eye = s => {
         const X = cx + s * ex;
-        if ((face === 2 && s > 0) || face === 1) { // mắt cười cong
-          x.strokeStyle = '#2A1D14'; x.lineWidth = 14; x.beginPath(); x.arc(X, ey + 12, 30, Math.PI * 1.1, Math.PI * 1.9); x.stroke(); return;
-        }
-        if (face === 5) { // mắt trái tim
-          x.fillStyle = '#E8436A'; x.beginPath(); x.moveTo(X, ey + 34); x.bezierCurveTo(X - 52, ey - 4, X - 30, ey - 50, X, ey - 22); x.bezierCurveTo(X + 30, ey - 50, X + 52, ey - 4, X, ey + 34); x.fill(); return;
-        }
-        if (face === 4) { // kính râm
-          x.fillStyle = '#1B2430'; x.beginPath(); x.ellipse(X, ey, 52, 36, 0, 0, 7); x.fill(); x.fillStyle = 'rgba(255,255,255,.5)'; x.beginPath(); x.ellipse(X - 18, ey - 12, 14, 7, -0.4, 0, 7); x.fill(); return;
-        }
-        const r = face === 3 ? 42 : 38;
+        if (eyes === 3) { x.strokeStyle = '#2A1D14'; x.lineWidth = 14; x.beginPath(); x.arc(X, ey + 12, 30, Math.PI * 1.1, Math.PI * 1.9); x.stroke(); return; }
+        const r = E.big ? 44 : eyes === 1 ? 41 : 38;
+        x.save();
+        const lidY = eyes === 2 ? ey - 6 : E.squint ? ey - 16 : null;
+        if (lidY !== null) { x.beginPath(); x.rect(X - 60, lidY, 120, 120); x.clip(); }
         x.fillStyle = '#2A1D14'; x.beginPath(); x.ellipse(X, ey, r * 0.78, r, 0, 0, 7); x.fill();
-        x.fillStyle = '#5A3A22'; x.beginPath(); x.ellipse(X, ey + 10, r * 0.55, r * 0.6, 0, 0, 7); x.fill();
-        x.fillStyle = '#fff'; x.beginPath(); x.arc(X - 10, ey - 14, 12, 0, 7); x.fill(); x.beginPath(); x.arc(X + 10, ey + 14, 5, 0, 7); x.fill();
+        const pr = E.big ? 0.42 : 0.55;
+        x.fillStyle = f.eyeC; x.beginPath(); x.ellipse(X + gx * 0.5, ey + 10 + gy * 0.5, r * pr, r * (pr + 0.05), 0, 0, 7); x.fill();
+        x.fillStyle = '#fff'; x.beginPath(); x.arc(X - 10 + gx * 0.4, ey - 14 + gy * 0.4, eyes === 1 ? 14 : 12, 0, 7); x.fill(); x.beginPath(); x.arc(X + 10 + gx * 0.4, ey + 14 + gy * 0.4, eyes === 1 ? 7 : 5, 0, 7); x.fill();
+        if (eyes === 1) { x.beginPath(); x.arc(X + 14, ey - 6, 4, 0, 7); x.fill(); }
+        x.restore();
+        if (lidY !== null) { x.strokeStyle = '#2A1D14'; x.lineWidth = 9; x.beginPath(); x.moveTo(X - r * 0.85, lidY + 4); x.quadraticCurveTo(X, lidY - 4, X + r * 0.85, lidY + 4); x.stroke(); }
+        if (f.gender === 'f') { x.strokeStyle = '#2A1D14'; x.lineWidth = 7; const top = lidY !== null ? lidY : ey - r * 0.8; [[0.62, -10, 22], [0.78, 4, 18]].forEach(([dx, dy, l]) => { x.beginPath(); x.moveTo(X + s * r * dx, top + dy + 6); x.lineTo(X + s * (r * dx + l * 0.7), top + dy - l * 0.6); x.stroke(); }); }
       };
       eye(-1); eye(1);
-      if (face === 4) { x.strokeStyle = '#1B2430'; x.lineWidth = 10; x.beginPath(); x.moveTo(cx - 40, ey - 8); x.lineTo(cx + 40, ey - 8); x.stroke(); }
-      if (teacher) { x.strokeStyle = '#2B3440'; x.lineWidth = 7; [-1, 1].forEach(s => { x.beginPath(); x.arc(cx + s * ex, ey, 52, 0, 7); x.stroke(); }); x.beginPath(); x.moveTo(cx - 40, ey); x.lineTo(cx + 40, ey); x.stroke(); }
+      if (f.teacher) { x.strokeStyle = '#2B3440'; x.lineWidth = 7; [-1, 1].forEach(s => { x.beginPath(); x.arc(cx + s * ex, ey, 52, 0, 7); x.stroke(); }); x.beginPath(); x.moveTo(cx - 40, ey); x.lineTo(cx + 40, ey); x.stroke(); }
       // miệng
-      const my = ey + 100;
-      x.lineWidth = 11; x.strokeStyle = '#8E3B3B';
-      if (face === 0 || face === 2) { x.beginPath(); x.arc(cx, my - 22, 30, Math.PI * 0.18, Math.PI * 0.82); x.stroke(); }
-      else if (face === 1 || face === 5) { x.fillStyle = '#9C3A3A'; x.beginPath(); x.moveTo(cx - 42, my - 10); x.quadraticCurveTo(cx, my + 60, cx + 42, my - 10); x.closePath(); x.fill(); x.fillStyle = '#fff'; x.fillRect(cx - 30, my - 9, 60, 12); x.fillStyle = '#F07C8C'; x.beginPath(); x.ellipse(cx, my + 22, 18, 10, 0, 0, 7); x.fill(); }
-      else if (face === 3) { x.fillStyle = '#9C3A3A'; x.beginPath(); x.ellipse(cx, my + 4, 20, 26, 0, 0, 7); x.fill(); }
-      else if (face === 4) { x.beginPath(); x.moveTo(cx - 26, my + 4); x.quadraticCurveTo(cx + 10, my + 16, cx + 34, my - 8); x.stroke(); }
+      const my = ey + 100, mouth = E.mouth != null ? E.mouth : f.mouth;
+      x.lineWidth = 11; x.strokeStyle = '#8E3B3B'; x.lineCap = 'round';
+      if (mouth === 0) { x.beginPath(); x.arc(cx, my - 22, 30, Math.PI * 0.18, Math.PI * 0.82); x.stroke(); }
+      else if (mouth === 1) { x.fillStyle = '#9C3A3A'; x.beginPath(); x.moveTo(cx - 42, my - 10); x.quadraticCurveTo(cx, my + 60, cx + 42, my - 10); x.closePath(); x.fill(); x.fillStyle = '#fff'; x.fillRect(cx - 30, my - 9, 60, 12); x.fillStyle = '#F07C8C'; x.beginPath(); x.ellipse(cx, my + 22, 18, 10, 0, 0, 7); x.fill(); }
+      else if (mouth === 2) { x.fillStyle = '#9C3A3A'; x.beginPath(); x.ellipse(cx, my + 4, 18, 24, 0, 0, 7); x.fill(); }
+      else if (mouth === 3) { x.beginPath(); x.moveTo(cx - 26, my + 4); x.quadraticCurveTo(cx + 10, my + 16, cx + 34, my - 8); x.stroke(); }
+      else { x.beginPath(); x.moveTo(cx - 6, my + 4); x.lineTo(cx + 30, my); x.stroke(); }
     });
     return faceTex[k];
   }
@@ -162,16 +187,19 @@ NL.w3 = (function () {
   function makeChar(look, o = {}) {
     look = look || {};
     const fem = look.gender === 'f', bw = [0.88, 1, 1.22][look.body == null ? 1 : look.body];
+    const outfit = o.teacher ? 0 : (look.outfit || 0), skirt = !o.teacher && look.bottom === 'skirt', expr = look.expr == null ? (look.face === 3 ? 2 : 0) : look.expr;
     const skinC = look.skin || SKINS[1], skin = mat(skinC, { roughness: 0.55 });
     const coatC = o.teacher ? '#2F80C0' : (look.coat || '#FFFFFF');
-    const coat = mat(coatC, { roughness: 0.65 }), coatEdge = mat(coatC === '#FFFFFF' ? '#DDE8F0' : coatC, { roughness: 0.7 });
-    const shirt = mat(fem ? '#FF9FB4' : '#7FC4F0'), pants = mat(o.teacher ? '#2E3A4A' : '#3E5C8A'), shoe = mat(fem ? '#E8607A' : '#3A4A6A', { roughness: 0.45 });
+    const coat = mat(coatC, { roughness: 0.65 }), coatEdge = mat(/^#F[A-F]F[A-F]F[A-F]$/i.test(coatC) ? '#DDE8F0' : NL.shade ? NL.shade(coatC, -12) : coatC, { roughness: 0.7 });
+    const shirtC = look.shirt || (fem ? '#FF9FB4' : look.gender === 'n' ? '#A9DCC4' : '#7FC4F0');
+    const shirt = mat(shirtC), pants = mat(o.teacher ? '#2E3A4A' : '#3E5C8A'), shoe = mat(fem ? '#E8607A' : '#3A4A6A', { roughness: 0.45 });
+    const sleeveM = outfit === 0 ? coat : shirt;
     const hairC = look.hairColor && /^#/.test(look.hairColor) ? look.hairColor : '#2B2B2B', hairM = mat(hairC, { roughness: 0.5 });
     const root = new T.Group(), body = new T.Group(); root.add(body);
     // chân ngắn + giày tròn
     const leg = side => {
       const g = new T.Group(); g.position.set(side * 0.075 * bw, 0.4, 0); body.add(g);
-      mesh(new T.CapsuleGeometry(0.055 * Math.sqrt(bw), 0.22, 4, 10), pants, g, [0, -0.18, 0]);
+      mesh(new T.CapsuleGeometry(0.055 * Math.sqrt(bw), 0.22, 4, 10), skirt ? skin : pants, g, [0, -0.18, 0]);
       const sh = mesh(new T.SphereGeometry(0.075, 14, 10), shoe, g, [0, -0.35, 0.03]); sh.scale.set(0.9, 0.6, 1.3);
       return g;
     };
@@ -179,6 +207,8 @@ NL.w3 = (function () {
     // thân tròn + áo blouse xoè
     const torso = new T.Group(); torso.position.y = 0.4; body.add(torso);
     const tb = mesh(new T.SphereGeometry(0.16, 20, 16), shirt, torso, [0, 0.17, 0]); tb.scale.set(1.05 * bw, 1.15, 0.85 * bw);
+    if (skirt) { const sk = mesh(new T.CylinderGeometry(0.15 * bw, 0.23 * bw, 0.17, 18, 1, true), new T.MeshStandardMaterial({ color: '#3E5C8A', roughness: 0.7, side: T.DoubleSide, flatShading: true }), torso, [0, 0.0, 0]); sk.scale.z = 0.9; }
+    if (outfit === 0) {
     const prof = [[0.08, 0.36], [0.15 * bw, 0.33], [0.175 * bw, 0.22], [0.19 * bw, 0.06], [0.22 * bw, -0.06], [0.225 * bw, -0.075]].map(([r, y]) => new T.Vector2(r, y));
     const cm = mesh(new T.LatheGeometry(prof, 28, 0.42, Math.PI * 2 - 0.84), new T.MeshStandardMaterial({ color: coatC, roughness: 0.65, side: T.DoubleSide }), torso, [0, 0, 0]); cm.scale.z = 0.85;
     const fz = 0.15 * bw * 0.85;
@@ -186,10 +216,21 @@ NL.w3 = (function () {
     mesh(new T.BoxGeometry(0.07, 0.055, 0.01), coatEdge, torso, [0.1 * bw, 0.05, 0.19 * bw * 0.85 + 0.01]);
     const pen = mesh(new T.CylinderGeometry(0.008, 0.008, 0.07, 6), mat('#2F80C0'), torso, [0.1 * bw, 0.09, 0.19 * bw * 0.85 + 0.015], false);
     void pen;
+    } else {
+      const fz = 0.16 * bw * 0.85 * 0.98;
+      if (outfit === 1) { // sơ mi: cổ áo trắng, hàng cúc
+        const col = mat(NL.shade ? NL.shade(shirtC, 30) : '#FFFFFF');
+        [-1, 1].forEach(s => { const c = mesh(new T.BoxGeometry(0.075, 0.045, 0.012), col, torso, [s * 0.04, 0.315, fz - 0.005]); c.rotation.z = s * 0.5; c.rotation.x = -0.35; });
+        [0.24, 0.17, 0.1].forEach(y => mesh(new T.SphereGeometry(0.009, 8, 6), mat(NL.shade ? NL.shade(shirtC, -25) : '#888'), torso, [0, y, fz + 0.004], false));
+      } else { // áo phông: viền cổ tròn
+        const nk = mesh(new T.TorusGeometry(0.055, 0.01, 6, 18, Math.PI), mat(NL.shade ? NL.shade(shirtC, -15) : shirtC), torso, [0, 0.33, fz - 0.03], false); nk.rotation.set(-0.9, 0, Math.PI);
+      }
+    }
     // tay ngắn, bàn tay tròn
     const arm = side => {
       const g = new T.Group(); g.position.set(side * 0.17 * bw, 0.31, 0); torso.add(g);
-      mesh(new T.CapsuleGeometry(0.05 * Math.sqrt(bw), 0.16, 4, 10), coat, g, [0, -0.11, 0]);
+      if (outfit === 2) { mesh(new T.SphereGeometry(0.06 * Math.sqrt(bw), 12, 10), shirt, g, [0, -0.04, 0]).scale.set(1, 1.1, 1); mesh(new T.CapsuleGeometry(0.04 * Math.sqrt(bw), 0.12, 4, 10), skin, g, [0, -0.13, 0]); }
+      else mesh(new T.CapsuleGeometry(0.05 * Math.sqrt(bw), 0.16, 4, 10), sleeveM, g, [0, -0.11, 0]);
       mesh(new T.SphereGeometry(0.048, 12, 10), skin, g, [0, -0.25, 0]);
       return g;
     };
@@ -200,7 +241,7 @@ NL.w3 = (function () {
     const skull = mesh(new T.SphereGeometry(HR, 32, 24), skin, head, [0, 0, 0]); skull.scale.set(1.04, 0.98, 0.96);
     [-1, 1].forEach(s => mesh(new T.SphereGeometry(0.045, 12, 10), skin, head, [s * HR * 1.02, -0.01, 0]));
     // mặt (dán lên nửa trước của đầu)
-    const fm = new T.MeshStandardMaterial({ map: faceTexture(look.face || 0, NL.shade ? NL.shade(hairC, -10) : hairC, o.teacher), transparent: true, roughness: 0.5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
+    const fm = new T.MeshStandardMaterial({ map: faceTexture({ eyes: look.eyes || 0, brows: look.brows || 0, mouth: look.mouth != null ? look.mouth : (look.face === 1 || look.face === 5 ? 1 : 0), expr, gender: look.gender, eyeC: look.eyeColor || '#5A3A22', browC: NL.shade ? NL.shade(hairC, -18) : hairC, teacher: !!o.teacher }), transparent: true, roughness: 0.5, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 });
     const face = new T.Mesh(new T.SphereGeometry(HR * 1.004, 40, 30, Math.PI / 2 - 0.95, 1.9, Math.PI / 2 - 0.8, 1.6), fm);
     face.scale.copy(skull.scale); head.add(face); face.renderOrder = 2;
     const nose = mesh(new T.SphereGeometry(0.014, 10, 8), mat(NL.shade ? NL.shade(skinC, -8) : skinC), head, [0, -0.045, HR * 0.97], false); void nose;
@@ -209,7 +250,8 @@ NL.w3 = (function () {
     const cap = mesh(new T.SphereGeometry(HR * 1.07, 32, 20, 0, Math.PI * 2, 0, Math.PI * 0.42), hairM, head, [0, 0.015, -0.01]); cap.scale.set(1.04, 1.0, 1.0);
     const back = mesh(new T.SphereGeometry(HR * 1.06, 28, 18, Math.PI * 1.15, Math.PI * 0.7, Math.PI * 0.25, Math.PI * 0.5), hairM, head, [0, 0, -0.005]); back.scale.set(1.03, 1, 1);
     // mái: vài lọn bo tròn, đáy cao hơn mắt
-    for (let k = -2; k <= 2; k++) { const f = mesh(new T.SphereGeometry(0.07, 12, 10), hairM, head, [k * 0.075, 0.15 - Math.abs(k) * 0.012, HR * 0.83 - Math.abs(k) * 0.03]); f.scale.set(1.1, 0.62, 0.7); f.rotation.z = -k * 0.2; }
+    if (hs === 6) { const bg = mesh(new T.SphereGeometry(0.1, 20, 12), hairM, head, [0, 0.155, HR * 0.8]); bg.scale.set(2.35, 0.62, 0.75); }
+    else for (let k = -2; k <= 2; k++) { const f = mesh(new T.SphereGeometry(0.07, 12, 10), hairM, head, [k * 0.075, 0.15 - Math.abs(k) * 0.012, HR * 0.83 - Math.abs(k) * 0.03]); f.scale.set(1.1, 0.62, 0.7); f.rotation.z = -k * 0.2; }
     [-1, 1].forEach(s => { const sd = mesh(new T.SphereGeometry(0.07, 12, 10), hairM, head, [s * HR * 0.95, 0.06, -0.02]); sd.scale.set(0.55, 1.1, 0.9); });
     if (hs === 1) { const lg = mesh(new T.CapsuleGeometry(0.17, 0.2, 6, 16), hairM, head, [0, -0.16, -0.1]); lg.scale.set(1.45, 1, 0.75); }
     if (hs === 2) mesh(new T.SphereGeometry(0.1, 16, 12), hairM, head, [0, 0.24, -0.12]);
@@ -218,7 +260,7 @@ NL.w3 = (function () {
     if (hs === 5) for (let k = 0; k < 16; k++) { const a = k / 16 * Math.PI * 2; mesh(new T.SphereGeometry(0.075, 10, 8), hairM, head, [Math.cos(a) * 0.22, 0.13 + Math.sin(k * 1.7) * 0.03, Math.sin(a) * 0.21 - 0.03]); }
     if (fem && hs !== 1 && hs !== 5) mesh(new T.SphereGeometry(0.035, 10, 8), mat('#FF6B8A'), head, [HR * 0.75, 0.17, 0.08]);
     root.traverse(m => { if (m.isMesh) m.userData.char = true; });
-    const st = { root, legL, legR, armL, armR, body, head, heading: 0 };
+    const st = { root, legL, legR, armL, armR, body, head, heading: 0, expr };
     st.pose = (anim, t, emote) => {
       const w = anim === 'walk' ? Math.sin(t * 10) : 0;
       legL.rotation.x = w * 0.7; legR.rotation.x = -w * 0.7;
@@ -228,7 +270,13 @@ NL.w3 = (function () {
       if (anim === 'dance') { body.position.y = Math.abs(Math.sin(t * 8)) * 0.1; body.rotation.z = Math.sin(t * 4) * 0.15; armL.rotation.z = -2.4 + Math.sin(t * 8) * 0.4; armR.rotation.z = 2.4 + Math.sin(t * 8 + 1) * 0.4; legL.rotation.x = Math.sin(t * 8) * 0.4; legR.rotation.x = -Math.sin(t * 8) * 0.4; }
       if (anim === 'special') { body.position.y = Math.abs(Math.sin(t * 6)) * 0.16; body.rotation.y = t * 6; armL.rotation.z = -1.6; armR.rotation.z = 1.6; }
       if (anim === 'jump') { body.position.y = Math.abs(Math.sin(t * 6)) * 0.2; armR.rotation.z = 2.7 + Math.sin(t * 12) * 0.2; }
-      if (emote === 'wave' || emote === 'five') { armR.rotation.z = 2.6; armR.rotation.x = 0; armR.rotation.y = Math.sin(t * 12) * 0.4; }
+      if (anim === 'idle' && !emote) {
+        if (expr === 1) head.rotation.z = 0.2 + Math.sin(t * 1.3) * 0.03;
+        if (expr === 2) { armL.rotation.z = -1.0; armR.rotation.z = 1.0; head.rotation.x = -0.08; }
+        if (expr === 3) { armL.rotation.z = -0.75; armR.rotation.z = 0.75; armL.rotation.x = 0.35; armR.rotation.x = 0.35; head.rotation.x = -0.06; }
+        if (expr === 4) { armR.rotation.set(-1.95, 0, -0.45); head.rotation.z = -0.12 + Math.sin(t * 0.9) * 0.03; }
+      }
+            if (emote === 'wave' || emote === 'five') { armR.rotation.z = 2.6; armR.rotation.x = 0; armR.rotation.y = Math.sin(t * 12) * 0.4; }
       if (emote === 'poke') armR.rotation.x = -1.4;
       if (emote === 'haha') head.rotation.x = -0.2 + Math.sin(t * 16) * 0.08;
     };
@@ -692,6 +740,7 @@ NL.w3 = (function () {
 
   // ---------- xem trước nhân vật ở màn chọn ----------
   const previews = new Map();
+  function spin(canvas) { const p = previews.get(canvas); if (p) p.hop = performance.now(); }
   function preview(canvas, getLook) {
     load().then(() => {
       let p = previews.get(canvas);
@@ -699,13 +748,22 @@ NL.w3 = (function () {
         const r = new T.WebGLRenderer({ canvas, antialias: true, alpha: true }); r.setPixelRatio(Math.min(2, devicePixelRatio || 1)); r.setSize(canvas.width, canvas.height, false);
         r.outputColorSpace = T.SRGBColorSpace; r.toneMapping = T.ACESFilmicToneMapping;
         const sc = new T.Scene(); sc.add(new T.HemisphereLight(0xFFFFFF, 0xC8D8E8, 1.1)); const dl = new T.DirectionalLight(0xFFFFFF, 1.4); dl.position.set(2, 3, 4); sc.add(dl);
-        const cam = new T.PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 20); cam.position.set(0, 0.85, 3.6); cam.lookAt(0, 0.66, 0);
-        p = { r, sc, cam, key: '', ch: null }; previews.set(canvas, p);
+        const cam = new T.PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 20); const near = canvas.width >= 280; cam.position.set(0, near ? 0.8 : 0.85, near ? 2.75 : 3.6); cam.lookAt(0, near ? 0.63 : 0.66, 0);
+        p = { r, sc, cam, key: '', ch: null, rot: 0, drag: null, touched: 0 }; previews.set(canvas, p);
+        // kéo để xoay nhân vật 360°
+        canvas.style.touchAction = 'none'; canvas.style.cursor = 'grab';
+        canvas.addEventListener('pointerdown', e => { p.drag = e.clientX; p.touched = performance.now(); canvas.setPointerCapture(e.pointerId); });
+        canvas.addEventListener('pointermove', e => { if (p.drag == null) return; p.rot += (e.clientX - p.drag) * 0.012; p.drag = e.clientX; p.touched = performance.now(); });
+        const up = () => { p.drag = null; }; canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up);
         const loop = () => {
           if (!canvas.isConnected) return;
           const look = getLook(), key = JSON.stringify(look);
           if (key !== p.key) { if (p.ch) p.sc.remove(p.ch.root); p.ch = makeChar(look, {}); p.sc.add(p.ch.root); p.key = key; }
-          const t = performance.now() / 1000; p.ch.root.rotation.y = Math.sin(t * 0.6) * 0.5; p.ch.pose('idle', t, Math.sin(t * 0.7) > 0.5 ? 'wave' : null);
+          const t = performance.now() / 1000;
+          if (performance.now() - p.touched > 4000) p.rot += (Math.sin(t * 0.6) * 0.5 - (((p.rot + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI)) * 0.03;
+          p.ch.root.rotation.y = p.rot;
+          if (p.hop) { const k = (performance.now() - p.hop) / 600; if (k >= 1) p.hop = 0; else { p.ch.root.rotation.y = p.rot + k * Math.PI * 2; p.ch.root.position.y = Math.sin(k * Math.PI) * 0.12; } }
+          p.ch.pose('idle', t, p.ch.expr === 0 && Math.sin(t * 0.7) > 0.5 ? 'wave' : null);
           if (canvas.offsetParent) p.r.render(p.sc, p.cam);
           requestAnimationFrame(loop);
         };
@@ -714,5 +772,5 @@ NL.w3 = (function () {
     });
   }
 
-  return { on, init, render, pick, hitChar, preview, seamless: (a, b) => !!(LINK[a] && LINK[a].includes(b)), get ready() { return ready; }, SKINS, HAIRS, HAIR_COLS, BODIES, FACES, makeChar };
+  return { on, init, render, pick, hitChar, preview, spin, seamless: (a, b) => !!(LINK[a] && LINK[a].includes(b)), get ready() { return ready; }, SKINS, HAIRS, HAIR_UI, HAIR_COLS, HAIR_NAMES, EYE_COLS, EYES, BROWS, MOUTHS, EXPRS, OUTFITS, COATS, COAT_NAMES, SHIRTS, BODIES, FACES, makeChar };
 })();
