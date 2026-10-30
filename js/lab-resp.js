@@ -229,7 +229,7 @@
       onNext(api) {
         api.wrapUp({
           right: 'Di chuyển về phía bình', truth: 'giọt mực bị kéo về phía bình vì hạt lấy O₂, còn CO₂ thải ra bị KOH hút mất.',
-          sub: 'Hạt luộc chín không hô hấp nên giọt mực đứng yên, nước vôi không đục, nhiệt độ không tăng.',
+          sub: 'Hạt luộc chín (đã khử trùng để vi sinh vật không phát triển trên hạt) không hô hấp nên giọt mực đứng yên, nước vôi không đục, nhiệt độ không tăng.',
           quiz: QUIZ, bank: 4, result: result()
         });
       }
@@ -271,7 +271,7 @@
         series: st.runs.map((r, i) => ({ name: `${r.alive ? '' : 'Luộc '}${r.m}g ${r.T}°C`, color: PAL[i], points: r.pts }))
       },
       conclusion: 'Hạt nảy mầm hô hấp mạnh: lấy O₂, thải CO₂ (làm đục nước vôi) và tỏa nhiệt. Hô hấp mạnh hơn khi nhiều hạt hơn và nhiệt độ gần tối ưu (khoảng 35°C)',
-      note: 'Hạt luộc chín đã chết, enzyme bị biến tính nên không hô hấp; đó là bình đối chứng.'
+      note: 'Hạt luộc chín đã chết, enzyme bị biến tính nên không hô hấp; đó là bình đối chứng. Hạt luộc phải được khử trùng (ví dụ tráng cồn hoặc dung dịch thuốc tím loãng), nếu không vi khuẩn, nấm mọc trên hạt cũng hô hấp và làm sai kết quả.'
     };
   }
 

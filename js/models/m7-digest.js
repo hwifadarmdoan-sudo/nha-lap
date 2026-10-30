@@ -8,7 +8,7 @@
     stom: { name: 'Dạ dày', sci: 'Gaster (Ventriculus)', rows: [['Cơ học', '3 lớp cơ (dọc, vòng, chéo) co bóp đảo trộn mạnh'], ['Dịch vị', 'HCl, pepsin, chất nhầy; 2 – 3 lít/ngày'], ['Hóa học', 'Pepsin: protein → chuỗi polypeptide ngắn'], ['pH', '1,5 – 2,0']] },
     pylor: { name: 'Cơ vòng môn vị', sci: 'Musculus sphincter pylori', rows: [['Vai trò', 'Mở từng đợt đưa dưỡng chấp xuống tá tràng']] },
     duo: { name: 'Tá tràng', sci: 'Duodenum', rows: [['Nhận', 'Dịch mật, dịch tụy qua nhú tá lớn'], ['Hóa học', 'Phân giải triệt để protein, lipid, carbohydrate'], ['pH', '≈ 8,0']] },
-    small: { name: 'Ruột non', sci: 'Intestinum tenue (không tràng, hồi tràng)', rows: [['Dài', '≈ 6 m'], ['Cơ học', 'Nhu động, co thắt từng đoạn'], ['Hóa học', 'Dịch ruột: maltase, sucrase, lactase, peptidase'], ['Hấp thụ', 'Đơn phân: glucose, amino acid, acid béo, glycerol'], ['pH', '7,0 – 8,0']] },
+    small: { name: 'Ruột non', sci: 'tá tràng, hỗng tràng, hồi tràng', rows: [['Dài', '≈ 6 m'], ['Cơ học', 'Nhu động, co thắt từng đoạn'], ['Hóa học', 'Dịch ruột: maltase, sucrase, lactase, peptidase'], ['Hấp thụ', 'Đơn phân: glucose, amino acid, acid béo, glycerol'], ['pH', '7,0 – 8,0']] },
     large: { name: 'Ruột già', sci: 'Intestinum crassum', rows: [['Gồm', 'Manh tràng, ruột thừa, đại tràng lên – ngang – xuống – xích ma, trực tràng'], ['Vai trò', 'Tái hấp thu nước và muối khoáng; vi khuẩn lên men, tạo phân'], ['Hóa học', 'Không tiết enzyme tiêu hóa']] },
     appx: { name: 'Ruột thừa', sci: 'Appendix vermiformis', rows: [['Vị trí', 'Đầu manh tràng'], ['Lưu ý', 'Viêm ruột thừa cần cấp cứu']] },
     rect: { name: 'Trực tràng và hậu môn', sci: 'Rectum & Anus', rows: [['Vai trò', 'Chứa phân; cơ vòng hậu môn mở để tống phân ra ngoài']] },
@@ -20,15 +20,15 @@
     papilla: { name: 'Nhú tá lớn', sci: 'Papilla duodeni major', rows: [['Vai trò', 'Nơi dịch mật và dịch tụy đổ vào tá tràng']] },
     layers: { name: '3 lớp cơ dạ dày', sci: 'Tunica muscularis', rows: [['Ngoài', 'Cơ dọc'], ['Giữa', 'Cơ vòng'], ['Trong', 'Cơ chéo'], ['Vai trò', 'Co bóp mạnh, nhào trộn thức ăn với dịch vị']] },
     rugae: { name: 'Nếp gấp niêm mạc dạ dày', sci: 'Rugae gastricae', rows: [['Vai trò', 'Giúp dạ dày dãn rộng khi chứa thức ăn'], ['Tuyến vị', 'Tiết HCl, pepsinogen, chất nhầy']] },
-    villus: { name: 'Nhung mao ruột', sci: 'Villi intestinales', rows: [['Kích thước', 'Cao ≈ 0,5 – 1 mm'], ['Bên trong', 'Mạng mao mạch máu và 1 mạch bạch huyết trung tâm'], ['Tăng diện tích', '≈ 30 lần (cùng vi nhung mao: tổng 200 – 300 m²)']] },
-    micro: { name: 'Vi nhung mao', sci: 'Microvilli (brush border)', rows: [['Vị trí', 'Mặt tự do của tế bào biểu mô ruột'], ['Tăng diện tích', '≈ 600 lần so với ống trơn'], ['Enzyme màng', 'Maltase, sucrase, lactase, peptidase']] },
+    villus: { name: 'Nhung mao ruột', sci: 'Villi intestinales', rows: [['Kích thước', 'Cao ≈ 0,5 – 1 mm'], ['Bên trong', 'Mạng mao mạch máu và 1 mạch bạch huyết trung tâm'], ['Tăng diện tích', '≈ 10 lần (nếp gấp ×3, nhung mao ×10, vi nhung mao ×20: tổng ≈ 600 lần)']] },
+    micro: { name: 'Vi nhung mao', sci: 'Microvilli (brush border)', rows: [['Vị trí', 'Mặt tự do của tế bào biểu mô ruột'], ['Tăng diện tích', '≈ 20 lần; cộng cả nếp gấp và nhung mao là ≈ 600 lần so với ống trơn'], ['Enzyme màng', 'Maltase, sucrase, lactase, peptidase']] },
     capil: { name: 'Mao mạch máu', sci: 'Capillaries', rows: [['Hấp thụ', 'Glucose, amino acid, vitamin tan trong nước (B, C), nước, khoáng'], ['Đường đi', 'Tĩnh mạch cửa → gan → tĩnh mạch chủ dưới → tim']] },
-    lacteal: { name: 'Mạch bạch huyết trung tâm', sci: 'Lacteal', rows: [['Hấp thụ', 'Acid béo + glycerol (tái tổng hợp lipid), vitamin A, D, E, K'], ['Đường đi', 'Ống ngực → tĩnh mạch dưới đòn → tim']] },
+    lacteal: { name: 'Mạch bạch huyết trung tâm', sci: 'Lacteal', rows: [['Hấp thụ', 'Lipid tái tổng hợp, gói thành hạt dưỡng chấp (chylomicron), cùng vitamin A, D, E, K. Acid béo mạch ngắn và glycerol phần lớn đi thẳng vào máu'], ['Đường đi', 'Ống ngực → tĩnh mạch dưới đòn → tim']] },
     portal: { name: 'Tĩnh mạch cửa gan', sci: 'Vena portae hepatis', rows: [['Chở', 'Máu giàu chất dinh dưỡng từ ruột về gan'], ['Gan', 'Điều hòa nồng độ chất, khử độc']] },
     thor: { name: 'Ống ngực (bạch huyết)', sci: 'Ductus thoracicus', rows: [['Chở', 'Bạch huyết giàu lipid từ ruột'], ['Đổ vào', 'Tĩnh mạch dưới đòn trái']] },
     cell: { name: 'Tế bào biểu mô ruột', sci: 'Enterocyte', rows: [['Đặc điểm', 'Mặt trên có vi nhung mao'], ['Vai trò', 'Hấp thụ đơn phân bằng khuếch tán và vận chuyển chủ động']] }
   };
-  const WARN_STARCH = 'Cảnh báo sinh học: Tinh bột không thể tiếp tục tiêu hóa hóa học tại dạ dày do môi trường axit mạnh pH 1.5 - 2.0 làm enzyme Amylase từ nước bọt bị biến tính và ngừng hoạt động!';
+  const WARN_STARCH = 'Cảnh báo sinh học: Tinh bột không thể tiếp tục tiêu hóa hóa học tại dạ dày do môi trường acid mạnh pH 1.5 - 2.0 làm amylase nước bọt dần bị bất hoạt. Lưu ý: phần tinh bột nằm sâu trong viên thức ăn chưa thấm acid vẫn được amylase tiếp tục phân giải thêm một thời gian ngắn.';
   const STAGES = [
     ['Khoang miệng & thực quản', 'Nhai nghiền, amylase: tinh bột chín → maltose; nắp thanh quản đậy, thực quản nhu động'],
     ['Dạ dày', 'Co bóp đảo trộn; HCl + pepsin: protein → polypeptide; môn vị mở từng đợt'],
@@ -243,7 +243,7 @@
       glu.forEach(m => m.visible = path !== 'lymph'); amino.forEach(m => m.visible = path !== 'lymph'); vit.forEach(m => m.visible = path !== 'lymph');
       fat.forEach(m => m.visible = path !== 'blood');
       flow(glu, bl, 0, out.b); flow(amino, bl, 0.37, out.b); flow(vit, bl, 0.61, out.b); flow(fat, (q) => ly(q), 0.2, out.l);
-      api.caption(path === 'blood' ? 'Con đường máu: glucose, amino acid, vitamin B, C, nước, khoáng → mao mạch → tĩnh mạch cửa → gan' : path === 'lymph' ? 'Con đường bạch huyết: acid béo + glycerol, vitamin A, D, E, K → mạch bạch huyết → ống ngực → tim' : 'Nhung mao: chất tan trong nước vào máu, lipid vào mạch bạch huyết');
+      api.caption(path === 'blood' ? 'Con đường máu: glucose, amino acid, vitamin B, C, nước, khoáng → mao mạch → tĩnh mạch cửa → gan' : path === 'lymph' ? 'Con đường bạch huyết: lipid tái tổng hợp gói thành chylomicron, vitamin A, D, E, K → mạch bạch huyết → ống ngực → tim (acid béo mạch ngắn, glycerol chủ yếu vào máu)' : 'Nhung mao: chất tan trong nước vào máu, lipid vào mạch bạch huyết');
     });
     api.choices({ label: '🔀 Con đường hấp thụ', items: [{ t: 'Cả hai', v: 'both' }, { t: '🩸 Máu', v: 'blood' }, { t: '💛 Bạch huyết', v: 'lymph' }], value: path, onPick(v) { path = v; } });
     api.view({ pos: [0, 7, 11], target: [0, 1.8, 0.7], min: 3, max: 22 });
@@ -273,7 +273,7 @@
     api.view({ pos: [0, 2.5, 9], target: [0, 0.6, 0], min: 2, max: 18 });
   }
   function villiTab(api) {
-    api.levels(['Nếp gấp ×3', 'Nhung mao ×30', 'Vi nhung mao ×600'], lv, n => { lv = n; api.setTab(api.tab); });
+    api.levels(['Nếp gấp ×3', 'Nhung mao ×30 (3 × 10)', 'Vi nhung mao ×600 (30 × 20)'], lv, n => { lv = n; api.setTab(api.tab); });
     let f = null;
     if (lv === 0) foldsLv(api); else if (lv === 1) f = villiLv(api); else microLv(api);
     commonCtl(api, x => f && f(x));
@@ -328,7 +328,7 @@
             ['Sucrase', 'Ruột non', 'Saccharose', 'Glucose + fructose', '7 – 8'], ['Lactase', 'Ruột non', 'Lactose', 'Glucose + galactose', '7 – 8'], ['Dịch mật (không phải enzyme)', 'Gan, chứa ở túi mật', 'Lipid', 'Giọt mỡ nhỏ (nhũ tương)', '7 – 8']] },
           { name: 'Hấp thụ', head: ['Chất dinh dưỡng', 'Con đường', 'Đường đi về tim'], rows: [
             ['Glucose', 'Máu', 'Mao mạch → tĩnh mạch cửa → gan → tĩnh mạch chủ dưới → tim'], ['Amino acid', 'Máu', 'Như trên'], ['Vitamin B, C; nước; khoáng', 'Máu', 'Như trên'],
-            ['Acid béo + glycerol', 'Bạch huyết', 'Mạch bạch huyết trung tâm → ống ngực → tĩnh mạch dưới đòn → tim'], ['Vitamin A, D, E, K', 'Bạch huyết', 'Như trên']] },
+            ['Lipid (dạng chylomicron)', 'Bạch huyết', 'Mạch bạch huyết trung tâm → ống ngực → tĩnh mạch dưới đòn → tim'], ['Vitamin A, D, E, K', 'Bạch huyết', 'Như trên']] },
           { name: 'pH và dinh dưỡng', head: ['Vị trí / Chặng', 'pH', 'Tinh bột còn lại (%)', 'Protein còn lại (%)', 'Lipid còn lại (%)'], rows: PH.map((p, k) => [p[0], p[1], ...LEFT[k]]) }
         ],
         chart: { svg: chartSVG() }

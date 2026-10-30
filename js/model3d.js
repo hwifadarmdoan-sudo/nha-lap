@@ -368,7 +368,7 @@ NL.m3d = (function () {
   }
   function showInfo(info) {
     const rows = (info.rows || []).map(r => `<tr><th>${r[0]}</th><td>${r[1]}</td></tr>`).join('');
-    ui.info.innerHTML = `<button class="m3d-x">✕</button><div class="m3d-iname">${info.name}</div>${info.sci ? `<div class="m3d-isci">${info.sci}</div>` : ''}${rows ? `<table>${rows}</table>` : ''}${info.text ? `<p>${info.text}</p>` : ''}`;
+    ui.info.innerHTML = `<button class="m3d-x">✕</button><div class="m3d-iname">${info.name}</div>${info.sci && /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(info.sci) ? `<div class="m3d-isci">${info.sci}</div>` : ''}${rows ? `<table>${rows}</table>` : ''}${info.text ? `<p>${info.text}</p>` : ''}`;
     ui.info.classList.remove('hidden'); ui.info.scrollTop = 0;
     ui.info.querySelector('.m3d-x').onclick = () => { NL.audio.play('click'); deselect(); };
     st.caption = info.name;

@@ -65,7 +65,7 @@
       el('rect', { x: tr.x + 40 + i * 170, y: tr.y + tr.h + 52, width: 18, height: 14, rx: 3, fill: COL[k], stroke: '#555' }, lg);
       api.text(lg, tr.x + 90 + i * 170, tr.y + tr.h + 64, `${k}: bướm ${t}`, 13, '#6C88A3', 700);
     });
-    api.text(lg, tr.x + tr.w / 2, tr.y + tr.h + 86, 'Giả định trội không hoàn toàn để nhìn thấy cả 3 kiểu gen (bướm bạch dương thật: alen đen trội)', 11, '#8A9AAD', 600);
+    api.text(lg, tr.x + tr.w / 2, tr.y + tr.h + 86, 'Giả định trội không hoàn toàn để nhìn thấy cả 3 kiểu gene (bướm bạch dương thật: allele đen trội)', 11, '#8A9AAD', 600);
     colorMoths([0.25, 0.5, 0.25]);
   }
 
@@ -126,7 +126,7 @@
       <tr><td>AA đen</td><td>${g.f[0].toFixed(3)}</td><td>${s.e[0].toFixed(3)}</td></tr>
       <tr><td>Aa xám</td><td>${g.f[1].toFixed(3)}</td><td>${s.e[1].toFixed(3)}</td></tr>
       <tr><td>aa trắng</td><td>${g.f[2].toFixed(3)}</td><td>${s.e[2].toFixed(3)}</td></tr>
-      <tr><td>χ²</td><td>${s.chi.toFixed(2)}</td><td style="color:${ok ? 'var(--ok)' : 'var(--red)'}">${ok ? 'ĐẠT HW' : 'MẤT HW'}</td></tr></table>`;
+      <tr><td>χ²</td><td>${s.chi.toFixed(2)}</td><td style="color:${ok ? 'var(--ok)' : 'var(--red)'}">${ok ? 'Chưa thấy lệch HW' : 'Lệch HW'}</td></tr></table>`;
     st.genTxt.textContent = 'Thế hệ F' + gen;
   }
 

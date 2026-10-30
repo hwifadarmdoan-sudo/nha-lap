@@ -7,7 +7,7 @@
     cil: { name: 'Cơ thể mi và dây treo', sci: 'Ciliary body & Zinn zonules', rows: [['Nhìn gần', 'Cơ thể mi co → dây treo chùng → thủy tinh thể phồng'], ['Nhìn xa', 'Cơ thể mi dãn → dây treo căng → thủy tinh thể xẹp']] },
     vit: { name: 'Thể thủy tinh', sci: 'Corpus vitreum', rows: [['Bản chất', 'Chất keo trong suốt'], ['Vai trò', 'Giữ hình dạng cầu mắt, cho ánh sáng đi qua']] },
     retina: { name: 'Võng mạc', sci: 'Retina', rows: [['Chứa', 'Tế bào que (≈ 120 triệu) và tế bào nón (≈ 6 triệu)'], ['Vai trò', 'Biến ánh sáng thành xung thần kinh']] },
-    fovea: { name: 'Hoàng điểm (điểm vàng)', sci: 'Fovea centralis', rows: [['Đặc điểm', 'Tập trung dày đặc tế bào nón, không có tế bào que'], ['Vai trò', 'Nơi nhìn rõ nhất, cảm nhận màu']] },
+    fovea: { name: 'Hoàng điểm (điểm vàng)', sci: '', rows: [['Đặc điểm', 'Tập trung nhiều tế bào nón. Riêng hố trung tâm ở giữa hoàng điểm chỉ có tế bào nón, không có tế bào que'], ['Vai trò', 'Nơi nhìn rõ nhất, cảm nhận màu']] },
     blind: { name: 'Điểm mù', sci: 'Optic disc', rows: [['Đặc điểm', 'Nơi dây thần kinh thị giác đi ra, không có tế bào thụ cảm'], ['Kết quả', 'Ảnh rơi vào đây không được nhìn thấy']] },
     optic: { name: 'Dây thần kinh thị giác', sci: 'Nervus opticus', rows: [['Dẫn', 'Xung từ tế bào hạch võng mạc về vỏ não thị giác (thùy chẩm)']] },
     rod: { name: 'Tế bào que', sci: 'Rod cell', rows: [['Sắc tố', 'Rhodopsin'], ['Nhạy', 'Ánh sáng yếu (nhìn lúc chạng vạng), không phân biệt màu'], ['Bước sóng nhạy nhất', '≈ 498 nm']] },
@@ -17,7 +17,7 @@
     pinna: { name: 'Vành tai', sci: 'Auricula', rows: [['Vai trò', 'Hứng sóng âm, hướng vào ống tai']] },
     canal: { name: 'Ống tai ngoài', sci: 'Meatus acusticus externus', rows: [['Dài', '≈ 2,5 cm'], ['Có', 'Lông và tuyến ráy tai giữ bụi']] },
     drum: { name: 'Màng nhĩ', sci: 'Membrana tympani', rows: [['Vai trò', 'Rung theo sóng âm, truyền vào chuỗi xương tai'], ['Diện tích', 'Lớn gấp ≈ 18 – 20 lần cửa sổ bầu dục']] },
-    oss: { name: 'Chuỗi xương tai', sci: 'Malleus – Incus – Stapes', rows: [['Gồm', 'Xương búa, xương đe, xương bàn đạp'], ['Vai trò', 'Đòn bẩy khuếch đại lực rung ≈ 20 lần'], ['Xương bàn đạp', 'Xương nhỏ nhất cơ thể, ấn vào cửa sổ bầu dục']] },
+    oss: { name: 'Chuỗi xương tai', sci: 'Malleus – Incus – Stapes', rows: [['Gồm', 'Xương búa, xương đe, xương bàn đạp'], ['Vai trò', 'Đòn bẩy tăng lực rung ≈ 1,3 lần; cộng với màng nhĩ rộng gấp ≈ 17–20 lần cửa sổ bầu dục, áp lực tăng tổng cộng ≈ 20 lần'], ['Xương bàn đạp', 'Xương nhỏ nhất cơ thể, ấn vào cửa sổ bầu dục']] },
     eus: { name: 'Vòi nhĩ (Eustache)', sci: 'Tuba auditiva', rows: [['Nối', 'Tai giữa với họng'], ['Vai trò', 'Cân bằng áp suất 2 bên màng nhĩ']] },
     semi: { name: 'Ống bán khuyên', sci: 'Canales semicirculares', rows: [['Số lượng', '3 ống trên 3 mặt phẳng vuông góc'], ['Vai trò', 'Thăng bằng, cảm nhận chuyển động quay của đầu']] },
     coch: { name: 'Ốc tai', sci: 'Cochlea', rows: [['Hình dạng', 'Ống xoắn ≈ 2,5 vòng'], ['Chứa', 'Cơ quan Corti trên màng cơ sở'], ['Âm cao', 'Rung mạnh ở đáy ốc tai'], ['Âm thấp', 'Rung mạnh ở đỉnh ốc tai']] },
@@ -29,7 +29,7 @@
     stereo: { name: 'Lông tơ', sci: 'Stereocilia', rows: [['Cơ chế', 'Bị bẻ cong → kéo mở kênh K⁺ cảm ứng cơ học ở đỉnh'], ['Tổn thương', 'Tiếng ồn > 85 dB kéo dài làm gãy vĩnh viễn, không mọc lại']] },
     kch: { name: 'Kênh K⁺ cảm ứng cơ học', sci: 'Mechanotransduction channel', rows: [['Mở khi', 'Lông tơ nghiêng về phía lông cao hơn'], ['Kết quả', 'K⁺ từ nội dịch tràn vào → khử cực tế bào lông → giải phóng chất dẫn truyền']] }
   };
-  const WARN_NEAR = 'Cảnh báo sinh lý: Vật thể vượt quá điểm cận thị của mắt, cơ thể mi đã co tối đa làm thủy tinh thể phồng hết cỡ nhưng ảnh vẫn rơi phía sau võng mạc khiến hình ảnh bị mờ!';
+  const WARN_NEAR = 'Cảnh báo sinh lí: Vật thể ở gần hơn điểm cực cận của mắt, cơ thể mi đã co tối đa làm thủy tinh thể phồng hết cỡ nhưng ảnh vẫn rơi phía sau võng mạc khiến hình ảnh bị mờ!';
   const WARN_NOISE = 'Cảnh báo thính giác: Âm thanh trên 85 dB kéo dài làm các lông tơ của tế bào lông bị gãy rụng vĩnh viễn (không mọc lại), dẫn đến giảm thính lực, có thể điếc. Hãy tránh nơi quá ồn và không nghe tai nghe quá to!';
 
   let dist = 2, defect = 'normal', glasses = false, cb = 'none', eyeView = 'eye', freq = 1000, dB = 60, tone = false, damage = 0;
@@ -109,7 +109,7 @@
       dLab.el.innerHTML = `d = ${dist < 1 ? Math.round(dist * 100) + ' cm' : dist + ' m'}`;
       const state = off < 0.08 ? '✔ Ảnh rõ trên hoàng điểm' : o.off > 0 ? '✖ Ảnh sau võng mạc (mờ)' : '✖ Ảnh trước võng mạc (mờ)';
       fLab.el.innerHTML = `${state}<br>Độ tụ thủy tinh thể ≈ ${o.P.toFixed(1)} D (điều tiết ${o.acc.toFixed(1)} D)`;
-      if (dist < 0.1 && defect === 'normal' && !warnNear) { warnNear = true; api.warn('near', WARN_NEAR, '⚠️ Cảnh báo sinh lý'); }
+      if (dist < 0.1 && defect === 'normal' && !warnNear) { warnNear = true; api.warn('near', WARN_NEAR, '⚠️ Cảnh báo sinh lí'); }
       if (dist >= 0.1) warnNear = false;
       api.caption(`${a > 0.5 ? 'Nhìn gần: cơ thể mi co, dây treo chùng, thủy tinh thể phồng' : 'Nhìn xa: cơ thể mi dãn, dây treo căng, thủy tinh thể xẹp'} · 1/f = 1/d + 1/d′ · d′ = ${(o.di * 1000).toFixed(1)} mm`);
     });
@@ -200,7 +200,7 @@
       peak.position.copy(pp); peak.scale.setScalar(0.6 + amp + Math.abs(Math.sin(t * 8)) * 0.2);
       pLab.el.innerHTML = freq >= 2000 ? 'Âm cao: rung mạnh ở đáy ốc tai' : freq <= 300 ? 'Âm thấp: rung mạnh ở đỉnh ốc tai' : 'Vùng rung mạnh nhất';
       const q2 = (t * 0.5) % 1; pulse.position.lerpVectors(V(1.4, -0.3, 0), V(4.2, 0.2, -0.4), q2);
-      api.caption(`${freq} Hz · ${dB} dB · Màng nhĩ → búa → đe → bàn đạp (khuếch đại ≈ 20 lần) → cửa sổ bầu dục → sóng dịch ốc tai`);
+      api.caption(`${freq} Hz · ${dB} dB · Màng nhĩ → búa → đe → bàn đạp (tai giữa tăng áp lực ≈ 20 lần) → cửa sổ bầu dục → sóng dịch ốc tai`);
     });
     soundCtl(api);
     api.checklist([{ k: 'drum', label: 'Màng nhĩ' }, { k: 'oss', label: 'Chuỗi xương tai' }, { k: 'coch', label: 'Ốc tai' }, { k: 'anerve', label: 'Dây thần kinh thính giác' }]);
@@ -311,7 +311,7 @@
           { name: 'So sánh mắt – tai', head: ['STT', 'Tiêu chí so sánh', 'Cơ quan Thị giác (Mắt)', 'Cơ quan Thính giác (Tai)', 'Dạng năng lượng kích thích & Tế bào thụ cảm'], rows: [
             [1, 'Kích thích thích hợp', 'Ánh sáng 380 – 760 nm', 'Sóng âm 20 – 20 000 Hz', 'Quang năng / cơ năng (dao động)'],
             [2, 'Bộ phận thu nhận', 'Võng mạc', 'Cơ quan Corti trong ốc tai', 'Tế bào que, nón / tế bào lông'],
-            [3, 'Bộ phận điều chỉnh', 'Thủy tinh thể, cơ thể mi, đồng tử', 'Chuỗi xương tai (khuếch đại ≈ 20 lần)', '–'],
+            [3, 'Bộ phận điều chỉnh', 'Thủy tinh thể, cơ thể mi, đồng tử', 'Màng nhĩ và chuỗi xương tai (tăng áp lực ≈ 20 lần)', '–'],
             [4, 'Cơ chế ở tế bào thụ cảm', 'Photon phân giải rhodopsin / photopsin', 'Lông tơ bẻ cong mở kênh K⁺', 'Đổi điện thế màng → xung thần kinh'],
             [5, 'Dây thần kinh', 'Thị giác', 'Thính giác', '–'], [6, 'Vùng vỏ não', 'Thùy chẩm', 'Thùy thái dương', '–'],
             [7, 'Bệnh, tật thường gặp', 'Cận thị, viễn thị, mù màu', 'Giảm thính lực do tiếng ồn > 85 dB', '–']] },

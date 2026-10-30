@@ -8,17 +8,17 @@
     stamen: { name: 'Bộ nhị', sci: 'Stamens (Androecium)', rows: [['Gồm', 'Chỉ nhị và bao phấn'], ['Vai trò', 'Cơ quan sinh sản đực, tạo hạt phấn']] },
     anther: { name: 'Bao phấn', sci: 'Anther', rows: [['Chứa', '4 túi phấn, trong có tế bào mẹ hạt phấn (2n)'], ['Giảm phân', 'Mỗi tế bào mẹ (2n) → 4 tiểu bào tử (n) → hạt phấn'], ['Bộ NST', 'Vách 2n, hạt phấn n']] },
     fil: { name: 'Chỉ nhị', sci: 'Filament', rows: [['Vai trò', 'Nâng đỡ bao phấn, dẫn chất dinh dưỡng'], ['Bộ NST', '2n']] },
-    pollen: { name: 'Hạt phấn', sci: 'Pollen grain (thể giao tử đực)', rows: [['Gồm', 'Tế bào sinh dưỡng (tạo ống phấn) + tế bào sinh sản'], ['Bộ NST', 'n'], ['Nảy mầm', 'Hút dịch nhầy trên đầu nhụy, mọc ống phấn'], ['Tế bào sinh sản', 'Nguyên phân → 2 tinh tử (n)']] },
+    pollen: { name: 'Hạt phấn', sci: 'thể giao tử đực', rows: [['Gồm', 'Tế bào sinh dưỡng (tạo ống phấn) + tế bào sinh sản'], ['Bộ NST', 'n'], ['Nảy mầm', 'Hút dịch nhầy trên đầu nhụy, mọc ống phấn'], ['Tế bào sinh sản', 'Nguyên phân → 2 tinh tử (n)']] },
     pistil: { name: 'Bộ nhụy', sci: 'Pistil (Gynoecium)', rows: [['Gồm', 'Đầu nhụy, vòi nhụy, bầu nhụy'], ['Vai trò', 'Cơ quan sinh sản cái']] },
     stigma: { name: 'Đầu nhụy', sci: 'Stigma', rows: [['Đặc điểm', 'Có lớp chất nhầy dính giữ hạt phấn'], ['Vai trò', 'Nơi hạt phấn đáp xuống và nảy mầm'], ['Bộ NST', '2n']] },
     style: { name: 'Vòi nhụy', sci: 'Style', rows: [['Đặc điểm', 'Dạng ống dài, mô dẫn giàu dinh dưỡng'], ['Vai trò', 'Đường đi của ống phấn; nhận diện protein S khi tự thụ'], ['Bộ NST', '2n']] },
     ovary: { name: 'Bầu nhụy', sci: 'Ovary', rows: [['Chứa', 'Noãn'], ['Sau thụ tinh', 'Phát triển thành quả'], ['Bộ NST', '2n']] },
     ovule: { name: 'Noãn', sci: 'Ovule', rows: [['Gồm', 'Vỏ noãn, phôi tâm, túi phôi'], ['Lỗ noãn', 'Nơi ống phấn đi vào'], ['Sau thụ tinh', 'Phát triển thành hạt'], ['Bộ NST', 'Vỏ noãn 2n']] },
     integ: { name: 'Vỏ noãn', sci: 'Integuments', rows: [['Sau thụ tinh', 'Thành vỏ hạt'], ['Bộ NST', '2n']] },
-    sac: { name: 'Túi phôi', sci: 'Embryo sac (thể giao tử cái)', rows: [['Hình thành', 'Đại bào tử (n) nguyên phân 3 lần → 8 nhân'], ['Gồm', '7 tế bào, 8 nhân'], ['Bộ NST', 'n']] },
+    sac: { name: 'Túi phôi', sci: 'thể giao tử cái', rows: [['Hình thành', 'Đại bào tử (n) nguyên phân 3 lần → 8 nhân'], ['Gồm', '7 tế bào, 8 nhân'], ['Bộ NST', 'n']] },
     egg: { name: 'Tế bào trứng', sci: 'Egg cell', rows: [['Vị trí', 'Gần lỗ noãn, giữa 2 tế bào kèm'], ['Bộ NST', 'n'], ['Thụ tinh', 'Tinh tử 1 (n) + trứng (n) → hợp tử (2n) → phôi']] },
     syn: { name: 'Tế bào kèm', sci: 'Synergids', rows: [['Số lượng', '2'], ['Vai trò', 'Tiết chất dẫn đường ống phấn; ống phấn vỡ ra tại đây'], ['Bộ NST', 'n']] },
-    polar: { name: 'Nhân cực', sci: 'Polar nuclei (tế bào trung tâm)', rows: [['Số lượng', '2 nhân (n + n) → nhân lưỡng bội 2n'], ['Thụ tinh', 'Tinh tử 2 (n) + 2n → nhân tam bội 3n → phôi nhũ']] },
+    polar: { name: 'Nhân cực', sci: 'tế bào trung tâm', rows: [['Số lượng', '2 nhân (n + n) → nhân lưỡng bội 2n'], ['Thụ tinh', 'Tinh tử 2 (n) + 2n → nhân tam bội 3n → phôi nhũ (ở cây hai lá mầm như đậu, phôi nhũ bị lá mầm hút hết, chất dự trữ nằm ở lá mầm)']] },
     anti: { name: 'Tế bào đối cực', sci: 'Antipodal cells', rows: [['Số lượng', '3'], ['Vị trí', 'Đầu đối diện lỗ noãn'], ['Bộ NST', 'n']] },
     tube: { name: 'Ống phấn', sci: 'Pollen tube', rows: [['Tạo bởi', 'Tế bào sinh dưỡng của hạt phấn'], ['Mang theo', '2 tinh tử (n)'], ['Định hướng', 'Hướng hóa: theo nồng độ Ca²⁺ và đường từ noãn']] },
     zyg: { name: 'Hợp tử', sci: 'Zygote', rows: [['Bộ NST', '2n'], ['Phát triển thành', 'Phôi (rễ mầm, thân mầm, chồi mầm, lá mầm)']] },
@@ -142,7 +142,7 @@
     api.choices({ label: '🐝 Nhập vai thụ phấn', items: [{ t: 'Không', v: 'none' }, { t: '🐝 Ong', v: 'bee' }, { t: '🌬 Gió', v: 'wind' }], value: vector, onPick(v) { vector = v; showB(); if (v === 'bee') api.toast('Kéo con ong vào bao phấn'); api.view({ pos: v === 'none' ? [1, 4, 9] : [3.6, 5, 13], target: v === 'none' ? [0, 1.4, 0] : [3.2, 1.2, 0], min: 3, max: 24 }); api.homeView(); } });
     api.slider({ label: '🌬 Tốc độ gió', min: 0, max: 10, step: 1, value: wind, unit: 'm/s', lazy: true, onInput(v) { wind = v; } });
     api.section('⏩ Tua nhanh hoa → quả');
-    api.choices({ items: [{ t: '🍎 Quả thịt', v: 'flesh' }, { t: '🫛 Quả khô (đậu)', v: 'dry' }], value: fruitType, onPick(v) { fruitType = v; applyRipe(); } });
+    api.choices({ items: [{ t: '🍅 Quả thịt', v: 'flesh' }, { t: '🫛 Quả khô (đậu)', v: 'dry' }], value: fruitType, onPick(v) { fruitType = v; applyRipe(); } });
     api.slider({ label: 'Thời gian sau thụ tinh', min: 0, max: 100, step: 1, value: Math.round(ripe * 100), unit: '%', lazy: true, onInput(v) { ripe = v / 100; if (v > 0 && !fertilized) api.warn('nofert', 'Lưu ý: quả và hạt chỉ hình thành sau khi thụ tinh kép. Mô hình đang giả sử noãn đã được thụ tinh; em có thể xem thụ tinh kép ở tab Túi phôi.', '💡 Gợi ý'); if (v === 100) addLog(`Tua nhanh ${fruitType === 'flesh' ? 'quả thịt' : 'quả khô'}`, 'Bầu → quả, noãn → hạt'); } });
     commonCtl(api, o => { op = o; applyRipe(); [A, B].forEach(F => { F.petals.forEach(m => api.setOpacity(m, o)); api.setOpacity(F.style, o); api.setOpacity(F.ovM, o); }); });
     api.view(vector === 'none' ? { pos: [1, 4, 9], target: [0, 1.4, 0], min: 3, max: 24 } : { pos: [3.6, 5, 13], target: [3.2, 1.2, 0], min: 3, max: 24 });

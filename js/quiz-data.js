@@ -207,12 +207,12 @@ NL.QUIZ = {
    "q": "Đường cong biểu diễn mối quan hệ giữa tốc độ hoạt động của enzyme amylase và nhiệt độ môi trường có đặc điểm hình dạng nào?",
    "o": [
     "Đường thẳng đi lên mãi khi nhiệt độ tăng",
-    "Hình chuông, đỉnh ở nhiệt độ tối ưu",
+    "Tăng dần tới nhiệt độ tối ưu rồi giảm rất nhanh",
     "Đường nằm ngang, tốc độ không đổi",
     "Đường đi xuống đều khi nhiệt độ tăng"
    ],
    "a": 1,
-   "e": "Tăng dần tới nhiệt độ tối ưu rồi giảm mạnh khi enzyme biến tính."
+   "e": "Đường cong không đối xứng: tăng từ từ tới nhiệt độ tối ưu, rồi tụt rất nhanh vì enzyme bị biến tính."
   },
   {
    "q": "Quá trình biến tính enzyme do nhiệt độ cao gây ra thuộc về bản chất hóa học nào của phân tử protein cấu tạo nên enzyme?",
@@ -294,7 +294,7 @@ NL.QUIZ = {
    "e": "Thành cellulose cứng nên tế bào giữ hình dạng khi bên trong co lại."
   },
   {
-   "q": "Trong hiện tượng co lõm (concave plasmolysis), đặc điểm hình thái của màng sinh chất khi tách khỏi thành tế bào là gì?",
+   "q": "Trong hiện tượng co lõm, đặc điểm hình thái của màng sinh chất khi tách khỏi thành tế bào là gì?",
    "o": [
     "Co đều thành một khối tròn nằm giữa tế bào",
     "Tách khỏi thành ở các cạnh, tạo các chỗ lõm vào",
@@ -340,7 +340,7 @@ NL.QUIZ = {
  ],
  "2D": [
   {
-   "q": "Khi cho giao phấn giữa hai cây đậu Hà Lan dị hợp tử 1 cặp tính trạng (Aa × Aa, hạt vàng là trội hoàn toàn so với hạt xanh), tỉ lệ kiểu hình lý thuyết thu được ở đời con F₁ là bao nhiêu?",
+   "q": "Khi cho giao phấn giữa hai cây đậu Hà Lan dị hợp tử 1 cặp tính trạng (Aa × Aa, hạt vàng là trội hoàn toàn so với hạt xanh), tỉ lệ kiểu hình lý thuyết thu được ở đời con là bao nhiêu?",
    "o": [
     "1 vàng : 1 xanh",
     "3 vàng : 1 xanh",
@@ -351,7 +351,7 @@ NL.QUIZ = {
    "e": "Aa × Aa cho 1AA : 2Aa : 1aa, tức 3 trội : 1 lặn."
   },
   {
-   "q": "Trong phép lai 2 cặp tính trạng phân li độc lập của Mendel (AaBb × AaBb), tỉ lệ phân li kiểu hình lý thuyết ở đời con F₁ tuân theo tỉ lệ nào dưới đây?",
+   "q": "Trong phép lai 2 cặp tính trạng phân li độc lập của Mendel (AaBb × AaBb), tỉ lệ phân li kiểu hình lý thuyết ở đời con tuân theo tỉ lệ nào dưới đây?",
    "o": [
     "3 : 3 : 1 : 1",
     "9 : 3 : 3 : 1",
@@ -373,7 +373,7 @@ NL.QUIZ = {
    "e": "Mẫu càng lớn, may rủi càng bù trừ nhau, tỉ lệ càng sát lý thuyết."
   },
   {
-   "q": "Mục đích chính của việc sử dụng kiểm định thống kê Chi-square (χ²) trong phân tích kết quả phép lai di truyền là gì?",
+   "q": "Mục đích chính của việc sử dụng kiểm định thống kê khi bình phương (χ²) trong phân tích kết quả phép lai di truyền là gì?",
    "o": [
     "Xác định trình tự nucleotide của gene quy định màu hạt",
     "Xem chênh lệch có phải do may rủi không",
@@ -384,7 +384,7 @@ NL.QUIZ = {
    "e": "χ² cho biết sai lệch nhỏ đến mức có thể coi là do may rủi."
   },
   {
-   "q": "Trong công thức tính giá trị Chi-square χ² = Σ (Oᵢ − Eᵢ)² / Eᵢ, ký hiệu Oᵢ và Eᵢ lần lượt đại diện cho các giá trị nào?",
+   "q": "Trong công thức tính giá trị χ² χ² = Σ (Oᵢ − Eᵢ)² / Eᵢ, ký hiệu Oᵢ và Eᵢ lần lượt đại diện cho các giá trị nào?",
    "o": [
     "O là số lý thuyết, E là số thực tế đếm được",
     "O là số thực tế đếm được, E là số lý thuyết",
@@ -395,7 +395,7 @@ NL.QUIZ = {
    "e": "O = observed (quan sát), E = expected (kỳ vọng)."
   },
   {
-   "q": "Đối với phép lai 2 cặp tính trạng phân li độc lập có 4 lớp kiểu hình ở đời con, bậc tự do (df) được sử dụng để tra bảng giá trị tới hạn Chi-square bằng bao nhiêu?",
+   "q": "Đối với phép lai 2 cặp tính trạng phân li độc lập có 4 lớp kiểu hình ở đời con, bậc tự do (df) được sử dụng để tra bảng giá trị tới hạn χ² bằng bao nhiêu?",
    "o": [
     "df = 1",
     "df = 2",
@@ -428,7 +428,7 @@ NL.QUIZ = {
    "e": "Mỗi cặp NST phân li độc lập trong giảm phân nên gene trên đó cũng vậy."
   },
   {
-   "q": "Khi thực hiện kiểm định Chi-square cho phép lai AaBb × aabb với dung lượng mẫu N = 400 cá thể, số lượng cá thể lý thuyết kỳ vọng (Eᵢ) cho mỗi loại kiểu hình trong 4 loại kiểu hình là bao nhiêu?",
+   "q": "Khi thực hiện kiểm định χ² cho phép lai AaBb × aabb với dung lượng mẫu N = 400 cá thể, số lượng cá thể lý thuyết kỳ vọng (Eᵢ) cho mỗi loại kiểu hình trong 4 loại kiểu hình là bao nhiêu?",
    "o": [
     "50 cá thể",
     "100 cá thể",
@@ -441,18 +441,18 @@ NL.QUIZ = {
   {
    "q": "Nếu kết quả tính toán thu được giá trị χ² nhỏ hơn giá trị tới hạn tra bảng ở mức ý nghĩa p = 0.05, chúng ta rút ra kết luận khoa học nào?",
    "o": [
-    "Sai lệch do may rủi, chấp nhận giả thuyết",
+    "Chưa đủ cơ sở bác bỏ giả thuyết, sai lệch có thể do ngẫu nhiên",
     "Bác bỏ giả thuyết Mendel vì sai lệch quá lớn",
     "Các gene liên kết hoàn toàn trên cùng một NST",
     "Chưa kết luận được vì χ² phải lớn hơn giá trị tới hạn"
    ],
    "a": 0,
-   "e": "χ² nhỏ hơn giá trị tới hạn nghĩa là chênh lệch đủ nhỏ để do may rủi."
+   "e": "χ² nhỏ hơn giá trị tới hạn: chênh lệch đủ nhỏ để có thể do ngẫu nhiên, nên chưa đủ cơ sở bác bỏ. Kiểm định không \"chứng minh\" giả thuyết đúng."
   }
  ],
  "2E": [
   {
-   "q": "Trong phương pháp điện di trên gel agarose, tại sao các phân tử DNA lại có xu hướng di chuyển từ cực âm ( − ve) về phía cực dương ( + ve)?",
+   "q": "Trong phương pháp điện di trên gel agarose, tại sao các phân tử DNA lại di chuyển từ cực âm về phía cực dương?",
    "o": [
     "DNA mang điện tích dương nên bị cực dương hút",
     "Nhóm phosphate làm DNA mang điện tích âm",
@@ -474,7 +474,7 @@ NL.QUIZ = {
    "e": "Gel như lưới, đoạn ngắn luồn qua nhanh hơn nên đi xa hơn."
   },
   {
-   "q": "Vai trò chính của thang chuẩn kích thước DNA (DNA Ladder Marker) được nạp vào một giếng riêng trên bản gel điện di là gì?",
+   "q": "Vai trò chính của thang chuẩn kích thước DNA được nạp vào một giếng riêng trên bản gel điện di là gì?",
    "o": [
     "Cung cấp thêm điện cho buồng điện di chạy khỏe",
     "Làm thước đo kích thước DNA mẫu",
@@ -485,7 +485,7 @@ NL.QUIZ = {
    "e": "Thang chuẩn có các đoạn đã biết kích thước, dùng để so."
   },
   {
-   "q": "Chất chỉ thị màu (Loading Dye) được trộn cùng với mẫu DNA trước khi nạp vào giếng có tác dụng quan trọng nào dưới đây?",
+   "q": "Chất chỉ thị màu nạp mẫu được trộn cùng với mẫu DNA trước khi nạp vào giếng có tác dụng quan trọng nào dưới đây?",
    "o": [
     "Làm DNA tự phát sáng mà không cần nhuộm thêm gì",
     "Giúp mẫu chìm xuống giếng và thấy mẫu chạy tới đâu",
@@ -540,7 +540,7 @@ NL.QUIZ = {
    "e": "Chất nhuộm (SafeStain, EtBr) gắn vào DNA và phát sáng dưới tia UV."
   },
   {
-   "q": "Trong biểu đồ chuẩn (Standard Curve) của điện di DNA, trục hoành (x-axis) thường biểu diễn đại lượng nào để tính toán kích thước DNA?",
+   "q": "Trong đường chuẩn của điện di DNA, trục hoành thường biểu diễn đại lượng nào để tính toán kích thước DNA?",
    "o": [
     "Chia đều theo số bp, để đọc kích thước cho nhanh",
     "Chia theo logarit của kích thước, các điểm gần thẳng hàng",
@@ -551,7 +551,7 @@ NL.QUIZ = {
    "e": "Quãng đường giảm gần tuyến tính theo log(bp), nên trục log cho đường gần thẳng."
   },
   {
-   "q": "Phát biểu nào sau đây đúng khi so sánh tốc độ di chuyển giữa một đoạn DNA siêu xoắn (supercoiled plasmid) và một đoạn DNA mạch thẳng có cùng tổng số cặp base trên cùng một bản gel agarose?",
+   "q": "Phát biểu nào sau đây đúng khi so sánh tốc độ di chuyển giữa một đoạn DNA siêu xoắn (plasmid vòng) và một đoạn DNA mạch thẳng có cùng tổng số cặp base trên cùng một bản gel agarose?",
    "o": [
     "Siêu xoắn gọn hơn nên thường chạy nhanh hơn mạch thẳng",
     "Mạch thẳng chạy nhanh hơn vì duỗi ra dễ luồn qua gel",
@@ -619,7 +619,7 @@ NL.QUIZ = {
    "e": "CO₂ làm nước vôi trong vẩn đục."
   },
   {
-   "q": "Khi tăng nhiệt độ môi trường từ 25°C lên 35°C (trong giới hạn sinh lý), tốc độ di chuyển của giọt mực đỏ thay đổi như thế nào?",
+   "q": "Khi tăng nhiệt độ môi trường từ 25°C lên 35°C (trong giới hạn sinh lí), tốc độ di chuyển của giọt mực đỏ thay đổi như thế nào?",
    "o": [
     "Nhanh hơn, vì enzyme hô hấp hoạt động mạnh hơn",
     "Chậm hơn, vì hạt mất nước nhanh khi trời ấm",
@@ -627,7 +627,7 @@ NL.QUIZ = {
     "Dừng hẳn, vì 35°C làm hạt bị sốc nhiệt"
    ],
    "a": 0,
-   "e": "Trong giới hạn sinh lý, ấm hơn thì enzyme làm việc nhanh hơn."
+   "e": "Trong giới hạn sinh lí, ấm hơn thì enzyme làm việc nhanh hơn."
   },
   {
    "q": "Tại sao nhiệt độ ghi nhận trên nhiệt kế ở bình chứa hạt nảy mầm lại tăng lên rõ rệt so với bình chứa hạt luộc chín sau một thời gian thí nghiệm?",
@@ -687,7 +687,7 @@ NL.QUIZ = {
    "e": "Cơ làm việc cần nhiều O₂, tim đập nhanh để bơm nhiều máu hơn."
   },
   {
-   "q": "Trong quá trình vận động thể lực cường độ cao, chỉ số Huyết áp tâm thu (SBP) và Huyết áp tâm trương (DBP) biến đổi ra sao?",
+   "q": "Trong quá trình vận động thể lực cường độ cao, chỉ số huyết áp tâm thu và huyết áp tâm trương biến đổi ra sao?",
    "o": [
     "Tâm thu tăng mạnh, tâm trương thay đổi ít",
     "Cả tâm thu và tâm trương cùng giảm mạnh",
@@ -698,7 +698,7 @@ NL.QUIZ = {
    "e": "Tim bóp mạnh làm số trên tăng; mạch ở cơ giãn nên số dưới ít đổi."
   },
   {
-   "q": "Khi nhịp tim tăng từ 70 nhịp/phút lên 140 nhịp/phút trên màn hình ECG giả lập, khoảng cách giữa hai đỉnh sóng R liên tiếp (khoảng R − R) thay đổi như thế nào?",
+   "q": "Khi nhịp tim tăng từ 70 nhịp/phút lên 140 nhịp/phút trên điện tâm đồ, khoảng cách giữa hai đỉnh sóng R liên tiếp (khoảng R − R) thay đổi như thế nào?",
    "o": [
     "Dài gấp đôi",
     "Ngắn còn nửa",
@@ -711,8 +711,8 @@ NL.QUIZ = {
   {
    "q": "Máy đo huyết áp tự động hiện kết quả 120/80 mmHg. Số 120 cho biết điều gì?",
    "o": [
-    "Huyết áp tâm trương",
-    "Huyết áp tâm thu",
+    "huyết áp tâm trương",
+    "huyết áp tâm thu",
     "Nhịp tim mỗi phút",
     "Áp suất khí quyển"
    ],
@@ -720,7 +720,7 @@ NL.QUIZ = {
    "e": "Số trên là tâm thu, lúc tim co bóp."
   },
   {
-   "q": "Tại sao ngay sau khi dừng chạy nhanh, nhịp tim và huyết áp của nhân vật không trở về ngay mức nghỉ ngơi mà phải mất một khoảng thời gian phục hồi?",
+   "q": "Tại sao ngay sau khi dừng chạy nhanh, nhịp tim và huyết áp của người tập không trở về ngay mức nghỉ ngơi mà phải mất một khoảng thời gian phục hồi?",
    "o": [
     "Cơ thể cần thời gian bù O₂ và dịu thần kinh",
     "Máy đo huyết áp bị kẹt nên chưa cập nhật được số mới",
@@ -753,7 +753,7 @@ NL.QUIZ = {
    "e": "Hành não điều hòa nhịp tim và huyết áp."
   },
   {
-   "q": "Nếu quấn băng quấn đo huyết áp quá lỏng so với tiêu chuẩn trên cánh tay nhân vật, kết quả đo Huyết áp thu được sẽ bị sai lệch ra sao?",
+   "q": "Nếu quấn băng quấn đo huyết áp quá lỏng so với tiêu chuẩn trên cánh tay người đo, kết quả đo huyết áp thu được sẽ bị sai lệch ra sao?",
    "o": [
     "Cao hơn thực tế",
     "Thấp hơn thực tế",
@@ -775,7 +775,7 @@ NL.QUIZ = {
    "e": "Cơ làm việc thải nhiều CO₂, làm máu chua hơn, kích thích tim và thở nhanh."
   },
   {
-   "q": "Đơn vị tiêu chuẩn dùng để đo và ghi nhận chỉ số Huyết áp trên các thiết bị y tế là gì?",
+   "q": "Đơn vị tiêu chuẩn dùng để đo và ghi nhận chỉ số huyết áp trên các thiết bị y tế là gì?",
    "o": [
     "Nhịp mỗi phút (bpm)",
     "Miligam mỗi lít (mg/L)",
@@ -783,7 +783,7 @@ NL.QUIZ = {
     "Lít mỗi phút (L/min)"
    ],
    "a": 2,
-   "e": "Huyết áp đo bằng mmHg."
+   "e": "huyết áp đo bằng mmHg."
   }
  ],
  "2H": [
@@ -810,15 +810,15 @@ NL.QUIZ = {
    "e": "Ngập nước thì thiếu O₂, hạt không hô hấp được."
   },
   {
-   "q": "Yếu tố ánh sáng có vai trò quyết định như thế nào đối với sự nảy mầm ban đầu của đa số các loại hạt giống (như hạt đậu, hạt ngô)?",
+   "q": "Ánh sáng có vai trò thế nào đối với sự nảy mầm của hạt đậu trong thí nghiệm này?",
    "o": [
-    "Bắt buộc phải có ánh sáng thì hạt mới nảy mầm được",
-    "Đa số hạt nảy mầm được cả trong tối",
-    "Ánh sáng làm hạt dừng nảy mầm hoàn toàn",
-    "Hạt cần ánh sáng để quang hợp ngay từ lúc mới nứt vỏ"
+    "Bắt buộc phải có ánh sáng thì hạt đậu mới nảy mầm được",
+    "Hạt đậu nảy mầm được cả trong tối",
+    "Ánh sáng làm hạt đậu dừng nảy mầm hoàn toàn",
+    "Hạt đậu cần ánh sáng để quang hợp ngay từ lúc mới nứt vỏ"
    ],
    "a": 1,
-   "e": "Hạt dùng chất dự trữ, chưa cần quang hợp nên đa số nảy mầm cả trong tối."
+   "e": "Hạt đậu dùng chất dự trữ ở lá mầm, chưa cần quang hợp nên nảy mầm được trong tối. Lưu ý: một số hạt như xà lách lại cần ánh sáng mới nảy mầm."
   },
   {
    "q": "Nếu đặt đĩa Petri chứa hạt đậu đã đủ ẩm và không khí vào trong ngăn đá tủ lạnh (0°C), hiện tượng gì sẽ xảy ra với hạt?",
@@ -840,7 +840,7 @@ NL.QUIZ = {
     "Trong tối nấm mốc tiết chất kích thích cây mọc dài ra"
    ],
    "a": 0,
-   "e": "Không có ánh sáng: thân dài nhanh, lá nhỏ, không có diệp lục nên vàng."
+   "e": "Trong tối phytochrome không hãm sự kéo dài thân, hormone thúc thân dài nhanh (mọc vống); không có ánh sáng nên không tạo diệp lục, thân vàng nhạt."
   },
   {
    "q": "Trước khi gieo hạt, người nông dân thường làm đất tơi xốp và phơi ải nhằm mục đích chính nào liên quan đến điều kiện nảy mầm?",
@@ -887,20 +887,20 @@ NL.QUIZ = {
    "e": "Hạt cây nhiệt đới nảy mầm tốt nhất quanh 25–30°C."
   },
   {
-   "q": "Khi học sinh tùy chỉnh số lượng hạt gieo trong đĩa Petri từ 10 hạt lên 25 hạt, công thức tính \"Tỷ lệ nảy mầm\" (%) trên hệ thống sẽ dựa trên con số nào?",
+   "q": "Gieo 25 hạt đậu, sau 5 ngày có 20 hạt nảy mầm. Tỉ lệ nảy mầm là bao nhiêu?",
    "o": [
-    "Số hạt nảy mầm ÷ 25 hạt đã gieo × 100%",
-    "25 hạt đã gieo ÷ số hạt nảy mầm × 100%",
-    "Số hạt nảy mầm × 25",
-    "Số hạt nảy mầm ÷ 10 × 100%, như cũ"
+    "80%",
+    "20%",
+    "125%",
+    "5%"
    ],
    "a": 0,
-   "e": "Tỉ lệ nảy mầm = số hạt nảy mầm chia tổng số hạt đã gieo."
+   "e": "Tỉ lệ nảy mầm = số hạt nảy mầm ÷ tổng số hạt gieo × 100% = 20 ÷ 25 × 100% = 80%."
   }
  ],
  "2I": [
   {
-   "q": "Khi bắt đầu quan sát tiêu bản nguyên phân dưới kính hiển vi ảo ở bước đầu tiên, học sinh cần thao tác bộ phận nào để đưa hình ảnh tế bào từ trạng thái mờ nhòe về trạng thái quan sát sơ bộ?",
+   "q": "Khi bắt đầu quan sát tiêu bản ở vật kính 10×, ảnh còn mờ nhòe. Nên vặn bộ phận nào trước để tìm ảnh nhanh?",
    "o": [
     "Ốc vi cấp",
     "Ốc thô",
@@ -955,7 +955,7 @@ NL.QUIZ = {
    "e": "Kỳ sau: các chromatid tách nhau, đi về hai cực."
   },
   {
-   "q": "Thao tác nào sau đây là đúng kỹ thuật khi học sinh muốn chuyển từ vật kính 10x sang quan sát chi tiết ở vật kính 40x trên kính hiển vi ảo?",
+   "q": "Thao tác nào sau đây là đúng kỹ thuật khi học sinh muốn chuyển từ vật kính 10x sang quan sát chi tiết ở vật kính 40x trên kính hiển vi?",
    "o": [
     "Vặn ốc thô lên hết cỡ rồi mới xoay vật kính",
     "Xoay sang 40×, chỉ chỉnh bằng ốc vi cấp",
@@ -1119,7 +1119,7 @@ NL.QUIZ = {
     "Tần số allele chắc chắn bằng 0,5"
    ],
    "a": 0,
-   "e": "χ² vượt 3,841 (df = 1, p = 0,05) nghĩa là lệch quá lớn, không do may rủi."
+   "e": "χ² vượt 3,841 (df = 1, p = 0,05): quần thể lệch khỏi cân bằng có ý nghĩa thống kê. Kiểm định chỉ cho biết có lệch, không cho biết vì sao: có thể do chọn lọc, giao phối không ngẫu nhiên hoặc lấy mẫu chưa chuẩn."
   }
  ]
 };
@@ -1135,7 +1135,8 @@ Object.assign(NL.QUIZ, {
     "Màng sinh chất và ribosome",
     "Bộ máy Golgi và nhân"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Thành cellulose và lục lạp chỉ có ở tế bào thực vật; ti thể, ribosome, Golgi, nhân thì cả hai đều có."
   },
   {
    "q": "Bào quan nào đóng vai trò là trung tâm cung cấp năng lượng cho tế bào nhân thực thông qua quá trình hô hấp tế bào để tổng hợp ATP?",
@@ -1145,7 +1146,8 @@ Object.assign(NL.QUIZ, {
     "Ribosome",
     "Lysosome"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Ti thể là nơi hô hấp tế bào, tạo phần lớn ATP."
   },
   {
    "q": "Trong tế bào nhân thực, cấu trúc nào chứa hầu hết vật chất di truyền dưới dạng phân tử DNA và điều khiển mọi hoạt động sống của tế bào?",
@@ -1155,7 +1157,8 @@ Object.assign(NL.QUIZ, {
     "Lưới nội chất hạt",
     "Peroxisome"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Nhân chứa gần hết DNA của tế bào nên điều khiển mọi hoạt động sống."
   },
   {
    "q": "Bào quan nào trực tiếp thực hiện quá trình dịch mã để tổng hợp chuỗi polypeptide từ thông tin trên phân tử RNA?",
@@ -1165,7 +1168,8 @@ Object.assign(NL.QUIZ, {
     "Trung thể",
     "Tế bào chất"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Ribosome đọc mRNA và nối amino acid thành chuỗi polypeptide."
   },
   {
    "q": "Chức năng chính của bộ máy Golgi bên trong tế bào nhân thực là gì?",
@@ -1175,7 +1179,8 @@ Object.assign(NL.QUIZ, {
     "Chứa nước và chất thải, giữ tế bào căng",
     "Phân hủy bào quan già và bị tổn thương"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Golgi nhận protein từ lưới nội chất, chỉnh sửa, đóng gói vào túi rồi chuyển đi."
   },
   {
    "q": "Bào quan chứa các enzyme thủy phân acid giúp tiêu hóa nội bào và phân hủy các bào quan bị tổn thương ở tế bào động vật là bào quan nào?",
@@ -1185,7 +1190,8 @@ Object.assign(NL.QUIZ, {
     "Lysosome",
     "Lục lạp"
    ],
-   "a": 2
+   "a": 2,
+   "e": "Lysosome chứa enzyme thủy phân, tiêu hóa chất lạ và bào quan già hỏng."
   },
   {
    "q": "Không bào trung tâm ở tế bào thực vật trưởng thành đảm nhận vai trò sinh học chính nào sau đây?",
@@ -1195,7 +1201,8 @@ Object.assign(NL.QUIZ, {
     "Tạo thoi phân bào khi tế bào phân chia",
     "Chứa DNA và tự nhân đôi khi tế bào lớn"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Không bào trung tâm chứa nhiều nước, giữ tế bào căng và dự trữ chất, sắc tố."
   },
   {
    "q": "Sự khác biệt căn bản về đặc điểm cấu trúc và chức năng giữa lưới nội chất hạt và lưới nội chất trơn là gì?",
@@ -1205,7 +1212,8 @@ Object.assign(NL.QUIZ, {
     "Lưới hạt tổng hợp DNA; lưới trơn tổng hợp RNA cho tế bào",
     "Lưới hạt chỉ có ở thực vật; lưới trơn chỉ có ở động vật"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Lưới nội chất hạt có ribosome bám nên tổng hợp protein; lưới trơn không có ribosome, tổng hợp lipid và khử độc."
   },
   {
    "q": "Cấu trúc trung thể có vai trò quan trọng trong việc hình thành thoi phân bào để phân chia nhiễm sắc thể xuất hiện ở loại tế bào nào?",
@@ -1215,7 +1223,8 @@ Object.assign(NL.QUIZ, {
     "Tế bào vi khuẩn nhân sơ",
     "Tế bào nấm men"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Tế bào động vật có trung thể; thực vật bậc cao vẫn tạo được thoi phân bào mà không cần trung thể."
   },
   {
    "q": "Sắc tố diệp lục tham gia trực tiếp vào quá trình hấp thụ năng lượng ánh sáng trong quang hợp nằm tại vị trí cấu trúc nào bên trong lục lạp?",
@@ -1225,7 +1234,8 @@ Object.assign(NL.QUIZ, {
     "Màng ngoài lục lạp",
     "Màng trong lục lạp"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Diệp lục nằm trên màng thylakoid, nơi diễn ra pha sáng."
   }
  ],
  "M2": [
@@ -1237,7 +1247,8 @@ Object.assign(NL.QUIZ, {
     "Đường trong DNA có nhóm OH ở carbon 2′, RNA thì không",
     "Đường trong DNA mạch hở, đường trong RNA mạch vòng"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Deoxyribose (DNA) thiếu một nguyên tử O ở carbon 2′ so với ribose (RNA)."
   },
   {
    "q": "Trong quá trình tái bản DNA ở tế bào nhân thực, enzyme nào chịu trách nhiệm chính trong việc phá vỡ các liên kết hydrogen giữa hai mạch đơn để tách chạc tái bản hình chữ Y?",
@@ -1245,9 +1256,10 @@ Object.assign(NL.QUIZ, {
     "DNA Polymerase",
     "Helicase",
     "DNA Ligase",
-    "Primase"
+    "RNA Polymerase"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Helicase tháo xoắn, tách hai mạch tạo chạc chữ Y. Sau đó primase đặt đoạn mồi RNA, polymerase mới kéo dài mạch."
   },
   {
    "q": "Enzyme RNA Polymerase thực hiện tổng hợp chuỗi mRNA trong quá trình phiên mã theo chiều sinh học nào và trượt trên mạch gốc DNA có chiều như thế nào?",
@@ -1257,7 +1269,8 @@ Object.assign(NL.QUIZ, {
     "mRNA dài theo chiều 5′→3′, enzyme trượt trên mạch gốc 5′→3′",
     "mRNA dài theo chiều 3′→5′, enzyme trượt trên mạch gốc 3′→5′"
    ],
-   "a": 0
+   "a": 0,
+   "e": "RNA polymerase trượt trên mạch gốc chiều 3′→5′, nên mRNA mới dài ra theo chiều 5′→3′."
   },
   {
    "q": "Phân tử tRNA đóng vai trò vận chuyển amino acid trong quá trình dịch mã có cấu trúc không gian đặc trưng nào giúp nó nhận biết chính xác bộ ba mã hóa trên mRNA?",
@@ -1267,7 +1280,8 @@ Object.assign(NL.QUIZ, {
     "Vùng liên kết peptide gắn thẳng vào ribosome",
     "Đoạn mạch kép xoắn trái ở giữa phân tử"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Bộ ba đối mã trên tRNA bắt cặp bổ sung với codon trên mRNA để đặt đúng amino acid."
   },
   {
    "q": "Một đột biến điểm làm thay thế 1 cặp nucleotide trên gene cấu trúc nhưng chuỗi polypeptide do gene đó quy định không bị thay đổi trình tự amino acid nào là do đặc tính nào của mã di truyền?",
@@ -1277,27 +1291,30 @@ Object.assign(NL.QUIZ, {
     "Tính đặc hiệu của mã di truyền",
     "Tính liên tục, đọc không ngắt quãng"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Nhiều codon cùng mã hóa một amino acid (tính thoái hóa), nên thay một nucleotide có thể không đổi amino acid."
   },
   {
-   "q": "Xét một phân tử DNA mạch kép có tỷ lệ A = 20% tổng số nucleotide. Tỷ lệ % số nucleotide loại G và chỉ số quy luật Chargaff (A + G)/(T + C) của phân tử này là bao nhiêu?",
+   "q": "Xét một phân tử DNA mạch kép có tỉ lệ A = 20% tổng số nucleotide. Tỉ lệ % số nucleotide loại G và chỉ số quy luật Chargaff (A + G)/(T + C) của phân tử này là bao nhiêu?",
    "o": [
     "G = 30%, (A+G)/(T+C) = 1",
     "G = 20%, (A+G)/(T+C) = 0,5",
     "G = 30%, (A+G)/(T+C) = 1,5",
     "G = 40%, (A+G)/(T+C) = 1"
    ],
-   "a": 0
+   "a": 0,
+   "e": "A = T = 20% nên G = C = 30%; trong DNA mạch kép A + G luôn bằng T + C nên tỉ số bằng 1."
   },
   {
-   "q": "Tại sao đoạn phân tử DNA có tỷ lệ cặp G − C cao lại có nhiệt độ biến tính (nhiệt độ nóng chảy Tm) cao hơn đoạn DNA có cùng độ dài nhưng chứa tỷ lệ cặp A − T cao hơn?",
+   "q": "Tại sao đoạn phân tử DNA có tỉ lệ cặp G − C cao lại có nhiệt độ biến tính (nhiệt độ nóng chảy Tm) cao hơn đoạn DNA có cùng độ dài nhưng chứa tỉ lệ cặp A − T cao hơn?",
    "o": [
     "G–C có 3 liên kết hydrogen, A–T chỉ có 2",
     "G–C chứa đường ribose bền nhiệt hơn",
     "G–C nối nhau bằng liên kết phosphodiester kép",
     "G–C nặng hơn nên khó bị nhiệt làm tách"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Cặp G–C có 3 liên kết hydrogen, A–T có 2, nên DNA giàu G–C cần nhiệt cao hơn mới tách mạch."
   },
   {
    "q": "Khoảng cách giữa hai cặp base liên tiếp dọc theo trục của phân tử DNA chuẩn và chiều dài của một chu kỳ xoắn hoàn chỉnh (10 cặp base) đo được bằng công cụ thước đo 3D lần lượt là bao nhiêu?",
@@ -1307,7 +1324,8 @@ Object.assign(NL.QUIZ, {
     "0.17 nm và 1.7 nm",
     "0.34 nm và 2.0 nm"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Mỗi cặp base cách nhau khoảng 0,34 nm; một vòng xoắn 10 cặp dài khoảng 3,4 nm."
   },
   {
    "q": "Dạng đột biến gene nào sau đây thường gây ra hậu quả nghiêm trọng nhất đến cấu trúc của chuỗi polypeptide do làm thay đổi toàn bộ trình tự amino acid từ vị trí đột biến về sau?",
@@ -1317,7 +1335,8 @@ Object.assign(NL.QUIZ, {
     "Thay 1 cặp nucleotide tạo ra bộ ba đồng nghĩa",
     "Đảo thứ tự nucleotide trong cùng một bộ ba"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Thêm hoặc mất một cặp nucleotide làm dịch khung đọc, đổi toàn bộ bộ ba từ chỗ đột biến trở đi."
   },
   {
    "q": "Trong quá trình dịch mã tại Ribosome, liên kết hóa học nào được hình thành để nối các amino acid kế tiếp nhau tạo thành chuỗi polypeptide?",
@@ -1327,7 +1346,8 @@ Object.assign(NL.QUIZ, {
     "Liên kết hydrogen",
     "Liên kết glycosidic"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Các amino acid nối với nhau bằng liên kết peptide."
   }
  ],
  "M3": [
@@ -1339,7 +1359,8 @@ Object.assign(NL.QUIZ, {
     "Điều chỉnh lượng máu từ tĩnh mạch chủ về tâm nhĩ",
     "Đóng kín van hai lá khi tâm thất bắt đầu co"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Nút xoang nhĩ tự phát xung đều đặn, là \"máy tạo nhịp\" của tim."
   },
   {
    "q": "Trong đồ thị Điện tâm đồ (ECG) chuẩn thu được khi tim hoạt động, phức bộ sóng QRS phản ánh quá trình điện thế nào của tim?",
@@ -1349,7 +1370,8 @@ Object.assign(NL.QUIZ, {
     "Hai tâm thất tái cực, đang giãn",
     "Các van động mạch đóng lại"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Phức bộ QRS là lúc hai tâm thất khử cực, ngay trước khi tâm thất co."
   },
   {
    "q": "Hiện tượng các tế bào hồng cầu hình đĩa lõm hai mặt phải xếp thành hàng đơn di chuyển từ từ qua lòng mao mạch hẹp mang lại ý nghĩa sinh học gì đối với quá trình trao đổi chất?",
@@ -1359,17 +1381,19 @@ Object.assign(NL.QUIZ, {
     "Làm áp lực máu ở động mạch chủ giảm về 0",
     "Giúp máu chảy nhanh gấp mười lần bình thường"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Hồng cầu đi thành hàng đơn, chậm qua mao mạch nên có đủ thời gian và diện tích tiếp xúc để trao đổi khí."
   },
   {
-   "q": "Trong mô phỏng xơ vữa động mạch, sự tích tụ mảng bám mỡ (plaque) trong lòng động mạch chủ gây ra hậu quả trực tiếp nào đối với tâm thất trái?",
+   "q": "Trong mô phỏng, mảng xơ vữa làm hẹp lòng động mạch chủ. Điều này gây hậu quả trực tiếp nào cho tâm thất trái?",
    "o": [
-    "Mạch hẹp, tim phải bóp mạnh hơn nên dần phì đại",
+    "Phải co bóp mạnh hơn để tống máu, lâu dần phì đại",
     "Tâm thất trái ngừng nhận máu từ tâm nhĩ trái",
-    "Huyết áp toàn bộ hệ động mạch giảm xuống",
+    "huyết áp toàn bộ hệ động mạch giảm xuống",
     "Nút xoang nhĩ bị đứt gãy, tim ngừng đập"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Động mạch chủ hẹp làm tâm thất trái phải thắng áp lực lớn hơn, cơ tim dày lên. Thực tế hay gặp nhất do tăng huyết áp kéo dài hoặc hẹp van động mạch chủ."
   },
   {
    "q": "Hiện tượng một dòng máu trào ngược từ tâm thất trái trở lại tâm nhĩ trái trong pha co tâm thất kèm theo tiếng thổi tim bất thường là dấu hiệu bệnh lý của cấu trúc nào?",
@@ -1379,7 +1403,8 @@ Object.assign(NL.QUIZ, {
     "Tắc tĩnh mạch chủ dưới",
     "Viêm nút nhĩ thất"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Van 2 lá nằm giữa tâm nhĩ trái và tâm thất trái; hở van thì máu trào ngược lên tâm nhĩ khi tâm thất co."
   },
   {
    "q": "Máu giàu oxygen (O₂) có màu đỏ tươi từ phổi trở về tâm nhĩ trái sẽ đi tiếp vào ngăn nào của tim trước khi được bơm đi nuôi toàn cơ thể?",
@@ -1389,17 +1414,19 @@ Object.assign(NL.QUIZ, {
     "Tâm nhĩ phải",
     "Động mạch phổi"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Máu từ tâm nhĩ trái qua van 2 lá xuống tâm thất trái, rồi được bơm vào động mạch chủ."
   },
   {
    "q": "Sự đóng lại đột ngột của van nhĩ - thất (van 2 lá và van 3 lá) khi hai tâm thất bắt đầu co bóp tạo ra âm thanh tiếng tim nào?",
    "o": [
-    "Tiếng tim thứ nhất (\"LUB\")",
-    "Tiếng tim thứ hai (\"DUB\")",
+    "Tiếng tim thứ nhất (tiếng \"tùng\")",
+    "Tiếng tim thứ hai (tiếng \"tắc\")",
     "Tiếng thổi tâm thu",
     "Tiếng rung tâm trương"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Van nhĩ – thất đóng khi tâm thất bắt đầu co, tạo tiếng tim thứ nhất (trầm, dài)."
   },
   {
    "q": "Tại sao thành cơ của tâm thất trái lại có cấu trúc dày hơn đáng kể so với thành cơ của tâm thất phải?",
@@ -1409,7 +1436,8 @@ Object.assign(NL.QUIZ, {
     "Phải bơm máu lên phổi nhanh hơn tâm thất phải",
     "Không có lúc giãn nghỉ nên cơ phát triển dày"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Tâm thất trái bơm máu đi khắp cơ thể, phải thắng áp lực lớn hơn nhiều so với tâm thất phải chỉ bơm lên phổi."
   },
   {
    "q": "Trong vòng tuần hoàn nhỏ (vòng tuần hoàn phổi), loại mạch máu nào đảm nhận chức năng vận chuyển máu giàu oxygen (O₂) chảy từ phổi trở về tim?",
@@ -1419,7 +1447,8 @@ Object.assign(NL.QUIZ, {
     "Tĩnh mạch chủ trên",
     "Động mạch chủ"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Tĩnh mạch phổi chở máu giàu O₂ từ phổi về tâm nhĩ trái."
   },
   {
    "q": "Sự trao đổi khí O₂, CO₂ và các chất dinh dưỡng giữa máu và các tế bào cơ quan diễn ra tại loại mạch máu nào trong hệ tuần hoàn?",
@@ -1429,7 +1458,8 @@ Object.assign(NL.QUIZ, {
     "Tĩnh mạch chủ",
     "Bó His trong tim"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Thành mao mạch chỉ một lớp tế bào mỏng nên trao đổi chất diễn ra tại đây."
   }
  ],
  "M4": [
@@ -1441,7 +1471,8 @@ Object.assign(NL.QUIZ, {
     "Bao myelin",
     "Chùy synapse"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Sợi nhánh tiếp nhận tín hiệu từ neuron khác và truyền về thân neuron."
   },
   {
    "q": "Tại sao vận tốc lan truyền xung thần kinh trên sợi trục có bao myelin lại nhanh hơn gấp nhiều lần so với trên sợi trục không có bao myelin?",
@@ -1451,7 +1482,8 @@ Object.assign(NL.QUIZ, {
     "Bao myelin co bóp liên tục để đẩy xung điện đi",
     "Bao myelin có dày đặc kênh Ca²⁺ trên bề mặt"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Bao myelin cách điện, xung chỉ xuất hiện ở các eo Ranvier nên \"nhảy cóc\", nhanh hơn rất nhiều."
   },
   {
    "q": "Trong giai đoạn mất phân cực và đảo cực của điện thế hoạt động trên màng sợi trục, sự di chuyển của dòng ion nào là nguyên nhân chính làm điện thế màng tăng vọt từ − 70 mV lên + 30 mV?",
@@ -1461,7 +1493,8 @@ Object.assign(NL.QUIZ, {
     "Ca²⁺ bị đẩy ra khỏi tế bào",
     "Cl⁻ đi từ ngoài vào trong tế bào"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Kênh Na⁺ mở, Na⁺ tràn vào làm trong màng từ âm chuyển sang dương."
   },
   {
    "q": "Sự xâm nhập của loại ion nào từ dịch ngoại bào vào bên trong chùy màng trước synapse là yếu tố trực tiếp kích thích các bóng chứa di chuyển hòa màng để giải phóng chất dẫn truyền thần kinh?",
@@ -1471,7 +1504,8 @@ Object.assign(NL.QUIZ, {
     "Ion K⁺",
     "Ion Fe²⁺"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Ca²⁺ đi vào chùy synapse làm các bóng chứa chất dẫn truyền hòa màng và giải phóng ra khe."
   },
   {
    "q": "Sau khi được giải phóng vào khe synapse, chất dẫn truyền thần kinh Acetylcholine khuếch tán sang màng sau và gắn vào thụ thể đặc hiệu sẽ làm mở loại kênh ion nào?",
@@ -1481,7 +1515,8 @@ Object.assign(NL.QUIZ, {
     "Kênh Ca²⁺",
     "Kênh Cl⁻"
    ],
-   "a": 0
+   "a": 0,
+   "e": "ACh gắn thụ thể làm kênh Na⁺ mở, tạo điện thế ở màng sau. Điện thế này phải đủ lớn, đạt ngưỡng thì mới phát sinh xung thần kinh mới."
   },
   {
    "q": "Trạng thái điện thế nghỉ ( − 70 mV) ở tế bào neuron khi không bị kích thích được hình thành chủ yếu do sự chênh lệch nồng độ ion và tính thấm ưu tiên của màng tế bào đối với loại ion nào đi từ trong ra ngoài màng?",
@@ -1491,7 +1526,8 @@ Object.assign(NL.QUIZ, {
     "Ion Ca²⁺",
     "Ion Mg²⁺"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Khi nghỉ, màng cho K⁺ đi ra nhiều nhất, để lại phía trong âm hơn, tạo điện thế nghỉ."
   },
   {
    "q": "Chức năng sinh học cốt lõi của enzyme Acetylcholinesterase có mặt tại khe synapse là gì?",
@@ -1501,7 +1537,8 @@ Object.assign(NL.QUIZ, {
     "Khóa chặt các kênh Na⁺ ở màng sau synapse",
     "Đẩy xung thần kinh chạy ngược trở về thân neuron"
    ],
-   "a": 0
+   "a": 0,
+   "e": "AChE phân hủy acetylcholine để tín hiệu dừng lại, màng sau sẵn sàng cho xung kế tiếp."
   },
   {
    "q": "Giá trị điện thế nghỉ chuẩn ở màng tế bào neuron khi ở trạng thái không bị kích thích đo được bằng công cụ đo điện thế là bao nhiêu millivolt (mV)?",
@@ -1511,7 +1548,8 @@ Object.assign(NL.QUIZ, {
     "0 mV",
     "− 120 mV"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Điện thế nghỉ của neuron khoảng −70 mV (trong màng âm hơn ngoài màng)."
   },
   {
    "q": "Cấu trúc tiếp xúc chuyên hóa giữa chùy màng trước của neuron này với sợi nhánh hoặc thân của neuron khác đóng vai trò truyền thông tin một chiều được gọi là gì?",
@@ -1521,17 +1559,19 @@ Object.assign(NL.QUIZ, {
     "Thể Nissl",
     "Hạch thần kinh"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Synapse là chỗ tiếp xúc truyền tin giữa hai neuron, hoặc giữa neuron và tế bào cơ."
   },
   {
-   "q": "Nếu sử dụng độc tố Tetrodotoxin (TTX) tác động lên sợi trục neuron, hiện tượng sinh lý nào sẽ xảy ra do các kênh Na⁺ cảm ứng điện thế bị khóa hoàn toàn?",
+   "q": "Nếu sử dụng độc tố Tetrodotoxin (TTX) tác động lên sợi trục neuron, hiện tượng sinh lí nào sẽ xảy ra do các kênh Na⁺ cảm ứng điện thế bị khóa hoàn toàn?",
    "o": [
     "Không xuất hiện điện thế hoạt động, xung bị chặn",
     "Xung thần kinh lan truyền nhanh gấp mười lần",
     "Acetylcholine được giải phóng ồ ạt không ngừng",
     "Màng neuron vỡ ra vì nước tràn vào quá nhiều"
    ],
-   "a": 0
+   "a": 0,
+   "e": "TTX khóa kênh Na⁺ nên không có điện thế hoạt động, xung bị chặn."
   }
  ],
  "M5": [
@@ -1543,27 +1583,30 @@ Object.assign(NL.QUIZ, {
     "Nắp thanh quản",
     "Cơ liên sườn trong"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Màng cao su ở đáy chuông đóng vai cơ hoành."
   },
   {
-   "q": "Khi thực hiện động tác nuốt thức ăn, nắp thanh quản (Epiglottis) đảm nhận vai trò sinh học quan trọng nào sau đây?",
+   "q": "Khi thực hiện động tác nuốt thức ăn, nắp thanh quản đảm nhận vai trò sinh học quan trọng nào sau đây?",
    "o": [
     "Đậy kín khí quản để thức ăn không rơi vào",
     "Mở rộng khí quản cho nhiều O₂ vào phổi",
     "Co bóp đẩy thức ăn thẳng xuống dạ dày",
     "Tiết chất nhầy tiêu hóa một phần tinh bột"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Khi nuốt, nắp thanh quản đậy khí quản để thức ăn đi vào thực quản."
   },
   {
-   "q": "Giải thích nào sau đây đúng nhất về mặt sinh lý cho lời khuyên \"Không nên vừa ăn vừa nói hoặc vừa cười đùa\"?",
+   "q": "Giải thích nào sau đây đúng nhất về mặt sinh lí cho lời khuyên \"Không nên vừa ăn vừa nói hoặc vừa cười đùa\"?",
    "o": [
     "Thức ăn dễ lọt vào khí quản gây sặc",
     "Nhiều không khí vào dạ dày gây đầy hơi, đau bụng",
     "Thức ăn bị đẩy ngược lên khoang mũi khi cười",
     "Cơ hoành co thắt mãi không giãn ra được"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Vừa ăn vừa nói làm nắp thanh quản không kịp đậy, thức ăn dễ lọt vào khí quản gây sặc."
   },
   {
    "q": "Trong pha hít vào bình thường ở người, cử động co của cơ hoành và cơ liên sườn ngoài dẫn đến sự thay đổi thể tích và áp suất lồng ngực như thế nào?",
@@ -1573,27 +1616,30 @@ Object.assign(NL.QUIZ, {
     "Lồng ngực hẹp lại để nén không khí chui vào phế nang",
     "Áp suất phế nang tăng cao hơn khí quyển nên khí đi vào"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Cơ hoành và cơ liên sườn ngoài co làm lồng ngực rộng ra, áp suất trong phổi giảm nên khí tràn vào."
   },
   {
-   "q": "Tác hại trực tiếp của các chất độc hại trong khói thuốc lá đối với hệ thống lông rung (Cilia) trên bề mặt niêm mạc đường dẫn khí là gì?",
+   "q": "Tác hại trực tiếp của các chất độc hại trong khói thuốc lá đối với hệ thống lông rung trên bề mặt niêm mạc đường dẫn khí là gì?",
    "o": [
     "Làm tê liệt lông rung, bụi và chất nhầy không được đẩy ra",
     "Làm lông rung mọc nhiều gấp mười lần, gây tắc khí quản",
     "Biến lông rung thành tế bào trao đổi khí như phế nang",
     "Làm lông rung đập nhanh hơn nên đẩy bụi ra mạnh hơn"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Chất độc trong khói thuốc làm lông rung tê liệt, bụi và chất nhầy ứ lại trong đường thở."
   },
   {
-   "q": "Dung tích sống (VC) của phổi – chỉ số phản ánh sức khỏe hô hấp của một người – được tính bằng tổng của những thể tích khí nào sau đây?",
+   "q": "Dung tích sống của phổi – chỉ số phản ánh sức khỏe hô hấp của một người – được tính bằng tổng của những thể tích khí nào sau đây?",
    "o": [
     "TV + IRV + ERV",
     "TV + RV",
     "IRV + ERV + RV",
     "TV + RV + TLC"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Dung tích sống = khí lưu thông + khí bổ sung + khí dự trữ (TV + IRV + ERV)."
   },
   {
    "q": "Cấu trúc sinh học nào của hệ hô hấp là nơi trực tiếp diễn ra quá trình trao đổi khí O₂ và CO₂ giữa cơ thể với máu trong mao mạch?",
@@ -1603,27 +1649,30 @@ Object.assign(NL.QUIZ, {
     "Phế quản thùy",
     "Thanh quản"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Phế nang có thành mỏng, nhiều mao mạch bao quanh, là nơi trao đổi O₂ và CO₂."
   },
   {
-   "q": "Thể tích khí cặn (RV) còn lại trong phổi sau khi đã thở ra hết sức có ý nghĩa sinh học cốt lõi nào?",
+   "q": "Thể tích khí cặn còn lại trong phổi sau khi đã thở ra hết sức có ý nghĩa sinh học cốt lõi nào?",
    "o": [
     "Giữ phế nang không xẹp, trao đổi khí liên tục",
     "Cung cấp năng lượng cho cơ hoành co bóp",
     "Làm khoang màng phổi giảm về bằng không",
     "Đẩy toàn bộ CO₂ ra khỏi cơ thể khi thở ra"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Khí cặn giữ phế nang không xẹp hẳn, trao đổi khí vẫn diễn ra giữa hai nhịp thở."
   },
   {
-   "q": "Tại sao những người thường xuyên luyện tập thể dục thể thao hay bơi lội đúng cách lại sở hữu Dung tích sống (VC) lớn hơn đáng kể so với người ít vận động?",
+   "q": "Tại sao những người thường xuyên luyện tập thể dục thể thao hay bơi lội đúng cách lại sở hữu dung tích sống lớn hơn đáng kể so với người ít vận động?",
    "o": [
     "Cơ hô hấp khỏe hơn, lồng ngực giãn nở tốt hơn",
     "Số phế nang trong phổi tự nhân đôi liên tục",
     "Khí cặn trong phổi giảm hẳn về bằng không",
     "Không khí vào phổi có áp suất cao hơn"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Luyện tập làm cơ hô hấp khỏe, lồng ngực giãn nở tốt nên dung tích sống tăng."
   },
   {
    "q": "Trong thí nghiệm Donders, khi chúng ta kéo màng cao su ở đáy chuông thủy tinh xuống dưới, hiện tượng gì xảy ra với hai quả bóng bay bên trong chuông?",
@@ -1633,7 +1682,8 @@ Object.assign(NL.QUIZ, {
     "Áp suất tăng quá cao làm hai bóng vỡ ra",
     "Hai bóng không thay đổi vì chuông kín khí"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Kéo màng xuống làm thể tích chuông tăng, áp suất giảm, không khí tràn vào làm bóng phồng."
   }
  ],
  "M6": [
@@ -1645,7 +1695,8 @@ Object.assign(NL.QUIZ, {
     "Chỉ có nhụy và đài hoa",
     "Có hạt phấn nhưng không có bầu"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Hoa lưỡng tính có cả nhị (cơ quan sinh sản đực) và nhụy (cơ quan sinh sản cái)."
   },
   {
    "q": "Trong quá trình nảy mầm của hạt phấn trên đầu nhụy, yếu tố nào định hướng cho ống phấn đâm chính xác qua vòi nhụy tiến về phía lỗ noãn của bầu nhụy?",
@@ -1655,17 +1706,19 @@ Object.assign(NL.QUIZ, {
     "Trọng lực kéo ống phấn đi thẳng xuống bầu",
     "Chỉ nhị co bóp đẩy ống phấn vào"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Noãn tiết chất hóa học (như Ca²⁺, đường) dẫn hướng ống phấn."
   },
   {
-   "q": "Cơ chế tự bất thụ (Self-incompatibility) ở nhiều loài hoa lưỡng tính mang lại ý nghĩa sinh học cốt lõi nào sau đây?",
+   "q": "Cơ chế tự bất thụ ở nhiều loài hoa lưỡng tính mang lại ý nghĩa sinh học cốt lõi nào sau đây?",
    "o": [
     "Ngăn tự thụ phấn, giữ đa dạng di truyền",
     "Giúp cánh hoa không héo sau thụ tinh",
     "Làm ống phấn mọc nhanh gấp mười lần",
     "Cho bầu thành quả mà không cần thụ tinh"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Tự bất thụ ngăn hoa nhận phấn của chính cây đó, buộc thụ phấn chéo nên giữ được đa dạng di truyền."
   },
   {
    "q": "Khái niệm \"Thụ tinh kép\" ở thực vật hạt kín mô tả hai phản ứng kết hợp giao tử diễn ra đồng thời nào sau đây?",
@@ -1675,7 +1728,8 @@ Object.assign(NL.QUIZ, {
     "Một tinh tử kết hợp với tế bào kèm, một với tế bào đối cực",
     "Tinh tử 1 + trứng → hợp tử 2n; tinh tử 2 + vỏ noãn → vỏ hạt"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Tinh tử 1 + trứng → hợp tử 2n; tinh tử 2 + 2 nhân cực → nhân 3n."
   },
   {
    "q": "Sau khi quá trình thụ tinh kép diễn ra thành công, hợp tử (2n) và nhân tam bội (3n) bên trong túi phôi sẽ lần lượt phát triển thành những cấu trúc nào?",
@@ -1685,7 +1739,8 @@ Object.assign(NL.QUIZ, {
     "Hợp tử thành phôi nhũ; nhân 3n thành rễ mầm",
     "Hợp tử thành phôi; nhân 3n thành vỏ quả"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Hợp tử phát triển thành phôi, nhân 3n phát triển thành phôi nhũ."
   },
   {
    "q": "Trong tiến trình phát triển sau thụ tinh, cấu trúc Bầu nhụy của bông hoa sẽ biến đổi căng phồng lên để hình thành nên bộ phận nào?",
@@ -1695,7 +1750,8 @@ Object.assign(NL.QUIZ, {
     "Phôi cây",
     "Chồi mầm"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Bầu nhụy phát triển thành quả."
   },
   {
    "q": "Bộ phận Noãn nằm bên trong bầu nhụy sau khi đã trải qua quá trình thụ tinh kép sẽ biến đổi phát triển thành cấu trúc nào?",
@@ -1705,7 +1761,8 @@ Object.assign(NL.QUIZ, {
     "Cánh hoa",
     "Đài hoa"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Noãn đã thụ tinh phát triển thành hạt."
   },
   {
    "q": "Những bông hoa thụ phấn nhờ côn trùng (như ong, bướm) thường sở hữu các đặc điểm hình thái thích nghi đặc trưng nào sau đây?",
@@ -1715,17 +1772,19 @@ Object.assign(NL.QUIZ, {
     "Bao phấn treo lủng lẳng, đầu nhụy như lông chim",
     "Không có bầu nhụy, đầu nhụy không tiết chất nhầy"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Hoa nhờ côn trùng thường to, màu sặc sỡ, có mật và hương thơm, hạt phấn dính để bám vào côn trùng."
   },
   {
-   "q": "Nội phôi (Phôi nhũ) mang bộ nhiễm sắc thể tam bội (3n) được hình thành trong hiện tượng thụ tinh kép đóng vai trò sinh học gì đối với sự sinh sản của cây?",
+   "q": "Phôi nhũ (3n) hình thành trong thụ tinh kép có vai trò gì?",
    "o": [
     "Dự trữ chất dinh dưỡng nuôi phôi",
     "Bảo vệ quả khỏi sâu bệnh tấn công",
     "Giúp hạt nhẹ để bay xa trong gió",
     "Dẫn đường cho ống phấn đi vào lỗ noãn"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Phôi nhũ dự trữ dinh dưỡng nuôi phôi. Ở cây hai lá mầm như đậu, chất dự trữ chuyển hết vào lá mầm nên hạt gần như không còn phôi nhũ."
   },
   {
    "q": "Trong thí nghiệm nhập vai vector thụ phấn nhờ gió, hạt phấn của hoa thụ phấn nhờ gió có đặc điểm gì giúp chúng dễ dàng phát tán xa?",
@@ -1735,19 +1794,21 @@ Object.assign(NL.QUIZ, {
     "Chứa nhiều mật thơm để hấp dẫn gió",
     "Có màu đỏ rực để phản xạ ánh sáng"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Hạt phấn hoa nhờ gió nhỏ, nhẹ, khô và rất nhiều để gió mang đi xa."
   }
  ],
  "M7": [
   {
-   "q": "Enzyme Amylase có trong nước bọt ở khoang miệng đảm nhận chức năng tiêu hóa hóa học biến đổi loại chất nào thành đường đôi Maltose?",
+   "q": "Enzyme amylase trong nước bọt biến đổi chất nào thành đường đôi maltose?",
    "o": [
     "Tinh bột chín",
     "Protein chuỗi dài",
-    "Lipid (Chất béo)",
+    "Lipid (chất béo)",
     "DNA và RNA"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Amylase nước bọt cắt tinh bột chín thành maltose."
   },
   {
    "q": "Hoạt động tiêu hóa cơ học quan trọng nhất diễn ra tại dạ dày nhờ vào đặc điểm cấu trúc giải phẫu nào của cơ quan này?",
@@ -1757,7 +1818,8 @@ Object.assign(NL.QUIZ, {
     "Bề mặt có nhiều lông rung đẩy thức ăn đi",
     "Thành chứa dày đặc mạch bạch huyết co bóp"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Dạ dày có 3 lớp cơ dày co bóp, nghiền và đảo trộn thức ăn với dịch vị."
   },
   {
    "q": "Quá trình tiêu hóa hóa học phân giải hoàn toàn các chất dinh dưỡng và hoạt động hấp thụ dinh dưỡng diễn ra triệt để nhất tại bộ phận nào của ống tiêu hóa?",
@@ -1767,7 +1829,8 @@ Object.assign(NL.QUIZ, {
     "Ruột già",
     "Khoang miệng"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Ruột non có đủ enzyme từ tụy, ruột và mật, lại có diện tích hấp thụ rất lớn."
   },
   {
    "q": "Dịch mật do các tế bào gan sản xuất và tích trữ tại túi mật đóng vai trò sinh học cốt lõi nào trong quá trình tiêu hóa Lipid ở tá tràng?",
@@ -1777,7 +1840,8 @@ Object.assign(NL.QUIZ, {
     "Biến lipid thành glucose rồi đưa vào máu",
     "Làm mất tác dụng toàn bộ enzyme của tụy"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Mật không có enzyme; muối mật nhũ tương hóa mỡ thành giọt nhỏ để lipase tác động dễ hơn."
   },
   {
    "q": "Sự hiện diện của cấu trúc sinh học nào trên bề mặt niêm mạc ruột non giúp làm tăng diện tích bề mặt hấp thụ chất dinh dưỡng lên gấp hàng trăm lần (200 - 300 m²)?",
@@ -1787,7 +1851,8 @@ Object.assign(NL.QUIZ, {
     "Các nếp gấp nhẵn không có tế bào",
     "Lớp cơ dọc co bóp liên tục"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Nếp gấp, nhung mao và vi nhung mao làm diện tích hấp thụ tăng khoảng 600 lần (3 × 10 × 20)."
   },
   {
    "q": "Môi trường pH tối ưu giúp cho enzyme Pepsin trong dịch vị dạ dày hoạt động phân giải Protein diễn ra hiệu quả nhất là bao nhiêu?",
@@ -1797,7 +1862,8 @@ Object.assign(NL.QUIZ, {
     "pH 8,5 (kiềm nhẹ)",
     "pH 12 (kiềm mạnh)"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Pepsin hoạt động tốt nhất ở pH khoảng 1,5–2, môi trường acid mạnh của dạ dày."
   },
   {
    "q": "Các chất dinh dưỡng sau khi hấp thụ qua tế bào niêm mạc ruột non gồm Glucose, Amino acid, Vitamin tan trong nước (B, C) sẽ đi theo đường máu về cơ quan nào đầu tiên để được điều hòa và khử độc?",
@@ -1807,17 +1873,19 @@ Object.assign(NL.QUIZ, {
     "Phổi",
     "Não bộ"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Chất tan trong nước theo máu qua tĩnh mạch cửa về gan trước khi đi khắp cơ thể."
   },
   {
-   "q": "Các sản phẩm tiêu hóa lipid (Axit béo, Glycerol) và các vitamin tan trong dầu (A, D, E, K) sau khi được hấp thụ tại nhung mao ruột non sẽ vận chuyển theo con đường nào để trở về tim?",
+   "q": "Lipid sau khi được tái tổng hợp trong tế bào nhung mao (gói thành hạt dưỡng chấp) cùng các vitamin tan trong dầu (A, D, E, K) được vận chuyển theo con đường nào?",
    "o": [
     "Mạch bạch huyết",
     "Động mạch chủ",
     "Ống dẫn mật",
     "Tĩnh mạch thận"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Lipid gói thành hạt dưỡng chấp (chylomicron), quá to để vào mao mạch máu nên đi vào mạch bạch huyết. Acid béo mạch ngắn và glycerol phần lớn vào thẳng máu."
   },
   {
    "q": "Chức năng sinh học chủ yếu của Ruột già (Đại tràng) trong hệ tiêu hóa của người là gì?",
@@ -1827,17 +1895,19 @@ Object.assign(NL.QUIZ, {
     "Nhũ hóa toàn bộ chất béo chưa tiêu hóa",
     "Hấp thụ phần lớn chất dinh dưỡng của bữa ăn"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Ruột già hấp thụ lại nước, muối; vi khuẩn ở đây lên men chất còn lại và tạo phân."
   },
   {
-   "q": "Cấu trúc cơ vòng nằm ở ranh giới giữa dạ dày và tá tràng có nhiệm vụ điều tiết từng đợt dưỡng trấp đi xuống ruột non được gọi là gì?",
+   "q": "Cấu trúc cơ vòng nằm ở ranh giới giữa dạ dày và tá tràng có nhiệm vụ điều tiết từng đợt dưỡng chấp đi xuống ruột non được gọi là gì?",
    "o": [
     "Cơ vòng môn vị",
     "Cơ vòng tâm vị",
     "Cơ vòng hậu môn",
     "Van nhĩ thất"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Cơ vòng môn vị mở từng đợt cho dưỡng chấp xuống tá tràng."
   }
  ],
  "M8": [
@@ -1849,27 +1919,30 @@ Object.assign(NL.QUIZ, {
     "Tháp Sinh khối",
     "Tháp Tuổi"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Năng lượng luôn giảm dần qua các bậc nên tháp năng lượng không bao giờ đảo ngược."
   },
   {
-   "q": "Trong một hệ sinh thái cạn, trung bình chỉ có khoảng bao nhiêu phần trăm năng lượng được truyền từ bậc dinh dưỡng phía dưới lên bậc dinh dưỡng phía trên liền kề?",
+   "q": "Hiệu suất truyền năng lượng giữa hai bậc dinh dưỡng liền kề thường nằm trong khoảng 2–20%. Khi ước lượng nhanh, người ta hay lấy con số nào?",
    "o": [
     "Khoảng 10%",
     "Khoảng 30%",
     "Khoảng 50%",
     "Khoảng 70%"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Hiệu suất thực tế thường 2–20%; quy tắc 10% chỉ là số ước lượng nhanh."
   },
   {
-   "q": "Nguyên nhân chính dẫn đến sự thất thoát năng lượng lớn nhất (khoảng 70%) khi truyền qua các bậc dinh dưỡng trong tháp năng lượng là gì?",
+   "q": "Phần lớn năng lượng ở mỗi bậc dinh dưỡng không được truyền lên bậc trên. Con đường nào làm mất nhiều năng lượng nhất?",
    "o": [
     "Hô hấp và tỏa nhiệt của sinh vật",
     "Sinh vật phân hủy ăn hết phần còn lại",
     "Chất thải và phần rơi rụng của sinh vật",
     "Năng lượng phản xạ ngược ra môi trường"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Phần lớn năng lượng mất qua hô hấp và tỏa nhiệt; phần còn lại theo chất thải, xác. Tỉ lệ cụ thể khác nhau giữa các hệ."
   },
   {
    "q": "Dạng tháp số lượng đảo ngược (đáy hẹp, đỉnh rộng) thường được quan sát thấy rõ nhất ở hệ sinh thái nào sau đây?",
@@ -1879,7 +1952,8 @@ Object.assign(NL.QUIZ, {
     "Rừng nguyên sinh nhiều tầng cây",
     "Sa mạc khô hạn ít sinh vật"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Một cây to nuôi rất nhiều sâu nên đáy tháp số lượng hẹp hơn tầng trên."
   },
   {
    "q": "Trong hệ sinh thái dưới nước (như ao, biển mở), tháp sinh khối có thể xuất hiện dạng đảo ngược tạm thời do đặc điểm sinh học nào của thực vật phù du?",
@@ -1889,7 +1963,8 @@ Object.assign(NL.QUIZ, {
     "Động vật phù du không ăn thực vật phù du",
     "Thực vật phù du to hơn động vật phù du"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Thực vật phù du sinh sản rất nhanh nên sinh khối đo tại một thời điểm có thể nhỏ hơn sinh khối động vật ăn chúng."
   },
   {
    "q": "Đơn vị đo lường tiêu chuẩn nào sau đây thường được sử dụng để xây dựng các tầng của Tháp Năng lượng?",
@@ -1899,7 +1974,8 @@ Object.assign(NL.QUIZ, {
     "g/m²",
     "kg/ha"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Tháp năng lượng tính năng lượng tích lũy trên một đơn vị diện tích trong một năm, ví dụ kcal/m²/năm."
   },
   {
    "q": "Trong tháp sinh thái, bậc dinh dưỡng N₁ (cơ sở của tháp) luôn luôn được đảm nhận bởi nhóm sinh vật nào sau đây?",
@@ -1909,17 +1985,19 @@ Object.assign(NL.QUIZ, {
     "Sinh vật tiêu thụ bậc 2 (Động vật ăn thịt)",
     "Sinh vật phân hủy (Nấm, vi khuẩn)"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Bậc N₁ là sinh vật sản xuất, tự tổng hợp chất hữu cơ từ năng lượng ánh sáng."
   },
   {
    "q": "Ưu điểm vượt trội nhất của Tháp Năng lượng so với Tháp Số lượng và Tháp Sinh khối khi nghiên cứu hệ sinh thái là gì?",
    "o": [
-    "Cho thấy năng lượng mất đi qua từng bậc",
+    "Cho thấy năng lượng giảm dần qua từng bậc",
     "Thu thập số liệu rất đơn giản, không tốn thời gian",
     "Không cần cân hay đếm sinh vật mà vẫn vẽ được tháp",
     "Dùng chung một số liệu cho mọi mùa trong năm"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Tháp năng lượng cho thấy năng lượng giảm qua từng bậc, phản ánh đúng dòng năng lượng trong hệ."
   },
   {
    "q": "Xét hai bậc dinh dưỡng liền kề: bậc dinh dưỡng Nₙ có năng lượng tích lũy là Eₙ và bậc Nₙ₊₁ có năng lượng tích lũy là Eₙ₊₁. Công thức xác định hiệu suất sinh thái eff giữa hai bậc này là gì?",
@@ -1929,7 +2007,8 @@ Object.assign(NL.QUIZ, {
     "eff = (Eₙ−Eₙ₊₁) × 100%",
     "eff = (Eₙ + Eₙ₊₁)/(2) × 100%"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Hiệu suất sinh thái = năng lượng bậc trên chia năng lượng bậc dưới, nhân 100%."
   },
   {
    "q": "Trong một chuỗi thức ăn gồm các loài: Cỏ → Sâu ăn lá → Chim sâu → Diều hâu. Sinh vật thuộc bậc dinh dưỡng N₃ trong tháp sinh thái tương ứng là loài nào?",
@@ -1939,7 +2018,8 @@ Object.assign(NL.QUIZ, {
     "Sâu ăn lá",
     "Diều hâu"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Cỏ là N₁, sâu là N₂, chim sâu là N₃, diều hâu là N₄."
   }
  ],
  "M9": [
@@ -1951,7 +2031,8 @@ Object.assign(NL.QUIZ, {
     "Cơ mi co, dây treo căng, thủy tinh thể dẹt lại",
     "Cơ mi giữ nguyên, võng mạc tự lùi về phía sau"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Nhìn gần thì cơ mi co, dây treo chùng, thủy tinh thể phồng lên để tăng độ khúc xạ."
   },
   {
    "q": "Cấu trúc vi mô Cơ quan Corti – nơi trực tiếp biến đổi dao động cơ học thành xung thần kinh thính giác – nằm trên màng nào bên trong ốc tai?",
@@ -1961,7 +2042,8 @@ Object.assign(NL.QUIZ, {
     "Màng mái",
     "Màng cửa sổ bầu dục"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Cơ quan Corti nằm trên màng cơ sở của ốc tai."
   },
   {
    "q": "Trong cơ quan Corti, sự bẻ cong của các lông tơ (stereocilia) trên tế bào lông khi cọ xát vào màng mái sẽ kích hoạt mở trực tiếp loại kênh ion nào sau đây để gây khử cực tế bào?",
@@ -1971,27 +2053,30 @@ Object.assign(NL.QUIZ, {
     "Kênh ion Ca²⁺",
     "Kênh ion Cl⁻"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Lông tế bào lông bị bẻ cong làm kênh K⁺ mở, K⁺ từ nội dịch đi vào gây khử cực."
   },
   {
-   "q": "Loại tế bào thụ cảm thị giác nào tập trung chủ yếu ở vùng Hoàng điểm (Fovea) trên võng mạc, chịu trách nhiệm tiếp nhận ánh sáng mạnh và cảm nhận chi tiết màu sắc?",
+   "q": "Loại tế bào thụ cảm nào tập trung nhiều ở hoàng điểm, nhất là hố trung tâm, giúp nhìn rõ chi tiết và màu sắc?",
    "o": [
     "Tế bào nón",
     "Tế bào que",
     "Tế bào hai cực",
     "Tế bào hạch"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Hoàng điểm có nhiều tế bào nón; riêng hố trung tâm chỉ có tế bào nón nên nhìn rõ chi tiết và màu nhất."
   },
   {
-   "q": "Chuỗi 3 xương nhỏ nằm trong khoang tai giữa (xương búa, xương đe, xương đạp) đảm nhận vai trò sinh học quan trọng nào đối với sự truyền âm?",
+   "q": "Chuỗi 3 xương nhỏ nằm trong khoang tai giữa (xương búa, xương đe, xương bàn đạp) đảm nhận vai trò sinh học quan trọng nào đối với sự truyền âm?",
    "o": [
     "Khuếch đại rung động từ màng nhĩ vào tai trong",
     "Biến trực tiếp sóng âm thành xung thần kinh",
     "Cân bằng áp suất giữa tai giữa và họng",
     "Giữ dịch ốc tai không chảy ra tai ngoài"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Đòn bẩy xương tai tăng lực khoảng 1,3 lần; cộng với màng nhĩ rộng hơn cửa sổ bầu dục khoảng 17–20 lần, áp lực tăng tổng cộng khoảng 20 lần."
   },
   {
    "q": "Sóng âm có tần số cao (âm bổng, ví dụ 15000 Hz) khi truyền vào ốc tai sẽ gây ra sự dao động biên độ cực đại ở vị trí nào của màng cơ sở trong cơ quan Corti?",
@@ -2001,7 +2086,8 @@ Object.assign(NL.QUIZ, {
     "Đều nhau trên toàn bộ màng cơ sở",
     "Ở màng nhĩ, trước khi vào ốc tai"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Âm cao làm phần đáy màng cơ sở (hẹp, cứng, gần cửa sổ bầu dục) rung mạnh nhất."
   },
   {
    "q": "Một người bị tật cận thị do cầu mắt quá dài khiến hình ảnh của vật ở xa hội tụ ở vị trí nào, và cần sử dụng loại thấu kính nào để khắc phục?",
@@ -2011,7 +2097,8 @@ Object.assign(NL.QUIZ, {
     "Trước võng mạc; đeo kính hội tụ",
     "Sau võng mạc; đeo kính phân kỳ"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Cầu mắt dài làm ảnh vật ở xa hội tụ trước võng mạc; kính phân kỳ đẩy ảnh lùi về đúng võng mạc."
   },
   {
    "q": "Tiếp xúc thường xuyên với âm thanh có cường độ quá lớn (trên 85 dB) kéo dài gây ra tổn thương vĩnh viễn nào đối với cơ quan Corti?",
@@ -2021,7 +2108,8 @@ Object.assign(NL.QUIZ, {
     "Xương đe bị gãy, chỉ cần nghỉ ngơi là liền lại",
     "Dịch ốc tai đặc lại, nghe kém tạm thời rồi hết"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Âm quá lớn kéo dài làm hỏng tế bào lông; ở người chúng không mọc lại nên điếc vĩnh viễn."
   },
   {
    "q": "Sự biến đổi năng lượng diễn ra tại các tế bào thụ cảm trên võng mạc (tế bào que, tế bào nón) và tế bào lông trong cơ quan Corti có điểm chung bản chất là gì?",
@@ -2031,7 +2119,8 @@ Object.assign(NL.QUIZ, {
     "Biến điện năng thành âm thanh và ánh sáng",
     "Biến hóa năng thành cơ năng để co cơ"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Tế bào que, nón và tế bào lông đều biến kích thích (ánh sáng, rung động) thành tín hiệu điện thần kinh."
   },
   {
    "q": "Đường truyền sóng âm và xung thần kinh thính giác qua cơ quan Corti diễn ra theo đúng trình tự sinh học nào sau đây?",
@@ -2041,29 +2130,32 @@ Object.assign(NL.QUIZ, {
     "Cửa sổ bầu dục → màng nhĩ → tế bào lông → xương tai → vỏ não",
     "Màng nhĩ → dịch ốc tai → xương tai → tế bào lông → thần kinh"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Màng nhĩ → chuỗi xương tai → cửa sổ bầu dục → dịch ốc tai → tế bào lông → dây thần kinh thính giác."
   }
  ],
  "M10": [
   {
-   "q": "Dạng đột biến cấu trúc nhiễm sắc thể nào sau đây làm giảm số lượng gen trên một nhiễm sắc thể?",
+   "q": "Dạng đột biến cấu trúc nhiễm sắc thể nào sau đây làm giảm số lượng gene trên một nhiễm sắc thể?",
    "o": [
     "Lặp đoạn",
     "Mất đoạn",
     "Đảo đoạn",
     "Chuyển đoạn tương hỗ"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Mất đoạn làm NST mất một số gene."
   },
   {
-   "q": "Dạng đột biến cấu trúc nhiễm sắc thể nào làm thay đổi trật tự sắp xếp các gen nhưng không làm thay đổi chiều dài và số lượng gen trên nhiễm sắc thể đó?",
+   "q": "Dạng đột biến cấu trúc nhiễm sắc thể nào làm thay đổi trật tự sắp xếp các gene nhưng không làm thay đổi chiều dài và số lượng gene trên nhiễm sắc thể đó?",
    "o": [
     "Mất đoạn",
     "Lặp đoạn",
     "Đảo đoạn",
     "Chuyển đoạn không tương hỗ"
    ],
-   "a": 2
+   "a": 2,
+   "e": "Đảo đoạn quay ngược một đoạn 180°, đổi trật tự gene nhưng không đổi số gene."
   },
   {
    "q": "Khi quan sát mô phỏng dạng đột biến Lặp đoạn, hậu quả nổi bật nhất đối với nhiễm sắc thể là gì?",
@@ -2073,7 +2165,8 @@ Object.assign(NL.QUIZ, {
     "NST cuộn thành hình vòng tròn",
     "NST mất hẳn tâm động"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Lặp đoạn làm một đoạn có thêm bản sao, NST dài ra."
   },
   {
    "q": "Hiện tượng một đoạn nhiễm sắc thể đứt ra từ NST số 1 và gắn vào NST số 2 (không tương đồng) được gọi là dạng đột biến nào?",
@@ -2083,7 +2176,8 @@ Object.assign(NL.QUIZ, {
     "Đảo đoạn có chứa tâm động",
     "Lặp đoạn trên cùng một NST"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Đoạn NST chuyển sang NST không tương đồng gọi là chuyển đoạn."
   },
   {
    "q": "Ở người, mất một đoạn nhỏ ở nhánh ngắn của nhiễm sắc thể số 5 gây ra hội chứng nào sau đây?",
@@ -2093,7 +2187,8 @@ Object.assign(NL.QUIZ, {
     "Hội chứng mèo kêu",
     "Hội chứng siêu nữ"
    ],
-   "a": 2
+   "a": 2,
+   "e": "Mất đoạn nhánh ngắn NST số 5 gây hội chứng tiếng mèo kêu."
   },
   {
    "q": "Trong sản xuất bia, người ta ứng dụng dạng đột biến cấu trúc nhiễm sắc thể nào để làm tăng hoạt tính enzyme amylase ở đại mạch?",
@@ -2103,17 +2198,19 @@ Object.assign(NL.QUIZ, {
     "Đột biến Đảo đoạn",
     "Đột biến Dị đa bội"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Lặp đoạn chứa gene amylase làm tăng lượng enzyme ở đại mạch."
   },
   {
-   "q": "Loại đột biến cấu trúc nhiễm sắc thể nào thường dẫn đến hậu quả nghiêm trọng nhất, làm mất cân bằng hệ gen và dễ gây chết hoặc làm mất khả năng sinh sản của sinh vật?",
+   "q": "Loại đột biến cấu trúc nhiễm sắc thể nào thường dẫn đến hậu quả nghiêm trọng nhất, làm mất cân bằng hệ gene và dễ gây chết hoặc làm mất khả năng sinh sản của sinh vật?",
    "o": [
     "Đảo đoạn nhỏ",
     "Mất đoạn lớn",
     "Lặp đoạn nhỏ",
     "Đột biến đồng nghĩa"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Mất đoạn lớn làm mất nhiều gene, mất cân bằng hệ gene nên thường gây chết hoặc giảm sức sống."
   },
   {
    "q": "Đặc điểm nào sau đây là ĐÚNG khi nói về đột biến Đảo đoạn chứa tâm động?",
@@ -2123,7 +2220,8 @@ Object.assign(NL.QUIZ, {
     "Làm số tâm động trên NST tăng gấp đôi",
     "Không bao giờ xảy ra trong tự nhiên"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Đảo đoạn chứa tâm động có thể làm tâm động đổi vị trí nên hình thái NST thay đổi."
   },
   {
    "q": "Sự trao đổi đoạn không cân giữa hai chromatid không chị em trong cặp nhiễm sắc thể tương đồng trong quá trình giảm phân sẽ dẫn đến kết quả nào?",
@@ -2133,7 +2231,8 @@ Object.assign(NL.QUIZ, {
     "Cả hai chromatid cùng bị mất đoạn",
     "Hai chromatid vẫn hoàn toàn bình thường"
    ],
-   "a": 0
+   "a": 0,
+   "e": "Trao đổi chéo không cân giữa hai chromatid không chị em: một chromatid lặp đoạn, chromatid kia mất đoạn."
   },
   {
    "q": "Ý nghĩa tiến hóa quan trọng nhất của đột biến Đảo đoạn nhiễm sắc thể là gì?",
@@ -2143,7 +2242,8 @@ Object.assign(NL.QUIZ, {
     "Làm cơ quan sinh dưỡng to gấp đôi bình thường",
     "Loại bỏ hết gene lặn có hại khỏi quần thể"
    ],
-   "a": 1
+   "a": 1,
+   "e": "Đảo đoạn làm thay đổi trật tự gene, góp phần phân hóa các nòi trong loài."
   }
  ]
 });

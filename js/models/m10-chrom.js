@@ -3,10 +3,10 @@
   const GC = { A: 0xE5534B, B: 0xF28C28, C: 0xF2C230, D: 0x7BC043, E: 0x2BB3A6, F: 0x3E8EDE, G: 0x7A5BD6, H: 0xD158A8, M: 0x8D6E63, N: 0xA1887F, O: 0x5C9EAD, P: 0x9CCC65, Q: 0xFFB74D, R: 0x90A4AE };
   const CEN = 0xFF4FA3;
   const FACT = {
-    del: { t: 'Mất đoạn', q: 'Thiếu gen → mất cân bằng hệ gen, thường gây chết hoặc giảm sức sống', ex: 'Mất đoạn nhánh ngắn NST số 5 ở người gây hội chứng tiếng mèo kêu (cri du chat); mất đoạn NST 21 gây ung thư máu. Ứng dụng: loại bỏ gen không mong muốn ở cây trồng.' },
-    dup: { t: 'Lặp đoạn', q: 'Thừa gen (tăng số bản sao) → tăng hoặc giảm mức biểu hiện tính trạng', ex: 'Lặp đoạn ở đại mạch làm tăng hoạt tính enzyme amylase, có lợi cho công nghiệp sản xuất bia. Lặp đoạn tạo nguyên liệu cho tiến hóa (gen mới).' },
-    inv: { t: 'Đảo đoạn', q: 'Không mất, không thừa gen; thay đổi trật tự gen → có thể thay đổi mức hoạt động của gen', ex: 'Đảo đoạn góp phần tăng sự đa dạng giữa các thứ, các nòi trong cùng một loài (ví dụ ở ruồi giấm, muỗi), là nguyên liệu cho tiến hóa.' },
-    tra: { t: 'Chuyển đoạn', q: 'Thay đổi nhóm gen liên kết; chuyển đoạn lớn thường giảm khả năng sinh sản', ex: 'Chuyển đoạn giữa NST 9 và 22 tạo NST Philadelphia gây ung thư máu tủy mãn tính (CML). Ứng dụng: chuyển gen mong muốn giữa các loài, tạo dòng côn trùng bất thụ để phòng trừ sâu hại.' }
+    del: { t: 'Mất đoạn', q: 'Thiếu gene → mất cân bằng hệ gene, thường gây chết hoặc giảm sức sống', ex: 'Mất đoạn nhánh ngắn NST số 5 ở người gây hội chứng tiếng mèo kêu (cri du chat); mất đoạn nhỏ ở NST 21 làm giảm sức sống. Ứng dụng: loại bỏ gene không mong muốn ở cây trồng.' },
+    dup: { t: 'Lặp đoạn', q: 'Thừa gene (tăng số bản sao) → tăng hoặc giảm mức biểu hiện tính trạng', ex: 'Lặp đoạn ở đại mạch làm tăng hoạt tính enzyme amylase, có lợi cho công nghiệp sản xuất bia. Lặp đoạn tạo nguyên liệu cho tiến hóa (gene mới).' },
+    inv: { t: 'Đảo đoạn', q: 'Không mất, không thừa gene; thay đổi trật tự gene → có thể thay đổi mức hoạt động của gene', ex: 'Đảo đoạn góp phần tăng sự đa dạng giữa các thứ, các nòi trong cùng một loài (ví dụ ở ruồi giấm, muỗi), là nguyên liệu cho tiến hóa.' },
+    tra: { t: 'Chuyển đoạn', q: 'Thay đổi nhóm gene liên kết; chuyển đoạn lớn thường giảm khả năng sinh sản', ex: 'Chuyển đoạn giữa NST 9 và 22 tạo NST Philadelphia gây ung thư máu tủy mãn tính (CML). Ứng dụng: chuyển gene mong muốn giữa các loài, tạo dòng côn trùng bất thụ để phòng trừ sâu hại.' }
   };
 
   let mode = 'del', sub = 'peri', tsub = 'recip', speed = 1, playing = true, manual = false, tool = 'cut';
@@ -61,7 +61,7 @@
       if (t.c) { const m = api.sphere(0.3, api.mat(CEN, { emissive: CEN, emissiveIntensity: 0.25 }), null, g, 20); api.part(m, { name: 'Tâm động', sci: 'Centromere', rows: [['Vai trò', 'Nơi đính thoi phân bào, giúp NST di chuyển về 2 cực'], ['Vị trí', 'Eo thứ nhất, chia NST thành 2 cánh']] }); }
       else {
         const m = api.mesh(new T.CapsuleGeometry(0.42, 0.5, 6, 18), api.mat(GC[t.g], { roughness: 0.45, emissive: GC[t.g], emissiveIntensity: 0.05 }), null, g); m.rotation.z = Math.PI / 2;
-        api.part(m, { name: `Gen ${t.g}`, sci: 'Gene band', rows: [['Trên', 'xyz'.includes(t.g) ? '' : (('MNOPQR'.includes(t.g)) ? 'NST số 2' : 'NST số 1')], ['Lưu ý', 'Mỗi băng màu đại diện cho một gen hoặc một nhóm gen']] });
+        api.part(m, { name: `Gene ${t.g}`, sci: 'Gene band', rows: [['Trên', 'xyz'.includes(t.g) ? '' : (('MNOPQR'.includes(t.g)) ? 'NST số 2' : 'NST số 1')], ['Lưu ý', 'Mỗi băng màu đại diện cho một gene hoặc một nhóm gene']] });
         const ar = api.mesh(new T.ConeGeometry(0.12, 0.3, 10), api.mat(0xFFFFFF), [0.05, 0, 0.42], g); ar.rotation.z = -Math.PI / 2; ar.userData.noPick = true;
         const sp = api.textSprite(t.g, { h: 0.55, parent: g, pos: [0, 0.82, 0], color: '#FFFFFF', bg: 'rgba(15,30,50,.7)' }); sp.userData.noPick = true;
       }
@@ -117,7 +117,7 @@
       lasers.forEach(m => m.visible = false);
       if (!manual && S.lasers) S.lasers.forEach((l, k2) => { const m = lasers[k2]; if (!m) return; const r = S.rows[l.row]; m.visible = true; m.position.set(xAt(r, l.at), rowY(l.row, S.rows.length), 0); m.material.opacity = 0.5 + 0.5 * Math.abs(Math.sin(api.time * 12)); });
       if (manual) [...cutMarks].slice(0, 6).forEach((c, k2) => { const [ri, i] = c.split(':').map(Number), r = manRows[ri]; if (!r) return; const m = lasers[k2]; m.visible = true; m.position.set(xAt(r, i + 0.5), rowY(ri, manRows.length), 0); m.material.opacity = 0.8; });
-      api.caption(manual ? (tool === 'cut' ? 'Chạm vào một gen để đặt / bỏ vết cắt bên phải gen đó' : 'Chạm chọn một đoạn, kéo thả sang vị trí mới; kéo xuống thật thấp để bỏ đoạn') : `${sc.label} · ${sc.states[si].cap}`);
+      api.caption(manual ? (tool === 'cut' ? 'Chạm vào một gene để đặt / bỏ vết cắt bên phải gene đó' : 'Chạm chọn một đoạn, kéo thả sang vị trí mới; kéo xuống thật thấp để bỏ đoạn') : `${sc.label} · ${sc.states[si].cap}`);
     });
     // ---------- tự cắt và kéo thả ----------
     const segOf = (ri, i) => { const r = manRows[ri]; let a = i, b = i; while (a > 0 && !cutMarks.has(`${ri}:${a - 1}`)) a--; while (b < r.length - 1 && !cutMarks.has(`${ri}:${b}`)) b++; return { ri, a, b }; };
@@ -163,7 +163,7 @@
     api.button('↺ Đặt lại', () => { reset(); playing = true; pb.textContent = '⏸ Tạm dừng'; });
     api.slider({ label: 'Tốc độ hoạt hình', min: 0.25, max: 2, step: 0.25, value: speed, unit: '×', lazy: true, onInput(v) { speed = v; } });
     api.section('✂ Tự cắt & ghép');
-    api.toggle({ label: 'Bật chế độ tự làm', value: manual, onChange(v) { if (v) { playing = false; pb.textContent = '▶ Phát'; startManual(); api.toast('Công cụ ✂: chạm gen để đặt vết cắt. Công cụ ✋: chọn đoạn rồi kéo thả'); } else reset(); } });
+    api.toggle({ label: 'Bật chế độ tự làm', value: manual, onChange(v) { if (v) { playing = false; pb.textContent = '▶ Phát'; startManual(); api.toast('Công cụ ✂: chạm gene để đặt vết cắt. Công cụ ✋: chọn đoạn rồi kéo thả'); } else reset(); } });
     api.choices({ items: [{ t: '✂ Cắt', v: 'cut' }, { t: '✋ Chọn & kéo', v: 'drag' }], value: tool, onPick(v) { tool = v; } });
     api.button('🗑 Bỏ đoạn đã chọn', () => opSel('Mất đoạn (tự làm)', ([ri]) => { manRows[ri] = manRows[ri].filter(t => { if (sel.includes(t.uid)) { dropped.add(t.uid); return false; } return true; }); }));
     api.button('⧉ Nhân đôi đoạn', () => opSel('Lặp đoạn (tự làm)', ([ri]) => { const r = manRows[ri], i = r.findIndex(t => t.uid === sel[sel.length - 1]); const copies = sel.map(uid => { const o = r.find(t => t.uid === uid); const c = tok(o.g, { src: o, flip: o.flip }); sc.all.push(c); mkTok(c); return c; }); r.splice(i + 1, 0, ...copies); }));
@@ -199,8 +199,8 @@
       <table><tr><th>Dạng</th><th>Trước</th><th>Sau</th><th>Hậu quả</th><th>Ví dụ & ứng dụng</th></tr>
       ${row('del', 'A-B-C-D-●-E-F-G-H', 'A-B-●-E-F-G-H')}${row('dup', 'A-B-C-D-●-E-F-G-H', 'A-B-C-B-C-D-●-E-F-G-H')}${row('inv', 'A-B-C-D-●-E-F-G-H', 'A-B-E-●-D-C-F-G-H')}${row('tra', 'A-B-C-●-D-E-F | M-N-O-●-P-Q-R', 'M-N-C-●-D-E-F | A-B-O-●-P-Q-R')}</table>
       <h2 style="font-size:16px;margin-top:20px">Các thao tác em đã thực hiện</h2>
-      <table><tr><th>STT</th><th>Dạng</th><th>Ban đầu → Sau</th><th>Chiều dài</th><th>Số gen</th></tr>${log.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('') || '<tr><td colspan="5">Chưa có</td></tr>'}</table>
-      <p style="font-size:12px;margin-top:16px">Ghi nhớ: Mất đoạn làm giảm số gen; lặp đoạn làm tăng số gen; đảo đoạn không đổi số gen nhưng đổi trật tự; chuyển đoạn đổi nhóm gen liên kết.</p>
+      <table><tr><th>STT</th><th>Dạng</th><th>Ban đầu → Sau</th><th>Chiều dài</th><th>Số gene</th></tr>${log.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('') || '<tr><td colspan="5">Chưa có</td></tr>'}</table>
+      <p style="font-size:12px;margin-top:16px">Ghi nhớ: Mất đoạn làm giảm số gene; lặp đoạn làm tăng số gene; đảo đoạn không đổi số gene nhưng đổi trật tự; chuyển đoạn đổi nhóm gene liên kết.</p>
       <script>setTimeout(()=>print(),400)<\/script></body></html>`);
     w.document.close();
   }
@@ -215,7 +215,7 @@
         title: 'Tóm tắt các dạng đột biến cấu trúc NST đã mô phỏng',
         sub: 'Bấm "Lưu ảnh biểu đồ" để lưu ảnh NST trước và sau đột biến',
         sheets: [
-          { name: 'Tóm tắt', head: ['STT', 'Tên dạng đột biến', 'Cấu trúc ban đầu → Cấu trúc sau đột biến', 'Biến đổi chiều dài NST', 'Số lượng gen'], rows: log.length ? log : [['–', 'Chưa chạy hoạt cảnh nào', '–', '–', '–']] },
+          { name: 'Tóm tắt', head: ['STT', 'Tên dạng đột biến', 'Cấu trúc ban đầu → Cấu trúc sau đột biến', 'Biến đổi chiều dài NST', 'Số lượng gene'], rows: log.length ? log : [['–', 'Chưa chạy hoạt cảnh nào', '–', '–', '–']] },
           { name: 'Hậu quả & ứng dụng', head: ['Dạng', 'Hậu quả', 'Ví dụ & ứng dụng'], rows: Object.values(FACT).map(f => [f.t, f.q, f.ex]) }
         ],
         chart: { svg: chromSVG() }

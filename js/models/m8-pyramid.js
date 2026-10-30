@@ -14,11 +14,11 @@
     pond: { name: 'Ao / biển mở', ground: 0x2E7FB8, sp: ['🟢 Tảo phù du', '🦐 Động vật phù du', '🐟 Cá nhỏ', '🐬 Cá lớn'], dec: '🦠 Vi khuẩn đáy',
       num: [9000000, 400000, 2000, 20], bio: [4, 21, 3, 0.5], ene: [8000, 800, 80, 8], decv: { num: 3e9, bio: 2, ene: 1600 } }
   };
-  const WARN_ENE = 'Cảnh báo kiến thức trọng tâm: Tháp Năng lượng LUÔN LUÔN có dạng chuẩn (đáy rộng, đỉnh nhọn) và KHÔNG BAO GIỜ bị đảo ngược! Do năng lượng luôn bị thất thoát khoảng 90% qua mỗi bậc dinh dưỡng theo quy luật nhiệt động lực học!';
+  const WARN_ENE = 'Cảnh báo kiến thức trọng tâm: Tháp Năng lượng LUÔN LUÔN có dạng chuẩn (đáy rộng, đỉnh nhọn) và KHÔNG BAO GIỜ bị đảo ngược! Mỗi bậc chỉ chuyển được khoảng 2–20% năng lượng lên bậc trên (quy tắc 10% chỉ là số ước lượng), phần lớn còn lại mất qua hô hấp tỏa nhiệt, chất thải và xác. Năng lượng không tự sinh ra, nên bậc trên không thể có nhiều hơn bậc dưới.';
   const INV_WHY = {
     num: 'Có thể đảo: 1 sinh vật sản xuất rất lớn (cây gỗ) nuôi hàng nghìn sâu và hàng vạn ký sinh trùng',
     bio: 'Có thể đảo tạm thời (hệ nước): tảo sinh khối nhỏ nhưng sinh sản cực nhanh nuôi động vật phù du sinh khối lớn hơn',
-    ene: 'Không bao giờ đảo: năng lượng thất thoát ≈ 90% qua mỗi bậc'
+    ene: 'Không bao giờ đảo: mỗi bậc chỉ chuyển lên khoảng 2–20% năng lượng'
   };
 
   let preset = 'grass', speed = 2, cut = 0, split = false;
@@ -53,7 +53,7 @@
         const v = vals[t.k], eff = t.k ? (vals[t.k] / vals[t.k - 1] * 100) : null;
         api.part(t.box, { name: LV[t.k], sci: p.sp[t.k], rows: [[KIND[kind], `${fmt(v)} ${UNIT[kind]}`], ...(t.k ? [['Hiệu suất so với bậc dưới', kind === 'ene' ? `eff = E${['₂', '₃', '₄'][t.k - 1]} / E${['₁', '₂', '₃'][t.k - 1]} × 100% = ${eff.toFixed(1)}%` : `${eff.toFixed(eff < 1 ? 3 : 1)}%`]] : [['Nguồn', kind === 'ene' ? 'Chỉ hấp thụ ≈ 1% năng lượng Mặt Trời để quang hợp' : 'Tự tổng hợp chất hữu cơ']]), ['Đại diện', p.sp[t.k]]] });
       });
-      api.part(dec, { name: 'Sinh vật phân hủy', sci: p.dec, rows: [[KIND[kind], `${fmt(p.decv[kind])} ${UNIT[kind]}`], ['Vai trò', 'Phân giải xác, chất thải thành chất vô cơ trả lại môi trường'], ['Năng lượng', 'Nhận ≈ 10% năng lượng mỗi bậc qua xác và chất thải']] });
+      api.part(dec, { name: 'Sinh vật phân hủy', sci: p.dec, rows: [[KIND[kind], `${fmt(p.decv[kind])} ${UNIT[kind]}`], ['Vai trò', 'Phân giải xác, chất thải thành chất vô cơ trả lại môi trường'], ['Năng lượng', 'Nhận phần năng lượng còn trong xác và chất thải của mọi bậc']] });
     };
     setInfo();
     return {
@@ -107,7 +107,7 @@
     let Q = null;
     const other = kind === 'ene' ? 'bio' : 'ene';
     if (split) { const sc = api.splitScene(); const holder = new api.T.Group(); sc.add(holder); Q = pyramid(api, holder, other, 0); }
-    api.label('Thất thoát ≈ 90% mỗi bậc: hô hấp 70%, chất thải 10%, phân hủy 10%', [0, -0.9, 3], { cls: 'plain' });
+    api.label('Mỗi bậc chỉ chuyển lên ≈ 2–20% (ước lượng 10%); phần lớn mất qua hô hấp tỏa nhiệt, chất thải, xác', [0, -0.9, 3], { cls: 'plain' });
     let warned = 0;
     api.onFrame(dt => {
       P.update(dt); if (Q) Q.update(dt);
@@ -154,9 +154,9 @@
             [3, 'Dạng tháp ở hệ đang xem', n[1] > n[0] ? 'Đảo ngược' : 'Chuẩn', b[1] > b[0] ? 'Đảo ngược' : 'Chuẩn', 'Luôn chuẩn', '–'],
             row(0), row(1), row(2), row(3),
             [8, 'Khả năng đảo ngược', 'Có', 'Có (tạm thời, hệ nước)', 'Không bao giờ', `${INV_WHY.num}. ${INV_WHY.bio}. ${INV_WHY.ene}`]] },
-          { name: 'Hiệu suất sinh thái', head: ['Bậc', 'Năng lượng (kcal/m²/năm)', 'Hiệu suất eff = Eₙ₊₁ / Eₙ × 100%', 'Thất thoát qua hô hấp (70%)', 'Chất thải (10%)', 'Phân hủy (10%)'], rows: e.map((v, k) => [['N₁', 'N₂', 'N₃', 'N₄'][k], Math.round(v * 10) / 10, k ? (e[k] / e[k - 1] * 100).toFixed(1) + '%' : '≈ 1% năng lượng Mặt Trời', Math.round(v * 0.7 * 10) / 10, Math.round(v * 0.1 * 10) / 10, Math.round(v * 0.1 * 10) / 10]) }
+          { name: 'Hiệu suất sinh thái', head: ['Bậc', 'Năng lượng (kcal/m²/năm)', 'Hiệu suất eff = Eₙ₊₁ / Eₙ × 100%', 'Không truyền lên bậc sau (hô hấp tỏa nhiệt, chất thải, xác)'], rows: e.map((v, k) => [['N₁', 'N₂', 'N₃', 'N₄'][k], Math.round(v * 10) / 10, k ? (e[k] / e[k - 1] * 100).toFixed(1) + '%' : '≈ 1% năng lượng Mặt Trời', k < e.length - 1 ? Math.round((v - e[k + 1]) * 10) / 10 : '–']) }
         ],
-        chart: { type: 'pie', title: 'Năng lượng của một bậc đi về đâu', labels: ['Hô hấp, tỏa nhiệt 70%', 'Chất thải, rơi rụng 10%', 'Sinh vật phân hủy 10%', 'Truyền lên bậc sau 10%'], values: [70, 10, 10, 10], colors: ['#E5534B', '#9AA3AD', '#8D6E4A', '#F2C230'] }
+        chart: (() => { const av = Math.round(e.slice(1).reduce((a, v, k) => a + v / e[k] * 100, 0) / (e.length - 1)); return { type: 'pie', title: `Trung bình một bậc ở hệ này (hiệu suất ≈ ${av}%)`, labels: [`Truyền lên bậc sau ${av}%`, `Mất qua hô hấp, chất thải, xác ${100 - av}%`], values: [av, 100 - av], colors: ['#F2C230', '#E5534B'] }; })()
       };
     },
     liveData: true

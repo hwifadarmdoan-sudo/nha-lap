@@ -5,7 +5,7 @@ window.NL = window.NL || {};
   const WALL_C = '#FBF3DC', WALL_SIDE = '#F1E5C2';
   NL.SUBJECTS = {
     4: { name: 'Sinh học', color: '#3FB37F', icon: '🌿', A: 'Đếm bọt khí rong', B: 'Co nguyên sinh', ready: true },
-    3: { name: 'Hóa học', color: '#9B6BD6', icon: '⚗️', A: 'Chuẩn độ axit–bazơ', B: 'Màu ngọn lửa', ready: false },
+    3: { name: 'Hóa học', color: '#9B6BD6', icon: '⚗️', A: 'Chuẩn độ acid – base', B: 'Màu ngọn lửa', ready: false },
     2: { name: 'Vật lí', color: '#3D8BD9', icon: '🧲', A: 'Con lắc đơn', B: 'Khúc xạ ánh sáng', ready: false }
   };
   // Tầng 4 Sinh: 10 phòng theo thứ tự trong bản đặc tả "Môn Sinh" (29/10). Mã phòng 2A, 2B giữ như cũ để không mất kết quả đã lưu.
@@ -20,7 +20,7 @@ window.NL = window.NL || {};
     { id: '2H', floor: 4, hook: 'Giá đỗ ngoài chợ được ủ trong tối nên trắng và dài. Ra nắng thì sao?', grade: 'Sinh 11 · Sinh trưởng ở thực vật', no: 8, short: 'Nảy mầm', name: 'Điều kiện nảy mầm của hạt', icon: '🌱', ready: true },
     { id: '2I', floor: 4, hook: 'Mỗi năm em cao thêm vì tế bào trong cơ thể liên tục phân chia.', grade: 'Sinh 10 · Chu kỳ tế bào, nguyên phân', no: 9, short: 'Nguyên phân', name: 'Quan sát nguyên phân', icon: '🔍', ready: true },
     { id: '2J', floor: 4, hook: 'Thế kỷ 19 ở Anh, khói nhà máy làm đen thân cây và bướm màu đen dần nhiều hơn.', grade: 'Sinh 12 · Di truyền quần thể', no: 10, short: 'Quần thể', name: 'Tần số allele qua các thế hệ', icon: '🦋', ready: true },
-    { id: '3A', floor: 3, name: 'Chuẩn độ axit–bazơ', ready: false },
+    { id: '3A', floor: 3, name: 'Chuẩn độ acid – base', ready: false },
     { id: '3B', floor: 3, name: 'Thử màu ngọn lửa', ready: false },
     { id: '4A', floor: 2, name: 'Con lắc đơn', ready: false },
     { id: '4B', floor: 2, name: 'Khúc xạ qua lăng kính', ready: false }

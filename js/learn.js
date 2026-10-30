@@ -57,7 +57,7 @@ NL.learn = (function () {
       pic: P('<circle cx="22" cy="20" r="12" fill="#FFD54A"/><path d="M60 70 Q58 40 62 20" stroke="#2E8B57" stroke-width="5" fill="none"/><ellipse cx="74" cy="34" rx="14" ry="5" fill="#58C08A"/><ellipse cx="50" cy="46" rx="14" ry="5" fill="#58C08A"/><text x="86" y="22" font-size="13" font-weight="800" fill="#2F80C0">O₂</text>')
     },
     o2: {
-      words: ['O₂', 'khí oxi'], name: 'Khí O₂ (oxi)',
+      words: ['O₂', 'khí oxi'], name: 'Khí O₂ (oxygen)',
       text: 'Khí do cây thải ra khi quang hợp. Bọt khí nổi lên từ cành rong chủ yếu là O₂.',
       pic: P('<circle cx="40" cy="50" r="10" fill="#fff" stroke="#7FB9DC" stroke-width="3"/><circle cx="62" cy="34" r="7" fill="#fff" stroke="#7FB9DC" stroke-width="3"/><circle cx="78" cy="18" r="5" fill="#fff" stroke="#7FB9DC" stroke-width="3"/><text x="86" y="60" font-size="16" font-weight="800" fill="#2F80C0">O₂</text>')
     },

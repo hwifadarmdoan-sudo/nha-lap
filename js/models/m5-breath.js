@@ -337,12 +337,12 @@
   }
 
   function commonCtl(api, onOp) {
-    api.slider({ label: '🌬 Tần số thở', min: 12, max: 60, step: 1, value: rate, unit: 'nhịp/phút', lazy: true, onInput(v) { rate = v; if (v >= 40) api.warn('rate', 'Thở trên 40 nhịp/phút khi nghỉ là thở nhanh nông: khí chủ yếu ra vào khoảng chết (khí quản, phế quản), lượng khí thực sự tới phế nang giảm, cơ thể có thể thiếu O₂.', '⚠️ Lưu ý sinh lí'); } });
+    api.slider({ label: '🌬 Tần số thở', min: 12, max: 60, step: 1, value: rate, unit: 'nhịp/phút', lazy: true, onInput(v) { rate = v; if (v > 20) api.warn('rate', 'Người lớn khi nghỉ thở trên 20 nhịp/phút đã là thở nhanh. Càng nhanh thì càng nông: khí chủ yếu ra vào khoảng chết (khí quản, phế quản), lượng khí thực sự tới phế nang giảm, cơ thể có thể thiếu O₂.', '⚠️ Lưu ý sinh lí'); } });
     api.slider({ label: 'Độ trong suốt sườn và phổi', min: 0, max: 100, step: 5, value: Math.round((1 - op) * 100), unit: '%', lazy: true, onInput(v) { op = Math.max(0.05, 1 - v / 100); onOp && onOp(op); } });
     api.section('🚬 Khói thuốc và bụi mịn');
     const reb = () => { if (api.tab === 'alv' || api.tab === 'vent') { if (api.tab === 'alv') api.setTab(api.tab); } };
     api.slider({ label: 'Số năm hút thuốc', min: 0, max: 30, step: 1, value: years, unit: 'năm', lazy: true, onInput(v) { years = v; if (dmg() > 0.3) api.warn('smoke', WARN_SMOKE, '⚠️ Cảnh báo sức khỏe'); clearTimeout(api.el._rb); api.el._rb = setTimeout(reb, 350); } });
-    api.slider({ label: 'Bụi mịn PM₂.₅', min: 0, max: 250, step: 5, value: pm, unit: 'µg/m³', lazy: true, onInput(v) { pm = v; if (v > 150) api.warn('pm', 'Bụi mịn PM₂.₅ trên 150 µg/m³ là mức có hại cho sức khỏe: hạt nhỏ hơn 2,5 µm đi sâu tới tận phế nang, gây viêm, giảm chức năng phổi. Nên đeo khẩu trang đạt chuẩn và hạn chế ra ngoài.', '⚠️ Cảnh báo ô nhiễm'); clearTimeout(api.el._rb); api.el._rb = setTimeout(reb, 350); } });
+    api.slider({ label: 'Bụi mịn PM₂.₅', min: 0, max: 250, step: 5, value: pm, unit: 'µg/m³', lazy: true, onInput(v) { pm = v; if (v > 15) api.warn('pm', 'WHO khuyến nghị bụi mịn PM₂.₅ trung bình 24 giờ không quá 15 µg/m³. Vượt mức này là bắt đầu có hại, càng cao càng nguy hiểm: hạt nhỏ hơn 2,5 µm đi sâu tới tận phế nang, gây viêm, giảm chức năng phổi. Nên đeo khẩu trang đạt chuẩn và hạn chế ra ngoài.', '⚠️ Cảnh báo ô nhiễm'); clearTimeout(api.el._rb); api.el._rb = setTimeout(reb, 350); } });
     api.checklist([
       { k: 'rib', label: 'Khung xương sườn và Cơ hoành' }, { k: 'donders', label: 'Mô hình Chuông Donders' }, { k: 'epi', label: 'Nắp thanh quản và Thực quản' },
       { k: 'tree', label: 'Khí quản và Cây phế quản' }, { k: 'cilia', label: 'Lớp tế bào lông rung' }, { k: 'alv', label: 'Chùm phế nang và Mạng lưới mao mạch' }

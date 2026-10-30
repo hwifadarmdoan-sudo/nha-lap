@@ -120,7 +120,7 @@
   }
 
   function historyRows() {
-    return st.runs.map((r, i) => [i + 1, r.mode + ' cặp', r.cross, r.N, ratio(PH[r.mode].filter(c => r.exp.ph[c] > 0), r.obs.ph), r.cs.df ? r.cs.chi.toFixed(2) : '–', r.cs.df ? (r.cs.accept ? 'Chấp nhận' : 'Bác bỏ') : 'Không cần']);
+    return st.runs.map((r, i) => [i + 1, r.mode + ' cặp', r.cross, r.N, ratio(PH[r.mode].filter(c => r.exp.ph[c] > 0), r.obs.ph), r.cs.df ? r.cs.chi.toFixed(2) : '–', r.cs.df ? (r.cs.accept ? 'Chưa đủ cơ sở bác bỏ' : 'Bác bỏ') : 'Không cần']);
   }
 
   const steps = [
@@ -147,43 +147,59 @@
       onNext(api) { api.goto(st.pollinated ? 2 : 1); }
     },
     {
-      label: 'Thụ phấn', text: 'Kéo cọ lấy phấn hoa cây bố, chấm lên hoa cây mẹ', hint: 'Kéo cọ vào bông hoa cây bố (bên phải), rồi kéo sang bông hoa cây mẹ (bên trái)',
+      label: 'Thụ phấn',
+      get text() { return ['Chạm hoa cây mẹ để khử nhị: cắt bỏ nhị khi hoa còn nụ, chưa kịp tự thụ phấn', 'Kéo cọ lấy phấn hoa cây bố, chấm lên đầu nhụy hoa cây mẹ', 'Chạm hoa cây mẹ để trùm túi giấy, ngăn phấn lạ bay vào'][st.ph || 0]; },
+      get hint() { return ['Đậu Hà Lan tự thụ phấn từ khi hoa còn nụ, nên phải bỏ nhị cây mẹ trước', 'Kéo cọ vào bông hoa cây bố (bên phải), rồi kéo sang bông hoa cây mẹ (bên trái)', 'Bao hoa để chắc chắn hạt sinh ra chỉ do phấn cây bố'][st.ph || 0]; },
       enter(api) {
-        api.setOn(st.brush, true);
-        api.draggable(st.brush, {
-          target: { x: 420, y: 300, r: 80, sx: 420, sy: 300 }, onDrop: () => {
-            NL.audio.play('pop');
-            api.tween(st.brush, 420, 280, 200, () => {
-              api.setOn(st.brush, true);
-              api.draggable(st.brush, {
-                target: { x: 130, y: 300, r: 80, sx: 130, sy: 300 }, onDrop: () => {
-                  st.pollinated = true; NL.audio.play('ting');
-                  api.tween(st.brush, 275, 420, 500);
-                  api.say('Thụ phấn xong! Từ lần sau mình thụ phấn giúp em'); api.done();
-                }
+        const fl = st.p1.flower, self = this;
+        const phase = n => { st.ph = n; api.say(self.text); };
+        st.ph = 0;
+        api.tapable(fl, () => {
+          NL.audio.play('pop'); fl.querySelectorAll('circle').forEach(c => c.setAttribute('fill', '#D9CDB8'));
+          phase(1);
+          api.setOn(st.brush, true);
+          api.draggable(st.brush, {
+            target: { x: 420, y: 300, r: 80, sx: 420, sy: 300 }, onDrop: () => {
+              NL.audio.play('pop');
+              api.tween(st.brush, 420, 280, 200, () => {
+                api.setOn(st.brush, true);
+                api.draggable(st.brush, {
+                  target: { x: 130, y: 300, r: 80, sx: 130, sy: 300 }, onDrop: () => {
+                    NL.audio.play('ting');
+                    api.tween(st.brush, 275, 420, 500);
+                    phase(2);
+                    api.tapable(fl, () => {
+                      st.pollinated = true; NL.audio.play('ting');
+                      api.el('path', { d: 'M-22 14 L-18 -34 Q0 -44 18 -34 L22 14 Z', fill: '#EAD9B8', stroke: '#B89A68', 'stroke-width': 2, opacity: 0.92 }, fl);
+                      api.say('Khử nhị, thụ phấn, bao hoa xong! Từ lần sau mình làm giúp em'); api.done();
+                    });
+                    api.setOn(fl, true);
+                  }
+                });
               });
-            });
-          }
+            }
+          });
         });
+        api.setOn(fl, true);
       }
     },
     {
-      label: () => `Lần lai ${st.runs.length + 1}/3 · Số hạt`, text: 'Chọn số hạt đời con muốn gieo (N)', hint: 'Thử cả N nhỏ (10, 50) và N lớn (1000 trở lên) để so sánh',
+      label: () => `Lần lai ${st.runs.length + 1}/3 · Số hạt`, text: 'Chọn số hạt đời con muốn đếm (N)', hint: 'Thử cả N nhỏ (10, 50) và N lớn (1000 trở lên) để so sánh',
       enter(api) {
         api.choices({
           label: 'Số hạt đời con N', items: NS.map(n => ({ t: n.toLocaleString('vi-VN'), v: n })), value: st.N,
           onPick(v) { st.N = v; }
         });
-        api.done('Gieo hạt ➜');
+        api.done('Thu hạt ➜');
       },
       onNext(api) {
         const go = () => api.goto(3);
-        if (st.N <= 50) api.card({ kicker: '⚠️ Mẫu nhỏ', text: `N = ${st.N} là quá ít. Mẫu nhỏ dễ lệch ngẫu nhiên, có thể làm χ² cao và bác bỏ giả thuyết Mendel.`, sub: 'Cứ thử để thấy. Sau đó tăng lên N ≥ 1.000 để thấy quy luật số lớn!', btn: 'Vẫn gieo ➜' }, go);
+        if (st.N <= 50) api.card({ kicker: '⚠️ Mẫu nhỏ', text: `N = ${st.N} là quá ít. Mẫu nhỏ dễ lệch ngẫu nhiên, có thể làm χ² cao và bác bỏ giả thuyết Mendel.`, sub: 'Cứ thử để thấy. Sau đó tăng lên N ≥ 1.000 để thấy quy luật số lớn!', btn: 'Vẫn đếm ➜' }, go);
         else go();
       }
     },
     {
-      label: () => `Lần lai ${st.runs.length + 1}/3 · Đếm hạt`, text: 'Đang gieo và đếm hạt đời con…', hint: 'Đợi hạt rơi xong',
+      label: () => `Lần lai ${st.runs.length + 1}/3 · Đếm hạt`, text: 'Tách quả trên cây mẹ, đếm hạt đời con. Màu và hình dạng hạt nhìn ngay trên hạt, không cần gieo', hint: 'Đợi hạt rơi xong',
       enter(api) {
         const r = { mode: st.mode, cross: st.cross, N: st.N, obs: run(st.cross, st.N), exp: expected(st.cross) };
         r.cs = chiSquare(r);
@@ -205,7 +221,7 @@
         api.ask({
           kicker: '📐 Kiểm định χ²', q: `χ² = ${c}, bậc tự do df = ${r.cs.df}, giá trị tới hạn = ${r.cs.crit}. Em kết luận gì?`,
           options: [
-            { t: 'Chấp nhận giả thuyết Mendel', ok: r.cs.accept, why: `${c} lớn hơn ${r.cs.crit}: khác biệt quá lớn, không thể chỉ do ngẫu nhiên.` },
+            { t: 'Chưa đủ cơ sở bác bỏ giả thuyết Mendel', ok: r.cs.accept, why: `${c} lớn hơn ${r.cs.crit}: khác biệt quá lớn, không thể chỉ do ngẫu nhiên.` },
             { t: 'Bác bỏ giả thuyết Mendel', ok: !r.cs.accept, why: `${c} nhỏ hơn ${r.cs.crit}: chênh lệch nhỏ, chỉ do ngẫu nhiên.` }
           ],
           explain: r.cs.accept ? `χ² nhỏ hơn ${r.cs.crit} nên sai khác giữa thực tế và lý thuyết không có ý nghĩa thống kê.` : `χ² lớn hơn ${r.cs.crit}. ${r.N <= 100 ? 'Mẫu nhỏ nên lệch ngẫu nhiên nhiều. Thử lại với N lớn hơn nhé.' : 'Trường hợp hiếm do ngẫu nhiên.'}`
@@ -249,7 +265,7 @@
           .concat([{ name: 'Lý thuyết', color: '#3FB37F', values: cls.map(c => Math.round(last.exp.ph[c] * 100)) }])
       },
       conclusion: 'Các cặp allele phân li đồng đều về giao tử (1 : 1) và tổ hợp ngẫu nhiên khi thụ tinh. Số cá thể càng lớn, tỉ lệ thực tế càng gần tỉ lệ lý thuyết (3 : 1; 9 : 3 : 3 : 1)',
-      note: 'χ² nhỏ hơn giá trị tới hạn (3,841 với df = 1; 7,815 với df = 3) thì chấp nhận giả thuyết Mendel.'
+      note: 'χ² nhỏ hơn giá trị tới hạn (3,841 với df = 1; 7,815 với df = 3) thì chưa đủ cơ sở bác bỏ giả thuyết Mendel: sai lệch có thể chỉ do ngẫu nhiên. Kiểm định không chứng minh giả thuyết chắc chắn đúng.'
     };
   }
 

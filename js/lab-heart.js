@@ -129,7 +129,7 @@
 
   const steps = [
     {
-      label: 'Chuẩn bị', text: 'Quấn băng đo huyết áp lên cánh tay bạn đang đứng trên máy chạy', hint: 'Kéo băng quấn màu xanh vào cánh tay',
+      label: 'Chuẩn bị', text: 'Quấn băng đo huyết áp lên cánh tay bạn đang đứng trên máy chạy (điện cực ECG đã dán sẵn trên ngực bạn)', hint: 'Kéo băng quấn màu xanh vào cánh tay',
       enter(api) {
         sim(api);
         api.setOn(st.cuff, true);
@@ -137,7 +137,7 @@
           target: { x: 170, y: 300, r: 110 }, snap: false, onDrop: () => {
             st.cuff.style.display = 'none'; st.cuffOn.setAttribute('opacity', 1);
             st.cuffed = true; st.ecgOff.remove(); NL.audio.play('ting');
-            api.say('Đã gắn xong! Màn hình đang hiện điện tâm đồ'); api.done();
+            api.say('Đã gắn xong! Điện tâm đồ lấy từ các điện cực dán trên ngực; băng quấn chỉ dùng để đo huyết áp'); api.done();
           }
         });
       }

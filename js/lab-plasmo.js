@@ -279,7 +279,10 @@
   function soak(api) {
     st.paper.style.display = 'none';
     const f = formOf(st.C);
-    setForm(f, st.C); st.viewLabel.textContent = 'Dung dịch đang ngấm…';
+    // dạng co tiến triển theo thời gian: góc → lõm → lồi; nồng độ quyết định dạng cuối đạt tới trong thời gian quan sát
+    const ORDER = ['goc', 'lom', 'loi'], seq = ORDER.includes(f) ? ORDER.slice(0, ORDER.indexOf(f) + 1) : [f];
+    let si = 0, tStage = 0;
+    setForm(seq[0], st.C); st.viewLabel.textContent = 'Dung dịch đang ngấm…';
     const card = api.panel(`<div>⏱ Thời gian tác động</div><div class="big-num"><span id="plT">0</span> giây</div>`);
     st.speed = 5;
     const sp = api.choices({ label: 'Tốc độ', items: [{ t: '1×', v: 1 }, { t: '5×', v: 5 }, { t: '10×', v: 10 }], value: 5, onPick(v) { st.speed = v; } });
@@ -287,7 +290,10 @@
     api.loop(dt => {
       t += dt * st.speed; st.rate = Math.min(0.5, 0.004 * st.speed);
       card.querySelector('#plT').textContent = Math.floor(t);
-      if (t > 20 && settled()) {
+      if (si < seq.length - 1 && settled() && t - tStage > 8) {
+        si++; tStage = t; setForm(seq[si], st.C); st.viewLabel.textContent = `Ngâm lâu hơn: chuyển sang ${FORM_NAME[seq[si]].toLowerCase()}…`;
+      }
+      if (si === seq.length - 1 && t > 20 && settled()) {
         card.remove(); sp.remove(); st.rate = 0.035;
         st.viewLabel.textContent = 'Tế bào đã ổn định';
         const right = f === 'nhuoc' || f === 'dang' ? 'Không co' : FORM_NAME[f];
@@ -314,15 +320,15 @@
   const EXPLAIN = {
     nhuoc: 'Nhược trương: nước đi vào, tế bào trương nước, không co.',
     dang: 'Gần đẳng trương với tế bào này: nước ra vào cân bằng, tế bào giữ nguyên. Đẳng trương hay không còn tùy loại tế bào (0,9% NaCl chỉ đẳng trương với tế bào người).',
-    goc: 'Co góc: ưu trương nhẹ, nước đi ra ít, màng sinh chất mới tách khỏi thành ở các góc.',
-    lom: 'Co lõm: ưu trương trung bình, nước thoát ra nhiều, các mặt bên của màng lõm sâu vào trong.',
-    loi: 'Co lồi: ưu trương mạnh, chất nguyên sinh co cụm thành khối tròn, tách khỏi thành ở mọi phía.'
+    goc: 'Co góc: nước mới đi ra ít, màng sinh chất mới tách khỏi thành ở các góc. Ở nồng độ này, trong thời gian quan sát tế bào dừng ở co góc.',
+    lom: 'Co lõm: tế bào co góc trước, nước tiếp tục đi ra nên các mặt bên lõm vào. Dạng co tiến triển theo thời gian; nồng độ cao hơn thì tới dạng này nhanh hơn.',
+    loi: 'Co lồi: tế bào đi qua co góc, co lõm rồi chất nguyên sinh co tròn, tách khỏi thành ở mọi phía. Nồng độ càng cao thì càng nhanh tới dạng này.'
   };
 
   // Sau biểu đồ: so với điều em đã đoán, hỏi vì sao, rồi câu trong ngân hàng.
   function afterChart(api) {
     api.wrapUp({
-      right: 'Co lại vì nước đi ra', truth: 'trong dung dịch ưu trương, tế bào co nguyên sinh; nồng độ càng cao co càng mạnh (góc → lõm → lồi).',
+      right: 'Co lại vì nước đi ra', truth: 'trong dung dịch ưu trương, tế bào co nguyên sinh; theo thời gian dạng co tiến dần góc → lõm → lồi, nồng độ càng cao thì càng nhanh tới dạng co mạnh.',
       sub: st.recovered === false ? 'Mẫu co lồi hầu như không phản co khi nhỏ nước cất: tế bào có thể đã tổn thương, tùy mức co và thời gian ngâm.' : 'Khi nhỏ nước cất vào, tế bào phản co trở lại như cũ.',
       quiz: QUIZ, bank: 3, result: result()
     });
@@ -362,7 +368,7 @@
         rows: st.runs.map((r, i) => [i + 1, r.C, r.sec, FORM_NAME[r.form], r.em, r.pct]).concat([['Nước cất', 0, '', st.recovered ? 'Phản co ✓' : st.recovered === false ? 'Hầu như không phản co (co lồi)' : '…', '', '']])
       },
       chart: { labels: rows.map(r => `${r.C}% · ${FORM_NAME[r.form].split(' (')[0]}`), yLabel: '% thể tích chất nguyên sinh co rút', max: 100, series: [{ name: 'Mức co rút', color: '#9B4FC4', values: rows.map(r => r.pct) }] },
-      conclusion: 'Trong dung dịch ưu trương nước đi ra khỏi tế bào nên tế bào co nguyên sinh; nồng độ càng cao co càng mạnh: co góc → co lõm → co lồi. Nhỏ nước cất (nhược trương) thì nước đi vào, tế bào phản co. Mẫu co lồi thường khó hoặc không phản co, tùy mức tổn thương và thời gian ngâm',
+      conclusion: 'Trong dung dịch ưu trương nước đi ra khỏi tế bào nên tế bào co nguyên sinh. Dạng co tiến triển theo thời gian (co góc → co lõm → co lồi); nồng độ càng cao thì càng nhanh và càng dễ tới dạng co mạnh. Nhỏ nước cất (nhược trương) thì nước đi vào, tế bào phản co. Mẫu co lồi thường khó hoặc không phản co, tùy mức tổn thương và thời gian ngâm',
       note: 'Chỉ tế bào sống mới co và phản co nguyên sinh được.'
     };
   }

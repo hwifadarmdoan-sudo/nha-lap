@@ -160,7 +160,7 @@
           tick += dt; if (tick > 0.12) { tick = 0; st.dishes.forEach(paint); table(api); }
           if (!darkTold && st.day > 7 && st.dishes.some(d => !d.light && canGrow(d))) {
             darkTold = true;
-            api.card({ kicker: '🔬 Giải thích khoa học', text: 'Trong tối, thân mầm mọc dài nhanh, lá nhỏ, ngọn cong móc câu. Không có ánh sáng nên không tổng hợp được diệp lục, thân vàng nhạt.', sub: 'Hiện tượng này gọi là cây mọc vống. Thân dài ra nhờ chất dự trữ trong hạt, không phải vì cây "muốn" tìm ánh sáng.' });
+            api.card({ kicker: '🔬 Giải thích khoa học', text: 'Trong tối, thân mầm mọc dài nhanh, lá nhỏ, ngọn cong móc câu. Không có ánh sáng nên không tổng hợp được diệp lục, thân vàng nhạt.', sub: 'Hiện tượng này gọi là cây mọc vống. Cơ chế: trong tối, sắc tố phytochrome ở dạng không hoạt động nên không kìm hãm sự kéo dài thân; hormone (gibberellin, auxin) thúc tế bào thân dài ra, dùng chất dự trữ trong hạt. Có ánh sáng, phytochrome chuyển dạng và hãm lại.' });
           }
           if (st.day >= DAYS) { st.dishes.forEach(paint); table(api); NL.audio.play('success'); api.done('Đếm mầm ➜'); return false; }
         });
@@ -196,7 +196,7 @@
       enter(api) { api.showChart(result()); api.done('Trả lời câu hỏi ➜'); },
       onNext(api) {
         api.wrapUp({
-          right: 'Nước, không khí, nhiệt độ thích hợp', truth: 'hạt cần đủ nước, đủ O₂ và nhiệt độ thích hợp. Ánh sáng không cần cho nảy mầm.',
+          right: 'Nước, không khí, nhiệt độ thích hợp', truth: 'hạt cần đủ nước, đủ O₂ và nhiệt độ thích hợp. Với hạt đậu, ánh sáng không cần cho nảy mầm (một số hạt như xà lách lại cần ánh sáng).',
           sub: 'Đĩa ngập nước thiếu O₂ nên hạt bị thối. Trong tối hạt vẫn nảy mầm nhưng thân vọt dài, vàng nhạt.',
           quiz: QUIZ, bank: 4, result: result()
         });
@@ -216,7 +216,7 @@
         type: 'line', xLabel: 'Thời gian (ngày)', yLabel: 'Chiều dài TB của mầm (mm)', xMax: DAYS,
         series: st.dishes.map((d, i) => ({ name: 'Đĩa ' + (i + 1), color: PAL[i], points: st.hist.map(h => [h[0], h[1][i]]) }))
       },
-      conclusion: 'Hạt nảy mầm khi có đủ nước, đủ không khí (O₂) và nhiệt độ thích hợp (khoảng 25–30°C), hạt phải khỏe. Ánh sáng không cần cho nảy mầm nhưng cần cho cây con xanh và cứng cáp',
+      conclusion: 'Hạt nảy mầm khi có đủ nước, đủ không khí (O₂) và nhiệt độ thích hợp (khoảng 25–30°C), hạt phải khỏe. Với hạt đậu, ánh sáng không cần cho nảy mầm nhưng cần cho cây con xanh và cứng cáp. Có loại hạt cần ánh sáng mới nảy mầm, ví dụ hạt xà lách, thuốc lá',
       note: 'Ngập nước làm thiếu O₂, hạt không hô hấp được nên bị thối.'
     };
   }

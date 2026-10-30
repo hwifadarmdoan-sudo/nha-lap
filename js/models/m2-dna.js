@@ -10,7 +10,7 @@
   const translate = mrna => { const out = []; let i = mrna.indexOf('AUG'); if (i < 0) return out; for (; i + 3 <= mrna.length; i += 3) { const a = AA[mrna.substr(i, 3)]; out.push(a); if (a === 'KT') break; } return out; };
 
   const INFO = {
-    P: { name: 'Nhóm phosphate', sci: 'Phosphate group (PO₄³⁻)', rows: [['Công thức', 'PO₄³⁻ (H₃PO₄ khi chưa phân li)'], ['Liên kết', 'Liên kết phosphodiester nối C3′ của đường này với C5′ của đường kế tiếp'], ['Năng lượng liên kết', '≈ 340 kJ/mol (liên kết cộng hóa trị P–O)'], ['Khoảng cách', 'P–O ≈ 0,16 nm; 2 nhóm phosphate kề nhau ≈ 0,7 nm']] },
+    P: { name: 'Nhóm phosphate', sci: 'Phosphate', rows: [['Điện tích', 'Trong mạch DNA, mỗi nhóm phosphate mang 1 điện tích âm, nên cả phân tử DNA tích điện âm'], ['Liên kết', 'Liên kết phosphodiester nối C3′ của đường này với C5′ của đường kế tiếp'], ['Năng lượng liên kết', '≈ 340 kJ/mol (liên kết cộng hóa trị P–O)'], ['Khoảng cách', 'P–O ≈ 0,16 nm; 2 nhóm phosphate kề nhau ≈ 0,7 nm']] },
     S: { name: 'Đường deoxyribose', sci: 'Deoxyribose (C₅H₁₀O₄)', rows: [['Công thức', 'C₅H₁₀O₄, vòng 5 cạnh (4C + 1O)'], ['Khác ribose', 'Thiếu 1 nguyên tử O ở C2′ (ribose của RNA là C₅H₁₀O₅)'], ['Liên kết', 'Liên kết glycosidic C1′–N với base; liên kết phosphodiester ở C3′ và C5′'], ['Khoảng cách', 'C1′–N ≈ 0,15 nm']] },
     R: { name: 'Đường ribose', sci: 'Ribose (C₅H₁₀O₅)', rows: [['Công thức', 'C₅H₁₀O₅, có nhóm –OH ở C2′'], ['Liên kết', 'Glycosidic với base, phosphodiester với phosphate']] },
     base: b => ({ name: 'Base ' + NAME[b] + ' (' + b + ')', sci: NAME[b], rows: [['Loại', 'AG'.includes(b) ? 'Purine (2 vòng)' : 'Pyrimidine (1 vòng)'], ['Công thức', { A: 'C₅H₅N₅', T: 'C₅H₆N₂O₂', G: 'C₅H₅N₅O', C: 'C₄H₅N₃O', U: 'C₄H₄N₂O₂' }[b]], ['Bắt cặp', b === 'U' ? 'U – A bằng 2 liên kết hydrogen (trong RNA)' : `${b} – ${PAIR[b]} bằng ${'AT'.includes(b) ? 2 : 3} liên kết hydrogen`], ['Liên kết với đường', 'Liên kết glycosidic (N–C1′)']] }),
@@ -25,7 +25,7 @@
     small: { name: 'Tiểu đơn vị bé', sci: 'Small subunit (40S)', rows: [['Thành phần', 'rRNA 18S + khoảng 33 protein'], ['Chức năng', 'Gắn và trượt trên mRNA, kiểm soát khớp codon – anticodon']] },
     large: { name: 'Tiểu đơn vị lớn', sci: 'Large subunit (60S)', rows: [['Thành phần', 'rRNA 28S, 5,8S, 5S + khoảng 47 protein'], ['Chức năng', 'Chứa vị trí A, P, E; xúc tác liên kết peptide']] },
     helicase: { name: 'Enzyme Helicase', sci: 'Helicase', rows: [['Chức năng', 'Cắt đứt liên kết hydrogen, tháo xoắn, tách 2 mạch tạo chạc tái bản chữ Y'], ['Nguồn năng lượng', 'ATP']] },
-    pol: { name: 'DNA Polymerase', sci: 'DNA polymerase', rows: [['Chức năng', 'Lắp nucleotide tự do theo nguyên tắc bổ sung, kéo dài mạch mới chiều 5′ → 3′'], ['Mạch liên tục', 'Tổng hợp liên tục cùng chiều tháo xoắn'], ['Mạch gián đoạn', 'Tổng hợp thành các đoạn Okazaki ngược chiều tháo xoắn']] },
+    pol: { name: 'DNA Polymerase', sci: 'DNA polymerase', rows: [['Chức năng', 'Lắp nucleotide tự do theo nguyên tắc bổ sung, kéo dài mạch mới chiều 5′ → 3′'], ['Mạch liên tục', 'Tổng hợp liên tục cùng chiều tháo xoắn'], ['Mạch gián đoạn', 'Tổng hợp thành các đoạn Okazaki ngược chiều tháo xoắn'], ['Cần mồi', 'Không tự bắt đầu được: enzyme primase phải đặt trước một đoạn mồi RNA ngắn, polymerase mới nối tiếp vào đầu 3′ của mồi']] },
     ligase: { name: 'DNA Ligase', sci: 'DNA ligase', rows: [['Chức năng', 'Nối các đoạn Okazaki bằng liên kết phosphodiester']] },
     rnapol: { name: 'RNA Polymerase', sci: 'RNA polymerase', rows: [['Chức năng', 'Bám vùng khởi động (promoter), tháo xoắn, trượt trên mạch gốc chiều 3′ → 5′, tổng hợp mRNA chiều 5′ → 3′'], ['Nguyên tắc', 'A – U, T – A, G – C, C – G']] }
   };
@@ -248,7 +248,7 @@
         pol1.position.set(fx - 0.9, 0.55, 0.3); pol2.position.set(x0 + Math.max(0, okStart - 4) * rise, -0.55, 0.3);
         // ligase nối khe giữa các đoạn
         const gapX = x0 + (okStart - 1) * rise; lig.position.set(gapX - 7 * rise * ((performance.now() / 1500) % 1 < 0.5 ? 1 : 1), -1.25, 0.3);
-        info.set(`Chạc tái bản ở cặp thứ <b>${Math.min(N, iF)}</b>/${N}. Helicase cắt liên kết hydrogen; polymerase lắp nucleotide chiều 5′→3′; ligase nối các đoạn Okazaki.`);
+        info.set(`Chạc tái bản ở cặp thứ <b>${Math.min(N, iF)}</b>/${N}. Helicase cắt liên kết hydrogen; primase đặt đoạn mồi RNA; polymerase lắp nucleotide chiều 5′→3′ tiếp sau mồi; mồi được thay bằng DNA rồi ligase nối các đoạn Okazaki.`);
       });
       api.view({ pos: [0, 0.5, 15], target: [0, 0, 0], min: 4, max: 30 });
     } else if (proc === 'tx') {
