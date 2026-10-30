@@ -25,6 +25,9 @@
         "lastMove": { ".validate": "newData.isNumber()" },
         "teacher": { ".validate": "newData.isBoolean()" },
         "hidden": { ".validate": "newData.isBoolean()" },
+        "res": {
+          "$lab": { ".validate": "$lab.length <= 4 && newData.isString() && newData.val().length <= 300" }
+        },
         "look": {
           "hair": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 9" },
           "hairColor": { ".validate": "newData.isString() && newData.val().length <= 9" },

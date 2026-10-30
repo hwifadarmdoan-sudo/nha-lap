@@ -10,16 +10,16 @@ window.NL = window.NL || {};
   };
   // Tầng 4 Sinh: 10 phòng theo thứ tự trong bản đặc tả "Môn Sinh" (29/10). Mã phòng 2A, 2B giữ như cũ để không mất kết quả đã lưu.
   NL.EXPERIMENTS = [
-    { id: '2A', floor: 4, no: 1, short: 'Quang hợp', name: 'Đếm bọt khí rong', icon: '🌿', ready: true },
-    { id: '2C', floor: 4, no: 2, short: 'Enzyme', name: 'Nhiệt độ và enzyme amylase', icon: '🧪', ready: true },
-    { id: '2B', floor: 4, no: 3, short: 'Co nguyên sinh', name: 'Co và phản co nguyên sinh', icon: '🔬', ready: true },
-    { id: '2D', floor: 4, no: 4, short: 'Mendel', name: 'Di truyền Mendel ở đậu Hà Lan', icon: '🫛', ready: true },
-    { id: '2E', floor: 4, no: 5, short: 'Điện di DNA', name: 'Điện di DNA', icon: '🧬', ready: true },
-    { id: '2F', floor: 4, no: 6, short: 'Hô hấp hạt', name: 'Hô hấp tế bào ở hạt nảy mầm', icon: '🌰', ready: true },
-    { id: '2G', floor: 4, no: 7, short: 'Nhịp tim', name: 'Huyết áp và nhịp tim', icon: '❤️', ready: true },
-    { id: '2H', floor: 4, no: 8, short: 'Nảy mầm', name: 'Điều kiện nảy mầm của hạt', icon: '🌱', ready: true },
-    { id: '2I', floor: 4, no: 9, short: 'Nguyên phân', name: 'Quan sát nguyên phân', icon: '🔍', ready: true },
-    { id: '2J', floor: 4, no: 10, short: 'Quần thể', name: 'Tần số allele qua các thế hệ', icon: '🦋', ready: true },
+    { id: '2A', floor: 4, grade: 'Sinh 11 · Quang hợp ở thực vật', no: 1, short: 'Quang hợp', name: 'Đếm bọt khí rong', icon: '🌿', ready: true },
+    { id: '2C', floor: 4, grade: 'Sinh 10 · Enzyme, chuyển hoá ở tế bào', no: 2, short: 'Enzyme', name: 'Nhiệt độ và enzyme amylase', icon: '🧪', ready: true },
+    { id: '2B', floor: 4, grade: 'Sinh 10 · Trao đổi chất qua màng', no: 3, short: 'Co nguyên sinh', name: 'Co và phản co nguyên sinh', icon: '🔬', ready: true },
+    { id: '2D', floor: 4, grade: 'Sinh 12 · Di truyền Mendel', no: 4, short: 'Mendel', name: 'Di truyền Mendel ở đậu Hà Lan', icon: '🫛', ready: true },
+    { id: '2E', floor: 4, grade: 'Sinh 12 · Công nghệ gene (mở rộng)', no: 5, short: 'Điện di DNA', name: 'Điện di DNA', icon: '🧬', ready: true },
+    { id: '2F', floor: 4, grade: 'Sinh 11 · Hô hấp ở thực vật', no: 6, short: 'Hô hấp hạt', name: 'Hô hấp tế bào ở hạt nảy mầm', icon: '🌰', ready: true },
+    { id: '2G', floor: 4, grade: 'Sinh 11 · Tuần hoàn ở động vật', no: 7, short: 'Nhịp tim', name: 'Huyết áp và nhịp tim', icon: '❤️', ready: true },
+    { id: '2H', floor: 4, grade: 'Sinh 11 · Sinh trưởng ở thực vật', no: 8, short: 'Nảy mầm', name: 'Điều kiện nảy mầm của hạt', icon: '🌱', ready: true },
+    { id: '2I', floor: 4, grade: 'Sinh 10 · Chu kỳ tế bào, nguyên phân', no: 9, short: 'Nguyên phân', name: 'Quan sát nguyên phân', icon: '🔍', ready: true },
+    { id: '2J', floor: 4, grade: 'Sinh 12 · Di truyền quần thể', no: 10, short: 'Quần thể', name: 'Tần số allele qua các thế hệ', icon: '🦋', ready: true },
     { id: '3A', floor: 3, name: 'Chuẩn độ axit–bazơ', ready: false },
     { id: '3B', floor: 3, name: 'Thử màu ngọn lửa', ready: false },
     { id: '4A', floor: 2, name: 'Con lắc đơn', ready: false },
@@ -373,7 +373,7 @@ window.NL = window.NL || {};
       floorColor(x, y) { return (x + y) % 2 ? '#F2F6F9' : '#E6EDF2'; },
       deco: [
         { kind: 'window', side: 'N', a: 1, b: 3.4 },
-        { kind: 'board', side: 'N', a: 4, b: 6.4, lines: ['Phòng ' + ab, e.short], head: sub.color },
+        { kind: 'board', side: 'N', a: 4, b: 6.4, lines: ['Phòng ' + ab, e.short, e.grade], head: sub.color },
         { kind: 'window', side: 'N', a: 7, b: 9.4 },
         { kind: 'board', side: 'W', a: 4.2, b: 6.8, lines: ['🥽 An toàn', 'Đeo kính bảo hộ', 'Làm theo từng bước'], head: '#E5534B' }
       ],

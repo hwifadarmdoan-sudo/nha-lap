@@ -95,7 +95,7 @@
       st.t += sdt; st.held += sdt; logT += sdt;
       if (logT >= 5) { logT = 0; st.log.push([+(st.t / 60).toFixed(2), Math.round(st.HR), Math.round(st.SBP), Math.round(st.DBP)]); }
       // người và máy chạy
-      const a = ACT[st.act]; legT += dt * a.f * Math.PI * 2;
+      const a = st.stopped ? ACT.rest : ACT[st.act]; legT += dt * a.f * Math.PI * 2;
       const sw = Math.sin(legT) * a.leg;
       st.legF._extra = ` rotate(${sw})`; st.legB._extra = ` rotate(${-sw})`; st.armF._extra = ` rotate(${-sw * 0.8})`; st.armB._extra = ` rotate(${sw * 0.8})`;
       [st.legF, st.legB, st.armF, st.armB].forEach(e => api.place(e));
@@ -167,7 +167,7 @@
       onNext(api) { st.onTick = null; api.goto(2); }
     },
     {
-      label: () => `Lần đo ${st.meas.length + 1}/3 · Huyết áp`, text: 'Bấm Đo trên máy đo huyết áp', hint: 'Băng quấn tự bơm căng rồi xả dần. Máy ghi tâm thu (số trên) và tâm trương (số dưới)',
+      label: () => `Lần đo ${st.meas.length + 1}/3 · Huyết áp`, get text() { return st.act === 'rest' ? 'Bấm Đo trên máy đo huyết áp' : 'Bấm Đo: máy chạy dừng lại và đo ngay sau vận động'; }, hint: 'Băng quấn tự bơm căng rồi xả dần. Máy ghi tâm thu (số trên) và tâm trương (số dưới)',
       enter(api) { measure(api); }
     },
     {
@@ -222,6 +222,7 @@
     $c('#htGo').onclick = () => {
       if (phase !== 'idle') return;
       phase = 'pump'; $c('#htGo').classList.add('hidden'); st.bpTxt.textContent = '--- / ---';
+      if (st.act !== 'rest') { st.stopped = true; NL.game.toast('Dừng máy chạy và đo ngay: đang chạy thì tay rung, máy đo không chính xác'); }
       $c('#htS').textContent = 'Đang bơm căng băng quấn…'; NL.audio.play('click');
       const lp = api.loop(dt => {
         if (phase === 'pump') { P = Math.min(180, P + dt * 70); if (P >= 180) { phase = 'release'; $c('#htS').textContent = 'Đang xả khí, máy nghe mạch đập…'; } }
@@ -234,7 +235,7 @@
       });
     };
     const finish = () => {
-      phase = 'done'; st.measuring = false; P = 0; show(); card.remove();
+      phase = 'done'; st.measuring = false; st.stopped = false; P = 0; show(); card.remove();
       st.bpTxt.textContent = `${tSBP} / ${tDBP}`; st.pTxt.textContent = `Mạch ${hr} lần/phút`;
       st.meas.push({ act: st.act, prof: st.prof, hr, sbp: tSBP, dbp: tDBP, min: +(st.held / 60).toFixed(1) });
       const r = st.meas[0], d = (a, b) => (a - b >= 0 ? '+' : '') + (a - b);

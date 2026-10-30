@@ -60,6 +60,7 @@
     <button class="btn small pop elev-btn hidden" id="btnLab">🔬 Làm thí nghiệm</button>
   </div>
   <div class="hud-tr">
+    <button class="icon-btn pop" id="btnJump" title="Đi nhanh tới phòng">🧭</button>
     <button class="icon-btn pop" id="btnSound" title="Âm thanh">🔊</button>
     <button class="icon-btn pop" id="btnReport" title="Báo cáo">📋</button>
   </div>
@@ -84,6 +85,15 @@
   <div class="tut-row"><span>🚪</span><div>Đi tới cửa, thang máy hay bàn thí nghiệm là vào. Chạm vào chúng cũng được</div></div>
   <div class="tut-row"><span>🎯</span><div>Làm thí nghiệm ở tầng 4. Mũi tên vàng chỉ đường cho em</div></div>
   <button class="btn big pop" id="tutOk">Đi thôi!</button>
+</div></div>
+
+<!-- Đi nhanh tới phòng -->
+<div id="jump" class="modal hidden"><div class="big-box jump-box">
+  <div class="jump-head">🧭 Đi nhanh tới bàn thí nghiệm</div>
+  <div class="jump-grid" id="jumpGrid"></div>
+  <form class="jump-code" id="jumpForm"><input id="jumpIn" placeholder="Mã phòng thầy cô gửi, ví dụ 3 hoặc 2B" autocomplete="off"><button class="btn small pop">Vào</button></form>
+  <div class="jump-note" id="jumpNote"></div>
+  <button class="btn ghost pop" id="jumpClose">Đóng</button>
 </div></div>
 
 <!-- Thang máy -->
@@ -130,6 +140,15 @@
 </form></div>
 
 <!-- Màn điều hành -->
+<!-- Kết quả cả lớp (giáo viên) -->
+<div id="tRes" class="modal hidden"><div class="big-box tres-box">
+  <div class="jump-head">📊 Kết quả cả lớp</div>
+  <div class="jump-note">Gom từ các em đang và đã vào trong buổi này (lưu trên máy cô).</div>
+  <div class="tres-scroll" id="tResTable"></div>
+  <div class="tres-miss" id="tResMiss"></div>
+  <div class="l3-btns"><button class="btn small pop" id="tResCsv">⬇ Tải bảng điểm (CSV)</button><button class="btn small ghost pop" id="tResClear">Xóa dữ liệu</button><button class="btn small ghost pop" id="tResClose">Đóng</button></div>
+</div></div>
+
 <div id="teacher" class="hidden">
   <div class="t-panel">
     <div class="t-head">Điều hành <span id="tCount"></span></div>
@@ -140,6 +159,7 @@
       <button class="btn small pop" id="tRecall">📣 Gọi về</button>
       <button class="btn small ghost pop" id="tBots">🤖 Học sinh ảo: bật</button>
       <button class="btn small ghost pop" id="tFilm">🎬 Quay phim</button>
+      <button class="btn small ghost pop" id="tResBtn">📊 Kết quả lớp</button>
     </div>
   </div>
   <button class="icon-btn pop t-toggle" id="tToggle">☰</button>
@@ -147,7 +167,7 @@
 <div id="tAlert" class="t-alert hidden"></div>
 
 <!-- Xoay ngang -->
-<div id="rotate" class="rotate"><div class="phone">📱</div><p>Xoay ngang điện thoại nhé</p></div>
+<div id="rotate" class="rotate"><div class="phone">📱</div><p>Xoay ngang điện thoại nhé</p><div class="rot-help">Màn hình không xoay? Tắt khóa xoay:<br>iPhone: vuốt từ góc phải trên xuống, chạm biểu tượng 🔒 khóa xoay<br>Android: vuốt từ trên xuống, bật <b>Tự động xoay</b></div></div>
 
 <script src="js/vendor/firebase-app-compat.js"></script>
 <script src="js/vendor/firebase-auth-compat.js"></script>

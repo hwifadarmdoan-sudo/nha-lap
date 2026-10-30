@@ -318,6 +318,16 @@
     // chạm vào cửa thang máy
     const et = elevTrig(s);
     if (et && w.y < 1.1 && w.x > et.x1 - 0.3 && w.x < et.x2 + 0.3) { walkToElevator(); return; }
+    // chạm vào một cánh cửa: đi thẳng vào đúng cửa đó, không lạc vào cửa khác dọc đường
+    const door = s.triggers.find(t => (t.type === 'goto' || t.type === 'locked') && w.x > t.x1 - 0.3 && w.x < t.x2 + 0.3 && w.y > t.y1 - 0.3 && w.y < t.y2 + 0.4);
+    if (door && !g.teacher) {
+      let cx = (door.x1 + door.x2) / 2, cy = (door.y1 + door.y2) / 2;
+      if (door.y1 === 0) cy = Math.min(cy, 0.5); if (door.x1 === 0) cx = Math.min(cx, 0.5);
+      g.pendingBench = null; g.pendingElev = false; g.pendingModel = null; g.followId = null;
+      g.path = NL.findPath(s, g.x, g.y, cx, cy); g.pathDoor = door;
+      if (g.path) clickMark = { x: cx, y: cy, t: 0 };
+      return;
+    }
     // chạm vào nhân vật khác
     const hit = USE3D && NL.w3.ready ? NL.w3.hitChar(e.clientX, e.clientY, visibleOthers()) : visibleOthers().find(o => {
       const p = NL.iso(o.rx, o.ry); const sx = p.x * zoom + cam.x, sy = p.y * zoom + cam.y;
@@ -375,6 +385,33 @@
     if (!NL.audio.muted) { NL.audio.init(); NL.audio.music('calm'); }
   });
   $('btnReport').addEventListener('click', () => { NL.audio.play('click'); NL.report.open(); });
+  // Đi nhanh: chọn phòng hoặc nhập mã phòng thầy cô gửi (số phòng 1–10 hoặc 2A…), vào thẳng bàn thí nghiệm
+  function findRoom(q) {
+    q = String(q || '').trim().toLowerCase().replace(/^phòng\s*/, '');
+    return NL.EXPERIMENTS.find(x => x.ready && x.floor === 4 && (x.id.toLowerCase() === q || String(x.no) === q));
+  }
+  function jumpTo(e) {
+    $('jump').classList.add('hidden'); NL.audio.play('pop');
+    g.tut.elevator = 1; goScene('lab-' + e.id, 'default');
+    if (!g.teacher) $('btnLab').click();
+  }
+  $('btnJump').addEventListener('click', () => {
+    if (NL.lab.isOpen || g.inElev) return;
+    NL.audio.play('click');
+    const grid = $('jumpGrid'); grid.innerHTML = '';
+    NL.EXPERIMENTS.filter(e => e.floor === 4 && e.ready).forEach(e => {
+      const b = document.createElement('button'); b.className = 'jump-room pop' + (g.results[e.id] ? ' done' : '');
+      b.innerHTML = `<b>${e.icon} ${e.no} · ${e.short}${g.results[e.id] ? ' ✓' : ''}</b><span>${e.grade || ''}</span>`;
+      b.onclick = () => jumpTo(e); grid.appendChild(b);
+    });
+    $('jumpNote').textContent = 'Thầy cô gửi link vào thẳng phòng: ' + location.origin + location.pathname + '?tn=<số phòng>';
+    $('jumpIn').value = ''; $('jump').classList.remove('hidden');
+  });
+  $('jumpForm').addEventListener('submit', ev => {
+    ev.preventDefault(); const e = findRoom($('jumpIn').value);
+    if (e) jumpTo(e); else $('jumpNote').textContent = 'Không có phòng này. Nhập số từ 1 đến 10 nhé';
+  });
+  $('jumpClose').addEventListener('click', () => { NL.audio.play('click'); $('jump').classList.add('hidden'); });
 
   // ---------- thang máy ----------
   // Bước vào cửa thang (nhìn từ trên), nhân vật biến vào trong, rồi chuyển sang góc nhìn POV trong cabin.
@@ -480,8 +517,21 @@
       toast(ev.type === 'five' ? `${ev.name} đập tay với em ✋` : `${ev.name} chọc em 👉`);
     }
   });
+  // Tóm tắt kết quả gửi cho giáo viên: { '2A': 'đúng/tổng|câu sai~câu sai' }, câu sai ghi số thứ tự trong ngân hàng câu hỏi
+  let resCache = null, resKey = '';
+  function resSummary() {
+    const k = Object.keys(g.results).join();
+    if (k === resKey) return resCache;
+    const out = {};
+    Object.keys(g.results).forEach(id => {
+      const q = g.results[id].quiz || [], bank = (NL.QUIZ && NL.QUIZ[id]) || [];
+      const wrong = q.filter(x => !x.ok).map(x => { const i = bank.findIndex(b => b.q === x.q); return i >= 0 ? String(i) : String(x.q).replace(/[|~]/g, ' ').slice(0, 40); });
+      out[id] = `${q.length - wrong.length}/${q.length}|${wrong.join('~')}`.slice(0, 300);
+    });
+    resKey = k; resCache = Object.keys(out).length ? out : undefined; return resCache;
+  }
   function myState() {
-    return { name: g.name, look: g.look, scene: g.scene, x: +g.x.toFixed(2), y: +g.y.toFixed(2), facing: g.facing, anim: g.anim, emote: g.emote, emoteT: g.emoteT, help: g.help, status: g.status, lastMove: g.lastMove, teacher: g.teacher, hidden: (g.teacher && NL.teacher.filming) || !!g.inElev };
+    return { name: g.name, look: g.look, scene: g.scene, x: +g.x.toFixed(2), y: +g.y.toFixed(2), facing: g.facing, anim: g.anim, emote: g.emote, emoteT: g.emoteT, help: g.help, status: g.status, lastMove: g.lastMove, teacher: g.teacher, hidden: (g.teacher && NL.teacher.filming) || !!g.inElev, res: NL.net.noRes || g.teacher ? undefined : resSummary() };
   }
   function visibleOthers() {
     const out = [];
@@ -510,7 +560,7 @@
 
   function update(dt) {
     const s = NL.scenes[g.scene];
-    const frozen = NL.lab.isOpen || NL.m3d.isOpen || NL.elevator.isOpen() || g.inElev || !$('tutorial').classList.contains('hidden') || !$('bigmsg').classList.contains('hidden') || (g.teacher && NL.teacher.filming);
+    const frozen = NL.lab.isOpen || NL.m3d.isOpen || NL.elevator.isOpen() || g.inElev || !$('tutorial').classList.contains('hidden') || !$('bigmsg').classList.contains('hidden') || !$('jump').classList.contains('hidden') || (g.teacher && NL.teacher.filming);
     // hướng đi từ bàn phím / cần điều khiển
     let mx = 0, my = 0;
     if (!frozen) {
@@ -542,7 +592,10 @@
     if (clickMark) { clickMark.t += dt; if (clickMark.t > 0.6) clickMark = null; }
 
     // chạm vùng kích hoạt
+    if (!g.path) g.pathDoor = null;
     if (!frozen) s.triggers.forEach(tr => {
+      // đang đi theo đường đã chọn: chỉ vào cửa đích, bỏ qua các cửa đi ngang
+      if (g.path && (tr.type === 'goto' || tr.type === 'locked') && tr !== g.pathDoor) return;
       const inside = inRect(tr, g.x, g.y), was = insideTrig.has(tr);
       if (inside && !was) { insideTrig.add(tr); onTrigger(tr); }
       if (!inside && was) { insideTrig.delete(tr); if (tr.type === 'bench' || tr.type === 'model') { benchPrompt(false); setGuide(null); } if (tr.type === 'npc' && $('npcTalk')) $('npcTalk').classList.add('hidden'); }

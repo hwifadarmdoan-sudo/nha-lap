@@ -49,9 +49,12 @@
     for (let k = 0; k < LANES; k++) {
       const x = 70 + (k % 3) * 50, y = k < 3 ? 434 : 524;
       const t = A.tube(api, L, x, y, { h: 70, w: 24, k: 0.5, color: 'rgba(90,120,230,.55)' });
-      api.text(t, 0, -78, k ? 'Mẫu ' + k : 'Thang', 12, '#1F4E79', 800);
+      api.el('circle', { cx: 0, cy: -30, r: 10, fill: '#fff', opacity: .9 }, t);
+      api.text(t, 0, -25, k ? String(k) : 'L', 13, '#1F4E79', 800);
       st.tubes.push(t);
     }
+    api.text(L, 120, 350, 'Ống mẫu (L = thang)', 13, '#1F4E79', 800);
+    st.stain = A.bottle(api, L, 110, 320, 'Nhuộm DNA', 'rgba(255,140,200,.6)', { w: 64, h: 70, font: 11 }); st.stain.style.display = 'none';
     st.pip = A.pipette(api, L, 690, 445, { bulb: '#9B6BD6', len: 130 });
     // công tắc UV
     st.uvBtn = api.g(L, 200, 160);
@@ -107,6 +110,17 @@
     };
   }
 
+  function uvOn(api) {
+    api.setOn(st.uvBtn, true);
+    api.tapable(st.uvBtn, () => {
+      st.uv = true; NL.audio.play('unlock');
+      st.gel.setAttribute('fill', '#1C1440'); st.dye.style.opacity = 0;
+      drawBands(); st.bands.style.opacity = 1;
+      api.say(st.prog > 1 ? 'Các đoạn nhỏ đã chạy ra khỏi gel nên mất băng. Lần sau tắt nguồn sớm hơn nhé' : 'Các băng DNA phát sáng! Đoạn nhỏ ở gần cực +');
+      api.done();
+    });
+  }
+
   const steps = [
     loadStep(0, 'Hút thang chuẩn (Thang) và bơm vào giếng L'),
     loadStep(1, 'Hút mẫu 1, bơm vào giếng 1'),
@@ -150,16 +164,16 @@
       onNext(api) { st.loop.stop(); api.goto(5); }
     },
     {
-      label: 'Soi UV', text: 'Bật đèn soi UV để thấy các băng DNA', hint: 'Chạm nút UV tím bên trái buồng điện di',
+      label: 'Nhuộm và soi UV', text: 'DNA không tự phát sáng. Nhuộm gel trước, rồi mới soi UV', hint: 'Chạm lọ thuốc nhuộm DNA, sau đó chạm nút UV tím',
       enter(api) {
         NL.audio.play('click');
-        api.setOn(st.uvBtn, true);
-        api.tapable(st.uvBtn, () => {
-          st.uv = true; NL.audio.play('unlock');
-          st.gel.setAttribute('fill', '#1C1440'); st.dye.style.opacity = 0;
-          drawBands(); st.bands.style.opacity = 1;
-          api.say(st.prog > 1 ? 'Các đoạn nhỏ đã chạy ra khỏi gel nên mất băng. Lần sau tắt nguồn sớm hơn nhé' : 'Các băng DNA phát sáng! Đoạn nhỏ ở gần cực +');
-          api.done();
+        st.stain.style.display = ''; api.setOn(st.stain, true);
+        api.tapable(st.stain, () => {
+          api.setOn(st.stain, false); NL.audio.play('bubble');
+          st.gel.setAttribute('fill', 'rgba(255,215,240,.9)');
+          api.card({ kicker: '🧪 Nhuộm gel', text: 'Ngâm gel trong thuốc nhuộm DNA (ví dụ SafeStain, hoặc EtBr ở phòng thí nghiệm chuyên dụng) khoảng 20 phút. Thuốc nhuộm gắn vào DNA và phát sáng dưới tia UV.', sub: 'Đeo găng tay: thuốc nhuộm DNA có thể gây hại.', btn: 'Tiếp ➜' }, () => {
+            api.card({ kicker: '⚠️ An toàn tia UV', text: 'Đóng nắp chắn UV và đeo kính bảo hộ trước khi bật đèn. Tia UV làm hại mắt và da.', btn: 'Đã đeo, bật UV ➜' }, () => uvOn(api));
+          });
         });
       }
     },

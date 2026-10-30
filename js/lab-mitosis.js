@@ -239,7 +239,7 @@
           .concat(PH.map((t, k) => ['Vi trường', '', '', t, c.cnt[k] + ' tế bào', Math.round(c.cnt[k] / c.total * 100) + '%']))
       },
       chart: { labels: PH.map(t => t.replace('Kỳ ', '')), yLabel: '% tế bào trong vi trường', series: [{ name: 'Tỉ lệ', color: '#9B6BD6', values: c.cnt.map(n => Math.round(n / c.total * 100)) }] },
-      conclusion: 'Nguyên phân gồm kỳ trung gian và 4 kỳ phân chia: đầu, giữa, sau, cuối. Kỳ trung gian chiếm nhiều thời gian nhất nên số tế bào ở kỳ này nhiều nhất',
+      conclusion: 'Chu kỳ tế bào gồm kỳ trung gian và quá trình nguyên phân. Nguyên phân có 4 kỳ: đầu, giữa, sau, cuối. Kỳ trung gian chiếm nhiều thời gian nhất của chu kỳ tế bào nên số tế bào ở kỳ này nhiều nhất',
       note: 'Đỉnh rễ hành có mô phân sinh, tế bào phân chia liên tục nên dễ quan sát nguyên phân.'
     };
   }

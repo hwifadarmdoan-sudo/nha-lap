@@ -38,7 +38,7 @@ NL.learn = (function () {
     },
     dangtruong: {
       words: ['đẳng trương'], name: 'Dung dịch đẳng trương',
-      text: 'Dung dịch có nồng độ chất tan bằng dịch tế bào. Nước ra vào cân bằng, tế bào giữ nguyên.',
+      text: 'Dung dịch có nồng độ chất tan bằng dịch tế bào. Nước ra vào cân bằng, tế bào giữ nguyên. Đẳng trương hay không tùy loại tế bào: NaCl 0,9% đẳng trương với tế bào người, chưa chắc với tế bào thực vật.',
       pic: P('<rect x="35" y="15" width="50" height="50" rx="8" fill="#F3E3F9" stroke="#9B4FC4" stroke-width="3"/><ellipse cx="60" cy="40" rx="20" ry="20" fill="#9B4FC4"/><text x="92" y="46" font-size="18" fill="#5BB4EA">⇄</text>')
     },
     conguyensinh: {

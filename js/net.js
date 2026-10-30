@@ -78,7 +78,13 @@ NL.net = (function () {
       // chỉ gửi khi có gì đổi, tối đa 5 lần/giây, để gói miễn phí của Firebase đủ dùng cho cả lớp
       const key = JSON.stringify(Object.assign({}, state, { emoteT: 0 })), now = Date.now();
       if (key === lastSent || now - lastSentAt < 200) return;
-      lastSent = key; lastSentAt = now; fb.meRef.set(state).catch(e => console.warn('Không gửi được trạng thái', e.code || e)); return;
+      lastSent = key; lastSentAt = now;
+      fb.meRef.set(JSON.parse(JSON.stringify(state))).catch(e => {
+        // luật Database cũ chưa có ô res: bỏ phần kết quả rồi gửi lại
+        if (state.res && /PERMISSION/i.test(e.code || e.message || '')) { api.noRes = true; lastSent = ''; return; }
+        console.warn('Không gửi được trạng thái', e.code || e);
+      });
+      return;
     }
     if (ch && selfId) ch.postMessage({ kind: 'state', from: selfId, state });
   }
@@ -92,9 +98,10 @@ NL.net = (function () {
   function prune() { if (fb) return; const now = Date.now(); peers.forEach((p, id) => { if (now - p.last > 6000) peers.delete(id); }); }
 
   window.addEventListener('pagehide', bye);
-  return {
-    init, teacherLogin, sendState, sendEvent, prune, peers, hasFirebase,
+  const api = {
+    noRes: false, init, teacherLogin, sendState, sendEvent, prune, peers, hasFirebase,
     get online() { return online; }, get mode() { return fb ? 'firebase' : 'local'; }, get id() { return selfId; },
     onState(cb) { stateCb = cb; }, onEvent(cb) { eventCb = cb; }
   };
+  return api;
 })();

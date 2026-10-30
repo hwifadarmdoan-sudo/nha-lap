@@ -48,8 +48,8 @@
   // vẽ lại một đĩa theo điều kiện và ngày hiện tại
   function paint(d) {
     const api = api0, dark = !d.light;
-    d.bg.setAttribute('fill', dark ? '#2A2350' : '#EAF3FA');
-    d.cotton.setAttribute('fill', d.water === 'dry' ? '#F4EEDF' : dark ? '#4A4180' : '#E8F4FF');
+    d.bg.setAttribute('fill', dark ? '#1C3326' : '#EAF3FA');
+    d.cotton.setAttribute('fill', d.water === 'dry' ? '#F4EEDF' : dark ? '#3A5A45' : '#E8F4FF');
     d.flood.setAttribute('opacity', d.water === 'flood' ? 1 : 0);
     d.jar.setAttribute('opacity', d.o2 ? 0 : 1); d.jarTxt.setAttribute('opacity', d.o2 ? 0 : 1);
     d.tag.textContent = `${WATER[d.water].split(' ')[0]} ${d.T}°C ${d.o2 ? '' : 'không O₂ '}${d.light ? '☀️' : '🌑'}${d.good ? '' : ' luộc'}`;
@@ -146,7 +146,7 @@
       }
     },
     {
-      label: 'Theo dõi', text: 'Tua nhanh 10 ngày và quan sát các đĩa', hint: 'Đĩa trong tối được soi bằng đèn buồng tối nên có màu tím',
+      label: 'Theo dõi', text: 'Tua nhanh 10 ngày và quan sát các đĩa', hint: 'Đĩa trong tối được soi bằng đèn xanh lục mờ, loại ánh sáng cây gần như không dùng',
       enter(api) {
         const card = api.panel(`<div>⏱ Thời gian</div><div class="big-num">Ngày <span id="spD">0</span></div><div class="rep-sub" id="spH"></div>`);
         api.choices({ label: 'Tốc độ', items: [{ t: '1 giờ/giây', v: 1 / 24 }, { t: '6 giờ/giây', v: 0.25 }, { t: '1 ngày/giây', v: 1 }], value: st.speed = 1, onPick(v) { st.speed = v; } });
@@ -160,7 +160,7 @@
           tick += dt; if (tick > 0.12) { tick = 0; st.dishes.forEach(paint); table(api); }
           if (!darkTold && st.day > 7 && st.dishes.some(d => !d.light && canGrow(d))) {
             darkTold = true;
-            api.card({ kicker: '🔬 Giải thích khoa học', text: 'Trong tối, cây mầm dồn năng lượng để kéo dài thân, vươn tìm ánh sáng. Không có ánh sáng nên không tạo được diệp lục, thân vàng nhạt.', sub: 'Hiện tượng này gọi là cây bị vống (vọt mầm).' });
+            api.card({ kicker: '🔬 Giải thích khoa học', text: 'Trong tối, thân mầm mọc dài nhanh, lá nhỏ, ngọn cong móc câu. Không có ánh sáng nên không tổng hợp được diệp lục, thân vàng nhạt.', sub: 'Hiện tượng này gọi là cây mọc vống. Thân dài ra nhờ chất dự trữ trong hạt, không phải vì cây "muốn" tìm ánh sáng.' });
           }
           if (st.day >= DAYS) { st.dishes.forEach(paint); table(api); NL.audio.play('success'); api.done('Đếm mầm ➜'); return false; }
         });

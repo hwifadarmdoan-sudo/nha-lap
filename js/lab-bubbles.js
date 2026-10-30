@@ -17,7 +17,7 @@
 
   function build(api) {
     const L = api.svg, el = api.el;
-    st = { d: 25, T: 25, C: 2, auto: false, rows: [], lampOn: false, bubbles: [], timer: null };
+    st = { d: 25, T: 25, C: 2, auto: true, rows: [], lampOn: false, bubbles: [], timer: null };
     // thước đo
     const ruler = api.g(L, 0, 0);
     el('rect', { x: 548, y: 470, width: 380, height: 26, rx: 6, fill: '#FFF3C9', stroke: '#E2C779', 'stroke-width': 2 }, ruler);
@@ -143,7 +143,7 @@
             }
           }),
           api.slider({ label: 'NaHCO₃ (nguồn CO₂)', min: 0, max: 5, step: 0.5, value: st.C, unit: '%', onInput(v) { st.C = v; updateLight(); st.ctls && check(); } }),
-          api.choices({ label: 'Cách đếm', items: [{ t: '👆 Tự đếm', v: false }, { t: '🤖 Máy đếm', v: true }], value: st.auto, onPick(v) { st.auto = v; } })
+          api.choices({ label: 'Cách đếm', items: [{ t: '🤖 Máy đếm', v: true }, { t: '👆 Tự đếm (thử thách)', v: false }], value: st.auto, onPick(v) { st.auto = v; } })
         ];
         check();
       },
@@ -151,7 +151,7 @@
     },
     {
       label: () => `Lần đo ${Math.min(3, st.rows.length + 1)}/3`,
-      text: 'Chạm vào từng bọt khí O₂ để đếm!', hint: 'Mỗi bọt khí nổi lên trong ống, chạm vào là được tính. Hết 15 giây thì dừng',
+      get text() { return st.auto ? 'Máy đang đếm bọt khí O₂ trong 15 giây' : 'Chạm vào từng bọt khí O₂ để đếm!'; }, get hint() { return st.auto ? 'Quan sát bọt khí nổi lên. Đèn càng gần, bọt càng nhiều?' : 'Mỗi bọt khí nổi lên trong ống, chạm vào là được tính. Hết 15 giây thì dừng'; },
       enter(api) { runCount(api); }
     },
     {
@@ -177,7 +177,7 @@
 
   function runCount(api) {
     const card = document.createElement('div'); card.className = 'slider-card';
-    card.innerHTML = `<div>⏱ còn <span id="tVal">${DUR}</span> giây</div><div class="big-num">Em đếm: <span id="cVal">0</span></div>`;
+    card.innerHTML = `<div>⏱ còn <span id="tVal">${DUR}</span> giây</div><div class="big-num">${st.auto ? 'Máy đếm' : 'Em đếm'}: <span id="cVal">0</span></div>`;
     api.side.prepend(card);
     const L = api.svg, per = rate(st.d) * (0.92 + Math.random() * 0.16);
     let t = 0, next = 0.6, em = 0, real = 0, last = performance.now(), gasH = 0;

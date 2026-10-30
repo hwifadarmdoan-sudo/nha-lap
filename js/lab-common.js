@@ -65,10 +65,12 @@ NL.lab = (function () {
       item.setPointerCapture(e.pointerId);
       const p = toSvg(e), off = { x: item._x - p.x, y: item._y - p.y };
       NL.audio.play('click');
-      const move = ev => { const q = toSvg(ev); place(item, q.x + off.x, q.y + off.y); moveHand(handR, q.x + 10, q.y + 46); if (opt.onMove) opt.onMove(item); };
+      let moved = 0;
+      const move = ev => { const q = toSvg(ev); moved = Math.max(moved, Math.hypot(q.x - p.x, q.y - p.y)); if (moved < 6) return; place(item, q.x + off.x, q.y + off.y); moveHand(handR, q.x + 10, q.y + 46); if (opt.onMove) opt.onMove(item); };
       const up = () => {
         item.removeEventListener('pointermove', move); item.removeEventListener('pointerup', up); item.removeEventListener('pointercancel', up);
         const tg = opt.target, hit = tg && Math.hypot(item._x - tg.x, item._y - tg.y) < (tg.r || 90);
+        if (moved < 6 && tg && !hit) { pick(item); restHands(); return; } // chạm rồi chạm: chọn đồ trước, chạm chỗ đặt sau
         if (hit) {
           if (opt.snap !== false) tween(item, tg.sx !== undefined ? tg.sx : tg.x, tg.sy !== undefined ? tg.sy : tg.y, 180);
           setOn(item, false); NL.audio.play('drop');
@@ -77,6 +79,26 @@ NL.lab = (function () {
         restHands();
       };
       item.addEventListener('pointermove', move); item.addEventListener('pointerup', up); item.addEventListener('pointercancel', up);
+    });
+  }
+  // chế độ chạm–chạm thay cho kéo–thả
+  let picked = null, ring = null;
+  function pick(item) {
+    unpick(); picked = item; item.classList.add('picked');
+    const tg = item._dragOpt.target;
+    ring = el('circle', { cx: tg.x, cy: tg.y, r: Math.min(tg.r || 90, 70), class: 'drop-ring' }, layer);
+    NL.game.toast('Chạm vào vòng tròn để đặt vào đó');
+  }
+  function unpick() { if (picked) picked.classList.remove('picked'); picked = null; if (ring) ring.remove(); ring = null; }
+  function tapPlace(e) {
+    if (!picked) return;
+    const item = picked, opt = item._dragOpt, tg = opt.target, q = toSvg(e);
+    unpick();
+    if (!item._on || Math.hypot(q.x - tg.x, q.y - tg.y) > (tg.r || 90) * 1.3) return;
+    layer.appendChild(item);
+    tween(item, tg.sx !== undefined ? tg.sx : tg.x, tg.sy !== undefined ? tg.sy : tg.y, 260, () => {
+      if (opt.onMove) opt.onMove(item);
+      setOn(item, false); NL.audio.play('drop'); opt.onDrop && opt.onDrop(item);
     });
   }
   function setOn(item, on) {
@@ -104,7 +126,7 @@ NL.lab = (function () {
   // ---------- điều khiển bước ----------
   function setStep() {
     const st = cur.steps[stepIdx];
-    active.forEach(a => setOn(a, false)); active = [];
+    unpick(); active.forEach(a => setOn(a, false)); active = [];
     if (cur.mod.clearSide) $('labSide').innerHTML = '';
     $('stepNo').textContent = st.label ? (typeof st.label === 'function' ? st.label() : st.label) : `Bước ${stepIdx + 1}/${cur.steps.length}`;
     say(st.text);
@@ -235,6 +257,7 @@ NL.lab = (function () {
     $('lab').classList.remove('hidden');
     const stage = $('labStage'); stage.innerHTML = ''; $('labSide').innerHTML = '';
     svg = el('svg', { viewBox: '0 0 1000 560', preserveAspectRatio: 'xMidYMid meet' }, stage);
+    svg.addEventListener('pointerdown', tapPlace); unpick();
     // mặt bàn
     el('rect', { x: -400, y: 330, width: 1800, height: 400, fill: '#E9DCC0' }, svg);
     el('rect', { x: -400, y: 322, width: 1800, height: 14, fill: '#F7EEDB' }, svg);
@@ -244,7 +267,7 @@ NL.lab = (function () {
     buildHands(NL.game.look.coat === '#FFFFFF' ? '#F4F8FB' : NL.game.look.coat);
     cancelAnimationFrame(rafId); animHands();
     stepIdx = 0; setStep();
-    if (mod.goal) NL.learn.card({ kicker: '🔎 Mình đang tìm hiểu', text: mod.goal, btn: 'Bắt đầu ➜' });
+    if (mod.goal) { const ex = NL.EXPERIMENTS.find(x => x.id === id); NL.learn.card({ kicker: '🔎 Mình đang tìm hiểu', text: mod.goal, sub: ex && ex.grade ? '📘 ' + ex.grade : '', btn: 'Bắt đầu ➜' }); }
     return true;
   }
   function close() {

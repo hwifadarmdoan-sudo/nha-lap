@@ -192,7 +192,7 @@
     },
     {
       label: () => `Lần thử ${st.runs.length + 1}/3 · Nồng độ`,
-      text: 'Chọn nồng độ dung dịch NaCl để nhỏ vào mép lamen', hint: 'Kéo thanh nồng độ. Thử cả nồng độ thấp và cao, ví dụ 0.9%, 5%, 20%',
+      text: 'Chọn nồng độ dung dịch NaCl để nhỏ vào mép lamen', hint: 'Kéo thanh nồng độ. Thử cả nồng độ thấp và cao, ví dụ 1%, 5%, 20%',
       enter(api) {
         sideTable(api);
         if (!st.runs.length && !api.prediction) api.ask({
@@ -206,7 +206,7 @@
             onInput(v, c) {
               st.C = v; st.bottles.nacl.lab.textContent = `NaCl ${v}%`;
               const dup = st.runs.some(r => Math.abs(r.C - v) < 1);
-              c.warn(dup ? 'Chọn nồng độ cách lần trước ít nhất 1% nhé' : v < 0.5 ? 'Nhược trương' : v < 1.5 ? 'Gần đẳng trương (0.9%)' : 'Ưu trương');
+              c.warn(dup ? 'Chọn nồng độ cách lần trước ít nhất 1% nhé' : v < 0.5 ? 'Nhược trương' : v < 1.5 ? 'Gần đẳng trương (với tế bào này)' : 'Ưu trương');
               if (dup) api.hideNext(); else api.done('Nhỏ dung dịch ➜');
             }
           }),
@@ -252,8 +252,8 @@
               const last = st.runs[st.runs.length - 1];
               st.rate = 0.03;
               if (last.form === 'loi') {
-                st.recovered = false; st.viewLabel.textContent = 'Tế bào không phản co';
-                api.card({ kicker: '🔬 Giải thích khoa học', text: 'Ở dạng co lồi, chất nguyên sinh đã tách hẳn khỏi thành tế bào ở mọi phía. Tế bào bị tổn thương nặng nên không phản co được nữa.', sub: 'Thử với mẫu co góc hoặc co lõm thì tế bào sẽ phản co.' });
+                st.recovered = false; st.viewLabel.textContent = 'Tế bào hầu như không phản co';
+                api.card({ kicker: '🔬 Giải thích khoa học', text: 'Ở dạng co lồi, chất nguyên sinh tách khỏi thành ở mọi phía. Tế bào thường khó hoặc không phản co, tùy mức tổn thương và thời gian ngâm trong dung dịch ưu trương.', sub: 'Mẫu co góc hoặc co lõm, ngâm chưa lâu, thường phản co tốt hơn.' });
               } else { setForm('normal'); st.recovered = true; st.viewLabel.textContent = 'Tế bào phản co nguyên sinh'; }
               api.wait(1.8, () => { st.paper.style.display = 'none'; api.done('Xem biểu đồ ➜'); });
             }
@@ -313,8 +313,8 @@
   };
   const EXPLAIN = {
     nhuoc: 'Nhược trương: nước đi vào, tế bào trương nước, không co.',
-    dang: 'Gần đẳng trương: nước ra vào cân bằng, tế bào giữ nguyên.',
-    goc: 'Co góc: ưu trương nhẹ, màng sinh chất tách khỏi thành ở các góc trước vì ở đó bám yếu hơn.',
+    dang: 'Gần đẳng trương với tế bào này: nước ra vào cân bằng, tế bào giữ nguyên. Đẳng trương hay không còn tùy loại tế bào (0,9% NaCl chỉ đẳng trương với tế bào người).',
+    goc: 'Co góc: ưu trương nhẹ, nước đi ra ít, màng sinh chất mới tách khỏi thành ở các góc.',
     lom: 'Co lõm: ưu trương trung bình, nước thoát ra nhiều, các mặt bên của màng lõm sâu vào trong.',
     loi: 'Co lồi: ưu trương mạnh, chất nguyên sinh co cụm thành khối tròn, tách khỏi thành ở mọi phía.'
   };
@@ -323,7 +323,7 @@
   function afterChart(api) {
     api.wrapUp({
       right: 'Co lại vì nước đi ra', truth: 'trong dung dịch ưu trương, tế bào co nguyên sinh; nồng độ càng cao co càng mạnh (góc → lõm → lồi).',
-      sub: st.recovered === false ? 'Mẫu co lồi không phản co khi nhỏ nước cất vì tế bào đã bị tổn thương.' : 'Khi nhỏ nước cất vào, tế bào phản co trở lại như cũ.',
+      sub: st.recovered === false ? 'Mẫu co lồi hầu như không phản co khi nhỏ nước cất: tế bào có thể đã tổn thương, tùy mức co và thời gian ngâm.' : 'Khi nhỏ nước cất vào, tế bào phản co trở lại như cũ.',
       quiz: QUIZ, bank: 3, result: result()
     });
   }
@@ -359,10 +359,10 @@
       title: 'Co và phản co nguyên sinh', param: 'Nồng độ NaCl: ' + rows.map(r => r.C + '%').join(', '),
       table: {
         head: ['Lần', 'Nồng độ NaCl (%)', 'Thời gian tác động (giây)', 'Dạng co nguyên sinh', 'Em nhận ra', 'Thể tích chất nguyên sinh co rút (%)'],
-        rows: st.runs.map((r, i) => [i + 1, r.C, r.sec, FORM_NAME[r.form], r.em, r.pct]).concat([['Nước cất', 0, '', st.recovered ? 'Phản co ✓' : st.recovered === false ? 'Không phản co (đã co lồi)' : '…', '', '']])
+        rows: st.runs.map((r, i) => [i + 1, r.C, r.sec, FORM_NAME[r.form], r.em, r.pct]).concat([['Nước cất', 0, '', st.recovered ? 'Phản co ✓' : st.recovered === false ? 'Hầu như không phản co (co lồi)' : '…', '', '']])
       },
       chart: { labels: rows.map(r => `${r.C}% · ${FORM_NAME[r.form].split(' (')[0]}`), yLabel: '% thể tích chất nguyên sinh co rút', max: 100, series: [{ name: 'Mức co rút', color: '#9B4FC4', values: rows.map(r => r.pct) }] },
-      conclusion: 'Trong dung dịch ưu trương nước đi ra khỏi tế bào nên tế bào co nguyên sinh; nồng độ càng cao co càng mạnh: co góc → co lõm → co lồi. Nhỏ nước cất (nhược trương) thì nước đi vào, tế bào phản co (trừ khi đã co lồi và bị tổn thương)',
+      conclusion: 'Trong dung dịch ưu trương nước đi ra khỏi tế bào nên tế bào co nguyên sinh; nồng độ càng cao co càng mạnh: co góc → co lõm → co lồi. Nhỏ nước cất (nhược trương) thì nước đi vào, tế bào phản co. Mẫu co lồi thường khó hoặc không phản co, tùy mức tổn thương và thời gian ngâm',
       note: 'Chỉ tế bào sống mới co và phản co nguyên sinh được.'
     };
   }
