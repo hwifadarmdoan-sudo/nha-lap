@@ -5,7 +5,7 @@ window.NL = window.NL || {};
 NL.w3 = (function () {
   const on = new URLSearchParams(location.search).has('3d');
   let T, renderer, scene, camera, cv, sky, sun, hemi, ready = false, loading = null;
-  let built = {}, curId = null, curGroup = null, anims = [], pickables = [];
+  let built = {}, curId = null, curGroup = null, anims = [], pickables = [], active = [], shellV = 1, doorOpen = 0, seamT = 0, skyBg = null, skyFog = null, sunDisc = null;
   const chars = new Map(); let tagBox = null, arrow = null, ring = null, dots = [];
   let zoomK = 1, camPos = null, camTgt = null;
   const STOREY = 3.3, WALL_H = 2.9;
@@ -31,15 +31,18 @@ NL.w3 = (function () {
       renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
       renderer.outputColorSpace = T.SRGBColorSpace; renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
       scene = new T.Scene();
-      scene.background = skyTex();
-      scene.fog = new T.Fog(0xCFEAFB, 40, 120);
+      skyBg = skyTex(); skyFog = new T.Fog(0xCFEAFB, 45, 130);
+      scene.background = skyBg; scene.fog = skyFog;
       camera = new T.PerspectiveCamera(38, 1, 0.1, 400);
       hemi = new T.HemisphereLight(0xEAF6FF, 0xB9D8A0, 0.9); scene.add(hemi);
-      sun = new T.DirectionalLight(0xFFF4DE, 1.6); sun.castShadow = true;
+      sun = new T.DirectionalLight(0xFFE9C4, 2.1); sun.castShadow = true;
       sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
       scene.add(sun); scene.add(sun.target);
       scene.add(new T.AmbientLight(0xFFFFFF, 0.25));
       sky = clouds(); scene.add(sky);
+      // mặt trời rực rỡ trên trời
+      sunDisc = new T.Sprite(new T.SpriteMaterial({ map: canvasTex(256, 256, (x) => { const gr = x.createRadialGradient(128, 128, 10, 128, 128, 128); gr.addColorStop(0, 'rgba(255,250,220,1)'); gr.addColorStop(0.25, 'rgba(255,236,150,.95)'); gr.addColorStop(0.5, 'rgba(255,220,120,.35)'); gr.addColorStop(1, 'rgba(255,220,120,0)'); x.fillStyle = gr; x.fillRect(0, 0, 256, 256); }), transparent: true, depthWrite: false, fog: false }));
+      sunDisc.scale.set(26, 26, 1); scene.add(sunDisc);
       tagBox = document.createElement('div'); tagBox.className = 'w3-tags'; document.body.appendChild(tagBox);
       arrow = guideArrow(); scene.add(arrow);
       ring = new T.Mesh(new T.RingGeometry(0.18, 0.26, 32), new T.MeshBasicMaterial({ color: 0x2F80C0, transparent: true, depthWrite: false })); ring.rotation.x = -Math.PI / 2; ring.visible = false; scene.add(ring);
@@ -235,24 +238,90 @@ NL.w3 = (function () {
 
   // ---------- dựng khung cảnh từ dữ liệu scenes.js ----------
   const WALL_C = '#FBF3DC';
+  // sân trước và sảnh nằm chung một không gian: sảnh đặt bên trong tầng 1 tòa A1 để đi liền mạch
+  const OFF = { lobby: [2, -5.4] };
+  const LINK = { outside: ['lobby'], lobby: ['outside'] };
+  const offOf = id => OFF[id] || [0, 0];
+  let grassTexC = null;
+  function grassTex(rep) {
+    if (!grassTexC) grassTexC = canvasTex(512, 512, (x, W, H) => {
+      x.fillStyle = '#8CCB72'; x.fillRect(0, 0, W, H);
+      const R = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+      for (let k = 0; k < 2600; k++) { const px = R() * W, py = R() * H, l = 5 + R() * 9; x.strokeStyle = ['#7DBE63', '#9AD57E', '#6FB257', '#A8DC8C'][k % 4]; x.lineWidth = 2; x.beginPath(); x.moveTo(px, py); x.lineTo(px + (R() - 0.5) * 4, py - l); x.stroke(); }
+      for (let k = 0; k < 70; k++) { const px = R() * W, py = R() * H; x.fillStyle = ['#FFFFFF', '#FFE066', '#FF9EBB', '#C9B6FF'][k % 4]; x.beginPath(); x.arc(px, py, 3, 0, 7); x.fill(); x.fillStyle = '#FFD23F'; x.beginPath(); x.arc(px, py, 1.2, 0, 7); x.fill(); }
+    });
+    const t = grassTexC.clone(); t.needsUpdate = true; t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(rep, rep); return t;
+  }
+  // khuôn viên trường: cỏ hoa, hàng cây đung đưa, đèn, ghế đá, các nhà khác phía xa, lá bay
+  function campus(g, s, an, opt = {}) {
+    const R = (() => { let k = 11; return () => (k = (k * 16807) % 2147483647) / 2147483647; })();
+    const gr = mesh(new T.PlaneGeometry(220, 220), new T.MeshStandardMaterial({ map: grassTex(60), roughness: 1 }), g, [s.w / 2, -0.03, s.d / 2], false); gr.rotation.x = -Math.PI / 2; gr.receiveShadow = true;
+    const keep = opt.keep || [-3, -12, s.w + 3, s.d + 2];
+    const free = (x, z) => !(x > keep[0] && x < keep[2] && z > keep[1] && z < keep[3]);
+    let n = 0;
+    while (n < 46) {
+      const x = s.w / 2 + (R() - 0.5) * 70, z = s.d / 2 + (R() - 0.5) * 70; if (!free(x, z)) continue; n++;
+      obj(g, { kind: R() > 0.3 ? 'tree' : 'bush', x: x - 0.5, y: z - 0.5, w: 1, d: 1, big: 0.8 + R() * 0.7 }, [], an);
+    }
+    // bồn hoa
+    for (let k = 0; k < 14; k++) {
+      const x = s.w / 2 + (R() - 0.5) * 40, z = s.d / 2 + (R() - 0.5) * 40; if (!free(x, z)) continue;
+      for (let j = 0; j < 9; j++) mesh(new T.SphereGeometry(0.09, 8, 6), mat(['#FF7BA0', '#FFD23F', '#FFFFFF', '#B497FF'][j % 4], { roughness: 0.6 }), g, [x + (R() - 0.5) * 1.2, 0.12, z + (R() - 0.5) * 1.2], false);
+    }
+    // nhà khác trong trường phía xa
+    [[-22, -20, 14, 10, 4], [30, -18, 12, 9, 5], [-26, 18, 10, 12, 3], [34, 20, 14, 10, 4]].forEach(([x, z, w, d, fl]) => {
+      const h = fl * STOREY, bt = canvasTex(128, 128, (c, W, H) => { c.fillStyle = '#F2E4C6'; c.fillRect(0, 0, W, H); c.fillStyle = '#8EC9EE'; for (let k = 0; k < 4; k++) c.fillRect(10 + k * 30, 40, 18, 50); });
+      bt.wrapS = bt.wrapT = T.RepeatWrapping; bt.repeat.set(w / 3, fl);
+      const m = new T.MeshStandardMaterial({ map: bt, roughness: 0.9 });
+      mesh(new T.BoxGeometry(w, h, d), [m, m, mat('#E3D3AA'), mat('#E3D3AA'), m, m], g, [s.w / 2 + x, h / 2, s.d / 2 + z]);
+      mesh(new T.BoxGeometry(w + 0.6, 0.6, d + 0.6), mat('#C9604B', { roughness: 0.8 }), g, [s.w / 2 + x, h + 0.3, s.d / 2 + z]);
+    });
+    // lá rơi bay theo gió
+    const leafG = new T.PlaneGeometry(0.12, 0.08), leaves = [];
+    for (let k = 0; k < 36; k++) { const l = new T.Mesh(leafG, new T.MeshStandardMaterial({ color: ['#7CC36A', '#E9C46A', '#A7D676'][k % 3], side: T.DoubleSide })); l.userData = { x: s.w / 2 + (R() - 0.5) * 30, z: s.d / 2 + (R() - 0.5) * 24, y: R() * 6, sp: 0.3 + R() * 0.5, ph: R() * 6 }; g.add(l); leaves.push(l); }
+    an.push((t, dt) => leaves.forEach(l => { const u = l.userData; u.y -= u.sp * (dt || 0.016); u.x += 0.6 * (dt || 0.016); if (u.y < 0) { u.y = 5 + R() * 3; u.x = s.w / 2 + (R() - 0.5) * 30 - 6; } l.position.set(u.x + Math.sin(t * 2 + u.ph) * 0.4, u.y, u.z); l.rotation.set(t * 2 + u.ph, t * 1.3, 0); }));
+  }
+  // tấm biển gắn tường: chữ vẽ trên canvas, dán phẳng lên tường nên không bị cắt chữ
+  function wallSign(g, side, m, y, text, o = {}) {
+    const fs = 64, pad = 34, font = `800 ${fs}px 'Baloo 2', sans-serif`;
+    const mc = document.createElement('canvas').getContext('2d'); mc.font = font;
+    const W = Math.ceil(mc.measureText(text).width) + pad * 2, Hh = Math.round(fs * 1.6);
+    const tex = canvasTex(W, Hh, (x) => {
+      x.fillStyle = o.bg || '#2F80C0'; x.beginPath(); x.roundRect ? x.roundRect(0, 0, W, Hh, 22) : x.rect(0, 0, W, Hh); x.fill();
+      x.strokeStyle = 'rgba(255,255,255,.75)'; x.lineWidth = 5; x.beginPath(); x.roundRect ? x.roundRect(6, 6, W - 12, Hh - 12, 18) : x.rect(6, 6, W - 12, Hh - 12); x.stroke();
+      x.font = font; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = o.color || '#fff'; x.fillText(text, W / 2, Hh / 2 + 3);
+    });
+    let h = o.h || 0.3, w = h * W / Hh; if (o.maxW && w > o.maxW) { w = o.maxW; h = w * Hh / W; }
+    const p = mesh(new T.BoxGeometry(w, h, 0.03), [mat('#E6EEF5'), mat('#E6EEF5'), mat('#E6EEF5'), mat('#E6EEF5'), new T.MeshStandardMaterial({ map: tex, roughness: 0.5 }), mat('#E6EEF5')], g, null, false);
+    const out = (o.out || 0.03);
+    if (side === 'N') p.position.set(m, y, out); else { p.position.set(out, y, m); p.rotation.y = Math.PI / 2; }
+    return p;
+  }
   function build(s) {
     const g = new T.Group(); const picks = [], an = [];
-    const floorY = 0, f = s.floor || 1, ground = s.walls ? -(f - 1) * STOREY - 0.12 : -0.01;
-    // mặt đất cỏ + lối đi
-    const grass = mesh(new T.PlaneGeometry(260, 260), mat('#9ED486', { roughness: 1 }), g, [s.w / 2, ground - 0.02, s.d / 2], false); grass.rotation.x = -Math.PI / 2;
-    // sàn theo màu ô của bản 2D
-    const R = 32, ft = canvasTex(s.w * R, s.d * R, (x) => {
-      for (let yy = 0; yy < s.d; yy++) for (let xx = 0; xx < s.w; xx++) { x.fillStyle = s.floorColor(xx, yy); x.fillRect(xx * R, yy * R, R, R); x.strokeStyle = 'rgba(30,60,90,.08)'; x.strokeRect(xx * R + 0.5, yy * R + 0.5, R - 1, R - 1); }
+    const f = s.floor || 1, balcony = s.triggers.some(tr => tr.type === 'balcony');
+    const linked = !!LINK[s.id], interior = s.walls && !balcony && !linked;
+    if (!s.walls) campus(g, s, an, { keep: [-1, -10, s.w + 1, s.d + 1] });
+    else if (balcony) { const cg = new T.Group(); cg.position.y = -(f - 1) * STOREY - 0.12; g.add(cg); campus(cg, s, an, { keep: [-2, -2, s.w + 2, s.d + 8] }); }
+    else if (interior) { const fl0 = mesh(new T.PlaneGeometry(80, 80), mat('#EFE6D4', { roughness: 1 }), g, [s.w / 2, -0.14, s.d / 2], false); fl0.rotation.x = -Math.PI / 2; }
+    // sàn: sân ngoài trời vẽ cỏ + gạch lát, trong nhà vẽ gạch men
+    const R = s.walls ? 32 : 64, ft = canvasTex(s.w * R, s.d * R, (x) => {
+      for (let yy = 0; yy < s.d; yy++) for (let xx = 0; xx < s.w; xx++) {
+        const c = s.floorColor(xx, yy), isGrass = !s.walls && /^#(A6DB8F|9CD385)$/i.test(c);
+        if (isGrass) continue;
+        x.fillStyle = c; x.fillRect(xx * R, yy * R, R, R);
+        x.strokeStyle = s.walls ? 'rgba(30,60,90,.08)' : 'rgba(120,100,70,.25)'; x.lineWidth = s.walls ? 1 : 3; x.strokeRect(xx * R + 1, yy * R + 1, R - 2, R - 2);
+      }
     });
-    ft.magFilter = T.NearestFilter;
-    const fl = mesh(new T.PlaneGeometry(s.w, s.d), new T.MeshStandardMaterial({ map: ft, roughness: 0.75 }), g, [s.w / 2, floorY, s.d / 2], false); fl.rotation.x = -Math.PI / 2; fl.receiveShadow = true; picks.push(fl);
+    ft.magFilter = s.walls ? T.NearestFilter : T.LinearFilter;
+    const fl = mesh(new T.PlaneGeometry(s.w, s.d), new T.MeshStandardMaterial({ map: ft, roughness: 0.75, transparent: !s.walls }), g, [s.w / 2, 0.002, s.d / 2], false); fl.rotation.x = -Math.PI / 2; fl.receiveShadow = true; picks.push(fl);
+    if (!s.walls) { const pk = mesh(new T.PlaneGeometry(s.w, s.d), new T.MeshBasicMaterial({ visible: false }), g, [s.w / 2, 0, s.d / 2], false); pk.rotation.x = -Math.PI / 2; picks.push(pk); }
     if (s.walls) {
-      // khối tòa nhà bên dưới (thấy khi nhìn ra ban công)
-      if (f > 1) {
+      if (f > 1) { // khối tòa nhà bên dưới (thấy khi nhìn ra ban công)
         const bt = canvasTex(256, 128, (x, w, h) => { x.fillStyle = '#F4E9C8'; x.fillRect(0, 0, w, h); x.fillStyle = '#8EC9EE'; for (let k = 0; k < 8; k++) x.fillRect(8 + k * 31, 34, 18, 52); x.fillStyle = '#E2D2A2'; x.fillRect(0, h - 8, w, 8); });
         bt.wrapS = bt.wrapT = T.RepeatWrapping; bt.repeat.set(Math.ceil(s.w / 6), f - 1);
         const bm = new T.MeshStandardMaterial({ map: bt, roughness: 0.9 });
-        const hb = (f - 1) * STOREY; const blk = mesh(new T.BoxGeometry(s.w, hb, s.d), [bm, bm, mat('#EADDB5'), mat('#EADDB5'), bm, bm], g, [s.w / 2, -hb / 2 - 0.13, s.d / 2], false);
+        const hb = (f - 1) * STOREY; mesh(new T.BoxGeometry(s.w, hb, s.d), [bm, bm, mat('#EADDB5'), mat('#EADDB5'), bm, bm], g, [s.w / 2, -hb / 2 - 0.13, s.d / 2], false);
       }
       mesh(new T.BoxGeometry(s.w, 0.12, s.d), mat('#E7DCC0'), g, [s.w / 2, -0.065, s.d / 2], false);
       // tường bắc (z = 0) và tây (x = 0)
@@ -261,15 +330,14 @@ NL.w3 = (function () {
       const ww = mesh(new T.BoxGeometry(0.15, WALL_H, s.d), wm, g, [-0.075, WALL_H / 2, s.d / 2]); picks.push(ww);
       mesh(new T.BoxGeometry(s.w + 0.15, 0.12, 0.03), mat('#E6D6A8'), g, [s.w / 2 - 0.075, 0.06, 0.005], false);
       mesh(new T.BoxGeometry(0.03, 0.12, s.d), mat('#E6D6A8'), g, [0.005, 0.06, s.d / 2], false);
-      // phòng kín (không có ban công): tường nam, đông bằng kính mờ để vẫn nhìn vào trong
-      if (!s.triggers.some(tr => tr.type === 'balcony')) {
-        const gm = new T.MeshStandardMaterial({ color: 0xE8F4FC, transparent: true, opacity: 0.12, roughness: 0.1, depthWrite: false });
-        mesh(new T.BoxGeometry(s.w, WALL_H, 0.06), gm, g, [s.w / 2, WALL_H / 2, s.d + 0.03], false);
-        mesh(new T.BoxGeometry(0.06, WALL_H, s.d), gm, g, [s.w + 0.03, WALL_H / 2, s.d / 2], false);
-        mesh(new T.BoxGeometry(s.w + 0.1, 0.35, 0.12), mat('#F1E5C2'), g, [s.w / 2, 0.175, s.d + 0.06], false);
-        mesh(new T.BoxGeometry(0.12, 0.35, s.d), mat('#F1E5C2'), g, [s.w + 0.06, 0.175, s.d / 2], false);
-        mesh(new T.BoxGeometry(s.w + 0.1, 0.06, 0.12), mat('#FFFFFF'), g, [s.w / 2, WALL_H, s.d + 0.06], false);
-        mesh(new T.BoxGeometry(0.12, 0.06, s.d), mat('#FFFFFF'), g, [s.w + 0.06, WALL_H, s.d / 2], false);
+      // phòng kín: tường nam, đông cắt thấp (kiểu nhà búp bê) để nhìn vào, chừa lối ra
+      if (!balcony) {
+        const gapS = s.triggers.filter(tr => tr.type === 'goto' && tr.y2 >= s.d - 0.7).map(tr => [tr.x1 - 0.2, tr.x2 + 0.2]);
+        const gapE = s.triggers.filter(tr => tr.type === 'goto' && tr.x2 >= s.w - 0.7).map(tr => [tr.y1 - 0.2, tr.y2 + 0.2]);
+        const runs = (len, gaps) => { const out = []; let a = 0; gaps.sort((p, q) => p[0] - q[0]).forEach(([g0, g1]) => { if (g0 > a) out.push([a, g0]); a = Math.max(a, g1); }); if (a < len) out.push([a, len]); return out; };
+        const LH = 0.5, cap = mat('#FFFFFF', { roughness: 0.5 });
+        runs(s.w + 0.15, gapS).forEach(([a, b]) => { mesh(new T.BoxGeometry(b - a, LH, 0.15), wm, g, [(a + b) / 2, LH / 2, s.d + 0.075]); mesh(new T.BoxGeometry(b - a, 0.04, 0.18), cap, g, [(a + b) / 2, LH + 0.02, s.d + 0.075], false); });
+        runs(s.d, gapE).forEach(([a, b]) => { mesh(new T.BoxGeometry(0.15, LH, b - a), wm, g, [s.w + 0.075, LH / 2, (a + b) / 2]); mesh(new T.BoxGeometry(0.18, 0.04, b - a), cap, g, [s.w + 0.075, LH + 0.02, (a + b) / 2], false); });
       }
       (s.deco || []).forEach(dc => deco(g, dc, picks));
     }
@@ -279,9 +347,9 @@ NL.w3 = (function () {
     });
     (s.tags || []).forEach(tg => label(tg.label, { parent: g, pos: [tg.x, 0.6, tg.y], h: 0.26 }));
     s.objects.forEach(o => obj(g, o, picks, an));
-    // ánh sáng trong phòng
     if (s.walls) { const pl = new T.PointLight(0xFFF2D8, 0.5, 18); pl.position.set(s.w / 2, 2.6, s.d / 2); g.add(pl); }
-    g.userData = { picks, anims: an, ground };
+    const o2 = offOf(s.id); g.position.set(o2[0], linked && s.walls ? 0.012 : 0, o2[1]);
+    g.userData = { picks, anims: an, env: interior ? 'indoor' : 'sky' };
     return g;
   }
   // trang trí gắn tường: side 'N' chạy theo x ở z = 0; 'W' chạy theo z ở x = 0
@@ -303,16 +371,16 @@ NL.w3 = (function () {
       const dr = onWall(g, w.side, m + 0.01, w.b, 0, 2.15, 0.08, mat('#DCE4EC', { metalness: 0.6, roughness: 0.25 }));
       picks.push(dl, dr);
       const disp = onWall(g, w.side, m - 0.22, m + 0.22, 2.2, 2.36, 0.1, mat('#14273A'));
-      label(w.floorLabel || '▲', { parent: g, pos: wallPos(w.side, m, 2.28, 0.17), h: 0.13, bg: '#14273A', color: '#7CF29A' });
-      label('🛗 Thang máy', { parent: g, pos: wallPos(w.side, m, 2.65, 0.3), h: 0.26 });
+      wallSign(g, w.side, m, 2.28, w.floorLabel || '▲', { h: 0.13, bg: '#14273A', color: '#7CF29A', out: 0.16 });
+      wallSign(g, w.side, m, 2.62, '🛗 Thang máy', { h: 0.28, bg: '#FFFFFF', color: '#1F4E79', maxW: (w.b - w.a) + 0.6 });
       void disp;
     } else if (w.kind === 'door') {
       onWall(g, w.side, w.a - 0.1, w.b + 0.1, 0, 2.3, 0.06, mat('#FFFFFF'));
       const d = onWall(g, w.side, w.a, w.b, 0, 2.18, 0.08, mat(w.locked ? '#C9D3DD' : '#9FD3F2', { roughness: 0.4 })); picks.push(d);
       onWall(g, w.side, w.a + 0.15, w.b - 0.15, 1.05, 1.95, 0.09, mat('#E8F6FF', { roughness: 0.1, emissive: '#CFEFFF', emissiveIntensity: 0.3 }));
       const hx = w.b - 0.22; onWall(g, w.side, hx - 0.03, hx + 0.03, 0.95, 1.12, 0.12, mat('#C9A227', { metalness: 0.7, roughness: 0.3 }));
-      label(w.label, { parent: g, pos: wallPos(w.side, m, w.high ? 2.85 : 2.5, 0.3), h: 0.24, bg: w.locked ? '#9AA9B7' : (w.color || '#2F80C0'), color: '#fff' });
-      if (w.sub) label(w.sub, { parent: g, pos: wallPos(w.side, m, 1.2, 0.3), h: 0.2 });
+      wallSign(g, w.side, m, 2.52, w.label, { h: 0.3, bg: w.locked ? '#9AA9B7' : (w.color || '#2F80C0'), maxW: (w.b - w.a) + 0.55 });
+      if (w.sub) wallSign(g, w.side, m, 1.45, w.sub, { h: 0.22, bg: '#FFFFFF', color: '#1F4E79', out: 0.11 });
     } else if (w.kind === 'board') {
       const lines = w.lines || [];
       const tex = canvasTex(512, 320, (x, W, Hh) => {
@@ -342,10 +410,11 @@ NL.w3 = (function () {
         break;
       }
       case 'tree': {
-        mesh(new T.CylinderGeometry(0.12, 0.18, 1.8, 10), mat('#8A5A3B'), g, [cx, 0.9, cz]);
-        const top = new T.Group(); top.position.set(cx, 2.2, cz); g.add(top);
+        const tr = new T.Group(); tr.position.set(cx, 0, cz); tr.scale.setScalar(o.big || 1); g.add(tr);
+        mesh(new T.CylinderGeometry(0.12, 0.18, 1.8, 10), mat('#8A5A3B'), tr, [0, 0.9, 0]);
+        const top = new T.Group(); top.position.set(0, 2.2, 0); tr.add(top);
         [[0, 0.4, 0, 0.95], [-0.5, 0, 0.2, 0.7], [0.5, 0, -0.1, 0.7], [0.1, 0.9, 0, 0.6], [0, 0, 0.5, 0.65]].forEach(([x, y, z, r], k) => mesh(new T.IcosahedronGeometry(r, 1), mat(k % 2 ? '#5DB36F' : '#4FA36B', { flatShading: true }), top, [x, y, z]));
-        an.push(t => { top.rotation.z = Math.sin(t * 1.1 + o.x) * 0.025; });
+        an.push(t => { top.rotation.z = Math.sin(t * 1.4 + o.x) * 0.05 + Math.sin(t * 3.1 + o.y) * 0.015; top.rotation.x = Math.sin(t * 1.1 + o.y) * 0.03; });
         break;
       }
       case 'bush': [[-0.2, 0], [0.2, 0], [0, 0.15]].forEach(([x, y]) => mesh(new T.SphereGeometry(0.3, 10, 8), mat('#5DB36F'), g, [cx + x, 0.25 + y, cz])); break;
@@ -451,41 +520,54 @@ NL.w3 = (function () {
       if (e) { const ic = emojiSprite(e.icon, 0.34, g, [cx, h + 0.55, cz]); an.push(t => { ic.position.y = h + 0.55 + Math.sin(t * 2) * 0.04; }); }
     }
   }
-  // tòa A1 trước sân
+  // tòa A1 trước sân: sâu 9 m để sảnh tầng 1 nằm gọn bên trong; mờ dần khi em bước vào sảnh
+  let bShell = null, bMats = [], doorL = null, doorR = null, doorAt = null;
   function building(g, o, picks) {
-    const floors = 4, hh = floors * STOREY + 0.6, x0 = o.x, z0 = o.y, w = o.w, d = o.d;
+    const floors = 4, hh = floors * STOREY + 0.6, x0 = o.x, w = o.w, fz = o.y + o.d, D = 9, z0 = fz - D;
+    const bg = new T.Group(); g.add(bg); bShell = bg;
     const wm = mat('#F4E9C8', { roughness: 0.95 });
-    const b = mesh(new T.BoxGeometry(w, hh, d), wm, g, [x0 + w / 2, hh / 2, z0 + d / 2]); picks.push(b);
-    mesh(new T.BoxGeometry(w + 0.3, 0.3, d + 0.3), mat('#EADDB5'), g, [x0 + w / 2, hh + 0.15, z0 + d / 2]);
+    const b = mesh(new T.BoxGeometry(w, hh, D), wm, bg, [x0 + w / 2, hh / 2, z0 + D / 2]); picks.push(b);
+    mesh(new T.BoxGeometry(w + 0.3, 0.3, D + 0.3), mat('#EADDB5'), bg, [x0 + w / 2, hh + 0.15, z0 + D / 2]);
     const glassM = mat('#8EC9EE', { roughness: 0.1, metalness: 0.2, emissive: '#6FB6E2', emissiveIntensity: 0.15 });
     for (let f = 0; f < floors; f++) {
       const y = f * STOREY + 0.9;
-      mesh(new T.BoxGeometry(w + 0.08, 0.1, 0.08), mat('#E2D2A2'), g, [x0 + w / 2, (f + 1) * STOREY + 0.05, z0 + d + 0.02], false);
+      mesh(new T.BoxGeometry(w + 0.08, 0.1, 0.08), mat('#E2D2A2'), bg, [x0 + w / 2, (f + 1) * STOREY + 0.05, fz + 0.02], false);
       for (let k = 0; k < 12; k++) {
         if (f === 0 && k >= 4 && k <= 7) continue;
-        mesh(new T.BoxGeometry(0.62, 1.4, 0.06), glassM, g, [x0 + 0.62 + k, y + 0.7, z0 + d + 0.02], false);
-        mesh(new T.BoxGeometry(0.72, 0.06, 0.12), mat('#FFFFFF'), g, [x0 + 0.62 + k, y - 0.02, z0 + d + 0.05], false);
+        mesh(new T.BoxGeometry(0.62, 1.4, 0.06), glassM, bg, [x0 + 0.62 + k, y + 0.7, fz + 0.02], false);
+        mesh(new T.BoxGeometry(0.72, 0.06, 0.12), mat('#FFFFFF'), bg, [x0 + 0.62 + k, y - 0.02, fz + 0.05], false);
       }
-      for (let k = 0; k < 3; k++) mesh(new T.BoxGeometry(0.06, 1.4, 0.6), glassM, g, [x0 + w + 0.02, y + 0.7, z0 + 0.7 + k * 1.1], false);
-      label(['Tầng 1 · Sảnh', 'Tầng 2 · Lý', 'Tầng 3 · Hóa', 'Tầng 4 · Sinh'][f], { parent: g, pos: [x0 + w + 0.6, y + 0.7, z0 + d - 0.2], h: 0.3, bg: f === 3 ? '#3FB37F' : 'rgba(255,255,255,.92)', color: f === 3 ? '#fff' : '#1F4E79' });
+      for (let k = 0; k < 7; k++) mesh(new T.BoxGeometry(0.06, 1.4, 0.6), glassM, bg, [x0 + w + 0.02, y + 0.7, z0 + 0.8 + k * 1.2], false);
+      wallSign(bg, 'N', 0, 0, ['Tầng 1 · Sảnh', 'Tầng 2 · Lý', 'Tầng 3 · Hóa', 'Tầng 4 · Sinh'][f], { h: 0.32, bg: f === 3 ? '#3FB37F' : '#FFFFFF', color: f === 3 ? '#fff' : '#1F4E79' }).position.set(x0 + w + 0.06, y + 0.7, fz - 0.6);
+      bg.children[bg.children.length - 1].rotation.y = Math.PI / 2;
     }
-    // sảnh vào: bậc thềm, cửa kính đôi lớn, 4 cột tròn, mái đón có biển A1
-    const fz = z0 + d, gx = x0 + 6, wh = mat('#FFFFFF', { roughness: 0.5 });
-    [[4.8, 0.1, 2.0], [4.4, 0.2, 1.6], [4.0, 0.3, 1.2]].forEach(([w2, h2, d2]) => mesh(new T.BoxGeometry(w2, h2, d2), mat('#E9E2D0'), g, [gx, h2 / 2, fz + d2 / 2 - 0.1]));
-    mesh(new T.BoxGeometry(3.0, 3.0, 0.18), mat('#D9CFB5'), g, [gx, 1.8, fz + 0.06], false);
-    mesh(new T.BoxGeometry(2.5, 2.7, 0.06), mat('#5FA6D6', { roughness: 0.08, metalness: 0.35, emissive: '#4F96C6', emissiveIntensity: 0.15 }), g, [gx, 1.65, fz + 0.16], false);
-    [-0.62, 0, 0.62].forEach(dx => mesh(new T.BoxGeometry(0.06, 2.7, 0.09), wh, g, [gx + dx * 2, 1.65, fz + 0.18], false));
-    mesh(new T.BoxGeometry(2.6, 0.08, 0.1), wh, g, [gx, 3.0, fz + 0.18], false);
-    [-0.5, 0.5].forEach(dx => mesh(new T.BoxGeometry(0.04, 0.5, 0.06), mat('#C9A227', { metalness: 0.7, roughness: 0.3 }), g, [gx + dx * 0.22, 1.4, fz + 0.22], false));
+    // sảnh vào: bậc thềm, cửa kính đôi tự mở, 4 cột tròn, mái đón có biển A1
+    const gx = x0 + 6, wh = mat('#FFFFFF', { roughness: 0.5 });
+    [[4.8, 0.03, 2.0], [4.4, 0.06, 1.6], [4.0, 0.09, 1.2]].forEach(([w2, h2, d2]) => mesh(new T.BoxGeometry(w2, h2, d2), mat('#E9E2D0'), g, [gx, h2 / 2, fz + d2 / 2 - 0.1]));
+    mesh(new T.BoxGeometry(3.0, 3.0, 0.18), mat('#D9CFB5'), bg, [gx, 1.8, fz + 0.06], false);
+    const dm = mat('#5FA6D6', { roughness: 0.08, metalness: 0.35, emissive: '#4F96C6', emissiveIntensity: 0.15, transparent: true, opacity: 0.8 });
+    doorL = mesh(new T.BoxGeometry(1.24, 2.7, 0.06), dm, bg, [gx - 0.63, 1.35, fz + 0.18], false);
+    doorR = mesh(new T.BoxGeometry(1.24, 2.7, 0.06), dm, bg, [gx + 0.63, 1.35, fz + 0.18], false);
+    [doorL, doorR].forEach((d, k) => { mesh(new T.BoxGeometry(0.05, 0.5, 0.06), mat('#C9A227', { metalness: 0.7, roughness: 0.3 }), d, [k ? -0.52 : 0.52, 0.05, 0.05], false); });
+    doorL.userData.x = gx - 0.63; doorR.userData.x = gx + 0.63; doorAt = [gx, fz];
+    mesh(new T.BoxGeometry(2.6, 0.08, 0.1), wh, bg, [gx, 2.74, fz + 0.18], false);
     [-2.05, -1.25, 1.25, 2.05].forEach(dx => {
-      mesh(new T.CylinderGeometry(0.15, 0.17, 3.5, 20), wh, g, [gx + dx * 1.0, 0.3 + 1.75, fz + 1.75]);
-      mesh(new T.BoxGeometry(0.42, 0.12, 0.42), wh, g, [gx + dx, 0.36, fz + 1.75]);
+      mesh(new T.CylinderGeometry(0.15, 0.17, 3.5, 20), wh, bg, [gx + dx, 2.05, fz + 1.75]);
+      mesh(new T.BoxGeometry(0.42, 0.12, 0.42), wh, bg, [gx + dx, 0.36, fz + 1.75]);
     });
-    mesh(new T.BoxGeometry(5.2, 0.36, 2.4), wh, g, [gx, 3.98, fz + 1.05]);
-    mesh(new T.BoxGeometry(5.3, 0.08, 2.5), mat('#2F80C0'), g, [gx, 4.2, fz + 1.05]);
-    label('A1', { parent: g, pos: [gx, 4.75, fz + 2.3], h: 0.75, bg: '#2F80C0', color: '#fff' });
-    label('Trường Đại học Sư phạm Hà Nội', { parent: g, pos: [gx, 3.95, fz + 2.36], h: 0.3 });
-    label('🚪 Lối vào', { parent: g, pos: [gx, 3.25, fz + 0.4], h: 0.26, bg: '#3FB37F', color: '#fff' });
+    mesh(new T.BoxGeometry(5.2, 0.36, 2.4), wh, bg, [gx, 3.98, fz + 1.05]);
+    mesh(new T.BoxGeometry(5.3, 0.08, 2.5), mat('#2F80C0'), bg, [gx, 4.2, fz + 1.05]);
+    wallSign(bg, 'N', gx, 3.95, 'Trường Đại học Sư phạm Hà Nội', { h: 0.28, bg: '#FFFFFF', color: '#1F4E79', out: fz + 2.27 });
+    wallSign(bg, 'N', gx, 4.75, 'A1', { h: 0.7, out: fz + 1.5 });
+    wallSign(bg, 'N', gx, 3.02, '🚪 Lối vào', { h: 0.24, bg: '#3FB37F', out: fz + 0.2 });
+    // vật liệu riêng để làm mờ cả khối
+    bMats = [];
+    bg.traverse(m => { if (m.isMesh) { const arr = Array.isArray(m.material) ? m.material : [m.material]; const cl = arr.map(x => { const c = x.clone(); c.transparent = true; c.userData.op = x.opacity; bMats.push(c); return c; }); m.material = Array.isArray(m.material) ? cl : cl[0]; } });
+  }
+  function shellFade(v) {
+    if (!bShell) return;
+    bShell.visible = v > 0.02;
+    bMats.forEach(m => { m.opacity = (m.userData.op == null ? 1 : m.userData.op) * v; m.depthWrite = v > 0.95; });
   }
 
   // ---------- mũi tên dẫn đường ----------
@@ -520,17 +602,30 @@ NL.w3 = (function () {
     frameNo++;
     const s = st.s;
     if (curId !== s.id) {
-      if (curGroup) scene.remove(curGroup);
-      if (!built[s.id]) built[s.id] = build(s);
-      curGroup = built[s.id]; scene.add(curGroup); curId = s.id;
-      pickables = curGroup.userData.picks; anims = curGroup.userData.anims;
+      const want = [s.id].concat(LINK[s.id] || []);
+      active.forEach(id => { if (!want.includes(id)) scene.remove(built[id]); });
+      want.forEach(id => { if (!built[id]) built[id] = build(NL.scenes[id]); if (!active.includes(id)) scene.add(built[id]); });
+      const seam = curId && (LINK[curId] || []).includes(s.id);
+      active = want; curId = s.id; curGroup = built[s.id];
+      pickables = curGroup.userData.picks; anims = [].concat(...want.map(id => built[id].userData.anims));
       chars.forEach(c => { c.st.root.visible = false; });
-      const span = Math.max(s.w, s.d);
-      sun.position.set(s.w / 2 + 8, 16, s.d / 2 + 6); sun.target.position.set(s.w / 2, 0, s.d / 2);
-      const sc = sun.shadow.camera; sc.left = -span; sc.right = span; sc.top = span; sc.bottom = -span; sc.near = 1; sc.far = 60; sc.updateProjectionMatrix();
-      camPos = null;
+      // nắng: phủ cả sân + sảnh khi đang ở cụm liền mạch
+      const base = LINK[s.id] ? NL.scenes.outside : s, span = Math.max(base.w, base.d) + 4;
+      sun.position.set(base.w / 2 + 10, 18, base.d / 2 + 8); sun.target.position.set(base.w / 2, 0, base.d / 2 - 2);
+      const sc = sun.shadow.camera; sc.left = -span; sc.right = span; sc.top = span; sc.bottom = -span; sc.near = 1; sc.far = 70; sc.updateProjectionMatrix();
+      const indoor = curGroup.userData.env === 'indoor';
+      scene.background = indoor ? new T.Color('#EFE6D4') : skyBg; scene.fog = indoor ? new T.Fog(0xEFE6D4, 10, 26) : skyFog; sky.visible = !indoor; sunDisc.visible = !indoor;
+      if (!seam) camPos = null; seamT = seam ? 1.2 : 0;
     }
-    anims.forEach(f => f(st.t));
+    // vỏ tòa A1 mờ dần khi vào sảnh, hiện lại khi ra sân; cửa kính tự mở khi đến gần
+    if (built.outside && active.includes('outside')) {
+      const tf = curId === 'outside' ? 1 : 0; shellV += (tf - shellV) * Math.min(1, st.dt * 3); if (Math.abs(tf - shellV) < 0.01) shellV = tf; shellFade(shellV);
+      if (built.lobby) built.lobby.visible = shellV < 0.98;
+      const me = st.self, o0 = offOf(curId), near = me && doorAt && Math.hypot(me.x + o0[0] - doorAt[0], me.y + o0[1] - doorAt[1]) < 2.6;
+      doorOpen += ((near ? 1 : 0) - doorOpen) * Math.min(1, st.dt * 5);
+      if (doorL) { doorL.position.x = doorL.userData.x - doorOpen * 1.1; doorR.position.x = doorR.userData.x + doorOpen * 1.1; }
+    }
+    anims.forEach(f => f(st.t, st.dt));
     sky.children.forEach(c => { c.position.x += c.userData.v * st.dt; if (c.position.x > 90) c.position.x = -90; });
     // nhân vật
     const live = new Set();
@@ -542,30 +637,32 @@ NL.w3 = (function () {
       if (mv > 0.002 && mv < 2) c.heading = Math.atan2(dx, dy);
       else if (mv >= 2) c.heading = c.heading || 0;
       c.px = x; c.py = y;
-      const r = c.st.root; r.visible = true; r.position.set(x, 0, y);
+      const o0 = offOf(curId), r = c.st.root; r.visible = true; r.position.set(x + o0[0], curGroup.position.y, y + o0[1]);
       let dh = c.heading - r.rotation.y; dh = Math.atan2(Math.sin(dh), Math.cos(dh)); r.rotation.y += dh * Math.min(1, st.dt * 10);
       c.st.pose(o.anim || 'idle', st.t + (id.length || 0), o.emote);
       // nhãn tên
       const emo = o.emote && EMO[o.emote] ? EMO[o.emote] : '';
       const html = `${o.help ? '<i class="w3-help">🆘</i>' : ''}${emo ? `<i class="w3-emo">${emo}</i>` : ''}<b class="${me ? 'me' : ''}${o.teacher ? ' tch' : ''}">${esc(o.name || '')}${me && !st.teacher ? ' (em)' : o.bot ? ' (ảo)' : ''}${o.teacher ? ' 👩‍🏫' : ''}</b>${st.teacher && !o.teacher && o.status ? `<small>${esc(o.status)}</small>` : ''}`;
       if (html !== c.tagHtml) { c.tag.innerHTML = html; c.tagHtml = html; }
-      const p = new T.Vector3(x, 1.5, y).project(camera);
+      const p = new T.Vector3(x + o0[0], 1.5, y + o0[1]).project(camera);
       c.tag.style.transform = `translate(${(p.x * 0.5 + 0.5) * innerWidth}px,${(-p.y * 0.5 + 0.5) * innerHeight}px) translate(-50%,-100%)`;
       c.tag.style.display = p.z < 1 ? '' : 'none';
     });
     chars.forEach((c, id) => { if (!live.has(id)) { c.st.root.visible = false; c.tag.style.display = 'none'; } });
     // camera: nhìn chéo từ phía +x +z giống bản 2D, bám theo nhân vật
-    const f = st.focus;
+    const f0 = st.focus, oo = offOf(curId), f = { x: f0.x + oo[0], y: f0.y + oo[1] };
     const dist = (s.walls ? 5.8 : 9.5) * zoomK * (st.zoomRel || 1), elev = s.walls ? 0.62 : 0.48;
     const tgt = new T.Vector3(f.x, 0.7, f.y);
     const pos = new T.Vector3(f.x + dist * Math.cos(elev) * 0.7071, 0.9 + dist * Math.sin(elev), f.y + dist * Math.cos(elev) * 0.7071);
     if (!camPos || st.snap) { camPos = pos.clone(); camTgt = tgt.clone(); }
-    const k = Math.min(1, st.dt * 5); camPos.lerp(pos, k); camTgt.lerp(tgt, k);
+    seamT = Math.max(0, seamT - st.dt);
+    const k = Math.min(1, st.dt * (seamT > 0 ? 2.2 : 5)); camPos.lerp(pos, k); camTgt.lerp(tgt, k);
+    sunDisc.position.set(camPos.x + 40, camPos.y + 38, camPos.z - 70);
     camera.position.copy(camPos); camera.lookAt(camTgt);
     // dẫn đường
-    if (st.guide) { arrow.visible = true; arrow.position.set(st.guide.x, 0.9 + Math.abs(Math.sin(st.t * 3)) * 0.25, st.guide.y); arrow.rotation.y = st.t; } else arrow.visible = false;
-    dots.forEach((d, k2) => { const q = st.guidePts && st.guidePts[k2 * 2]; d.visible = !!q; if (q) { d.position.set(q.x, 0.015, q.y); d.material.opacity = 0.55 + 0.35 * Math.sin(st.t * 5 - k2); } });
-    if (st.clickMark) { ring.visible = true; const kk = st.clickMark.t / 0.6; ring.position.set(st.clickMark.x, 0.02, st.clickMark.y); ring.scale.setScalar(1 + kk * 1.5); ring.material.opacity = 1 - kk; } else ring.visible = false;
+    if (st.guide) { arrow.visible = true; arrow.position.set(st.guide.x + oo[0], 0.9 + Math.abs(Math.sin(st.t * 3)) * 0.25, st.guide.y + oo[1]); arrow.rotation.y = st.t; } else arrow.visible = false;
+    dots.forEach((d, k2) => { const q = st.guidePts && st.guidePts[k2 * 2]; d.visible = !!q; if (q) { d.position.set(q.x + oo[0], 0.03, q.y + oo[1]); d.material.opacity = 0.55 + 0.35 * Math.sin(st.t * 5 - k2); } });
+    if (st.clickMark) { ring.visible = true; const kk = st.clickMark.t / 0.6; ring.position.set(st.clickMark.x + oo[0], 0.03, st.clickMark.y + oo[1]); ring.scale.setScalar(1 + kk * 1.5); ring.material.opacity = 1 - kk; } else ring.visible = false;
     renderer.render(scene, camera);
   }
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -578,14 +675,15 @@ NL.w3 = (function () {
     const nd = new T.Vector2(sx / innerWidth * 2 - 1, -(sy / innerHeight) * 2 + 1);
     ray.r.setFromCamera(nd, camera);
     const hit = ray.r.intersectObjects(pickables, false)[0];
-    if (hit) return { x: hit.point.x, y: hit.point.z };
+    const oo = offOf(curId);
+    if (hit) return { x: hit.point.x - oo[0], y: hit.point.z - oo[1] };
     const t = -ray.r.ray.origin.y / ray.r.ray.direction.y; if (!(t > 0)) return null;
-    const p = ray.r.ray.origin.clone().addScaledVector(ray.r.ray.direction, t); return { x: p.x, y: p.z };
+    const p = ray.r.ray.origin.clone().addScaledVector(ray.r.ray.direction, t); return { x: p.x - oo[0], y: p.z - oo[1] };
   }
   function hitChar(sx, sy, list) {
     if (!ready) return null;
     return list.find(o => {
-      const a = new T.Vector3(o.rx, 0, o.ry).project(camera), b = new T.Vector3(o.rx, 1.3, o.ry).project(camera);
+      const oo = offOf(curId), a = new T.Vector3(o.rx + oo[0], 0, o.ry + oo[1]).project(camera), b = new T.Vector3(o.rx + oo[0], 1.3, o.ry + oo[1]).project(camera);
       const ax = (a.x * 0.5 + 0.5) * innerWidth, ay = (-a.y * 0.5 + 0.5) * innerHeight, by = (-b.y * 0.5 + 0.5) * innerHeight;
       const half = Math.max(16, (ay - by) * 0.22);
       return Math.abs(sx - ax) < half && sy < ay + 6 && sy > by - 6;
@@ -616,5 +714,5 @@ NL.w3 = (function () {
     });
   }
 
-  return { on, init, render, pick, hitChar, preview, get ready() { return ready; }, SKINS, HAIRS, HAIR_COLS, BODIES, FACES, makeChar };
+  return { on, init, render, pick, hitChar, preview, seamless: (a, b) => !!(LINK[a] && LINK[a].includes(b)), get ready() { return ready; }, SKINS, HAIRS, HAIR_COLS, BODIES, FACES, makeChar };
 })();

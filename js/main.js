@@ -144,10 +144,10 @@
   let fade = 0, fadeAt = 0, insideTrig = new Set();
   function goScene(id, spawn) {
     if ($('npcTalk')) $('npcTalk').classList.add('hidden');
-    const s = NL.scenes[id];
+    const s = NL.scenes[id], seam = USE3D && NL.w3.ready && NL.w3.seamless(g.scene, id);
     g.scene = id;
     const sp = (s.spawns[spawn] || s.spawns.default);
-    g.x = sp.x; g.y = sp.y; g.path = null; fade = 1; fadeAt = performance.now();
+    g.x = sp.x; g.y = sp.y; g.path = null; fade = seam ? 0 : 1; fadeAt = performance.now() - (seam ? 1000 : 0);
     insideTrig = new Set(s.triggers.filter(tr => inRect(tr, g.x, g.y)).map(tr => tr));
     $('hudFloor').textContent = s.title;
     $('hudFloor').style.background = s.subject ? s.subject.color : '#fff';
