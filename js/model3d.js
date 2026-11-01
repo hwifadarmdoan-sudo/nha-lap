@@ -28,12 +28,12 @@ NL.MODELS = [
   { id: 'LM1', no: 1, floor: 2, short: 'Hệ Mặt Trời', name: 'Hệ Mặt Trời, nhật thực và nguyệt thực', icon: '🪐' },
   { id: 'LM2', no: 2, floor: 2, short: 'Nguyên tử Bohr', name: 'Nguyên tử Rutherford – Bohr', icon: '⚛️' },
   { id: 'LM3', no: 3, floor: 2, short: 'Đường sức từ', name: 'Đường sức từ của nam châm và ống dây', icon: '🧲' },
-  { id: 'LM4', no: 4, floor: 2, short: 'Máy biến áp', name: 'Máy biến áp một pha', icon: '🔌' },
+  { id: 'LM4', no: 4, floor: 2, short: 'Máy biến áp', name: 'Máy biến áp và truyền tải điện', icon: '🔌' },
   { id: 'LM5', no: 5, floor: 2, short: 'Động cơ điện', name: 'Động cơ điện một chiều', icon: '⚙️' },
-  { id: 'LM6', no: 6, floor: 2, short: 'Thấu kính', name: 'Ảnh qua thấu kính', icon: '🔍' },
+  { id: 'LM6', no: 6, floor: 2, short: 'Thấu kính', name: 'Thấu kính, mắt cận và mắt viễn', icon: '🔍' },
   { id: 'LM7', no: 7, floor: 2, short: 'Máy phát điện', name: 'Máy phát điện xoay chiều', icon: '🌀' },
-  { id: 'LM8', no: 8, floor: 2, short: 'Sóng điện từ', name: 'Sóng điện từ và thang sóng', icon: '📡' },
-  { id: 'LM9', no: 9, floor: 2, short: 'Phóng xạ', name: 'Phóng xạ α, β, γ', icon: '☢️' },
+  { id: 'LM8', no: 8, floor: 2, short: 'Sóng điện từ', name: 'Sóng điện từ, thang sóng và ăng-ten', icon: '📡' },
+  { id: 'LM9', no: 9, floor: 2, short: 'Phóng xạ', name: 'Phóng xạ α, β, γ và chu kì bán rã', icon: '☢️' },
   { id: 'LM10', no: 10, floor: 2, short: 'Sợi quang', name: 'Sợi quang và phản xạ toàn phần', icon: '💡' }
 ];
 
