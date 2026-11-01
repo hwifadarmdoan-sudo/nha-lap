@@ -1,4 +1,4 @@
-// Khung xem mô hình 3D dùng chung cho 10 mô hình Sinh (tầng 4) và 10 mô hình Hóa (tầng 3).
+// Khung xem mô hình 3D dùng chung cho 10 mô hình Sinh (tầng 4), 10 mô hình Hóa (tầng 3) và 10 mô hình Lí (tầng 2).
 // Mỗi mô hình gọi NL.m3d.register(id, { title, tabs, build(api, tab), data(api), quizKey }).
 // three.js chỉ được tải khi mở mô hình đầu tiên để trò chơi vào nhanh.
 window.NL = window.NL || {};
@@ -23,7 +23,18 @@ NL.MODELS = [
   { id: 'HM7', no: 7, floor: 3, short: 'Lò cao', name: 'Lò cao luyện gang', icon: '🏭' },
   { id: 'HM8', no: 8, floor: 3, short: 'Protein & đường', name: 'Protein và carbohydrate', icon: '🍞' },
   { id: 'HM9', no: 9, floor: 3, short: 'Điện phân', name: 'Bình điện phân', icon: '⚡' },
-  { id: 'HM10', no: 10, floor: 3, short: 'Nhà kính', name: 'Hiệu ứng nhà kính', icon: '🌍' }
+  { id: 'HM10', no: 10, floor: 3, short: 'Nhà kính', name: 'Hiệu ứng nhà kính', icon: '🌍' },
+  // Tầng 2 Lí: mã LM1–LM10 theo bản đặc tả "Môn Lí" 01/11
+  { id: 'LM1', no: 1, floor: 2, short: 'Hệ Mặt Trời', name: 'Hệ Mặt Trời, nhật thực và nguyệt thực', icon: '🪐' },
+  { id: 'LM2', no: 2, floor: 2, short: 'Nguyên tử Bohr', name: 'Nguyên tử Rutherford – Bohr', icon: '⚛️' },
+  { id: 'LM3', no: 3, floor: 2, short: 'Đường sức từ', name: 'Đường sức từ của nam châm và ống dây', icon: '🧲' },
+  { id: 'LM4', no: 4, floor: 2, short: 'Máy biến áp', name: 'Máy biến áp một pha', icon: '🔌' },
+  { id: 'LM5', no: 5, floor: 2, short: 'Động cơ điện', name: 'Động cơ điện một chiều', icon: '⚙️' },
+  { id: 'LM6', no: 6, floor: 2, short: 'Thấu kính', name: 'Ảnh qua thấu kính', icon: '🔍' },
+  { id: 'LM7', no: 7, floor: 2, short: 'Máy phát điện', name: 'Máy phát điện xoay chiều', icon: '🌀' },
+  { id: 'LM8', no: 8, floor: 2, short: 'Sóng điện từ', name: 'Sóng điện từ và thang sóng', icon: '📡' },
+  { id: 'LM9', no: 9, floor: 2, short: 'Phóng xạ', name: 'Phóng xạ α, β, γ', icon: '☢️' },
+  { id: 'LM10', no: 10, floor: 2, short: 'Sợi quang', name: 'Sợi quang và phản xạ toàn phần', icon: '💡' }
 ];
 
 NL.m3d = (function () {
