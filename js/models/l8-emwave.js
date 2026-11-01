@@ -53,7 +53,7 @@
     api.toggle({ label: '💧 Cho sóng đi vào nước', value: false, onChange(v) { s.water = v; refresh(); } });
     api.checklist([{ k: 'E', label: 'Điện trường E' }, { k: 'B', label: 'Từ trường B' }]);
     api.note('❓ Khi sóng đi từ chân không vào nước, đại lượng nào <b>giữ nguyên</b>?');
-    const qa = api.note('');
+    const qa = api.note('<span style="opacity:.6">Chọn một đáp án bên dưới.</span>');
     api.choices({ label: '', items: [{ t: 'Tốc độ', v: 'v' }, { t: 'Bước sóng', v: 'l' }, { t: 'Tần số', v: 'f' }], value: -1, onPick(v) {
       if (v === 'f') { qa.set('✅ Đúng. Tần số do nguồn phát quyết định. Vào nước, tốc độ giảm nên bước sóng ngắn lại.'); api.beep(880, 0.12, 'sine', 0.1); }
       else { qa.set('❌ Chưa đúng.'); api.warn(null, 'Bật "Cho sóng đi vào nước" và quan sát: trong nước các đỉnh sóng <b>dồn sát lại</b> (bước sóng ngắn đi) và sóng đi chậm hơn. Nhưng số dao động mỗi giây ở hai bên không đổi: <b>tần số giữ nguyên</b>.<br>Công thức: v = c/n, λ = v/f.', '🤔 Xem lại'); }

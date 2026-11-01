@@ -70,7 +70,7 @@
     api.button('⏸ Dừng hình / ▶ Chạy tiếp', () => { s.pause = !s.pause; });
     api.checklist([{ k: 'field', label: 'Đường sức từ' }, { k: 'normal', label: 'Pháp tuyến của khung' }]);
     api.note('❓ Khi mặt khung <b>song song</b> với đường sức thì từ thông qua khung bằng 0. Lúc đó suất điện động cảm ứng bằng bao nhiêu?');
-    const qa = api.note('');
+    const qa = api.note('<span style="opacity:.6">Chọn một đáp án bên dưới.</span>');
     api.choices({ label: '', items: [{ t: 'Bằng 0', v: 0 }, { t: 'Lớn nhất', v: 1 }], value: -1, onPick(v) {
       if (v === 1) { qa.set('✅ Đúng. Suất điện động phụ thuộc <b>tốc độ biến thiên</b> của từ thông, không phụ thuộc từ thông lớn hay nhỏ. Lúc từ thông qua 0, nó đổi nhanh nhất.'); api.beep(880, 0.12, 'sine', 0.1); }
       else { qa.set('❌ Chưa đúng, xem giải thích.'); api.warn(null, 'Từ thông bằng 0 không có nghĩa là suất điện động bằng 0. Định luật Faraday: e = −ΔΦ/Δt, tức e phụ thuộc từ thông <b>thay đổi nhanh hay chậm</b>.<br>Bấm Dừng hình đúng lúc mặt khung song song đường sức (mũi tên tím vuông góc đường sức) và nhìn dải đồ thị: đường từ thông Φ đi qua 0 đúng lúc đường e đạt đỉnh.', '🤔 Từ thông và suất điện động'); }
