@@ -36,7 +36,16 @@ NL.audio = (function () {
     unlock() { [523, 659, 784, 1046].forEach((f, i) => tone(f, 0.25, 'triangle', 0.18, i * 0.08)); },
     success() { [523, 659, 784, 1046, 784, 1046].forEach((f, i) => tone(f, 0.3, 'triangle', 0.22, i * 0.11)); },
     door() { tone(220, 0.5, 'sine', 0.08); },
-    hum() { tone(180, 1.6, 'sawtooth', 0.025); }
+    hum() { tone(180, 1.6, 'sawtooth', 0.025); },
+    // tầng Lí: tia lửa điện, còi báo, tiếng tích tắc
+    zap() {
+      if (!ctx) return;
+      const n = ctx.sampleRate * 0.35, b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0);
+      for (let k = 0; k < n; k++) d[k] = (Math.random() * 2 - 1) * Math.pow(1 - k / n, 2) * (Math.random() < 0.3 ? 1 : 0.3);
+      const s = ctx.createBufferSource(), g = ctx.createGain(); g.gain.value = 0.35; s.buffer = b; s.connect(g); g.connect(master); s.start();
+    },
+    alarm() { [0, 0.24, 0.48].forEach(w => { tone(880, 0.11, 'square', 0.07, w); tone(440, 0.11, 'square', 0.07, w + 0.12); }); },
+    tick() { tone(2200, 0.03, 'square', 0.05); }
   };
 
   // Nhạc nền: hợp âm rải ngũ cung nhẹ; nhạc nhảy: nhanh, có trống.

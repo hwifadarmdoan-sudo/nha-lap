@@ -77,13 +77,14 @@ NL.lineSVG = function (spec, W, H) {
   (spec.marks || []).forEach(m => { s += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${Y(m.y)}" y2="${Y(m.y)}" stroke="${m.color || '#E5534B'}" stroke-dasharray="6 5" stroke-width="2"/><text x="${W - pad.r}" y="${Y(m.y) - 5}" font-size="12" font-weight="800" fill="${m.color || '#E5534B'}" text-anchor="end">${m.label || ''}</text>`; });
   spec.series.forEach(se => {
     if (!se.points.length) return;
-    s += `<polyline fill="none" stroke="${se.color}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" points="${se.points.map(p => X(p[0]) + ',' + Y(p[1])).join(' ')}"/>`;
-    if (se.points.length <= 24) se.points.forEach(p => { s += `<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="4.5" fill="#fff" stroke="${se.color}" stroke-width="3"/>`; });
+    // se.dots: chỉ chấm điểm đo, không nối; se.dash: đường lý thuyết nét đứt
+    if (!se.dots) s += `<polyline fill="none" stroke="${se.color}" stroke-width="${se.dash ? 2.5 : 3.5}"${se.dash ? ' stroke-dasharray="8 6"' : ''} stroke-linejoin="round" stroke-linecap="round" points="${se.points.map(p => X(p[0]) + ',' + Y(p[1])).join(' ')}"/>`;
+    if (!se.dash && (se.dots || se.points.length <= 24)) se.points.forEach(p => { s += `<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="4.5" fill="#fff" stroke="${se.color}" stroke-width="3"/>`; });
   });
   s += `<text x="${pad.l}" y="16" font-size="13" font-weight="800" fill="#6C88A3">${spec.yLabel || ''}</text>`;
   s += `<text x="${W - pad.r}" y="${H - 4}" font-size="13" font-weight="800" fill="#6C88A3" text-anchor="end">${spec.xLabel || ''}</text>`;
   let lx = W - pad.r;
-  spec.series.slice().reverse().forEach(se => {
+  spec.series.filter(se => se.name && !se.dash).reverse().forEach(se => {
     const w = se.name.length * 7 + 26; lx -= w;
     s += `<rect x="${lx}" y="6" width="12" height="12" rx="3" fill="${se.color}"/><text x="${lx + 16}" y="16" font-size="13" font-weight="800" fill="#1F4E79">${se.name}</text>`;
   });

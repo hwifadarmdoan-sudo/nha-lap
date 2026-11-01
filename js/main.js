@@ -187,7 +187,7 @@
   // Lối tắt vào thẳng thí nghiệm: ?tn=2A, ?tn=2B… hoặc số phòng ?tn=1 … ?tn=10
   const TN = (() => {
     const q = (params.get('tn') || '').toLowerCase(); if (!q) return null;
-    const alias = { bubbles: '2A', bot: '2A', plasmo: '2B', co: '2B', enzyme: '2C', mendel: '2D', dna: '2E', gel: '2E', hohap: '2F', tim: '2G', naymam: '2H', nguyenphan: '2I', quanthe: '2J', kimloai: 'H1', chuando: 'H2', dienli: 'H3', khi: 'H4', traodoi: 'H5', ester: 'H6', anmon: 'H7', dotchay: 'H8', thamtu: 'H9', dinhsat: 'H10' };
+    const alias = { bubbles: '2A', bot: '2A', plasmo: '2B', co: '2B', enzyme: '2C', mendel: '2D', dna: '2E', gel: '2E', hohap: '2F', tim: '2G', naymam: '2H', nguyenphan: '2I', quanthe: '2J', kimloai: 'H1', chuando: 'H2', dienli: 'H3', khi: 'H4', traodoi: 'H5', ester: 'H6', anmon: 'H7', dotchay: 'H8', thamtu: 'H9', dinhsat: 'H10', ohm: 'L1', song: 'L2', khucxa: 'L3', conlac: 'L4', rlc: 'L5', faraday: 'L6', young: 'L7', coanang: 'L8', dientro: 'L9', quangdien: 'L10' };
     const e = findRoom(alias[q] || q);
     return e ? e.id : null;
   })();
@@ -204,7 +204,7 @@
     if (g.unlocked) $('emoSpecial').classList.remove('locked');
     if (isTouch) $('joy').classList.add('on');
     if (TN) { g.tut.elevator = 1; goScene('lab-' + TN, 'default'); $('btnLab').click(); return; }
-    if (MH) { g.tut.elevator = 1; goScene(NL.MODELS.find(m => m.id === MH).floor === 3 ? 'models3' : 'models', 'default'); openModel(MH); return; }
+    if (MH) { g.tut.elevator = 1; goScene({ 4: 'models', 3: 'models3', 2: 'models2' }[NL.MODELS.find(m => m.id === MH).floor], 'default'); openModel(MH); return; }
     goScene('outside', 'default');
     if (!g.tutDone) {
       $('tutMove').textContent = isTouch ? 'Kéo cần tròn ở góc trái để đi, hoặc chạm xuống sàn' : 'Đi bằng phím mũi tên hoặc W A S D, hoặc bấm chuột xuống sàn';
@@ -416,7 +416,8 @@
     NL.audio.play('click');
     const grid = $('jumpGrid'); grid.innerHTML = '';
     const curF = (NL.scenes[g.scene] || {}).floor;
-    (curF === 3 ? [3, 4] : [4, 3]).forEach(f => {
+    [curF].concat([4, 3, 2].filter(f => f !== curF)).forEach(f => {
+      if (!NL.SUBJECTS[f]) return;
       const list = NL.EXPERIMENTS.filter(e => e.floor === f && e.ready); if (!list.length) return;
       const h = document.createElement('div'); h.className = 'jump-floor'; h.textContent = `${NL.SUBJECTS[f].icon} Tầng ${f} · ${NL.SUBJECTS[f].name}`; grid.appendChild(h);
       list.forEach(e => {
@@ -425,12 +426,12 @@
         b.onclick = () => jumpTo(e); grid.appendChild(b);
       });
     });
-    $('jumpNote').textContent = 'Thầy cô gửi link vào thẳng phòng: ' + location.origin + location.pathname + '?tn=<mã phòng, ví dụ 3 hoặc H3>';
+    $('jumpNote').textContent = 'Thầy cô gửi link vào thẳng phòng: ' + location.origin + location.pathname + '?tn=<mã phòng, ví dụ 3, H3 hoặc L3>';
     $('jumpIn').value = ''; $('jump').classList.remove('hidden');
   });
   $('jumpForm').addEventListener('submit', ev => {
     ev.preventDefault(); const e = findRoom($('jumpIn').value);
-    if (e) jumpTo(e); else $('jumpNote').textContent = 'Không có phòng này. Phòng Sinh nhập số 1–10, phòng Hóa nhập H1–H10 nhé';
+    if (e) jumpTo(e); else $('jumpNote').textContent = 'Không có phòng này. Phòng Sinh nhập số 1–10, phòng Hóa nhập H1–H10, phòng Lí nhập L1–L10 nhé';
   });
   $('jumpClose').addEventListener('click', () => { NL.audio.play('click'); $('jump').classList.add('hidden'); });
 

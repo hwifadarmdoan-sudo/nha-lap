@@ -6,7 +6,7 @@ window.NL = window.NL || {};
   NL.SUBJECTS = {
     4: { name: 'Sinh học', color: '#3FB37F', icon: '🌿', A: 'Đếm bọt khí rong', B: 'Co nguyên sinh', ready: true },
     3: { name: 'Hóa học', color: '#9B6BD6', icon: '⚗️', ready: true },
-    2: { name: 'Vật lí', color: '#3D8BD9', icon: '🧲', A: 'Con lắc đơn', B: 'Khúc xạ ánh sáng', ready: false }
+    2: { name: 'Vật lí', color: '#3D8BD9', icon: '🧲', ready: true }
   };
   // Tầng 4 Sinh: 10 phòng theo thứ tự trong bản đặc tả "Môn Sinh" (29/10). Mã phòng 2A, 2B giữ như cũ để không mất kết quả đã lưu.
   NL.EXPERIMENTS = [
@@ -31,8 +31,17 @@ window.NL = window.NL || {};
     { id: 'H8', floor: 3, no: 8, short: 'Đốt hydrocarbon', name: 'Đốt cháy hydrocarbon', icon: '🕯️', grade: 'Hóa 11 · Hydrocarbon', hook: 'Bếp gas cháy lửa xanh, còn nến cháy lại có muội đen. Vì sao?', ready: true },
     { id: 'H9', floor: 3, no: 9, short: 'Thám tử ion', name: 'Thám tử ion kim loại', icon: '🕵️', grade: 'Hóa 12 · Nhận biết ion kim loại', hook: 'Phòng kiểm nghiệm nhận ra kim loại lạ trong nước nhờ màu kết tủa đặc trưng.', ready: true },
     { id: 'H10', floor: 3, no: 10, short: 'Đinh sắt + CuSO₄', name: 'Đinh sắt trong dung dịch CuSO₄', icon: '🟤', grade: 'KHTN 9 · Dãy hoạt động hóa học của kim loại', hook: 'Ngày xưa người ta lấy đồng bằng cách ngâm sắt vụn trong nước mỏ có muối đồng.', ready: true },
-    { id: '4A', floor: 2, name: 'Con lắc đơn', ready: false },
-    { id: '4B', floor: 2, name: 'Khúc xạ qua lăng kính', ready: false }
+    // Tầng 2 Lí: 10 phòng theo bản đề xuất 1/11 (mã L1–L10).
+    { id: 'L1', floor: 2, no: 1, short: 'Định luật Ohm', name: 'Định luật Ohm: cánh tay robot', icon: '🤖', grade: 'KHTN 9 · Điện · Vật lí 11 · Dòng điện không đổi', hook: 'Cắm nhầm bộ sạc có hiệu điện thế cao, đồ điện tử có thể cháy. Vì sao?', ready: true },
+    { id: 'L2', floor: 2, no: 2, short: 'Giao thoa sóng nước', name: 'Giao thoa sóng nước: trạm cứu nạn', icon: '🌊', grade: 'Vật lí 11 · Sóng', hook: 'Ném hai hòn đá cùng lúc xuống ao: có những vệt nước lặng xen giữa những vệt sóng mạnh.', ready: true },
+    { id: 'L3', floor: 2, no: 3, short: 'Khúc xạ ánh sáng', name: 'Khúc xạ ánh sáng: drone laser', icon: '🔦', grade: 'KHTN 9 · Ánh sáng', hook: 'Cắm chiếc đũa vào cốc nước, đũa trông như bị gãy ở mặt nước.', ready: true },
+    { id: 'L4', floor: 2, no: 4, short: 'Con lắc đơn', name: 'Con lắc đơn: đại đồng hồ', icon: '⏱️', grade: 'Vật lí 11 · Dao động', hook: 'Đồng hồ quả lắc chạy đúng giờ hay sai giờ là do chiều dài của quả lắc.', ready: true },
+    { id: 'L5', floor: 2, no: 5, short: 'Cộng hưởng RLC', name: 'Cộng hưởng điện: radio cổ', icon: '📻', grade: 'Vật lí 12 · Chuyên đề Dòng điện xoay chiều', hook: 'Vặn núm dò đài radio chính là đi tìm điểm cộng hưởng của mạch điện.', ready: true },
+    { id: 'L6', floor: 2, no: 6, short: 'Cảm ứng điện từ', name: 'Cảm ứng điện từ: bàn của Faraday', icon: '🧲', grade: 'KHTN 9 · Vật lí 12 · Từ trường', hook: 'Đèn xe đạp sáng nhờ núm dynamo quay theo bánh xe, không cần pin.', ready: true },
+    { id: 'L7', floor: 2, no: 7, short: 'Khe Young', name: 'Giao thoa ánh sáng qua khe Young', icon: '🌈', grade: 'Vật lí 11 · Sóng', hook: 'Bong bóng xà phòng và váng dầu có màu óng ánh nhờ giao thoa ánh sáng.', ready: true },
+    { id: 'L8', floor: 2, no: 8, short: 'Bảo toàn cơ năng', name: 'Bảo toàn cơ năng: ván trượt', icon: '🛹', grade: 'KHTN 9 · Vật lí 10 · Năng lượng', hook: 'Tàu lượn siêu tốc không có động cơ đẩy ở các con dốc sau mà vẫn chạy hết đường ray.', ready: true },
+    { id: 'L9', floor: 2, no: 9, short: 'Điện trở dây dẫn', name: 'Điện trở phụ thuộc chiều dài, tiết diện, vật liệu', icon: '🎸', grade: 'KHTN 9 · Điện', hook: 'Dây điện của bếp từ to hơn hẳn dây sạc điện thoại. Vì sao?', ready: true },
+    { id: 'L10', floor: 2, no: 10, short: 'Quang điện', name: 'Hiện tượng quang điện ngoài', icon: '☀️', grade: 'Vật lí 12 · Chuyên đề Vật lí lượng tử', hook: 'Năm 1905, Einstein giải thích hiện tượng này bằng hạt ánh sáng và sau đó nhận giải Nobel.', ready: true }
   ];
 
   // ---------- vẽ đồ vật ----------
@@ -331,9 +340,8 @@ window.NL = window.NL || {};
       spawns: { default: { x: 8, y: 1.6 }, fromElev: { x: 8, y: 1.6 }, fromLabA: { x: 2.25, y: 1.5 }, fromLabB: { x: 13.75, y: 1.5 } }
     };
   }
-  S.f2 = floorScene(2);
 
-  // Tầng môn học có 10 phòng (Sinh tầng 4, Hóa tầng 3): hành lang dài, 5 phòng mỗi bên thang máy.
+  // Tầng môn học có 10 phòng (Sinh tầng 4, Hóa tầng 3, Lí tầng 2): hành lang dài, 5 phòng mỗi bên thang máy.
   function subjectFloor(f) {
     const sub = NL.SUBJECTS[f], W = 28, exps = NL.EXPERIMENTS.filter(e => e.floor === f), hasModels = !!(NL.MODELS && NL.MODELS.some(m => m.floor === f)), roomId = f === 4 ? 'models' : 'models' + f;
     const doorX = k => k < 5 ? 0.6 + k * 2.45 : 15.6 + (k - 5) * 2.45;
@@ -374,6 +382,7 @@ window.NL = window.NL || {};
   }
   S.f4 = subjectFloor(4);
   S.f3 = subjectFloor(3);
+  S.f2 = subjectFloor(2);
 
 
   function labScene(e) {
@@ -431,7 +440,7 @@ window.NL = window.NL || {};
     });
     return s;
   }
-  if (NL.MODELS) { S.models = modelRoom(4); S.models3 = modelRoom(3); }
+  if (NL.MODELS) { S.models = modelRoom(4); S.models3 = modelRoom(3); if (NL.MODELS.some(m => m.floor === 2)) S.models2 = modelRoom(2); }
   NL.scenes = S;
 
   // ---------- đi lại ----------
