@@ -5,7 +5,8 @@
   --r:18px; --shadow:0 6px 0 rgba(31,78,121,.18), 0 10px 24px rgba(31,78,121,.18);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overflow:hidden;background:var(--sky);font-family:'Baloo 2',system-ui,sans-serif;color:var(--ink);user-select:none;-webkit-user-select:none;touch-action:none}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--sky);font-family:'Baloo 2',system-ui,sans-serif;color:var(--ink);user-select:none;-webkit-user-select:none;touch-action:pan-x pan-y;overscroll-behavior:none}
+canvas{touch-action:none}
 canvas#world{position:fixed;inset:0;width:100%;height:100%;display:block}
 .hidden{display:none!important}
 button{font-family:inherit;cursor:pointer;border:0}
@@ -366,6 +367,7 @@ body.film #hud,body.film #teacher,body.film .t-alert{display:none!important}
   .m3d-info{top:58px;width:min(250px,40vw)}
   .m3d-tools .btn.small{font-size:13px;padding:5px 10px}
   .m3d-sidebtn{display:grid;top:auto;bottom:12px}
+  .m3d.has-strip .m3d-side{bottom:calc(var(--sh,62px) + 8px)}
   .m3d-dgrid{grid-template-columns:1fr}
 }
 .m3d-ov{position:absolute;z-index:3}
@@ -487,3 +489,8 @@ canvas#world3d{position:fixed;inset:0;width:100%;height:100%;display:block}
 .hm-bl{left:12px;bottom:62px;pointer-events:none}
 .m3d.has-strip .hm-bl,.m3d.has-strip .hm-tl{bottom:calc(var(--sh,110px) + 58px)}
 @media (max-height:500px){.title-mark{display:none}.title-brand{margin:-6px 0 2px}}
+/* Cho phép vuốt lên xuống trong các bảng cuộn (html, body đang chặn mọi thao tác chạm mặc định) */
+.m3d-side,.m3d-info,.m3d-dbox,.m3d-tw,.m3d-seq,.m3d-popbox,.t-panel,.t-list,.data-card,.rep-page,.tres-scroll,.quiz-card{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.m3d-more{position:sticky;bottom:-8px;margin-top:-4px;align-self:center;background:var(--navy);color:#fff;font-weight:800;font-size:12.5px;padding:3px 12px;border-radius:999px;box-shadow:0 3px 8px rgba(0,0,0,.25);pointer-events:none;flex:none;transition:opacity .25s;animation:nudge 1.4s ease-in-out infinite}
+.m3d-more.gone{opacity:0}
+@keyframes nudge{50%{transform:translateY(-3px)}}

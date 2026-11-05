@@ -425,7 +425,7 @@ window.NL = window.NL || {};
         { kind: 'window', side: 'W', a: 2, b: 4.6 }
       ],
       objects: [
-        { kind: 'plant', x: 0.3, y: 7.9, w: 0.8, d: 0.8, solid: true }, { kind: 'plant', x: 12.9, y: 7.9, w: 0.8, d: 0.8, solid: true },
+        { kind: 'plant', x: 0.3, y: 7.9, w: 0.8, d: 0.8, solid: true }, { kind: 'plant', x: 10.9, y: 7.9, w: 0.8, d: 0.8, solid: true },
         { kind: 'plant', x: 12.9, y: 0.3, w: 0.8, d: 0.8, solid: true }
       ],
       triggers: [{ x1: 12.4, y1: 8.4, x2: 14, y2: 9, type: 'goto', to: 'f' + f, spawn: 'fromModels' }],

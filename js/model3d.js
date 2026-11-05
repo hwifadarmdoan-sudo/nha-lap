@@ -232,8 +232,15 @@ NL.m3d = (function () {
     st.tab = v;
     ui.tabs.querySelectorAll('.m3d-tab').forEach((b, k) => b.classList.toggle('on', (st.def.tabs || [])[k] && st.def.tabs[k].v === v));
     st.def.build(api, v);
+    moreHint();
     if (!st.home) view({ pos: [0, 2, 12], target: [0, 0, 0] });
     homeView(true);
+  }
+  // nhãn "vuốt xem thêm" ở đáy bảng điều khiển khi còn nội dung bên dưới (điện thoại thấp màn hình)
+  function moreHint() {
+    const m = document.createElement('div'); m.className = 'm3d-more'; m.textContent = '⌄ Vuốt lên xem thêm'; ui.side.appendChild(m);
+    const upd = () => m.classList.toggle('gone', ui.side.scrollTop + ui.side.clientHeight >= ui.side.scrollHeight - 12);
+    ui.side.onscroll = upd; requestAnimationFrame(upd); setTimeout(upd, 400);
   }
   function close() {
     if (!st) return;
