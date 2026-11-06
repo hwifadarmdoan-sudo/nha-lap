@@ -80,7 +80,7 @@
         const p = V((R() * 2 - 1) * inner.x * m, (R() * 2 - 1) * inner.y * m, (R() * 2 - 1) * inner.z * m);
         if (!plant && p.length() > 3.3 * m) continue;
         if (p.distanceTo(nucPos) < 1.9) continue;
-        if (plant && Math.abs(p.x - 0.9) < 2.3 && Math.abs(p.y) < 2.0 && Math.abs(p.z) < 2.0) continue;
+        if (plant && Math.abs(p.x - 1.9) < 3.0 && Math.abs(p.y) < 2.7 && Math.abs(p.z) < 2.7) continue;
         return p;
       }
       return V(0, 0, 0);
@@ -120,12 +120,17 @@
     // lưới nội chất hạt: các túi dẹt uốn quanh nhân, có hạt ribosome
     const rer = api.group(null, [nucPos.x, nucPos.y, nucPos.z]);
     const riboPts = [];
+    const a0 = plant ? 0.9 : 0.6, r0 = plant ? 1.55 : 1.75, dr = plant ? 0.2 : 0.26;
+    // túi dẹt đầu tiên nối liền với màng ngoài của màng nhân
+    const link = api.mesh(new T.TorusGeometry(1.42, 0.06, 6, 40, 0.9), api.mat(0x5FA8D3, { opacity: 0.95 }), null, rer); link.scale.set(1, 1, 2.4); link.rotation.set(Math.PI / 2, 0, a0 + 0.5);
     for (let k = 0; k < 5; k++) {
-      const r = 1.75 + k * 0.28, arc = 2.4 - k * 0.15;
+      const r = r0 + k * dr, arc = 2.4 - k * 0.15;
       const t = api.mesh(new T.TorusGeometry(r, 0.07, 6, 48, arc), api.mat(0x5FA8D3, { opacity: 0.95 }), null, rer);
-      t.scale.set(1, 1, 3.2); t.rotation.set(Math.PI / 2, 0, 0.6 + k * 0.08);
-      for (let j = 0; j < 26; j++) { const a = 0.6 + k * 0.08 + (j / 26) * arc; riboPts.push(V(nucPos.x + Math.cos(a) * (r + 0.09), nucPos.y + Math.sin(a) * (r + 0.09), nucPos.z + (R() - 0.5) * 0.4)); }
+      t.scale.set(1, 1, 3.2); t.rotation.set(Math.PI / 2, 0, a0 + k * 0.08);
+      if (k) { const b = api.mesh(new T.TorusGeometry(r - dr / 2, 0.05, 6, 10, 0.25), api.mat(0x5FA8D3), null, rer); b.scale.set(1, 1, 1.2); b.rotation.set(Math.PI / 2, 0, a0 + k * 0.08 + 0.9); }
+      for (let j = 0; j < 26; j++) { const a = a0 + k * 0.08 + (j / 26) * arc; riboPts.push(V(nucPos.x + Math.cos(a) * (r + 0.09), nucPos.y + Math.sin(a) * (r + 0.09), nucPos.z + (R() - 0.5) * 0.4)); }
     }
+    const rerEdge = nucPos.clone().add(V(Math.cos(a0 + 2.3) * (r0 + 2 * dr), Math.sin(a0 + 2.3) * (r0 + 2 * dr), 0.4));
     api.part(api.tag(rer, 'rer'), INFO.rer);
     // ribosome trên lưới và tự do
     const nFree = 160;
@@ -135,23 +140,25 @@
     api.root.add(ribo); api.part(api.tag(ribo, 'ribo'), INFO.ribo);
 
     // lưới nội chất trơn: ống phân nhánh
-    const ser = api.group(null, plant ? [-0.6, -1.9, 1.4] : [1.2, -1.4, 1.2]);
+    const ser = api.group(null, [rerEdge.x, rerEdge.y, rerEdge.z]);
     for (let k = 0; k < 6; k++) {
-      const pts = []; let p = V(R() - 0.5, R() - 0.5, R() - 0.5);
-      for (let j = 0; j < 6; j++) { pts.push(p.clone()); p.add(V(R() - 0.5, R() - 0.5, R() - 0.5).multiplyScalar(0.9)); }
+      const pts = []; let p = V(0, 0, 0);
+      const dir = V(-Math.sin(a0 + 2.3), Math.cos(a0 + 2.3), 0).multiplyScalar(plant ? -1 : 1);
+      for (let j = 0; j < 6; j++) { pts.push(p.clone()); p.add(V(R() - 0.5, R() - 0.5, R() - 0.5).multiplyScalar(0.8).add(dir.clone().multiplyScalar(0.35))); }
       api.tube(pts, 0.09, 0xB7D86B, ser);
     }
     api.part(api.tag(ser, 'ser'), INFO.ser);
 
     // bộ máy Golgi
-    const golgiPos = plant ? V(-0.4, 1.9, -1.4) : V(1.8, 1.3, -0.8);
+    // bộ máy Golgi: 5 túi dẹt cong xếp chồng, nhỏ hơn nhân nhiều lần; mặt cis (lõm) quay về phía lưới nội chất, mặt trans hướng ra màng
+    const golgiPos = plant ? V(-0.6, 2.2, -1.2) : V(1.5, 1.4, -0.9);
     const golgi = api.group(null, [golgiPos.x, golgiPos.y, golgiPos.z]);
-    for (let k = 0; k < 6; k++) {
-      const t = api.mesh(new T.TorusGeometry(0.8 - k * 0.04, 0.07, 6, 32, 2.0), api.mat(0xE8C547), null, golgi);
-      t.scale.set(1, 1, 3.4); t.position.set(k * 0.17, 0, 0); t.rotation.set(Math.PI / 2, Math.PI / 2, 2.1);
+    for (let k = 0; k < 5; k++) {
+      const t = api.mesh(new T.TorusGeometry(0.46 - k * 0.03, 0.045, 6, 32, 2.0), api.mat(k < 2 ? 0xE8C547 : 0xF0D070), null, golgi);
+      t.scale.set(1, 1, 2.6); t.position.set(0, 0, 0.25 - k * 0.12); t.rotation.set(0, 0, -1.0);
     }
-    for (let k = 0; k < 7; k++) api.sphere(0.09, 0xF2D675, [0.9 + R() * 0.5, (R() - 0.5) * 1.2, (R() - 0.5) * 1.2], golgi, 10);
-    golgi.rotation.y = -0.6;
+    for (let k = 0; k < 6; k++) api.sphere(0.06, 0xF2D675, [(R() - 0.5) * 0.8, (R() - 0.5) * 0.8, -0.55 - R() * 0.35], golgi, 8);
+    golgi.lookAt(nucPos.x, nucPos.y, nucPos.z); // trục z địa phương chỉ về nhân/lưới nội chất: mặt cis gần lưới, túi vận chuyển tách ra ở mặt trans
     api.part(api.tag(golgi, 'golgi'), INFO.golgi);
     g.golgiPos = golgiPos;
 
@@ -162,8 +169,9 @@
     for (let k = 0; k < nMito; k++) {
       const m = api.group(flow), p = inside(0.82);
       m.position.copy(p); m.rotation.set(R() * 3, R() * 3, R() * 3);
-      api.mesh(new T.CapsuleGeometry(0.24, 0.62, 6, 14), api.mat(0xF2994A, { emissive: 0xFF5A00, emissiveIntensity: 0 }), null, m);
-      for (let j = 0; j < 4; j++) { const c = api.box(0.03, 0.34, 0.28, 0xC0571C, [0, -0.24 + j * 0.16, 0], m); c.rotation.x = 1.57; c.rotation.z = j % 2 ? 0.3 : -0.3; }
+      const mb = api.mesh(new T.CapsuleGeometry(0.24, 0.62, 6, 14), api.mat(0xF2994A, { emissive: 0xFF5A00, emissiveIntensity: 0, opacity: 0.78 }), null, m); mb.scale.set(1, 1, 0.85);
+      api.mesh(new T.CapsuleGeometry(0.19, 0.56, 6, 12), api.mat(0xC0571C, { opacity: 0.35, depthWrite: false }), null, m).userData.noPick = true;
+      for (let j = 0; j < 6; j++) { const c = api.box(0.035, 0.3, 0.26, 0xC0571C, [j % 2 ? 0.08 : -0.08, -0.33 + j * 0.13, 0], m); c.rotation.x = 1.57; c.rotation.z = j % 2 ? 0.25 : -0.25; }
       api.part(api.tag(m, 'mito'), INFO.mito);
     }
     // lysosome (động vật), peroxisome, glyoxysome (thực vật)
@@ -183,16 +191,16 @@
     if (plant) {
       for (let k = 0; k < 9; k++) {
         const c = api.group(flow), a = (k / 9) * Math.PI * 2;
-        c.position.set(Math.cos(a) * 3.9, (R() - 0.5) * 4.6, Math.sin(a) * 2.6 + (R() - 0.5));
-        if (Math.abs(c.position.x) < 3) c.position.y = c.position.y > 0 ? 2.7 : -2.7;
+        c.position.set(Math.cos(a) * 4.3, (R() - 0.5) * 4.6, Math.sin(a) * 2.9 + (R() - 0.5) * 0.4);
+        if (Math.abs(c.position.x) < 3.5) c.position.y = c.position.y > 0 ? 3.0 : -3.0;
         c.rotation.set(R(), R() * 3, R());
-        const body = api.mesh(new T.SphereGeometry(0.62, 28, 18), api.mat(0x3E9B4A, { opacity: 0.85 }), null, c); body.scale.set(1.4, 0.55, 0.85);
-        for (let j = 0; j < 4; j++) for (let h = 0; h < 3; h++) api.cyl(0.13, 0.13, 0.05, 0x1D5E2A, [-0.5 + j * 0.33, -0.08 + h * 0.07, 0], c, 12);
+        const body = api.mesh(new T.SphereGeometry(0.62, 28, 18), api.mat(0x3E9B4A, { opacity: 0.72 }), null, c); body.scale.set(1.4, 0.5, 0.85);
+        for (let j = 0; j < 4; j++) { for (let h = 0; h < 4; h++) api.cyl(0.12, 0.12, 0.035, 0x1D5E2A, [-0.5 + j * 0.33, -0.1 + h * 0.055, (j % 2 ? 0.12 : -0.12)], c, 12); if (j < 3) api.cyl(0.02, 0.02, 0.36, 0x2E7D3A, [-0.34 + j * 0.33, 0, 0], c, 6).rotation.z = Math.PI / 2; }
         api.part(api.tag(c, 'chloro'), INFO.chloro);
       }
       // không bào trung tâm
-      const vac = api.mesh(blobGeo(T, 1, 0.05, 2.2, 48), api.mat(0x8FD3F4, { opacity: 0.35, side: T.DoubleSide }));
-      vac.scale.set(2.3, 2.0, 2.0); vac.position.set(0.9, 0, 0);
+      const vac = api.mesh(roundBox(T, 5.8, 5.2, 5.2, 1.1), api.mat(0x8FD3F4, { opacity: 0.35, side: T.DoubleSide }));
+      vac.position.set(1.9, 0, 0);
       api.part(api.tag(vac, 'vacuole'), INFO.vacuole);
     }
     // trung thể
