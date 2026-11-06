@@ -165,46 +165,70 @@
   // ---------- Tab 2: tai ----------
   function earTab(api) {
     const T = api.T, V = api.V;
+    // ---- tai liền khối, lát cắt đứng ngang: tai ngoài (trái) → tai giữa → tai trong (phải), nằm trong xương thái dương bán trong suốt ----
+    const SKIN = 0xF2C2A8, BONEC = 0xF4EEDF, INNER = 0xF6C2D0;
+    const bone = api.box(6.4, 5.2, 3.0, api.mat(0xE9E2D2, { opacity: 0.16, depthWrite: false, roughness: 0.9 }), [1.0, -0.2, 0]); bone.userData.noPick = true;
+    api.label('Xương thái dương', [3.6, 2.2, 0], { cls: 'plain' });
     const outer = api.group(); api.tag(outer, 'drum');
-    const pin = api.sphere(1.6, api.mat(0xF2C2A8), [-5, 0.4, 0], outer, 32); pin.scale.set(0.3, 1.4, 1); api.part(pin, INFO.pinna);
-    const rim = api.mesh(new T.TorusGeometry(1.3, 0.18, 10, 36, Math.PI * 1.5), api.mat(0xE8B096), [-4.9, 0.5, 0], outer); rim.rotation.y = Math.PI / 2; rim.rotation.x = 0.6; rim.userData.noPick = true;
-    const canal = api.mesh(new T.CylinderGeometry(0.42, 0.38, 3.2, 24, 1, true), api.mat(0xF2C2A8, { opacity: 0.5, side: T.DoubleSide, depthWrite: false }), [-3.2, 0, 0], outer); canal.rotation.z = Math.PI / 2; api.part(canal, INFO.canal);
-    const drum = api.mesh(new T.CircleGeometry(0.5, 32), api.mat(0xF8E6C8, { side: T.DoubleSide, opacity: 0.9 }), [-1.6, 0, 0], outer); drum.rotation.y = Math.PI / 2 - 0.2; api.part(drum, INFO.drum);
+    // vành tai: tấm sụn cong có gờ luân, đối luân và dái tai; hơi xoay về phía người xem để thấy hình dạng
+    const pinna = api.group(outer, [-4.5, 0.3, 0]); pinna.rotation.y = 0.6;
+    const pin = api.sphere(1, api.mat(SKIN, { roughness: 0.8 }), [0, 0.1, 0], pinna, 32); pin.scale.set(0.16, 1.45, 1.0);
+    const helix = api.mesh(new T.TorusGeometry(1.22, 0.17, 10, 48, Math.PI * 1.45), api.mat(0xE8B096, { roughness: 0.8 }), [0.05, 0.25, 0], pinna); helix.rotation.y = Math.PI / 2; helix.rotation.x = -0.25; helix.userData.noPick = true;
+    const anti = api.mesh(new T.TorusGeometry(0.72, 0.1, 8, 36, Math.PI * 1.2), api.mat(0xE8B096, { roughness: 0.8 }), [0.1, 0.15, 0.1], pinna); anti.rotation.y = Math.PI / 2; anti.rotation.x = 0.1; anti.userData.noPick = true;
+    const lobe = api.sphere(0.42, api.mat(SKIN, { roughness: 0.8 }), [0.05, -1.3, 0.25], pinna, 20); lobe.scale.set(0.35, 0.55, 0.5);
+    api.part(pinna, INFO.pinna);
+    // ống tai ngoài cong chữ S đi vào xương thái dương, dài ≈ 2,5 cm
+    const canalCurve = new T.CatmullRomCurve3([V(-4.15, 0.15, 0), V(-3.4, 0.4, 0), V(-2.6, 0.0, 0), V(-1.75, 0.18, 0)]);
+    const canal = api.mesh(new T.TubeGeometry(canalCurve, 40, 0.36, 16, false), api.mat(SKIN, { opacity: 0.5, side: T.DoubleSide, depthWrite: false }), null, outer); api.part(canal, INFO.canal);
+    // màng nhĩ chắn cuối ống tai, đặt chếch
+    const drum = api.mesh(new T.CircleGeometry(0.44, 32), api.mat(0xF8E6C8, { side: T.DoubleSide, opacity: 0.9 }), [-1.7, 0.18, 0], outer); drum.rotation.y = Math.PI / 2 - 0.25; api.part(drum, INFO.drum);
+    // tai giữa: hốc chứa khí, chuỗi 3 xương nối liên tiếp từ màng nhĩ tới cửa sổ bầu dục
+    const cav = api.mesh(new T.CapsuleGeometry(0.55, 0.9, 6, 16), api.mat(0xFFF3E6, { opacity: 0.12, depthWrite: false }), [-1.15, 0.25, 0], null); cav.userData.noPick = true;
     const oss = api.group(); api.tag(oss, 'oss');
-    const mal = api.group(oss, [-1.45, 0.25, 0]); api.mesh(new T.CapsuleGeometry(0.06, 0.6, 4, 8), 0xF4EEDF, [0, -0.2, 0], mal); api.sphere(0.16, 0xF4EEDF, [0.05, 0.25, 0], mal, 12);
-    const inc = api.group(oss, [-1.05, 0.35, 0]); api.sphere(0.17, 0xF4EEDF, [0, 0, 0], inc, 12); api.mesh(new T.CapsuleGeometry(0.05, 0.45, 4, 8), 0xF4EEDF, [0.1, -0.3, 0], inc).rotation.z = 0.3;
-    const sta = api.group(oss, [-0.72, 0.0, 0]); const arch = api.mesh(new T.TorusGeometry(0.16, 0.035, 6, 16, Math.PI), 0xF4EEDF, [0, 0, 0], sta); arch.rotation.z = -Math.PI / 2; api.box(0.04, 0.38, 0.22, 0xF4EEDF, [0.17, 0, 0], sta);
+    const mal = api.group(oss, [-1.7, 0.18, 0]); // xương búa: cán dính vào màng nhĩ, đầu ở trên
+    api.mesh(new T.CapsuleGeometry(0.055, 0.55, 4, 8), BONEC, [0.12, 0.3, 0], mal).rotation.z = -0.35; api.sphere(0.15, BONEC, [0.26, 0.62, 0], mal, 12);
+    const inc = api.group(oss, [-1.2, 0.78, 0]); // xương đe: thân khớp với đầu búa, ngành dài đi xuống
+    api.sphere(0.16, BONEC, [0, 0, 0], inc, 12); api.mesh(new T.CapsuleGeometry(0.05, 0.5, 4, 8), BONEC, [0.16, -0.28, 0], inc).rotation.z = 0.35;
+    const sta = api.group(oss, [-0.98, 0.32, 0]); // xương bàn đạp: đầu khớp với ngành dài xương đe, đế áp vào cửa sổ bầu dục
+    const arch = api.mesh(new T.TorusGeometry(0.15, 0.03, 6, 16, Math.PI), BONEC, [0.16, 0, 0], sta); arch.rotation.z = -Math.PI / 2; api.box(0.04, 0.36, 0.2, BONEC, [0.33, 0, 0], sta);
     api.part(oss, INFO.oss);
-    const eus = api.tube([[-1.2, -0.5, 0], [-0.9, -1.4, 0.2], [-0.5, -2.6, 0.4]], 0.12, 0xE8A0A0); api.part(eus, INFO.eus); api.tag(eus, 'oss');
-    // ốc tai xoắn
-    const cg = api.group(null, [0.6, -0.3, 0]); api.tag(cg, 'coch');
-    const pts = []; for (let k = 0; k <= 120; k++) { const q = k / 120, a = q * Math.PI * 5, r = 1.1 * (1 - q * 0.75); pts.push(V(q * 0.9, r * Math.sin(a), r * Math.cos(a))); }
-    const cc = new T.CatmullRomCurve3(pts); const coch = api.mesh(new T.TubeGeometry(cc, 300, 0.22, 10), api.mat(0xF6C2D0, { opacity: 0.85 }), null, cg); api.part(coch, INFO.coch);
+    const oval = api.mesh(new T.CircleGeometry(0.2, 20), api.mat(0xFFFFFF, { side: T.DoubleSide, opacity: 0.9 }), [-0.62, 0.32, 0], null); oval.rotation.y = Math.PI / 2; api.part(oval, { name: 'Cửa sổ bầu dục', sci: 'Oval window', rows: [['Vị trí', 'Màng mỏng trên thành tai trong, nơi đế xương bàn đạp áp vào'], ['Vai trò', 'Truyền rung động từ xương bàn đạp vào dịch ốc tai'], ['Diện tích', 'Nhỏ hơn màng nhĩ khoảng 17 – 20 lần nên áp lực tăng lên']] }); api.tag(oval, 'oss');
+    const round = api.mesh(new T.CircleGeometry(0.15, 20), api.mat(0xFFE4E4, { side: T.DoubleSide, opacity: 0.9 }), [-0.62, -0.35, 0], null); round.rotation.y = Math.PI / 2; api.part(round, { name: 'Cửa sổ tròn', sci: 'Round window', rows: [['Vai trò', 'Màng đàn hồi cho dịch ốc tai dồn ra, nhờ đó sóng áp lực lan được trong ốc tai']] }); api.tag(round, 'coch');
+    const eus = api.tube([[-1.2, -0.35, 0], [-1.05, -1.3, 0.15], [-0.8, -2.5, 0.35]], 0.12, 0xE8A0A0); api.part(eus, INFO.eus); api.tag(eus, 'oss');
+    // tai trong: tiền đình nối cửa sổ bầu dục với ốc tai (dưới) và 3 ống bán khuyên (trên)
+    const inG = api.group(); api.tag(inG, 'coch');
+    const vest = api.sphere(0.45, api.mat(INNER, { opacity: 0.9 }), [-0.2, 0.15, 0], inG, 20); vest.scale.set(0.8, 1.0, 0.8); api.part(vest, { name: 'Tiền đình', sci: 'Vestibulum', rows: [['Vị trí', 'Khoang giữa ốc tai và các ống bán khuyên, ngay sau cửa sổ bầu dục'], ['Vai trò', 'Chứa soan nang và cầu nang cảm nhận tư thế, gia tốc thẳng']] });
+    const cg = api.group(inG, [0.55, -0.35, 0]);
+    const pts = []; for (let k = 0; k <= 120; k++) { const q = k / 120, a = q * Math.PI * 5, r = 0.95 * (1 - q * 0.72); pts.push(V(q * 0.85, r * Math.sin(a) - 0.1, r * Math.cos(a))); }
+    const cc = new T.CatmullRomCurve3(pts); const coch = api.mesh(new T.TubeGeometry(cc, 300, 0.2, 10), api.mat(INNER, { opacity: 0.88 }), null, cg); api.part(coch, INFO.coch);
     const peak = api.sphere(0.3, api.mat(0xFFE070, { emissive: 0xFFC107, emissiveIntensity: 1.2, opacity: 0.85 }), null, cg, 16); peak.userData.noPick = true;
-    const semi = api.group(null, [0.2, 1.35, 0]); [[0, 0, 0], [Math.PI / 2, 0, 0], [0, Math.PI / 2, 0]].forEach((r, k) => { const m = api.mesh(new T.TorusGeometry(0.55, 0.07, 8, 30), 0xF6C2D0, [k * 0.25 - 0.25, 0, 0], semi); m.rotation.set(...r); }); api.part(semi, INFO.semi); api.tag(semi, 'coch');
-    const an = api.tube([[1.4, -0.3, 0], [2.6, -0.2, -0.2], [4.2, 0.2, -0.4]], 0.16, 0xF2D8A6); api.part(an, INFO.anerve); api.tag(an, 'anerve');
+    const semi = api.group(inG, [0.0, 1.25, 0]); [[0, 0, 0], [Math.PI / 2, 0, 0], [0, Math.PI / 2, 0]].forEach((r, k) => { const m = api.mesh(new T.TorusGeometry(0.5, 0.07, 8, 30), INNER, [k * 0.22 - 0.22, 0.1, 0], semi); m.rotation.set(...r); }); api.part(semi, INFO.semi);
+    api.lineBetween([-0.2, 0.5, 0], [0, 0.85, 0], 0.14, INNER, inG).userData.noPick = true; api.lineBetween([-0.1, 0.0, 0], [0.55, -0.45, 0], 0.16, INNER, inG).userData.noPick = true;
+    const an = api.tube([[1.5, -0.45, 0], [2.9, -0.35, -0.3], [4.3, 0.05, -0.6]], 0.16, 0xF2D8A6); api.part(an, INFO.anerve); api.tag(an, 'anerve');
+    api.tube([[0.2, 1.1, -0.1], [1.2, 0.5, -0.3], [2.3, -0.2, -0.4]], 0.07, 0xF2D8A6).userData.noPick = true;
     const waves = []; for (let k = 0; k < 6; k++) { const m = api.mesh(new T.TorusGeometry(0.6, 0.03, 6, 30), api.mat(0x7FD0FF, { emissive: 0x5BB4FF, emissiveIntensity: 0.6, opacity: 0.8 }), null); m.rotation.y = Math.PI / 2; m.userData.noPick = true; waves.push(m); }
     const pulse = api.sphere(0.12, api.mat(0xFFE070, { emissive: 0xFFD040, emissiveIntensity: 1.5 }), null, null, 10); pulse.userData.noPick = true;
-    api.label('Vành tai', pin, { off: [0, 2.3, 0] }); api.label('Ống tai ngoài', canal, { off: [0, 0.8, 0], cls: 'plain' }); api.label('Màng nhĩ', drum, { off: [0, -0.9, 0] });
-    api.label('Búa · Đe · Bàn đạp', [-1.05, 0.35, 0], { off: [0, 0.9, 0], cls: 'tag', color: '#C9A100' }); api.label('Vòi Eustache', [-0.5, -2.6, 0.4], { cls: 'plain' }); api.label('Ốc tai', [1.0, -1.6, 0], { cls: 'plain' });
-    api.label('Ống bán khuyên', [0.2, 2.1, 0], { cls: 'plain' }); api.label('Dây thần kinh thính giác', [4.2, 0.2, -0.4], { cls: 'plain' });
-    api.label('Tai ngoài', [-4.3, -2.4, 0], { cls: 'tag', color: '#E5737D' }); api.label('Tai giữa', [-1.1, -1.4, 0], { cls: 'tag', color: '#E0A100' }); api.label('Tai trong', [1.4, -2.2, 0], { cls: 'tag', color: '#5BB4FF' });
+    api.label('Vành tai', pinna, { off: [-0.3, 2.1, 0] }); api.label('Ống tai ngoài', [-3.0, 0.2, 0], { off: [-0.3, 1.1, 0], cls: 'plain', parent: outer }); api.label('Màng nhĩ', drum, { off: [-0.3, -1.1, 0] });
+    api.label('Xương búa', mal, { off: [-0.4, 1.4, 0], cls: 'tag', color: '#C9A100' }); api.label('Xương đe', inc, { off: [0.5, 1.0, 0], cls: 'tag', color: '#C9A100' }); api.label('Xương bàn đạp', sta, { off: [0.2, -1.1, 0], cls: 'tag', color: '#C9A100' });
+    api.label('Cửa sổ bầu dục', oval, { off: [0.9, 0.9, 0], cls: 'plain' }); api.label('Vòi nhĩ (xuống họng)', [-0.8, -2.5, 0.35], { off: [0, -0.4, 0], cls: 'plain' }); api.label('Ốc tai (2,5 vòng)', coch, { off: [0.3, -1.3, 0], cls: 'plain' });
+    api.label('3 ống bán khuyên', semi, { off: [0.2, 0.9, 0], cls: 'plain' }); api.label('Dây thần kinh thính giác', an, { off: [0.6, 0.7, 0], cls: 'plain' }); api.label('Tiền đình', vest, { off: [-0.2, 0.75, 0], cls: 'plain' });
+    api.label('Tai ngoài', [-3.6, -2.6, 0], { cls: 'tag', color: '#E5737D' }); api.label('Tai giữa', [-1.2, -1.75, 0], { cls: 'tag', color: '#E0A100' }); api.label('Tai trong', [1.6, -2.3, 0], { cls: 'tag', color: '#5BB4FF' });
     const pLab = api.label('', peak, { off: [0, 0.6, 0], cls: 'tag', color: '#E0A100' });
     soundLoop(api);
     api.onFrame(() => {
       const t = api.time, amp = dB / 120, vis = 2 + Math.log10(freq) * 0.8;
-      waves.forEach((m, k) => { const q = (t * 0.6 + k / 6) % 1; m.position.set(-6 + q * 4.3, 0, 0); m.scale.setScalar(1.6 - q); m.material.opacity = 0.8 * (1 - q) * Math.min(1, amp * 1.5); });
+      waves.forEach((m, k) => { const q = (t * 0.6 + k / 6) % 1; m.position.set(-7.6 + q * 3.3, 0.2, 0); m.scale.setScalar(1.6 - q); m.material.opacity = 0.8 * (1 - q) * Math.min(1, amp * 1.5); });
       const vib = Math.sin(t * vis * 6) * amp;
-      drum.position.x = -1.6 + vib * 0.06; mal.rotation.z = vib * 0.1; inc.rotation.z = vib * 0.08; sta.position.x = -0.72 + vib * 0.05;
+      drum.position.x = -1.7 + vib * 0.06; mal.position.x = -1.7 + vib * 0.06; mal.rotation.z = vib * 0.1; inc.rotation.z = vib * 0.08; sta.position.x = -0.98 + vib * 0.05;
       const pos = 1 - tonoPos(freq); const pp = cc.getPointAt(Math.max(0.02, Math.min(0.98, pos)));
       peak.position.copy(pp); peak.scale.setScalar(0.6 + amp + Math.abs(Math.sin(t * 8)) * 0.2);
       pLab.el.innerHTML = freq >= 2000 ? 'Âm cao: rung mạnh ở đáy ốc tai' : freq <= 300 ? 'Âm thấp: rung mạnh ở đỉnh ốc tai' : 'Vùng rung mạnh nhất';
-      const q2 = (t * 0.5) % 1; pulse.position.lerpVectors(V(1.4, -0.3, 0), V(4.2, 0.2, -0.4), q2);
+      const q2 = (t * 0.5) % 1; pulse.position.lerpVectors(V(1.5, -0.45, 0), V(4.3, 0.05, -0.6), q2);
       api.caption(`${freq} Hz · ${dB} dB · Màng nhĩ → búa → đe → bàn đạp (tai giữa tăng áp lực ≈ 20 lần) → cửa sổ bầu dục → sóng dịch ốc tai`);
     });
     soundCtl(api);
     api.checklist([{ k: 'drum', label: 'Màng nhĩ' }, { k: 'oss', label: 'Chuỗi xương tai' }, { k: 'coch', label: 'Ốc tai' }, { k: 'anerve', label: 'Dây thần kinh thính giác' }]);
-    api.view({ pos: [-1, 2, 12], target: [-0.8, 0, 0], min: 3, max: 24 });
+    api.view({ pos: [-0.9, 1.4, 14.5], target: [-0.9, -0.1, 0], min: 3, max: 26 });
   }
 
   // ---------- Tab 3: cơ quan Corti ----------
