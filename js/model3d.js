@@ -491,7 +491,15 @@ NL.m3d = (function () {
 
   // ---------- bảng điều khiển bên phải ----------
   function ctl(html, cls) { const d = document.createElement('div'); d.className = 'm3d-ctl ' + (cls || ''); d.innerHTML = html; ui.side.appendChild(d); return d; }
-  function section(t) { return ctl(t, 'm3d-sec'); }
+  // mục tiêu đề ở bảng bên phải: bấm để thu gọn / mở các điều khiển bên dưới (tới mục tiếp theo)
+  function section(t) {
+    const d = ctl(`<span>${t}</span><i class="m3d-sec-ch">⌃</i>`, 'm3d-sec');
+    d.addEventListener('click', () => {
+      NL.audio.play('click'); const closed = d.classList.toggle('closed');
+      for (let e = d.nextElementSibling; e && !e.classList.contains('m3d-sec'); e = e.nextElementSibling) e.classList.toggle('m3d-folded', closed);
+    });
+    return d;
+  }
   function note(html) { const d = ctl(html, 'm3d-note'); return { el: d, set(h) { d.innerHTML = h; } }; }
   function slider(o) {
     const sp = o.step || 1;
