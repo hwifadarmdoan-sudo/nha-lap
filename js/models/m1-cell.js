@@ -14,7 +14,7 @@
     vacuole: { name: 'Không bào trung tâm', sci: 'Central vacuole', rows: [['Cấu trúc', 'Túi lớn có màng (tonoplast) chứa dịch bào'], ['Chức năng', 'Duy trì sức trương nước, tạo hình dạng tế bào, dự trữ chất, chứa sắc tố và chất thải'], ['Kích thước', 'Chiếm 30–90% thể tích tế bào'], ['Số lượng', 'Thường 1 không bào lớn']] },
     wall: { name: 'Thành tế bào', sci: 'Cell wall', rows: [['Cấu trúc', 'Chủ yếu là cellulose, có cầu sinh chất nối các tế bào'], ['Chức năng', 'Bảo vệ, định hình tế bào, chống trương vỡ khi hút nước'], ['Kích thước', 'Dày 0,1–10 µm'], ['Số lượng', 'Bao ngoài màng sinh chất']] },
     centro: { name: 'Trung thể', sci: 'Centrosome', rows: [['Cấu trúc', '2 trung tử xếp vuông góc; mỗi trung tử gồm 9 bộ ba vi ống'], ['Chức năng', 'Trung tâm tổ chức vi ống, hình thành thoi phân bào khi phân chia'], ['Kích thước', 'Trung tử dài ~0,5 µm, đường kính ~0,2 µm'], ['Số lượng', '1 trung thể (2 trung tử)']] },
-    lyso: { name: 'Lysosome', sci: 'Lysosome', rows: [['Cấu trúc', 'Túi màng đơn chứa enzyme thủy phân, môi trường acid (pH ≈ 5)'], ['Chức năng', 'Tiêu hóa nội bào, phân hủy bào quan già và tế bào tổn thương'], ['Kích thước', '0,1–1,2 µm'], ['Số lượng', 'Vài trăm']] },
+    lyso: { name: 'Lysosome', sci: 'Lysosome', rows: [['Cấu trúc', 'Túi màng đơn chứa enzyme thủy phân, môi trường acid (pH ≈ 5)'], ['Chức năng', 'Tiêu hóa nội bào, phân hủy bào quan già và tế bào tổn thương'], ['Ở thực vật', 'Chức năng tiêu hóa do không bào phân giải đảm nhận'], ['Kích thước', '0,1–1,2 µm'], ['Số lượng', 'Vài trăm']] },
     perox: { name: 'Peroxisome', sci: 'Peroxisome', rows: [['Cấu trúc', 'Túi màng đơn chứa enzyme oxi hóa và catalase'], ['Chức năng', 'Phân giải H₂O₂, oxi hóa acid béo, khử độc rượu'], ['Kích thước', '0,1–1 µm'], ['Số lượng', 'Vài trăm']] },
     glyox: { name: 'Glyoxysome', sci: 'Glyoxysome', rows: [['Cấu trúc', 'Dạng peroxisome đặc biệt, màng đơn'], ['Chức năng', 'Chuyển hóa lipid dự trữ thành đường (chu trình glyoxylate) ở hạt có dầu đang nảy mầm'], ['Kích thước', '0,5–1,5 µm'], ['Số lượng', 'Nhiều ở hạt nảy mầm']] },
     tissue: { name: 'Mô', sci: 'Tissue', rows: [['Là gì', 'Tập hợp các tế bào giống nhau cùng thực hiện một chức năng'], ['Ví dụ', 'Mô biểu bì, mô cơ, mô dậu ở lá']], text: 'Chạm vào một tế bào hoặc cuộn sát vào để xem một tế bào' },
@@ -374,7 +374,8 @@
         Object.assign({ k: 'chloro', label: 'Lục lạp' }, plantOnly('chloro')), Object.assign({ k: 'vacuole', label: 'Không bào trung tâm' }, plantOnly('vacuole')),
         Object.assign({ k: 'wall', label: 'Thành tế bào' }, plantOnly('wall')), Object.assign({ k: 'centro', label: 'Trung thể' }, animalOnly('centro')),
         Object.assign({ k: 'lyso', label: 'Lysosome' }, animalOnly('lyso')), { k: 'perox', label: 'Peroxisome' }, Object.assign({ k: 'glyox', label: 'Glyoxysome' }, plantOnly('glyox'))
-      ].map(it => Object.assign(it, { on: !it.dis })));
+      ].filter(it => !it.dis).map(it => Object.assign(it, { on: true })));
+      api.note(plant ? 'Tế bào thực vật bậc cao không có trung thể; lysosome thay bằng không bào phân giải.' : 'Tế bào động vật không có lục lạp, không bào trung tâm, thành tế bào và glyoxysome.');
       api.toggle({ label: 'Chuyển động nội bào', value: anim, onChange(v) { anim = v; vesOn = v; if (!v) cur.flow.traverse(o => { if (o.userData.group === 'mito') o.children[0].material.emissiveIntensity = 0; }); } });
       api.section('✂️ Mặt cắt 3D');
       api.toggle({ label: 'Bật mặt cắt', value: clipOn, onChange(v) { clipOn = v; applyClip(api); } });
@@ -414,7 +415,7 @@
     chloro: 'Tế bào động vật không chứa lục lạp vì động vật là sinh vật dị dưỡng, không có khả năng tự tổng hợp chất hữu cơ bằng quá trình quang hợp!',
     vacuole: 'Tế bào động vật không có không bào trung tâm lớn. Chỉ có các không bào nhỏ (không bào tiêu hóa, không bào co bóp ở động vật nguyên sinh).',
     wall: 'Tế bào động vật không có thành tế bào cellulose. Bên ngoài màng sinh chất chỉ có chất nền ngoại bào, nhờ vậy tế bào động vật mềm và dễ thay đổi hình dạng.',
-    glyox: 'Glyoxysome chỉ có ở tế bào thực vật (nhiều ở hạt có dầu đang nảy mầm) để chuyển lipid dự trữ thành đường.'
+    glyox: 'Glyoxysome đặc trưng ở tế bào thực vật (nhiều ở hạt có dầu đang nảy mầm, chuyển lipid dự trữ thành đường), cũng gặp ở nấm; tế bào động vật không có.'
   };
   const WARN_P = {
     centro: 'Tế bào thực vật bậc cao không có trung thể. Thoi phân bào ở thực vật được hình thành từ các vùng tổ chức vi ống khác.',

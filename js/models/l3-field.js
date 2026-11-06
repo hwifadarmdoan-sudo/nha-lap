@@ -21,10 +21,11 @@
     }
     return pts;
   }
-  function drawLines(api, a, sgn, col, opacity, inside) {
+  function drawLines(api, a, sgn, col, opacity, inside, nPhi, nRot) {
     const T = api.T, g = api.group(), mat = api.mat(col, { opacity, depthWrite: false, emissive: col, emissiveIntensity: 0.4 });
-    const phis = [12, 28, 45, 62, 80, 100, 125, 150].map(d => d * Math.PI / 180);
-    const rots = [0, 60, 120, 180, 240, 300].map(d => d * Math.PI / 180);
+    const PH = [12, 28, 45, 62, 80, 100, 125, 150];
+    const phis = (nPhi ? PH.filter((_, k) => k % Math.ceil(PH.length / nPhi) === 0).slice(0, nPhi) : PH).map(d => d * Math.PI / 180);
+    const rots = Array.from({ length: nRot || 6 }, (_, k) => k * 2 * Math.PI / (nRot || 6));
     phis.forEach(phi => {
       const p2 = trace(a, sgn, phi, inside); if (p2.length < 6) return;
       rots.forEach(th => {
@@ -82,7 +83,10 @@
   function coil(api) {
     const T = api.T, A = 3, R = 1.2;
     let g = null, lines = null, poleN = null, poleS = null;
-    const Bin = () => MU0 * s.N * s.I / LEN; // T
+    const Bin = () => MU0 * s.N * Math.abs(s.I) / LEN; // T (độ lớn)
+    // số đường sức trong lòng ống tăng tuyến tính theo N·I: 4 đường ở N·I = 50 A·vòng (nhỏ nhất), 24 đường ở 5000 (lớn nhất)
+    const nLines = () => { const NI = s.N * Math.abs(s.I); return NI === 0 ? 0 : Math.max(1, Math.round(4 + 20 * (NI - 50) / 4950)); };
+    let tmr = 0; const soon = () => { clearTimeout(tmr); tmr = setTimeout(rebuild, 120); };
     const field = (x, y, z) => { const r = Math.hypot(y, z); if (Math.abs(x) < A && r < R) return [s.I >= 0 ? 1 : -1, 0, 0]; const b = Bpole(x, y, z, A, s.I >= 0 ? 1 : -1); return b; };
     const info = api.note('');
     const rebuild = () => {
@@ -98,25 +102,28 @@
         c.rotation.x = s.I >= 0 ? Math.PI / 2 : -Math.PI / 2; c.userData.noPick = true; c.visible = s.I !== 0;
       }
       api.cyl(0.08, 0.08, 1.4, api.mat(0x64748B), [-A, -R - 0.7, 0], g); api.cyl(0.08, 0.08, 1.4, api.mat(0x64748B), [A, -R - 0.7, 0], g);
+      const n = nLines(), nOut = s.I === 0 ? 0 : Math.max(2, Math.min(8, Math.round(n / 4))) * Math.max(2, Math.min(6, Math.round(n / 4)));
       if (s.I !== 0) {
-        const sg = s.I > 0 ? 1 : -1, op = Math.min(0.9, 0.25 + Math.abs(s.I) * 0.13);
-        lines = drawLines(api, A, sg, 0xFDE047, op, null);
-        [-0.8, -0.4, 0, 0.4, 0.8].forEach(r => [0, Math.PI / 2].forEach(th => {
-          const y = r * Math.cos(th), z = r * Math.sin(th);
-          const ln = api.lineBetween([-A, y, z], [A, y, z], 0.022, api.mat(0xFDE047, { opacity: op, depthWrite: false }), lines); ln.userData.noPick = true;
-          const cn = api.mesh(new T.ConeGeometry(0.09, 0.26, 10), api.mat(0xFDE047, { opacity: op }), [0, y, z], lines); cn.rotation.z = -sg * Math.PI / 2; cn.userData.noPick = true;
-        }));
+        const sg = s.I > 0 ? 1 : -1, op = 0.75;
+        lines = drawLines(api, A, sg, 0xFDE047, op, null, Math.max(2, Math.min(8, Math.round(n / 4))), Math.max(2, Math.min(6, Math.round(n / 4))));
+        // n đường sức trong lòng ống, rải đều theo hình hoa hướng dương (dày đều, mật độ tỉ lệ với B)
+        const GA = Math.PI * (3 - Math.sqrt(5)), mL = api.mat(0xFDE047, { opacity: op, depthWrite: false });
+        for (let k = 0; k < n; k++) {
+          const r = n === 1 ? 0 : 0.88 * R * Math.sqrt((k + 0.5) / n), th = k * GA, y = r * Math.cos(th), z = r * Math.sin(th);
+          const ln = api.lineBetween([-A, y, z], [A, y, z], 0.022, mL, lines); ln.userData.noPick = true;
+          const cn = api.mesh(new T.ConeGeometry(0.09, 0.26, 10), mL, [0, y, z], lines); cn.rotation.z = -sg * Math.PI / 2; cn.userData.noPick = true;
+        }
       } else lines = null;
       const nx = s.I >= 0 ? A + 0.9 : -A - 0.9;
       if (!poleN) { poleN = api.label('', [0, 0, 0], { cls: 'tag', color: '#EF4444' }); poleS = api.label('', [0, 0, 0], { cls: 'tag', color: '#3B82F6' }); }
       poleN.pos.set(nx, R + 0.6, 0); poleS.pos.set(-nx, R + 0.6, 0); poleN.set('Cực N'); poleS.set('Cực S'); poleN.show(s.I !== 0); poleS.show(s.I !== 0);
-      info.set(`B = μ₀·N·I / l = 4π·10⁻⁷ × ${s.N} × ${vn(Math.abs(s.I), 1)} / 0,5 = <b>${vn(Bin() * 1000, 2)} mT</b><br>Quy tắc nắm tay phải: khum các ngón tay theo chiều dòng điện trong các vòng dây, ngón cái choãi ra chỉ chiều đường sức trong lòng ống (đi ra ở cực N).`);
+      info.set(`N = ${s.N} vòng · I = ${vn(Math.abs(s.I), 1)} A · N·I = ${vn(s.N * Math.abs(s.I), 0)} A·vòng<br>Số đường sức đang vẽ: <b>${s.I === 0 ? 0 : n}</b> trong lòng ống (${nOut} vòng ngoài) · <i>số đường chỉ thể hiện độ mạnh tương đối của từ trường</i><br>B = μ₀·N·I / ℓ = 4π·10⁻⁷ × ${s.N} × ${vn(Math.abs(s.I), 1)} / 0,5 = <b>${vn(Bin() * 1000, 2)} mT</b><br>Quy tắc nắm tay phải: khum các ngón tay theo chiều dòng điện trong các vòng dây, ngón cái choãi ra chỉ chiều đường sức trong lòng ống (đi ra ở cực N).`);
     };
     compass(api, field, [5.5, 0.1, 2.6]);
     api.section('🌀 Ống dây có dòng điện');
-    api.slider({ label: 'Cường độ dòng điện I', min: -5, max: 5, step: 0.5, value: s.I, unit: 'A', lazy: true, onInput(v) { s.I = v; rebuild(); if (v < 0) api.toast('Dòng điện đổi chiều: hai cực của ống dây đổi chỗ'); } });
-    api.slider({ label: 'Số vòng dây N', min: 100, max: 1000, step: 100, value: s.N, unit: 'vòng', lazy: true, onInput(v) { s.N = v; rebuild(); } });
-    api.note('Đặt I = 0 thì không còn từ trường. Đổi dấu I (đổi chiều dòng điện) để thấy cực N, S đổi chỗ và kim nam châm quay ngược lại.');
+    api.slider({ label: 'Cường độ dòng điện I', min: -5, max: 5, step: 0.5, value: s.I, unit: 'A', lazy: true, onInput(v) { const flip = (v < 0) !== (s.I < 0); s.I = v; soon(); if (flip && v < 0) api.toast('Dòng điện đổi chiều: hai cực của ống dây đổi chỗ'); } });
+    api.slider({ label: 'Số vòng dây N', min: 100, max: 1000, step: 100, value: s.N, unit: 'vòng', lazy: true, onInput(v) { s.N = v; soon(); } });
+    api.note('Kéo I hoặc N: số đường sức tăng theo N·I (từ trường mạnh lên). Đặt I = 0 thì không còn từ trường. Đổi dấu I (đổi chiều dòng điện) để thấy cực N, S đổi chỗ và kim nam châm quay ngược lại.');
     rebuild();
     api.view({ pos: [2, 9, 13], target: [0, 0, 0], min: 3, max: 40 });
   }

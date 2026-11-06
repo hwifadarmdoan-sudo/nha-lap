@@ -2,7 +2,8 @@
 (function () {
   const P = NL.phys, vn = P.vn, TAU = Math.PI * 2;
   const U = 10, UC_MAX = 400; // nguồn 10 V hiệu dụng, tụ chịu tối đa 400 V
-  const ST = { 50: 'Đài Phố Cổ · 50 Hz', 80: 'Đài Sóng Xanh · 80 Hz' };
+  const ST = { 50: 'Nguồn tín hiệu A · 50 Hz', 80: 'Nguồn tín hiệu B · 80 Hz' };
+  const NOTE_F = 'Mô hình thu nhỏ tần số để dễ quan sát. Đài thật phát ở 0,5–1,6 MHz (AM) hoặc 88–108 MHz (FM); mạch chọn sóng thật có L cỡ μH, C cỡ pF.';
   let st, api_;
   const $ = id => document.getElementById(id);
 
@@ -103,8 +104,9 @@
 
   const steps = [
     {
-      label: 'Bật radio', text: 'Bật radio. Máy đang bắt sóng của Đài Phố Cổ, tần số 50 Hz', hint: 'Chạm nút đỏ ⏻',
+      label: 'Bật radio', text: 'Bật radio. Máy đang bắt nguồn tín hiệu A, tần số 50 Hz', hint: 'Chạm nút đỏ ⏻',
       enter(api) {
+        if (!st.noted) { st.noted = true; api.card({ kicker: '📻 Lưu ý', text: NOTE_F, btn: 'Hiểu rồi ➜' }); }
         if (!api.prediction) api.ask({ predict: true, q: 'Giữ nguyên tần số, vặn tụ xoay để tăng dần điện dung C. Cường độ dòng điện trong mạch sẽ…?', options: [{ t: 'Lớn nhất ở một giá trị C nhất định' }, { t: 'Tăng mãi theo C' }, { t: 'Không đổi' }] });
         api.setOn(st.pw, true);
         api.tapable(st.pw, () => { st.on = true; st.pwTxt.textContent = '📻 Đang phát'; NL.audio.play('hum'); api.say('Loa kêu rè rè, tiếng rất nhỏ: mạch chưa bắt đúng sóng'); api.done(); });
@@ -125,7 +127,7 @@
       }
     },
     {
-      label: 'Nhiệm vụ', text: 'Đổi sang Đài Sóng Xanh (80 Hz). Vặn tụ xoay cho tới khi loa nghe rõ nhất', hint: 'Cộng hưởng khi Z_L = Z_C. Tần số cao hơn thì cần C nhỏ hơn',
+      label: 'Nhiệm vụ', text: 'Đổi sang nguồn tín hiệu B (80 Hz). Vặn tụ xoay cho tới khi loa nghe rõ nhất', hint: 'Cộng hưởng khi Z_L = Z_C. Tần số cao hơn thì cần C nhỏ hơn',
       enter(api) {
         st.f = 80; if (st.R < 20) st.R = 50;
         controls(api);
@@ -134,7 +136,7 @@
           const c = calc();
           if (c.I >= 0.97 * c.Imax) st.okT += dt; else st.okT = 0;
           if (st.okT > 0.8) {
-            NL.audio.play('success'); api.say('Loa phát rõ Đài Sóng Xanh! 🎶 Nhìn giản đồ vectơ: U_L và U_C dài bằng nhau, ngược chiều');
+            NL.audio.play('success'); api.say('Loa phát rõ nguồn tín hiệu B! 🎶 Nhìn giản đồ vectơ: U_L và U_C dài bằng nhau, ngược chiều');
             api.wait(1.2, () => api.ask({
               q: 'Lúc bắt đài rõ nhất (cộng hưởng), điều nào ĐÚNG?',
               options: [{ t: 'Z_L = Z_C, u cùng pha với i, I lớn nhất', ok: true }, { t: 'Cuộn cảm và tụ không còn điện áp', why: 'Đọc U_C trên bảng: vẫn rất lớn. U_L và U_C chỉ triệt tiêu nhau về vectơ.' }, { t: 'Dòng điện không đi qua tụ nữa', why: 'Dòng vẫn chạy qua cả R, L, C vì chúng mắc nối tiếp.' }],

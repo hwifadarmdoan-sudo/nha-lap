@@ -1,7 +1,7 @@
 // Mô hình Hóa 9: Bình điện phân dung dịch CuSO₄ (anode trơ hoặc anode đồng tan) và NaCl (có hoặc không có màng ngăn, phenolphthalein). Ion di chuyển, bọt khí, khối lượng và thể tích theo định luật Faraday.
 (function () {
   const F = 96485, VM = 24.79, VOL = 0.5; // thể tích khí 1 mol ở điều kiện chuẩn (25 °C, 1 bar); 0,5 L dung dịch
-  const WARN_CU = 'Khi dùng anode làm bằng kim loại hoạt động (như <b>đồng</b>) trong dung dịch chứa ion của chính nó, kim loại ở anode sẽ <b>tan ra</b> (Cu → Cu²⁺ + 2e) thay vì nước bị oxi hóa. Màu xanh của dung dịch giữ nguyên. Đây là cơ sở của công nghệ <b>mạ điện</b> và <b>tinh luyện đồng</b>!';
+  const WARN_CU = 'Khi anode không trơ (anode tan), làm bằng chính kim loại của cation trong dung dịch (như <b>Cu</b> trong CuSO₄), kim loại ở anode bị oxi hóa và <b>tan ra</b> (Cu → Cu²⁺ + 2e) thay vì nước bị oxi hóa. Màu xanh của dung dịch giữ nguyên. Đây là cơ sở của công nghệ <b>mạ điện</b> và <b>tinh luyện đồng</b>!';
   const WARN_MEM = 'Nếu rút màng ngăn xốp, khí Cl₂ (vàng lục) sinh ra ở anode sẽ khuếch tán và phản ứng ngay với dung dịch NaOH ở cathode: Cl₂ + 2NaOH → NaCl + NaClO + H₂O, tạo ra <b>nước Javel</b>. Bạn sẽ không thu được dung dịch kiềm tinh khiết!';
   const SPEEDS = [{ t: '×1', v: 1 }, { t: '×60', v: 60 }, { t: '×600', v: 600 }];
   let s = null, speed = 60;

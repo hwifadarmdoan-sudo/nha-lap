@@ -113,7 +113,7 @@
             t += dt; const k = Math.min(1, t / 3);
             st.n1.body.setAttribute('transform', `scale(${1 - 0.12 * k} 1)`);
             st.n2.body.setAttribute('transform', `scale(${1 - 0.5 * k} 1)`);
-            st.b2.liq.setAttribute('fill', `rgba(${205 - 40 * k},${232 + 10 * k},${250 - 60 * k},.65)`);
+            st.b2.liq.setAttribute('fill', `rgba(${205 - 14 * k},${232 + 8 * k},${250 - 28 * k},.65)`);
             if (k >= 1) return false;
           });
           api.wait(3.1, () => {

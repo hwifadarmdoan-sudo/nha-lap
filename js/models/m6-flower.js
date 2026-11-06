@@ -20,14 +20,14 @@
     syn: { name: 'Tế bào kèm', sci: 'Synergids', rows: [['Số lượng', '2'], ['Vai trò', 'Tiết chất dẫn đường ống phấn; ống phấn vỡ ra tại đây'], ['Bộ NST', 'n']] },
     polar: { name: 'Nhân cực', sci: 'tế bào trung tâm', rows: [['Số lượng', '2 nhân (n + n) → nhân lưỡng bội 2n'], ['Thụ tinh', 'Tinh tử 2 (n) + 2n → nhân tam bội 3n → phôi nhũ (ở cây hai lá mầm như đậu, phôi nhũ bị lá mầm hút hết, chất dự trữ nằm ở lá mầm)']] },
     anti: { name: 'Tế bào đối cực', sci: 'Antipodal cells', rows: [['Số lượng', '3'], ['Vị trí', 'Đầu đối diện lỗ noãn'], ['Bộ NST', 'n']] },
-    tube: { name: 'Ống phấn', sci: 'Pollen tube', rows: [['Tạo bởi', 'Tế bào sinh dưỡng của hạt phấn'], ['Mang theo', '2 tinh tử (n)'], ['Định hướng', 'Hướng hóa: theo nồng độ Ca²⁺ và đường từ noãn']] },
+    tube: { name: 'Ống phấn', sci: 'Pollen tube', rows: [['Tạo bởi', 'Tế bào sinh dưỡng của hạt phấn'], ['Mang theo', '2 tinh tử (n)'], ['Định hướng', 'Hướng hóa: tế bào kèm trong túi phôi tiết peptide dẫn dụ ống phấn; Ca²⁺ giúp đầu ống phấn sinh trưởng']] },
     zyg: { name: 'Hợp tử', sci: 'Zygote', rows: [['Bộ NST', '2n'], ['Phát triển thành', 'Phôi (rễ mầm, thân mầm, chồi mầm, lá mầm)']] },
     endo: { name: 'Nhân tam bội', sci: 'Primary endosperm nucleus', rows: [['Bộ NST', '3n'], ['Phát triển thành', 'Phôi nhũ (nội nhũ) giàu chất dinh dưỡng']] },
     fruit: { name: 'Quả', sci: 'Fructus', rows: [['Do', 'Bầu nhụy phát triển thành'], ['Vai trò', 'Bảo vệ hạt và giúp phát tán hạt'], ['Bộ NST', '2n']] },
     seed: { name: 'Hạt', sci: 'Semen', rows: [['Do', 'Noãn đã thụ tinh phát triển thành'], ['Gồm', 'Vỏ hạt (2n), phôi (2n), phôi nhũ (3n)']] },
     bee: { name: 'Ong mật', sci: 'Apis mellifera', rows: [['Vai trò', 'Côn trùng thụ phấn: lông trên thân dính hạt phấn'], ['Thử ngay', 'Kéo ong vào bao phấn, rồi sang đầu nhụy hoa kia']] }
   };
-  const WARN_SI = 'Cảnh báo hiện tượng sinh học: Cơ chế tự bất thụ (Self-incompatibility) dựa trên sự nhận diện protein giữa vòi nhụy và hạt phấn của cùng một cây, giúp ngăn cản quá trình tự thụ phấn để ưu tiên thụ phấn chéo, duy trì sự đa dạng di truyền cho quần thể!';
+  const WARN_SI = 'Cảnh báo hiện tượng sinh học: Cơ chế tự bất thụ (Self-incompatibility) dựa trên sự nhận diện protein giữa vòi nhụy và hạt phấn của cùng một cây, giúp ngăn cản quá trình tự thụ phấn để ưu tiên thụ phấn chéo, duy trì sự đa dạng di truyền cho quần thể (ví dụ ở thuốc lá, khoai tây, táo: cơ chế S-RNase). Lưu ý: đậu Hà Lan tự thụ phấn nghiêm ngặt và không có tự bất thụ, nên Mendel mới chọn nó!';
   const STAGES = ['Thụ phấn và cuộc đua ống phấn', 'Hướng hóa học: ống phấn tìm lỗ noãn', 'Thụ tinh kép trong túi phôi'];
 
   let op = 1, speed = 3, vector = 'none', wind = 4, ripe = 0, fruitType = 'flesh', src = 'cross', fertilized = false;

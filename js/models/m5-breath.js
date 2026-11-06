@@ -14,7 +14,7 @@
     larynx: { name: 'Thanh quản', sci: 'Larynx', rows: [['Chứa', 'Dây thanh âm'], ['Vai trò', 'Dẫn khí và phát âm; khi nói luồng khí đi lên làm dây thanh rung']] },
     eso: { name: 'Thực quản', sci: 'Oesophagus', rows: [['Vị trí', 'Phía sau khí quản'], ['Dài', '≈ 25 cm'], ['Vai trò', 'Nhu động đẩy thức ăn xuống dạ dày']] },
     phar: { name: 'Họng (hầu)', sci: 'Pharynx', rows: [['Vai trò', 'Ngã tư chung của đường khí và đường thức ăn'], ['Lưu ý', 'Nhờ nắp thanh quản và lưỡi gà mà thức ăn không lọt vào đường khí']] },
-    palate: { name: 'Lưỡi gà (vòm miệng mềm)', sci: 'Uvula & soft palate', rows: [['Khi nuốt', 'Nâng lên đậy lối lên khoang mũi']] },
+    palate: { name: 'Vòm miệng mềm và lưỡi gà', sci: 'Uvula & soft palate', rows: [['Khi nuốt', 'Nâng lên đậy lối lên khoang mũi']] },
     tongue: { name: 'Lưỡi', sci: 'Lingua', rows: [['Khi nuốt', 'Đẩy viên thức ăn ra sau xuống họng']] },
     cilia: { name: 'Tế bào biểu mô có lông rung', sci: 'Ciliated epithelium', rows: [['Mỗi tế bào', '≈ 200 – 300 lông rung'], ['Nhịp đập', '10 – 20 lần/giây, theo hướng từ trong ra ngoài'], ['Vai trò', 'Quét lớp chất nhầy chứa bụi, vi khuẩn lên họng']] },
     goblet: { name: 'Tế bào tiết nhầy (tế bào hình đài)', sci: 'Goblet cell', rows: [['Vai trò', 'Tiết chất nhầy giữ bụi và vi khuẩn']] },
@@ -23,14 +23,14 @@
     cap: { name: 'Mạng lưới mao mạch phế nang', sci: 'Pulmonary capillaries', rows: [['Máu đến', 'Nghèo O₂ (động mạch phổi)'], ['Máu đi', 'Giàu O₂ (tĩnh mạch phổi)']] }
   };
   const WARN_TALK = 'Cảnh báo vệ sinh hô hấp: Vừa ăn vừa nói làm nắp thanh quản không đậy kín khí quản, thức ăn rơi vào đường dẫn khí sẽ kích hoạt phản xạ ho sặc dồn dập để tống dị vật ra ngoài, nguy hiểm hơn có thể gây tắc nghẽn hô hấp!';
-  const WARN_SMOKE = 'Cảnh báo sức khỏe: Nicotine và hắc ín làm lông rung tê liệt, rụng; chất nhầy dồn ứ gây ho đờm, viêm phế quản mạn. Vách phế nang đứt gãy (khí thũng phổi) làm giảm tới 60% diện tích trao đổi khí, phổi chuyển màu đen xám!';
+  const WARN_SMOKE = 'Cảnh báo sức khỏe: Nicotine và hắc ín làm lông rung tê liệt, rụng; chất nhầy dồn ứ gây ho đờm, viêm phế quản mạn. Hắc ín và bụi lắng đọng làm nhu mô phổi đen xám. Khí thũng làm vách phế nang đứt gãy, giảm diện tích trao đổi khí (có thể tới 60%)!';
 
   let rate = 16, op = 1, years = 0, pm = 0, sex = 'm', hgt = 170, wgt = 60, act = 'sport', ventMode = 'body', lv = 1, deepT0 = -99, epiMode = 'breathe', talk = false;
   const dmg = () => Math.min(1, years / 30 * 0.8 + pm / 250 * 0.4);
   const sm = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
   function vol() {
     const base = (sex === 'm' ? 25.84 : 20.16) * hgt;
-    const k = { low: 0.72, sport: 1, pro: 1.15 }[act];
+    const k = { low: 0.85, sport: 1, pro: 1.15 }[act];
     const bmi = wgt / Math.pow(hgt / 100, 2);
     const VC = Math.round(base * k * (bmi >= 30 ? 0.9 : bmi < 16 ? 0.93 : 1) * (1 - 0.3 * dmg()) / 10) * 10;
     const TV = 500, ERV = Math.round(0.28 * (VC - TV) / 10) * 10, IRV = VC - TV - ERV;

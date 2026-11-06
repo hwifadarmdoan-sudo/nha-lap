@@ -2,8 +2,8 @@
 (function () {
   const C3 = () => NL.chem3d;
   const S = 0.6; // 1 Å = 0,6 đơn vị cảnh
-  const HB = { name: 'Liên kết hydrogen', sci: 'N–H ··· O=C', rows: [['Độ dài', 'H···O ≈ 1,9 – 2,1 Å (N···O ≈ 2,9 Å)'], ['Năng lượng', 'Yếu: khoảng 10 – 30 kJ/mol mỗi liên kết'], ['Vai trò', 'Hàng trăm liên kết H cùng lúc giữ vững cấu trúc bậc 2 của protein']] };
-  const PEP = { name: 'Liên kết peptide', sci: '–CO–NH–', rows: [['Nối', 'Nhóm –COOH của amino acid này với nhóm –NH₂ của amino acid kế tiếp (tách 1 phân tử H₂O)'], ['Độ dài C–N', '1,33 Å (ngắn hơn C–N đơn 1,47 Å vì mang một phần tính chất liên kết đôi)'], ['Độ bền', 'Bền, cộng hóa trị; chỉ bị thủy phân bởi acid, base mạnh hoặc enzyme'], ['Thuộc bậc', 'Bậc 1 (trình tự amino acid)']] };
+  const HB = { name: 'Liên kết hydrogen', sci: 'N–H ··· O=C', rows: [['Độ dài', 'H···O ≈ 190–210 pm (N···O ≈ 290 pm)'], ['Năng lượng', 'Yếu: khoảng 10 – 30 kJ/mol mỗi liên kết'], ['Vai trò', 'Hàng trăm liên kết H cùng lúc giữ vững cấu trúc bậc 2 của protein']] };
+  const PEP = { name: 'Liên kết peptide', sci: '–CO–NH–', rows: [['Nối', 'Nhóm –COOH của amino acid này với nhóm –NH₂ của amino acid kế tiếp (tách 1 phân tử H₂O)'], ['Độ dài C–N', '133 pm (ngắn hơn C–N đơn 147 pm vì mang một phần tính chất liên kết đôi)'], ['Độ bền', 'Bền, cộng hóa trị; chỉ bị thủy phân bởi acid, base mạnh hoặc enzyme'], ['Thuộc bậc', 'Bậc 1 (trình tự amino acid)']] };
   const RG = { name: 'Gốc R (mạch bên)', sci: 'Side chain', rows: [['Vị trí', 'Gắn vào Cα của mỗi amino acid'], ['Trong xoắn α', 'Hướng ra ngoài lò xo'], ['Trong phiến β', 'Lần lượt hướng lên và xuống mặt phiến'], ['Có 20 loại', 'Quyết định tính chất từng amino acid']] };
   const WARN_HELIX = 'Liên kết hydrogen tuy là liên kết yếu, nhưng <b>hàng ngàn liên kết</b> này gộp lại đã tạo nên sự ổn định đáng kinh ngạc cho cấu trúc không gian của protein!';
   const WARN_CELL = 'Nhờ các liên kết <b>β-1,4-glycoside</b>, các chuỗi cellulose tạo thành mạch thẳng và liên kết chéo với nhau bằng liên kết hydrogen. Cấu trúc này tạo ra độ bền cơ học cực cao, biến cellulose thành "bộ xương" vững chắc của thành tế bào thực vật!';
@@ -65,7 +65,7 @@
       ribbon = api.group(g); api.tag(ribbon, 'rib');
       if (tab === 'sheet') { for (let s = 0; s < 4; s++) { const st = atoms.filter(a => a.r.s === s).map(a => a.cA.position); const t = api.tube(st, 0.16, s % 2 ? 0x60A5FA : 0x38BDF8, ribbon, 60); t.scale.set(1, 1, 1); const end = st[st.length - 1], prev = st[st.length - 2], cone = api.mesh(new T.ConeGeometry(0.35, 0.6, 4), api.mat(s % 2 ? 0x60A5FA : 0x38BDF8), null, ribbon); cone.position.copy(end); cone.quaternion.setFromUnitVectors(V(0, 1, 0), end.clone().sub(prev).normalize()); } }
       else api.tube(atoms.map(a => a.cA.position), 0.22, 0xF472B6, ribbon, 200);
-      ribbon.visible = style === 'ribbon'; api.part(ribbon, { name: tab === 'sheet' ? 'Phiến gấp β' : 'Mạch xoắn α', sci: tab === 'sheet' ? 'β-sheet' : 'α-helix', rows: tab === 'sheet' ? [['Hình dạng', 'Các đoạn mạch duỗi thẳng, gấp nếp như giấy xếp, xếp song song nhau'], ['Giữ bởi', 'Liên kết hydrogen giữa các mạch cạnh nhau'], ['Khoảng cách 2 mạch', '≈ 4,8 Å']] : [['Hình dạng', 'Lò xo xoắn phải, 3,6 amino acid mỗi vòng'], ['Bước xoắn', '5,4 Å'], ['Giữ bởi', 'Liên kết hydrogen giữa C=O của amino acid thứ i với N–H của amino acid thứ i + 4']] });
+      ribbon.visible = style === 'ribbon'; api.part(ribbon, { name: tab === 'sheet' ? 'Phiến gấp β' : 'Mạch xoắn α', sci: tab === 'sheet' ? 'β-sheet' : 'α-helix', rows: tab === 'sheet' ? [['Hình dạng', 'Các đoạn mạch duỗi thẳng, gấp nếp như giấy xếp, xếp song song nhau'], ['Giữ bởi', 'Liên kết hydrogen giữa các mạch cạnh nhau'], ['Khoảng cách 2 mạch', '≈ 480 pm']] : [['Hình dạng', 'Lò xo xoắn phải, 3,6 amino acid mỗi vòng'], ['Bước xoắn', '540 pm'], ['Giữ bởi', 'Liên kết hydrogen giữa C=O của amino acid thứ i với N–H của amino acid thứ i + 4']] });
     };
     mkRibbon();
     const base = atoms.map(a => ({ N: a.cN.position.clone(), CA: a.cA.position.clone(), C: a.cC.position.clone() }));
@@ -109,7 +109,7 @@
   function carb(api, tab) {
     const T = api.T, V = api.V, g = api.group(), units = [], links = [];
     const UNIT = { name: tab === 'cell' ? 'Gốc β-glucose' : 'Gốc α-glucose', sci: 'C₆H₁₀O₅ (trong mạch)', rows: [['Vòng', '6 cạnh: 5 nguyên tử C và 1 nguyên tử O'], ['Khác nhau α / β', 'Vị trí nhóm –OH ở C1 (dưới mặt vòng là α, trên mặt vòng là β)']] };
-    const GLY = k => ({ name: `Liên kết ${k}-glycoside`, sci: k === 'α-1,6' ? 'C1–O–C6' : 'C1–O–C4', rows: [['Nối', k === 'α-1,6' ? 'C1 của gốc này với C6 của gốc trên mạch chính: tạo điểm phân nhánh' : 'C1 của gốc này với C4 của gốc kế tiếp, qua 1 nguyên tử O'], ['Độ dài C–O', '≈ 1,43 Å'], ['Năng lượng', '≈ 360 kJ/mol (liên kết cộng hóa trị C–O)'], ['Bị cắt bởi', k.startsWith('β') ? 'Enzyme cellulase (người không có)' : 'Enzyme amylase (có trong nước bọt, dịch tụy)']] });
+    const GLY = k => ({ name: `Liên kết ${k}-glycoside`, sci: k === 'α-1,6' ? 'C1–O–C6' : 'C1–O–C4', rows: [['Nối', k === 'α-1,6' ? 'C1 của gốc này với C6 của gốc trên mạch chính: tạo điểm phân nhánh' : 'C1 của gốc này với C4 của gốc kế tiếp, qua 1 nguyên tử O'], ['Độ dài C–O', '≈ 143 pm'], ['Năng lượng', '≈ 360 kJ/mol (liên kết cộng hóa trị C–O)'], ['Bị cắt bởi', k.startsWith('β') ? 'Enzyme cellulase (người không có)' : 'Enzyme amylase (có trong nước bọt, dịch tụy)']] });
     const link = (a, b, kind, parent) => { const m = api.lineBetween(a, b, 0.06, api.mat(kind === 'α-1,6' ? 0xF59E0B : 0xFF6B6B), parent || g); const mid = api.sphere(0.1, api.mat(0xFF2A2A), null, parent || g, 10); mid.position.lerpVectors(a, b, 0.5); api.part(m, GLY(kind)); links.push(m); return m; };
     if (tab === 'amylose') {
       const n = 30, pts = [];

@@ -5,13 +5,13 @@
     RA: { name: 'Tâm nhĩ phải', sci: 'Right atrium', rows: [['Nhận máu', 'Máu nghèo O₂ từ tĩnh mạch chủ trên và dưới'], ['Áp lực', '2–6 mmHg'], ['Đặc điểm', 'Thành mỏng; chứa nút xoang nhĩ (máy tạo nhịp)']] },
     LA: { name: 'Tâm nhĩ trái', sci: 'Left atrium', rows: [['Nhận máu', 'Máu giàu O₂ từ 4 tĩnh mạch phổi'], ['Áp lực', '6–12 mmHg'], ['Đặc điểm', 'Đẩy máu xuống tâm thất trái qua van 2 lá']] },
     RV: { name: 'Tâm thất phải', sci: 'Right ventricle', rows: [['Bơm máu', 'Lên động mạch phổi (vòng tuần hoàn nhỏ)'], ['Áp lực', 'Tâm thu 15–30 mmHg, tâm trương 0–8 mmHg'], ['Thành cơ', 'Mỏng (≈ 3–5 mm)']] },
-    LV: { name: 'Tâm thất trái', sci: 'Left ventricle', rows: [['Bơm máu', 'Vào động mạch chủ đi nuôi toàn cơ thể (vòng tuần hoàn lớn)'], ['Áp lực', 'Tâm thu 100–140 mmHg, tâm trương 5–12 mmHg'], ['Thành cơ', 'Dày nhất (≈ 10–15 mm, gấp ~3 lần thất phải) vì phải tạo áp lực lớn đẩy máu đi xa']] },
+    LV: { name: 'Tâm thất trái', sci: 'Left ventricle', rows: [['Bơm máu', 'Vào động mạch chủ đi nuôi toàn cơ thể (vòng tuần hoàn lớn)'], ['Áp lực', 'Tâm thu 100–140 mmHg, tâm trương 5–12 mmHg'], ['Thành cơ', 'Dày nhất (≈ 8–11 mm, gấp khoảng 3 lần thất phải) vì phải tạo áp lực lớn đẩy máu đi xa; từ 12 mm trở lên nghi phì đại']] },
     mitral: { name: 'Van 2 lá', sci: 'Mitral (bicuspid) valve', rows: [['Vị trí', 'Giữa tâm nhĩ trái và tâm thất trái'], ['Hoạt động', 'Mở khi nhĩ co và pha dãn chung; đóng khi thất co (tạo tiếng "LUB")'], ['Bệnh lý', 'Hở van 2 lá: máu trào ngược lên nhĩ trái khi thất co']] },
     tricus: { name: 'Van 3 lá', sci: 'Tricuspid valve', rows: [['Vị trí', 'Giữa tâm nhĩ phải và tâm thất phải'], ['Hoạt động', 'Đóng khi thất co, ngăn máu trào ngược lên nhĩ']] },
     aortic: { name: 'Van động mạch chủ', sci: 'van bán nguyệt', rows: [['Vị trí', 'Giữa tâm thất trái và động mạch chủ'], ['Hoạt động', 'Mở khi thất co; đóng khi thất dãn (tạo tiếng "DUB")']] },
     pulmv: { name: 'Van động mạch phổi', sci: 'Pulmonary valve (van bán nguyệt)', rows: [['Vị trí', 'Giữa tâm thất phải và động mạch phổi'], ['Hoạt động', 'Mở khi thất co; đóng khi thất dãn']] },
     aorta: { name: 'Động mạch chủ', sci: 'Aorta', rows: [['Chở', 'Máu giàu O₂ từ tâm thất trái đi khắp cơ thể'], ['Huyết áp', '≈ 120/80 mmHg'], ['Đặc điểm', 'Thành dày, đàn hồi, lớn nhất cơ thể']] },
-    pa: { name: 'Động mạch phổi', sci: 'Pulmonary artery', rows: [['Chở', 'Máu nghèo O₂ từ tâm thất phải lên phổi'], ['Huyết áp', '≈ 25/10 mmHg'], ['Lưu ý', 'Là động mạch duy nhất chở máu nghèo O₂']] },
+    pa: { name: 'Động mạch phổi', sci: 'Pulmonary artery', rows: [['Chở', 'Máu nghèo O₂ từ tâm thất phải lên phổi'], ['Huyết áp', '≈ 25/10 mmHg'], ['Lưu ý', 'Là động mạch duy nhất chở máu nghèo O₂ (ở người trưởng thành)']] },
     vc: { name: 'Tĩnh mạch chủ trên và dưới', sci: 'Superior / inferior vena cava', rows: [['Chở', 'Máu nghèo O₂ từ khắp cơ thể về tâm nhĩ phải'], ['Áp lực', '≈ 0–5 mmHg']] },
     pv: { name: 'Tĩnh mạch phổi', sci: 'Pulmonary veins', rows: [['Chở', 'Máu giàu O₂ từ phổi về tâm nhĩ trái'], ['Lưu ý', 'Là tĩnh mạch duy nhất chở máu giàu O₂']] },
     SA: { name: 'Nút xoang nhĩ', sci: 'Sinoatrial (SA) node', rows: [['Vị trí', 'Thành tâm nhĩ phải, gần chỗ đổ của tĩnh mạch chủ trên'], ['Vai trò', 'Tự phát xung điện theo chu kì, là "máy tạo nhịp" của tim'], ['Tần số', '60–100 xung/phút khi nghỉ']] },
@@ -31,8 +31,12 @@
     const t = u * 0.8, g = (c, w, a) => a * Math.exp(-((t - c) * (t - c)) / (2 * w * w));
     return g(0.05, 0.022, 0.15) - g(0.165, 0.008, 0.12) + g(0.18, 0.009, 1.1) - g(0.198, 0.009, 0.25) + g(0.42, 0.04, 0.3);
   }
+  // Chu kì tim theo nhịp: tâm thu ≈ 0,3 s × (75/HR)^0,3 (gần như không đổi), nhĩ co 0,1 s, phần còn lại là dãn chung (rút ngắn nhiều nhất khi nhịp nhanh)
+  function timing(hr) { const per = 60 / hr, sys = 0.3 * Math.pow(75 / hr, 0.3), aC = 0.1; return { per, aC, sys, dia: Math.max(0.05, per - sys - aC) }; }
+  // quy đổi u (0–1 của chu kì) về thang chu kì chuẩn 0,8 s: nhĩ co 0–0,1; thất co 0,1–0,4; dãn chung 0,4–0,8
+  function tOf(u, hr) { const T = timing(hr), t = u * T.per; if (t < T.aC) return t / T.aC * 0.1; if (t < T.aC + T.sys) return 0.1 + (t - T.aC) / T.sys * 0.3; return 0.4 + Math.min(1, (t - T.aC - T.sys) / T.dia) * 0.4; }
   function lvp(u, sbp) {
-    const t = u * 0.8;
+    const t = tOf(u, HR);
     if (t < 0.1) return 6 + 4 * Math.sin(t / 0.1 * Math.PI);
     if (t < 0.4) { const k = (t - 0.1) / 0.3; return 8 + (sbp - 8) * Math.pow(Math.sin(k * Math.PI), 0.8); }
     return 5 + 3 * Math.exp(-(t - 0.4) * 8);
@@ -121,7 +125,7 @@
     api.view({ pos: [0, 0.6, 15], target: [0, 0.6, 0], min: 4, max: 26 });
     let u = 0, prevPh = -1, sw = 0;
     api.onFrame(dt => {
-      const per = 60 / HR; u = (u + dt / per) % 1; const t = u * 0.8;
+      const per = 60 / HR; u = (u + dt / per) % 1; const t = tOf(u, HR);
       const ph = t < 0.1 ? 0 : t < 0.4 ? 1 : 2;
       if (ph !== prevPh) {
         if (ph === 1) { api.beep(70, 0.16, 'sine', 0.5); api.beep(55, 0.12, 'sine', 0.35, 0.02); }
@@ -169,13 +173,13 @@
       }
     });
     let bp = null;
-    api.slider({ label: '💓 Nhịp tim', min: 40, max: 180, step: 1, value: HR, unit: 'nhịp/phút', onInput(v) { HR = v; if (v >= 150) api.warn('hr', 'Khi nghỉ, nhịp tim trên 100 nhịp/phút đã gọi là nhịp nhanh. Nhịp càng nhanh thì pha tâm trương bị rút ngắn nhiều nhất (tâm thu ngắn đi ít), tâm thất không kịp nạp đầy máu nên lượng máu tống đi mỗi nhịp giảm.', '⚠️ Cảnh báo y khoa'); if (v <= 45) api.warn('hr2', 'Nhịp tim dưới 50 nhịp/phút gọi là nhịp chậm. Ở vận động viên đây có thể là bình thường, nhưng ở người thường có thể gây chóng mặt do não thiếu máu.', '⚠️ Cảnh báo y khoa'); } });
+    api.slider({ label: '💓 Nhịp tim', min: 40, max: 180, step: 1, value: HR, unit: 'nhịp/phút', onInput(v) { HR = v; if (v >= 150) api.warn('hr', 'Khi nghỉ, nhịp tim trên 100 nhịp/phút đã gọi là nhịp nhanh. Nhịp càng nhanh thì pha tâm trương bị rút ngắn nhiều nhất (tâm thu ngắn đi ít), tâm thất không kịp nạp đầy máu nên lượng máu tống đi mỗi nhịp giảm.', '⚠️ Cảnh báo y khoa'); if (v < 60) api.warn('hr2', 'Nhịp tim dưới 60 nhịp/phút gọi là nhịp chậm. Ở vận động viên đây có thể là bình thường, nhưng ở người thường có thể gây chóng mặt do não thiếu máu.', '⚠️ Cảnh báo y khoa'); } });
     api.slider({ label: 'Độ trong suốt cơ tim', min: 0, max: 100, step: 5, value: Math.round((1 - myoOp) * 100), unit: '%', onInput(v) { myoOp = 1 - v / 100; s.H.traverse(o => { if (o.userData.myo) api.setOpacity(o, Math.max(0.04, myoOp) / 0.85); }); } });
     api.checklist([{ k: 'ch', label: 'Tâm nhĩ và tâm thất' }, { k: 'cond', label: 'Hệ dẫn truyền (SA, AV, His, Purkinje)' }, { k: 'valve', label: 'Van nhĩ – thất và van động mạch' }, { k: 'vessel', label: 'Mạch máu chính' }]);
     api.section('🩺 Mô phỏng bệnh lý');
     api.slider({ label: 'Mảng xơ vữa động mạch chủ', min: 0, max: 80, step: 5, value: plaque, unit: '%', onInput(v) { plaque = v; if (v >= 70) api.warn('plaque', 'Lòng động mạch chủ bị hẹp nặng làm tăng áp lực mà tâm thất trái phải thắng để tống máu (hậu tải). Cơ tim co bóp mạnh kéo dài nên dày lên (phì đại thất trái), lâu dần dễ suy tim. Lưu ý: sức cản ngoại vi của cả hệ tuần hoàn chủ yếu do các tiểu động mạch quyết định; tăng huyết áp kéo dài cũng gây phì đại thất trái.', '⚠️ Cảnh báo y khoa'); bp && bp.set(bpText()); } });
     api.toggle({ label: 'Hở van 2 lá', value: regurg, onChange(v) { regurg = v; bp && bp.set(bpText()); if (v) api.toast('Nghe tiếng thổi tâm thu giữa "LUB" và "DUB"'); } });
-    const bpText = () => `Huyết áp: <b>${sbpNow()}/${dbpNow()} mmHg</b><br>Thành thất trái: <b>${(12 * (1 + plaque / 160)).toFixed(1)} mm</b>${regurg ? '<br><b style="color:#E5534B">Máu trào ngược nhĩ trái mỗi nhịp</b>' : ''}`;
+    const bpText = () => `Huyết áp: <b>${sbpNow()}/${dbpNow()} mmHg</b><br>Thành thất trái: <b>${(10 * (1 + plaque / 160)).toFixed(1)} mm</b>${regurg ? '<br><b style="color:#E5534B">Máu trào ngược nhĩ trái mỗi nhịp</b>' : ''}`;
     bp = api.note(bpText());
   }
 
@@ -286,15 +290,15 @@
     build(api, tab) { if (tab === 'heart') heartTab(api); else if (tab === 'circ') circTab(api); else capTab(api); },
     data() {
       const sbp = sbpNow(), dbp = dbpNow(), pts = [], ep = [];
-      for (let k = 0; k <= 80; k++) { const u = k / 80; pts.push([+(u * 0.8 * 75 / HR).toFixed(3), +lvp(u, sbp).toFixed(1)]); ep.push([+(u * 0.8 * 75 / HR).toFixed(3), +(ecg(u) * 100).toFixed(1)]); }
+      for (let k = 0; k <= 80; k++) { const u = k / 80; pts.push([+(u * 60 / HR).toFixed(3), +lvp(u, sbp).toFixed(1)]); ep.push([+(u * 60 / HR).toFixed(3), +(ecg(u) * 100).toFixed(1)]); }
       const sick = plaque > 0 || regurg;
       return {
         title: 'Hai vòng tuần hoàn và thông số bệnh lý',
-        sub: `Nhịp tim ${HR} nhịp/phút · Chu kì tim ${(60 / HR).toFixed(2)} s (nhĩ co ${(0.1 * 75 / HR).toFixed(2)} s, thất co ${(0.3 * 75 / HR).toFixed(2)} s, dãn chung ${(0.4 * 75 / HR).toFixed(2)} s)`,
+        sub: (T => `Nhịp tim ${HR} nhịp/phút · Chu kì tim ${T.per.toFixed(2)} s (nhĩ co ${T.aC.toFixed(2)} s, thất co ${T.sys.toFixed(2)} s, dãn chung ${T.dia.toFixed(2)} s)`)(timing(HR)),
         sheets: [
           { name: 'Thông số', head: ['STT', 'Thông số / Tiêu chí', 'Trạng thái bình thường', 'Trạng thái Xơ vữa / Hở van', 'Đánh giá chẩn đoán y khoa'], rows: [
-            [1, 'Huyết áp động mạch (mmHg)', '120/80', `${sbp}/${dbp}`, sbp >= 140 ? 'Tăng huyết áp' : sbp >= 130 ? 'Huyết áp cao' : 'Bình thường'],
-            [2, 'Độ dày thành thất trái (mm)', '12', (12 * (1 + plaque / 160)).toFixed(1), plaque >= 40 ? 'Phì đại thất trái' : 'Bình thường'],
+            [1, 'Huyết áp động mạch (mmHg)', '120/80', `${sbp}/${dbp}`, sbp >= 140 || dbp >= 90 ? 'Tăng huyết áp' : sbp >= 130 ? 'Bình thường cao' : sbp >= 120 ? 'Bình thường' : 'Tối ưu'],
+            [2, 'Độ dày thành thất trái (mm)', '10', (10 * (1 + plaque / 160)).toFixed(1), 10 * (1 + plaque / 160) >= 12 ? 'Phì đại thất trái (≥ 12 mm)' : 'Bình thường'],
             [3, 'Hẹp lòng động mạch chủ (%)', '0', plaque, plaque >= 70 ? 'Hẹp nặng, nguy cơ suy tim, đột quỵ' : plaque >= 30 ? 'Hẹp vừa' : plaque ? 'Hẹp nhẹ' : 'Không hẹp'],
             [4, 'Van 2 lá', 'Đóng kín khi thất co', regurg ? 'Đóng không kín, máu trào ngược nhĩ trái' : 'Đóng kín', regurg ? 'Hở van 2 lá, có tiếng thổi tâm thu' : 'Bình thường'],
             [5, 'Nhịp tim (nhịp/phút)', '60–100', HR, HR > 100 ? 'Nhịp nhanh' : HR < 60 ? 'Nhịp chậm' : 'Bình thường'],

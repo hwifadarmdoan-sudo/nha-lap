@@ -30,7 +30,7 @@
     const b = st.beaker = api.g(L, BX, BY);
     el('path', { d: 'M-70 -190 L-66 0 L66 0 L70 -190', fill: 'rgba(220,240,255,.25)', stroke: A.GLASS, 'stroke-width': 3.5 }, b);
     st.liq = el('rect', { x: -64, y: -140, width: 128, height: 137, fill: 'rgba(60,140,230,.7)' }, b);
-    api.text(b, 0, 26, 'Dung dịch CuSO₄', 14, '#1F4E79', 800);
+    api.text(b, 0, 26, '20 mL CuSO₄ 0,25 M (0,005 mol)', 13, '#1F4E79', 800);
     // cân
     const sc = st.scale = api.g(L, SX, SY);
     el('rect', { x: -70, y: -20, width: 140, height: 40, rx: 8, fill: '#4A5A6A' }, sc);

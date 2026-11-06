@@ -14,7 +14,7 @@
   // ---------- NaCl ----------
   function buildNaCl(api) {
     const T = api.T, d = 1.41, n = cells * 2, o = -n * d / 2;
-    const INFO_NA = { name: 'Ion Na⁺ (cation sodium)', sci: 'Na⁺', rows: [['Hình thành', 'Na (2, 8, 1) nhường 1 electron lớp ngoài → Na⁺ (2, 8) bền như khí hiếm Ne'], ['Bán kính ion', '102 pm (nhỏ hơn nguyên tử Na 166 pm)'], ['Số phối trí', '6: mỗi Na⁺ được 6 Cl⁻ bao quanh theo hình bát diện'], ['Khoảng cách Na⁺–Cl⁻', '282 pm (0,282 nm)']], text: 'Chạm vào ion để thấy 6 ion trái dấu xung quanh nó.' };
+    const INFO_NA = { name: 'Ion Na⁺ (cation sodium)', sci: 'Na⁺', rows: [['Hình thành', 'Na (2, 8, 1) nhường 1 electron lớp ngoài → Na⁺ (2, 8) bền như khí hiếm Ne'], ['Bán kính ion', '102 pm (nhỏ hơn nguyên tử Na 166 pm (bán kính cộng hóa trị))'], ['Số phối trí', '6: mỗi Na⁺ được 6 Cl⁻ bao quanh theo hình bát diện'], ['Khoảng cách Na⁺–Cl⁻', '282 pm (0,282 nm)']], text: 'Chạm vào ion để thấy 6 ion trái dấu xung quanh nó.' };
     const INFO_CL = { name: 'Ion Cl⁻ (anion chloride)', sci: 'Cl⁻', rows: [['Hình thành', 'Cl (2, 8, 7) nhận 1 electron → Cl⁻ (2, 8, 8) bền như khí hiếm Ar'], ['Bán kính ion', '181 pm (lớn hơn nguyên tử Cl 102 pm)'], ['Số phối trí', '6 ion Na⁺'], ['Mạng', 'Lập phương tâm mặt, cạnh ô mạng a = 564 pm']] };
     const ions = [], grid = {};
     for (let i = 0; i <= n; i++) for (let j = 0; j <= n; j++) for (let k = 0; k <= n; k++) {
@@ -178,7 +178,7 @@
         liveHB = 2 * pairs.length / N;
       }
       hb.set(st === 'ice' ? pairs : pairs.filter((p, k) => (k + Math.floor(api.time * 8)) % 5 !== 0));
-      api.caption(`${temp} °C · ${st === 'ice' ? 'Nước đá: liên kết hydrogen cố định' : st === 'liq' ? 'Nước lỏng: liên kết hydrogen liên tục đứt và tạo lại' : 'Hơi nước: liên kết hydrogen bị phá vỡ'} · trung bình ${liveHB.toFixed(1).replace('.', ',')} liên kết H / phân tử`);
+      api.caption(`${temp} °C · ${st === 'ice' ? 'Nước đá: liên kết hydrogen cố định' : st === 'liq' ? 'Nước lỏng: liên kết hydrogen liên tục đứt và tạo lại' : 'Hơi nước: phân tử đã sang pha hơi gần như không còn liên kết hydrogen (cần nhiệt hóa hơi 2,26 kJ/g); nước lỏng ở 100 °C vẫn còn liên kết hydrogen'} · trung bình ${liveHB.toFixed(1).replace('.', ',')} liên kết H / phân tử`);
     });
     const stateNote = api.note('');
     const setNote = () => stateNote.set(temp <= 0

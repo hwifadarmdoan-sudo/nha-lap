@@ -1,7 +1,7 @@
 // Thí nghiệm H6: điều chế ethyl acetate. Acetic acid + ethanol, xúc tác H₂SO₄ đặc, đun cách thủy,
 // thêm nước muối bão hòa để ester nổi thành lớp, rồi ngửi đúng cách bằng phẩy tay.
 (function () {
-  const A = NL.art;
+  const A = NL.art, vn = (x, d) => NL.fmt(x, d);
   const TX = 300, TY = 440, MIX = 'rgba(250,245,225,.7)';
   let st;
 
@@ -17,9 +17,11 @@
     el('path', { d: `M${TX - 90} 300 L${TX - 86} 462 L${TX + 86} 462 L${TX + 90} 300`, fill: 'rgba(220,240,255,.25)', stroke: A.GLASS, 'stroke-width': 3.5 }, L);
     el('rect', { x: TX - 84, y: 350, width: 168, height: 108, fill: 'rgba(150,210,245,.45)' }, L);
     st.bath = api.g(L, 0, 0);
-    api.text(L, TX - 150, 300, 'Nồi cách thủy', 13, '#6C88A3', 700);
+    api.text(L, TX, 478, 'Nồi cách thủy', 13, '#6C88A3', 700);
+    // nhiệt kế trong nồi: giữ 65–70 °C
+    st.thermo = api.g(L, TX + 70, 300); el('rect', { x: -4, y: 0, width: 8, height: 150, rx: 4, fill: '#fff', stroke: '#9FB4C8', 'stroke-width': 2 }, st.thermo); st.thCol = el('rect', { x: -2, y: 90, width: 4, height: 56, rx: 2, fill: '#E5534B' }, st.thermo); st.thTxt = api.text(st.thermo, 0, -8, '', 12, '#1F4E79', 800);
     st.tube = A.tube(api, L, TX, TY, { h: 210, w: 44 });
-    st.layer = el('rect', { x: -20, y: 0, width: 40, height: 0, fill: 'rgba(250,215,120,.85)' }, st.tube);
+    st.layer = el('rect', { x: -20, y: 0, width: 40, height: 0, fill: 'rgba(240,248,255,.75)', stroke: 'rgba(120,160,200,.8)', 'stroke-width': 1.2 }, st.tube);
     st.clock = api.text(L, TX, 150, '', 26, '#1F4E79', 800);
     // hóa chất
     st.bAcid = A.bottle(api, L, 450, 530, 'CH₃COOH', 'rgba(250,240,215,.8)', { w: 76, h: 80, font: 12 });
@@ -42,7 +44,7 @@
   }
   function sideTable(api) {
     if (!st.tbl) st.tbl = api.table(['Lần đun', 'H₂SO₄ đặc', 'Ester']);
-    st.tbl.set(st.runs.map((r, i) => [i + 1, r.cat ? 'Có' : 'Không', r.cat ? 'Lớp ester rõ' : 'Gần như không có']));
+    st.tbl.set(st.runs.map((r, i) => [i + 1, r.cat ? 'Có' : 'Không', r.cat ? (r.T < 65 ? 'Lớp ester mỏng' : 'Lớp ester rõ') : 'Gần như không có']));
   }
   function bubbles(api, sec, onTick, done) {
     let t = 0, acc = 0; const bs = [];
@@ -57,27 +59,36 @@
   function heat(api) {
     st.heating = true; st.coil.setAttribute('fill', '#E5534B'); NL.audio.play('hum');
     st.lens.g.style.display = '';
-    const cat = st.cat;
-    bubbles(api, cat ? 5 : 3.5, k => {
+    const cat = st.cat, T = st.bathT || 60;
+    // FAIL FAST: nồi quá nóng thì ethanol và ester bay hơi mất; quá nguội thì phản ứng chậm, ít ester
+    if (T > 70) {
+      bubbles(api, 2.5, k => { st.clock.textContent = `⏱ ${Math.round(k * 3)} phút`; }, () => {
+        st.heating = false; st.coil.setAttribute('fill', '#7A8A99'); st.clock.textContent = '';
+        api.lesson({ title: `Nồi cách thủy ${T} °C: quá nóng`, text: 'Ethanol (sôi 78 °C) và ethyl acetate (sôi 77 °C) bay hơi gần hết khỏi ống nghiệm, mùi thơm thoát ra ngoài, thu được rất ít ester.', sub: 'Bài học: đun cách thủy giữ 65–70 °C, đủ nóng cho phản ứng mà không làm bay hơi chất.' }, () => { api.goto(2); });
+      });
+      return;
+    }
+    const slow = T < 65;
+    bubbles(api, cat ? (slow ? 4 : 5) : 3.5, k => {
       st.clock.textContent = `⏱ ${Math.round(k * 10)} phút`;
-      const e = cat ? Math.round(5 * k) : 0;
+      const e = cat ? Math.round((slow ? 3 : 5) * k) : 0;
       st.lens.set([{ f: 'CH₃COOH', n: 4 - Math.min(3, e) }, { f: 'C₂H₅OH', n: 4 - Math.min(3, e) }, { f: 'CH₃COOC₂H₅', n: e }, { f: 'H₂O', n: e ? Math.max(1, e - 1) : 0 }]);
     }, () => {
       st.heating = false; st.coil.setAttribute('fill', '#7A8A99'); st.clock.textContent = '';
-      st.runs.push({ cat }); sideTable(api);
+      st.runs.push({ cat, T }); sideTable(api);
       if (!cat) {
         st.failed = true;
         api.lesson({ title: 'Quên chất xúc tác H₂SO₄ đặc', text: 'Đun 10 phút rồi mà các phân tử acid và rượu va vào nhau gần như không tạo ra ester. Phản ứng này rất chậm nếu không có xúc tác.', sub: 'Bài học: H₂SO₄ đặc vừa là chất xúc tác làm phản ứng nhanh hơn, vừa hút nước giúp tạo nhiều ester hơn. Nhỏ vài giọt H₂SO₄ đặc rồi đun lại.', btn: '🔁 Thêm xúc tác' }, () => api.goto(2));
         return;
       }
-      api.say('CH₃COOH + C₂H₅OH ⇌ CH₃COOC₂H₅ + H₂O (H₂SO₄ đặc, đun nóng)');
+      api.say(`CH₃COOH + C₂H₅OH ⇌ CH₃COOC₂H₅ + H₂O (H₂SO₄ đặc, đun nóng)${slow ? ` · Nồi ${T} °C hơi nguội nên ester ít hơn (≈ 40%)` : ''}`);
       api.done('Tách lớp ester ➜');
     });
   }
 
   const steps = [
     {
-      label: 'Chuẩn bị 1/2', text: 'Lấy acetic acid (CH₃COOH) cho vào ống nghiệm', hint: 'Kéo pipette vào miệng ống nghiệm',
+      label: 'Chuẩn bị 1/2', text: 'Lấy acetic acid nguyên chất (acid acetic băng, CH₃COOH) cho vào ống nghiệm', hint: 'Kéo pipette vào miệng ống nghiệm',
       enter(api) {
         sideTable(api);
         api.card({ kicker: '🥽 An toàn', text: 'Đeo kính và găng tay. H₂SO₄ đặc gây bỏng nặng, acetic acid có mùi rất hắc. Làm ở nơi thoáng khí.', btn: 'Đã hiểu ➜' });
@@ -93,10 +104,14 @@
       label: 'Đun cách thủy', get text() { return st.failed ? 'Nhỏ vài giọt H₂SO₄ đặc rồi đun lại' : 'Có thể nhỏ H₂SO₄ đặc và bật bếp đun cách thủy'; }, get hint() { return st.failed ? 'Chạm lọ H₂SO₄ đặc trước, rồi chạm núm đỏ của bếp' : 'Chạm lọ H₂SO₄ đặc hoặc chạm núm đỏ của bếp'; },
       enter(api) {
         const plateOn = () => { api.setOn(st.plate, true); api.tapable(st.plate, () => { if (st.heating || st.dropping) return; api.setOn(st.drop, false); api.setOn(st.plate, false); heat(api); }); };
+        if (st.bathT === undefined) st.bathT = 60;
+        const setTh = T => { st.thCol.setAttribute('y', 146 - (T - 20) * 1.4); st.thCol.setAttribute('height', (T - 20) * 1.4); st.thTxt.textContent = vn(T, 0) + ' °C'; };
+        api.slider({ label: '🌡 Nhiệt độ nồi cách thủy (giữ 65–70 °C)', min: 40, max: 95, step: 5, value: st.bathT, unit: '°C', onInput(v, c) { st.bathT = v; setTh(v); c.warn(v < 65 ? 'Thấp: phản ứng chậm, ít ester' : v > 70 ? 'Cao: ethanol (sôi 78 °C) và ester (sôi 77 °C) bay hơi mất' : ''); } });
         if (!st.cat) {
           api.setOn(st.drop, true);
           api.tapable(st.drop, () => {
             if (st.heating || st.dropping) return;
+            if (!st.warnedAcid) { st.warnedAcid = true; api.card({ kicker: '⚠️ An toàn với H₂SO₄ đặc', text: 'Nhỏ từ từ từng giọt H₂SO₄ đặc vào hỗn hợp, không làm ngược lại. H₂SO₄ đặc tỏa nhiệt mạnh khi gặp nước, dễ bắn gây bỏng.', btn: 'Đã hiểu, nhỏ từ từ ➜' }, () => st.drop._tapCb(st.drop)); api.setOn(st.drop, true); return; }
             st.dropping = true;
             let n = 0; const one = () => A.drop(api, api.svg, TX, 240, 400, '#F4E6B0', () => { NL.audio.play('drop'); if (++n < 3) one(); else { st.cat = true; st.dropping = false; api.say('Đã nhỏ 3 giọt H₂SO₄ đặc. Giờ bật bếp đun cách thủy'); plateOn(); } });
             api.place(st.drop, TX, 250); one();
@@ -116,7 +131,7 @@
           let t = 0; api.loop(dt => { t += dt; const k = Math.min(1, t / 1.5); st.layer.setAttribute('y', -22 - 0.8 * 182); st.layer.setAttribute('height', 34 * k); if (k >= 1) return false; });
           st.lens.caption('🔍 Lớp trên cùng');
           st.lens.set([{ f: 'CH₃COOC₂H₅', n: 7 }]);
-          api.say('Ester không tan trong nước muối, nhẹ hơn nên nổi thành lớp màu vàng nhạt ở trên');
+          api.say('Ester không tan trong nước muối, nhẹ hơn nên nổi thành lớp chất lỏng không màu, trong suốt ở trên (viền nhẹ để dễ nhìn)');
           api.done('Ngửi mùi ester ➜');
         } });
       }
@@ -159,13 +174,14 @@
     }
   ];
 
+  const pct = r => !r.cat ? 1 : (r.T && r.T < 65) ? 40 : 65;
   function result() {
     const runs = st.runs.slice();
     if (!runs.some(r => !r.cat)) runs.unshift({ cat: false, ref: true });
     return {
       title: 'Điều chế ethyl acetate', param: '2 mL CH₃COOH, 2 mL C₂H₅OH, đun cách thủy 10 phút',
-      table: { head: ['Lần', 'H₂SO₄ đặc', 'Ester sau 10 phút (mô phỏng)', 'Ghi chú'], rows: runs.map((r, i) => [i + 1, r.cat ? 'Có' : 'Không', r.cat ? '≈ 65%' : '≈ 1%', r.ref ? 'Số liệu tham khảo' : 'Em làm']) },
-      chart: { labels: runs.map(r => r.cat ? 'Có H₂SO₄ đặc' : 'Không xúc tác'), yLabel: 'Ester thu được (%)', series: [{ name: 'Ester', color: '#E8A33D', values: runs.map(r => r.cat ? 65 : 1) }] },
+      table: { head: ['Lần', 'H₂SO₄ đặc', 'Nồi cách thủy', 'Ester sau 10 phút (mô phỏng)', 'Ghi chú'], rows: runs.map((r, i) => [i + 1, r.cat ? 'Có' : 'Không', r.T ? r.T + ' °C' : '65–70 °C', '≈ ' + pct(r) + '%', r.ref ? 'Số liệu tham khảo' : 'Em làm']) },
+      chart: { labels: runs.map(r => (r.cat ? 'Có H₂SO₄ đặc' : 'Không xúc tác') + (r.T ? ` ${r.T} °C` : '')), yLabel: 'Ester thu được (%)', series: [{ name: 'Ester', color: '#E8A33D', values: runs.map(pct) }] },
       conclusion: 'Acetic acid tác dụng với ethanol khi có H₂SO₄ đặc và đun nóng tạo ethyl acetate và nước. Phản ứng thuận nghịch nên không bao giờ chuyển hết thành ester. Ester nhẹ hơn nước, ít tan, có mùi thơm',
       note: 'Phần trăm ester là số liệu mô phỏng để so sánh, không phải số đo thật.'
     };
@@ -175,5 +191,5 @@
     return false;
   }
 
-  NL.lab.register('H6', { goal: 'Từ giấm và rượu, làm sao tạo ra chất có mùi thơm hoa quả?', build, steps, auto });
+  NL.lab.register('H6', { goal: 'Từ acetic acid (thành phần chính tạo vị chua của giấm) và ethanol, làm sao tạo ra chất có mùi thơm hoa quả?', build, steps, auto });
 })();

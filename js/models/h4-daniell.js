@@ -126,7 +126,7 @@
     api.slider({ label: '🌡 Nhiệt độ', min: 0, max: 80, step: 1, value: s.T, unit: '°C', lazy: true, onInput(v) { s.T = v; } });
     api.choices({ label: '⏩ Tua nhanh thời gian', items: SPEEDS, value: speed, onPick(v) { speed = v; } });
     api.button('↺ Làm lại pin mới', () => { s = fresh(); api.setTab(api.tab); });
-    api.note('E = 1,10 − <span style="white-space:nowrap">(RT / 2F)·ln([Zn²⁺]/[Cu²⁺])</span><br>Tăng [Cu²⁺] hoặc giảm [Zn²⁺] thì E tăng.');
+    api.note('E = 1,10 − <span style="white-space:nowrap">(RT / 2F)·ln([Zn²⁺]/[Cu²⁺])</span><br>Tăng [Cu²⁺] hoặc giảm [Zn²⁺] thì E tăng.<br><small>E° = 1,10 V là giá trị ở 25 °C; mô hình giữ E° cố định khi đổi nhiệt độ (thực tế E° thay đổi rất ít, khoảng −0,4 mV mỗi °C).</small>');
     api.view({ pos: [0, 4.2, 13.5], target: [0, 2.3, 0], min: 4, max: 30 });
   }
 

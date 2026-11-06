@@ -1,43 +1,64 @@
-// Thí nghiệm 2F: hô hấp tế bào ở hạt nảy mầm. Đo O₂ bằng giọt mực, thử CO₂ bằng nước vôi, đo nhiệt.
+// Thí nghiệm 2F: hô hấp tế bào ở hạt nảy mầm. Đo O₂ bằng giọt mực, thử CO₂ bằng nước vôi trong, đo nhiệt.
+// Sửa 6/11: ống mao dẫn Ø 3 mm (S = π·r² = 0,00707 mL/mm), tốc độ hút O₂ ≈ 0,45 mL/g/giờ ở 25 °C, Q10 ≈ 2 tới 35 °C rồi giảm;
+// giọt mực chạy hết ống thì phải làm lại; thí nghiệm CO₂ và nhiệt có điều khiển (chọn hạt, khối lượng, nhiệt độ, thời gian), ghi bảng, xem lại.
 (function () {
-  const A = NL.art;
-  const S = 0.02;            // tiết diện ống mao dẫn: V (mL) = s (mm) × 0,02
-  const RUN_MIN = 30;        // mỗi lần đo 30 phút
+  const A = NL.art, vn = (x, d) => NL.fmt(x, d);
+  const D_MM = 3, S = +(Math.PI * (D_MM / 2) * (D_MM / 2) / 1000).toFixed(5); // mm² → mL/mm: 0,00707
+  const TUBE_MM = 100;       // ống dài 100 mm
+  const RUN_MIN = 10;        // mỗi lần đo O₂ 10 phút
+  const V25 = 0.45;          // mL O₂ / g / giờ ở 25 °C (hạt đậu xanh nảy mầm: 0,3–0,6)
   const RX0 = 640, RX1 = 260; // vạch 0 mm ở bên phải, 100 mm sát bình
   const mmX = mm => RX0 - (RX0 - RX1) * mm / 100;
+  const KINDS = [{ t: '🌱 Nảy mầm', v: 'alive' }, { t: '🌰 Khô', v: 'dry' }, { t: '🍲 Luộc chín', v: 'boiled' }];
+  const kindName = k => ({ alive: 'Nảy mầm', dry: 'Khô', boiled: 'Luộc chín' })[k];
+  const kindK = k => ({ alive: 1, dry: 0.03, boiled: 0 })[k];
   let st;
 
-  // tốc độ hô hấp tương đối theo nhiệt độ: tối ưu 35 °C, trên 55 °C enzyme biến tính
+  // hệ số theo nhiệt độ so với 25 °C: Q10 ≈ 2 tới 35 °C, trên đó enzyme biến tính dần, từ 55 °C dừng hẳn
   function fT(T) {
     if (T <= 0 || T >= 55) return 0;
-    const x = T / 35; let f = x * Math.exp(1 - x);
-    if (T > 35) f *= Math.exp(-Math.pow((T - 35) / 10, 2));
+    let f = Math.pow(2, (Math.min(T, 35) - 25) / 10);
+    if (T > 35) f *= Math.exp(-Math.pow((T - 35) / 8, 2));
     return f;
   }
-  const sAt = (r, min) => Math.min(100, 0.8 * r.m * fT(r.T) * r.noise * (r.alive ? 1 : 0) * min / RUN_MIN);
+  // tốc độ hút O₂ (mL/giờ) của một lần đo
+  const rate = r => V25 * r.m * fT(r.T) * kindK(r.kind) * r.noise;
+  // quãng đường giọt mực (mm) sau t phút
+  const sAt = (r, min) => rate(r) * min / 60 / S;
 
-  function seedsIn(api, g, x, y, w, n, color) {
-    for (let i = 0; i < n; i++) api.el('ellipse', { cx: x + (Math.random() - 0.5) * w, cy: y - Math.random() * 14, rx: 7, ry: 5, fill: color, stroke: '#4E7A2E', 'stroke-width': 1, transform: `rotate(${Math.random() * 180} ${x} ${y})` }, g);
+  // hạt đậu xanh xếp đều một lớp: hạt nảy mầm xanh tươi có rễ mầm trắng, hạt khô xanh sẫm nhỏ, hạt luộc vàng nhạt
+  function seedsIn(api, g, x, y, w, n, kind) {
+    const col = kind === 'boiled' ? '#E3D7A6' : kind === 'dry' ? '#7FA648' : '#B9D96B', edge = kind === 'boiled' ? '#B8A66A' : '#4E7A2E';
+    const perRow = Math.max(3, Math.round(w / 16)), rows = Math.ceil(n / perRow);
+    for (let i = 0; i < n; i++) {
+      const row = Math.floor(i / perRow), inRow = Math.min(perRow, n - row * perRow), col0 = i % perRow;
+      const cx = x + (col0 - (inRow - 1) / 2) * 16 + (row % 2 ? 4 : 0), cy = y - row * 9;
+      const sg = api.g(g, cx, cy);
+      if (kind === 'alive') api.el('path', { d: `M${6} 0 q6 ${i % 2 ? 5 : -5} 10 ${i % 2 ? 7 : -7}`, stroke: '#F4F1E6', 'stroke-width': 2.2, fill: 'none', 'stroke-linecap': 'round' }, sg);
+      api.el('ellipse', { cx: 0, cy: 0, rx: kind === 'dry' ? 6 : 7, ry: kind === 'dry' ? 4 : 5, fill: col, stroke: edge, 'stroke-width': 1, transform: `rotate(${(i * 37) % 40 - 20})` }, sg);
+      api.el('ellipse', { cx: -2, cy: -1.5, rx: 2, ry: 1, fill: 'rgba(255,255,255,.55)' }, sg);
+    }
   }
   function flask(api, parent, x, y, label) {
     const g = api.g(parent, x, y), el = api.el;
     el('path', { d: 'M-16 -170 L-16 -110 L-70 0 L70 0 L16 -110 L16 -170 Z', fill: 'rgba(220,240,255,.35)', stroke: A.GLASS, 'stroke-width': 3.5, 'stroke-linejoin': 'round' }, g);
     el('line', { x1: -52, y1: -42, x2: 52, y2: -42, stroke: '#9AA9B7', 'stroke-width': 3, 'stroke-dasharray': '4 3' }, g);
-    if (label) api.text(g, 0, 26, label, 14, '#6C88A3', 700);
+    g.label = label ? api.text(g, 0, 26, label, 14, '#6C88A3', 700) : null;
     return g;
   }
 
   function build(api) {
     const L = api.svg, el = api.el;
-    st = { runs: [], m: 50, T: 30, alive: true, speed: 300, part: 1 };
+    st = { runs: [], co2Runs: [], heatRuns: [], m: 5, T: 25, kind: 'alive', speed: 60, part: 1, c: { m: 10, T: 25, kind: 'alive', min: 30 }, h: { m: 50, T: 25, kind: 'alive', hrs: 24 } };
     // ---- phần 1: bình đo O₂ ----
     const p1 = st.p1 = api.g(L, 0, 0);
     st.fl = flask(api, p1, 190, 450, 'Bình kín');
     st.flSeeds = api.g(st.fl, 0, 0);
     st.flKoh = api.g(st.fl, 0, 0);
-    // ống mao dẫn và thước
+    // ống mao dẫn Ø 3 mm và thước
     el('rect', { x: 206, y: 270, width: 450, height: 14, rx: 7, fill: 'rgba(220,240,255,.5)', stroke: A.GLASS, 'stroke-width': 2.5 }, p1);
     el('rect', { x: 196, y: 270, width: 14, height: 18, fill: 'rgba(220,240,255,.5)', stroke: A.GLASS, 'stroke-width': 2.5 }, p1);
+    api.text(p1, 430, 258, `Ống mao dẫn Ø ${D_MM} mm · S = π·r² = ${vn(S, 5)} mL/mm`, 12, '#6C88A3', 700);
     const ruler = api.g(p1, 0, 0);
     el('rect', { x: RX1 - 10, y: 290, width: RX0 - RX1 + 20, height: 26, rx: 5, fill: '#FFF3C9', stroke: '#E2C779', 'stroke-width': 2 }, ruler);
     for (let mm = 0; mm <= 100; mm += 2) {
@@ -52,20 +73,20 @@
     api.text(st.cork, 0, -8, 'Nút cao su', 12, '#6C88A3', 700);
     st.bowl = api.g(p1, 420, 450);
     el('path', { d: 'M-50 -30 Q0 20 50 -30 Z', fill: '#E9F2F8', stroke: '#9FB4C8', 'stroke-width': 3 }, st.bowl);
-    seedsIn(api, st.bowl, 0, -22, 70, 12, '#B9D96B');
+    seedsIn(api, st.bowl, 0, -22, 70, 12, 'alive');
     api.text(st.bowl, 0, 20, 'Hạt đậu xanh', 13, '#6C88A3', 700);
     st.koh = api.g(p1, 540, 450);
     el('rect', { x: -22, y: -40, width: 44, height: 40, rx: 6, fill: 'rgba(220,240,255,.4)', stroke: A.GLASS, 'stroke-width': 3 }, st.koh);
     el('rect', { x: -19, y: -24, width: 38, height: 21, rx: 4, fill: 'rgba(200,170,240,.6)' }, st.koh);
     api.text(st.koh, 0, 20, 'KOH 10%', 13, '#6C88A3', 700);
-    // ---- phần 2: nước vôi ----
+    // ---- phần 2: nước vôi trong (bình thí nghiệm bên trái, bình đối chứng hạt luộc bên phải) ----
     const p2 = st.p2 = api.g(L, 0, 0); p2.style.display = 'none';
-    st.lime = [];
-    [[170, 'Hạt nảy mầm'], [450, 'Hạt luộc chín']].forEach(([x, lab], i) => {
-      const f = flask(api, p2, x, 450, lab);
-      seedsIn(api, f, 0, -46, 70, 12, i ? '#C9B98A' : '#B9D96B');
+    st.lime = []; st.limeSeeds = []; st.limeFl = [];
+    [[170, 'Hạt nảy mầm'], [450, 'Đối chứng: hạt luộc chín']].forEach(([x, lab], i) => {
+      const f = flask(api, p2, x, 450, lab); st.limeFl.push(f);
+      const sg = api.g(f, 0, 0); st.limeSeeds.push(sg); seedsIn(api, sg, 0, -46, 70, 12, i ? 'boiled' : 'alive');
       el('path', { d: `M${x + 10} 285 L${x + 10} 250 L${x + 130} 250 L${x + 130} 420`, stroke: '#9FB4C8', 'stroke-width': 4, fill: 'none' }, p2);
-      const t = A.tube(api, p2, x + 130, 448, { h: 130, w: 34, k: 0.7, color: 'rgba(210,235,250,.7)', label: 'Nước vôi' });
+      const t = A.tube(api, p2, x + 130, 448, { h: 130, w: 34, k: 0.7, color: 'rgba(210,235,250,.7)', label: 'Nước vôi trong' });
       st.lime.push(t);
     });
     st.pump = api.g(p2, 330, 170);
@@ -74,23 +95,29 @@
     // ---- phần 3: bình cách nhiệt ----
     const p3 = st.p3 = api.g(L, 0, 0); p3.style.display = 'none';
     st.therm = [];
-    [[200, 'Hạt nảy mầm'], [460, 'Hạt luộc chín']].forEach(([x, lab]) => {
+    [[200, 'Hạt nảy mầm'], [460, 'Đối chứng: hạt luộc chín']].forEach(([x, lab]) => {
       el('rect', { x: x - 60, y: 280, width: 120, height: 170, rx: 26, fill: '#F4F0E6', stroke: '#C9BFA6', 'stroke-width': 4 }, p3);
       el('rect', { x: x - 40, y: 268, width: 80, height: 20, rx: 6, fill: '#C9BFA6' }, p3);
+      const sg = api.g(p3, x, 440); seedsIn(api, sg, 0, 0, 90, 16, 'alive');
       el('rect', { x: x - 5, y: 150, width: 10, height: 190, rx: 5, fill: '#fff', stroke: '#9FB4C8', 'stroke-width': 2 }, p3);
       const col = el('rect', { x: x - 3, y: 300, width: 6, height: 40, rx: 3, fill: '#E5534B' }, p3);
       el('rect', { x: x + 14, y: 160, width: 74, height: 34, rx: 8, fill: '#1E2A36' }, p3);
-      const led = api.text(p3, x + 51, 184, '25.0°C', 16, '#59F28A', 800);
-      api.text(p3, x, 476, lab, 14, '#6C88A3', 700);
-      st.therm.push({ col, led });
+      const led = api.text(p3, x + 51, 184, '25,0 °C', 15, '#59F28A', 800);
+      const label = api.text(p3, x, 476, lab, 14, '#6C88A3', 700);
+      st.therm.push({ col, led, label, seeds: sg });
     });
   }
 
-  function inkTo(mm) { st.ink.setAttribute('x', mmX(mm) - 6); }
+  function inkTo(mm) { st.ink.setAttribute('x', mmX(Math.min(TUBE_MM, mm)) - 6); }
   function logTable(api) {
-    if (!st.tbl || !st.tbl.card.isConnected) st.tbl = api.table(['Lần', 'Hạt', 'm', 'T', 's (mm)', 'V (mL)']);
-    st.tbl.set(st.runs.map((r, i) => [i + 1, r.alive ? 'Nảy mầm' : 'Luộc', r.m + ' g', r.T + '°C', r.s.toFixed(0), (r.s * S).toFixed(2)]));
+    if (!st.tbl || !st.tbl.card.isConnected) st.tbl = api.table(['Lần', 'Hạt', 'm', 'T', 's (mm)', 'V O₂ (mL)']);
+    st.tbl.set(st.runs.map((r, i) => [i + 1, kindName(r.kind), r.m + ' g', r.T + ' °C', vn(r.s, 0), vn(r.s * S, 2)]));
   }
+  function setTherm(i, T) { st.therm[i].led.textContent = vn(T, 1) + ' °C'; st.therm[i].col.setAttribute('y', 340 - (T - 15) * 6); st.therm[i].col.setAttribute('height', Math.max(2, (T - 15) * 6)); }
+  // độ đục nước vôi 0–3 theo thể tích CO₂ (RQ ≈ 1 nên V CO₂ ≈ V O₂)
+  const turb = v => v < 0.3 ? 0 : v < 1 ? 1 : v < 3 ? 2 : 3;
+  const TURB = ['trong', 'hơi vẩn', 'đục', 'đục trắng'];
+  function limeColor(k) { return `rgba(${210 + 40 * k},${235 + 15 * k},250,${0.7 + 0.25 * k})`; }
 
   const steps = [
     {
@@ -99,7 +126,7 @@
         api.setOn(st.bowl, true);
         api.draggable(st.bowl, {
           target: { x: 190, y: 400, r: 110 }, snap: false, onDrop: () => {
-            st.bowl.style.display = 'none'; seedsIn(api, st.flSeeds, 0, -46, 80, 16, '#B9D96B'); NL.audio.play('drop'); api.done();
+            st.bowl.style.display = 'none'; seedsIn(api, st.flSeeds, 0, -46, 80, 12, 'alive'); NL.audio.play('drop'); api.done();
           }
         });
       }
@@ -126,50 +153,59 @@
         });
       }
     },
-    {
-      label: () => `Lần đo ${st.runs.length + 1}/3 · Cài đặt`, text: 'Chọn khối lượng hạt, nhiệt độ và loại hạt', hint: 'Mỗi lần đo đổi một yếu tố để so sánh',
+    { // 3
+      label: () => `Lần đo ${Math.min(st.runs.length + 1, 3)}/3 · Cài đặt`, text: 'Chọn khối lượng hạt, nhiệt độ và loại hạt', hint: 'Mỗi lần đo đổi một yếu tố để so sánh',
       enter(api) {
         logTable(api);
         if (!st.runs.length && !api.prediction) api.ask({
           predict: true, q: 'Khi hạt nảy mầm hô hấp trong bình kín có KOH, giọt mực sẽ…?',
           options: [{ t: 'Di chuyển về phía bình' }, { t: 'Di chuyển ra xa bình' }, { t: 'Đứng yên' }]
         });
+        let mC;
         const check = () => {
-          const dup = st.runs.some(r => r.m === st.m && r.T === st.T && r.alive === st.alive);
+          const dup = st.runs.some(r => r.m === st.m && r.T === st.T && r.kind === st.kind);
+          // dự báo: ước lượng giọt mực đi được bao xa trong 10 phút; quá 100 mm thì nhắc trước (nhưng vẫn cho đo để em tự thấy)
+          const pred = sAt({ m: st.m, T: st.T, kind: st.kind, noise: 1 }, RUN_MIN);
+          if (mC) mC.warn(pred > TUBE_MM ? `Ước tính giọt mực đi ≈ ${vn(pred, 0)} mm, quá ống ${TUBE_MM} mm: nên bớt hạt hoặc hạ nhiệt độ` : pred > 0 && pred < 5 ? 'Giọt mực sẽ đi rất ít, khó đọc' : '');
           if (dup) { api.hideNext(); NL.game.toast('Đổi khối lượng, nhiệt độ hoặc loại hạt so với lần trước nhé'); } else api.done('Bắt đầu đo ➜');
         };
-        api.slider({ label: 'Khối lượng hạt', min: 10, max: 100, step: 5, value: st.m, unit: 'g', onInput(v) { st.m = v; check(); } });
+        mC = api.slider({ label: 'Khối lượng hạt', min: 1, max: 20, step: 1, value: st.m, unit: 'g', onInput(v) { st.m = v; check(); } });
         api.slider({ label: 'Nhiệt độ', min: 0, max: 60, value: st.T, unit: '°C', onInput(v, c) { st.T = v; c.warn(v > 50 ? 'Quá nóng: enzyme hô hấp bị biến tính' : v < 5 ? 'Quá lạnh: hô hấp gần như dừng' : ''); check(); } });
-        api.choices({ label: 'Loại hạt', items: [{ t: '🌱 Nảy mầm', v: true }, { t: '🍲 Luộc chín', v: false }], value: st.alive, onPick(v) { st.alive = v; check(); } });
+        api.choices({ label: 'Loại hạt', items: KINDS, value: st.kind, onPick(v) { st.kind = v; check(); } });
       },
       onNext(api) { api.goto(4); }
     },
-    {
-      label: () => `Lần đo ${st.runs.length + 1}/3 · Đang đo`, text: 'Quan sát giọt mực trong 30 phút', hint: 'Giọt mực bị kéo về phía bình vì O₂ trong bình bị hạt lấy đi',
+    { // 4
+      label: () => `Lần đo ${Math.min(st.runs.length + 1, 3)}/3 · Đang đo`, text: `Quan sát giọt mực trong ${RUN_MIN} phút`, hint: 'Giọt mực bị kéo về phía bình vì O₂ trong bình bị hạt lấy đi',
       enter(api) {
         logTable(api);
-        const r = { m: st.m, T: st.T, alive: st.alive, noise: 0.95 + Math.random() * 0.1, pts: [[0, 0]] };
+        const r = { m: st.m, T: st.T, kind: st.kind, alive: st.kind === 'alive', noise: 0.95 + Math.random() * 0.1, pts: [[0, 0]] };
         st.cur = r; inkTo(0);
-        if (!r.alive) { st.flSeeds.innerHTML = ''; seedsIn(api, st.flSeeds, 0, -46, 80, 16, '#C9B98A'); }
-        else { st.flSeeds.innerHTML = ''; seedsIn(api, st.flSeeds, 0, -46, 80, Math.round(6 + r.m / 7), '#B9D96B'); }
+        st.flSeeds.innerHTML = ''; seedsIn(api, st.flSeeds, 0, -46, 84, Math.round(4 + r.m * 1.2), r.kind);
         const card = api.panel(`<div>⏱ Thời gian thí nghiệm</div><div class="big-num"><span id="rsT">0</span> phút</div>`);
         api.choices({ label: 'Tốc độ', items: [{ t: '10×', v: 10 }, { t: '60×', v: 60 }, { t: '300×', v: 300 }], value: st.speed, onPick(v) { st.speed = v; } });
-        let t = 0, nextPt = 5;
+        let t = 0, nextPt = 1;
         api.loop(dt => {
           t = Math.min(RUN_MIN, t + dt * st.speed / 60);
           card.querySelector('#rsT').textContent = Math.floor(t);
-          inkTo(sAt(r, t));
-          if (t >= nextPt) { r.pts.push([nextPt, +(sAt(r, nextPt) * S).toFixed(3)]); nextPt += 5; }
+          const s = sAt(r, t); inkTo(s);
+          if (t >= nextPt) { r.pts.push([nextPt, +(sAt(r, nextPt) * S).toFixed(3)]); nextPt += 1; }
+          // FAIL FAST: giọt mực chạy hết ống trước khi hết giờ thì lần đo này hỏng, phải giảm hạt hoặc hạ nhiệt độ
+          if (s >= TUBE_MM) {
+            card.remove(); NL.audio.play('pop');
+            api.lesson({ title: 'Giọt mực chạy hết ống', text: `Mới ${Math.floor(t)} phút giọt mực đã tới vạch ${TUBE_MM} mm, không đo tiếp được. Lượng O₂ hạt hút vào vượt thể tích ống (${vn(TUBE_MM * S, 2)} mL).`, sub: 'Giảm khối lượng hạt (hoặc hạ nhiệt độ) rồi đo lại. Trong phòng thí nghiệm thật người ta cũng chọn lượng hạt sao cho giọt mực không chạy hết thước.' }, () => { inkTo(0); api.goto(3); });
+            return false;
+          }
           if (t >= RUN_MIN) {
             NL.audio.play('ting'); card.remove();
-            r.s = sAt(r, RUN_MIN);
+            r.s = s;
             readInk(api, r);
             return false;
           }
         });
       }
     },
-    {
+    { // 5
       label: () => `Lần đo ${st.runs.length}/3 · xong`, text: '', hint: 'Bấm nút ở góc dưới để đi tiếp',
       enter(api) {
         logTable(api);
@@ -182,48 +218,69 @@
         st.p1.style.display = 'none'; st.p2.style.display = ''; api.goto(6);
       }
     },
-    {
-      label: 'Thải khí CO₂', text: 'Bơm khí trong hai bình qua ống nước vôi trong', hint: 'Chạm nút Bơm khí',
+    { // 6: thải CO₂, có điều khiển
+      label: () => `Thải CO₂ · lần ${st.co2Runs.length + 1}`, text: 'Chọn hạt, khối lượng, nhiệt độ, thời gian rồi bơm khí qua nước vôi trong', hint: 'Bình bên phải là đối chứng: hạt luộc chín',
       enter(api) {
-        logTable(api);
+        const c = st.c;
+        const redraw = () => { st.limeSeeds[0].innerHTML = ''; seedsIn(api, st.limeSeeds[0], 0, -46, 70, Math.round(6 + c.m / 4), c.kind); st.limeFl[0].label.textContent = `Hạt ${kindName(c.kind).toLowerCase()} ${c.m} g · ${c.T} °C`; };
+        api.choices({ label: 'Loại hạt', items: KINDS, value: c.kind, onPick(v) { c.kind = v; redraw(); } });
+        api.choices({ label: 'Khối lượng hạt', items: [{ t: '5 g', v: 5 }, { t: '10 g', v: 10 }, { t: '20 g', v: 20 }], value: c.m, onPick(v) { c.m = v; redraw(); } });
+        api.slider({ label: 'Nhiệt độ', min: 5, max: 50, step: 5, value: c.T, unit: '°C', onInput(v) { c.T = v; redraw(); } });
+        api.choices({ label: 'Thời gian', items: [{ t: '10 phút', v: 10 }, { t: '20 phút', v: 20 }, { t: '30 phút', v: 30 }], value: c.min, onPick(v) { c.min = v; } });
+        redraw(); st.lime[0].fill(limeColor(0), 0.7); st.lime[1].fill(limeColor(0), 0.7);
+        if (!st.c2tbl || !st.c2tbl.card.isConnected) st.c2tbl = api.table(['Lần', 'Hạt', 'm', 'T', 't', 'Nước vôi']);
+        st.c2tbl.set(st.co2Runs.map((r, i) => [i + 1, kindName(r.kind), r.m + ' g', r.T + ' °C', r.min + "'", `${r.k}/3 ${TURB[r.k]}`]));
+        api.hideNext();
         api.setOn(st.pump, true);
         api.tapable(st.pump, () => {
-          NL.audio.play('bubble');
-          let k = 0;
-          api.loop(dt => {
-            k = Math.min(1, k + dt / 3);
-            st.lime[0].fill(`rgba(${210 + 40 * k},${235 + 15 * k},${250},${0.7 + 0.25 * k})`, 0.7);
-            if (Math.random() < 0.3) NL.audio.play('bubble');
-            if (k >= 1) {
-              api.say('Ống bên hạt nảy mầm vẩn đục trắng, ống bên hạt luộc vẫn trong');
-              st.co2 = true; api.done('Thử nhiệt ➜'); return false;
-            }
+          api.setOn(st.pump, false);
+          const r = { kind: c.kind, m: c.m, T: c.T, min: c.min, noise: 0.95 + Math.random() * 0.1 };
+          r.v = rate(r) * r.min / 60; r.k = turb(r.v); st.co2Runs.push(r);
+          replayCO2(api, r, () => {
+            st.c2tbl.set(st.co2Runs.map((r, i) => [i + 1, kindName(r.kind), r.m + ' g', r.T + ' °C', r.min + "'", `${r.k}/3 ${TURB[r.k]}`]));
+            api.say(`Ống bên hạt ${kindName(r.kind).toLowerCase()}: nước vôi ${TURB[r.k]} (mức ${r.k}/3, ≈ ${vn(r.v, 2)} mL CO₂). Ống đối chứng vẫn trong`);
+            const bar = api.panel('<button class="btn small ghost pop" id="rsRe">👁 Xem lại hiện tượng</button> <button class="btn small pop" id="rsNew">🔁 Làm lần mới</button>');
+            bar.querySelector('#rsRe').onclick = () => { NL.audio.play('click'); replayCO2(api, r); };
+            bar.querySelector('#rsNew').onclick = () => { NL.audio.play('click'); api.goto(6); };
+            if (st.co2Runs.length >= 2) api.done('Thử nhiệt ➜'); else NL.game.toast('Làm thêm một lần với điều kiện khác để so sánh nhé');
           });
         });
       },
       onNext(api) { st.p2.style.display = 'none'; st.p3.style.display = ''; api.goto(7); }
     },
-    {
-      label: 'Thải nhiệt', text: 'Theo dõi nhiệt kế trong hai bình cách nhiệt suốt 24 giờ', hint: 'Bấm Bắt đầu rồi xem nhiệt độ thay đổi',
+    { // 7: thải nhiệt, có điều khiển
+      label: () => `Thải nhiệt · lần ${st.heatRuns.length + 1}`, text: 'Chọn hạt, khối lượng, nhiệt độ phòng, thời gian rồi bấm Bắt đầu', hint: 'Bình bên phải là đối chứng: hạt luộc chín',
       enter(api) {
-        logTable(api);
+        const h = st.h;
+        const redraw = () => { st.therm[0].seeds.innerHTML = ''; seedsIn(api, st.therm[0].seeds, 0, 0, 90, Math.round(8 + h.m / 8), h.kind); st.therm[0].label.textContent = `Hạt ${kindName(h.kind).toLowerCase()} ${h.m} g`; setTherm(0, h.T); setTherm(1, h.T); };
+        api.choices({ label: 'Loại hạt', items: KINDS, value: h.kind, onPick(v) { h.kind = v; redraw(); } });
+        api.choices({ label: 'Khối lượng hạt', items: [{ t: '20 g', v: 20 }, { t: '50 g', v: 50 }, { t: '100 g', v: 100 }], value: h.m, onPick(v) { h.m = v; redraw(); } });
+        api.slider({ label: 'Nhiệt độ phòng', min: 10, max: 40, step: 5, value: h.T, unit: '°C', onInput(v) { h.T = v; redraw(); } });
+        api.choices({ label: 'Thời gian', items: [{ t: '6 giờ', v: 6 }, { t: '12 giờ', v: 12 }, { t: '24 giờ', v: 24 }], value: h.hrs, onPick(v) { h.hrs = v; } });
+        redraw();
+        if (!st.htbl || !st.htbl.card.isConnected) st.htbl = api.table(['Lần', 'Hạt', 'm', 'T phòng', 't', 'T bình']);
+        st.htbl.set(st.heatRuns.map((r, i) => [i + 1, kindName(r.kind), r.m + ' g', r.T + ' °C', r.hrs + ' h', vn(r.Tend, 1) + ' °C']));
         api.done('Bắt đầu ⏵');
       },
       onNext(api) {
-        const card = api.panel(`<div>⏱ Thời gian</div><div class="big-num"><span id="rsH">0</span> giờ</div><div class="rep-sub">1 giờ ảo = 0,25 giây</div>`);
-        let h = 0;
-        api.loop(dt => {
-          h = Math.min(24, h + dt * 4);
-          const T1 = 25 + 7 * (1 - Math.exp(-h / 10)), T2 = 25;
-          [T1, T2].forEach((T, i) => { st.therm[i].led.textContent = T.toFixed(1) + '°C'; st.therm[i].col.setAttribute('y', 340 - (T - 15) * 6); st.therm[i].col.setAttribute('height', (T - 15) * 6); });
-          card.querySelector('#rsH').textContent = Math.floor(h);
-          if (h >= 24) { st.heat = T1; NL.audio.play('ting'); api.say(`Sau 24 giờ: bình hạt nảy mầm ${T1.toFixed(1)}°C, bình hạt luộc vẫn 25.0°C`); api.done('Xem đồ thị ➜'); st.heatDone = true; return false; }
+        if (st.heatRuns.length >= 2 && st.heatReady) { api.goto(8); return; }
+        const h = st.h, r = { kind: h.kind, m: h.m, T: h.T, hrs: h.hrs, noise: 0.95 + Math.random() * 0.1 };
+        // nhiệt tỏa ra tỉ lệ với tốc độ hô hấp; bình cách nhiệt tốt: ΔT tiến tới ΔTmax ≈ 0,11 °C mỗi gam (ở 25 °C) theo hàm mũ, τ ≈ 8 giờ
+        r.dTmax = 0.11 * r.m * fT(r.T) * kindK(r.kind) * r.noise;
+        r.Tend = r.T + r.dTmax * (1 - Math.exp(-r.hrs / 8));
+        st.heatRuns.push(r);
+        replayHeat(api, r, () => {
+          st.htbl.set(st.heatRuns.map((r, i) => [i + 1, kindName(r.kind), r.m + ' g', r.T + ' °C', r.hrs + ' h', vn(r.Tend, 1) + ' °C']));
+          api.say(`Sau ${r.hrs} giờ: bình hạt ${kindName(r.kind).toLowerCase()} ${vn(r.Tend, 1)} °C, bình đối chứng vẫn ${vn(r.T, 1)} °C`);
+          const bar = api.panel('<button class="btn small ghost pop" id="rsRe">👁 Xem lại hiện tượng</button> <button class="btn small pop" id="rsNew">🔁 Làm lần mới</button>');
+          bar.querySelector('#rsRe').onclick = () => { NL.audio.play('click'); replayHeat(api, r); };
+          bar.querySelector('#rsNew').onclick = () => { NL.audio.play('click'); st.heatReady = false; api.goto(7); };
+          if (st.heatRuns.length >= 2) { st.heatReady = true; api.done('Xem đồ thị ➜'); } else NL.game.toast('Làm thêm một lần với điều kiện khác để so sánh nhé');
         });
         api.hideNext();
-        st.afterHeat = () => api.goto(8);
       }
     },
-    {
+    { // 8
       label: 'Kết quả', text: 'Thể tích O₂ hạt lấy vào theo thời gian', hint: 'Đường dốc hơn: hô hấp mạnh hơn',
       enter(api) { api.showChart(result()); api.done('Trả lời câu hỏi ➜'); },
       onNext(api) {
@@ -235,21 +292,48 @@
       }
     }
   ];
-  // bước 7 dùng nút Bước tiếp theo hai lần: lần đầu chạy đồng hồ, lần sau sang kết quả
-  const heatStep = steps[7], onNext0 = heatStep.onNext;
-  heatStep.onNext = api => { if (st.heatDone) st.afterHeat(); else onNext0(api); };
 
-  // học sinh tự đọc vạch giọt mực
+  // chạy lại hoạt cảnh bơm khí qua nước vôi (3 giây)
+  function replayCO2(api, r, cb) {
+    NL.audio.play('bubble'); st.lime[0].fill(limeColor(0), 0.7); st.lime[1].fill(limeColor(0), 0.7);
+    let k = 0;
+    api.loop(dt => {
+      k = Math.min(1, k + dt / 3);
+      st.lime[0].fill(limeColor(k * r.k / 3), 0.7);
+      if (Math.random() < 0.3) NL.audio.play('bubble');
+      if (k >= 1) { cb && cb(); return false; }
+    });
+  }
+  // chạy lại hoạt cảnh nhiệt kế (1 giờ ảo = 0,25 giây)
+  function replayHeat(api, r, cb) {
+    const card = api.panel(`<div>⏱ Thời gian</div><div class="big-num"><span id="rsH">0</span> giờ</div><div class="rep-sub">1 giờ ảo = 0,25 giây</div>`);
+    let h = 0;
+    api.loop(dt => {
+      h = Math.min(r.hrs, h + dt * 4);
+      setTherm(0, r.T + r.dTmax * (1 - Math.exp(-h / 8))); setTherm(1, r.T);
+      card.querySelector('#rsH').textContent = Math.floor(h);
+      if (h >= r.hrs) { NL.audio.play('ting'); card.remove(); cb && cb(); return false; }
+    });
+  }
+
+  // học sinh tự đọc vạch giọt mực; đọc sai quá 3 mm thì được gợi ý và đọc lại một lần
   function readInk(api, r) {
     api.say('Đọc vị trí giọt mực trên thước rồi nhập số mm');
     const card = api.panel(`<div>Giọt mực đi được</div><div class="big-num"><input class="num-in" type="number" min="0" max="100" step="1" id="rsIn"> <small>mm</small></div><button class="btn small pop" id="rsOk">Ghi số</button><div class="warn-line" id="rsW"></div>`);
+    let retried = false;
     const go = () => {
       const v = +card.querySelector('#rsIn').value;
-      if (card.querySelector('#rsIn').value === '') return;
+      if (card.querySelector('#rsIn').value === '' || r.logged) return;
       const ok = Math.abs(v - r.s) <= 3;
-      r.em = v;
+      if (!ok && !retried) {
+        retried = true; NL.audio.play('pop');
+        const lo = Math.floor(r.s / 10) * 10;
+        card.querySelector('#rsW').textContent = `Em nhìn lại nhé: giọt mực nằm giữa vạch ${lo} và ${lo + 10} mm. Đọc lại một lần`;
+        return;
+      }
+      r.em = v; r.logged = true;
       NL.audio.play(ok ? 'ting' : 'pop');
-      NL.game.toast(ok ? `Chính xác! Giọt mực ở ${r.s.toFixed(0)} mm` : `Giọt mực ở khoảng ${r.s.toFixed(0)} mm, em đọc ${v} mm`);
+      NL.game.toast(ok ? `Chính xác! Giọt mực ở ${vn(r.s, 0)} mm` : `Giọt mực ở khoảng ${vn(r.s, 0)} mm, em đọc ${v} mm`);
       st.runs.push(r); card.remove(); api.goto(5);
     };
     card.querySelector('#rsOk').onclick = go;
@@ -260,18 +344,19 @@
   function result() {
     const PAL = ['#5BB4EA', '#3FB37F', '#F2994A'];
     return {
-      title: 'Hô hấp tế bào ở hạt nảy mầm', param: st.runs.map(r => `${r.alive ? 'nảy mầm' : 'luộc'} ${r.m} g, ${r.T}°C`).join('; '),
+      title: 'Hô hấp tế bào ở hạt nảy mầm', param: st.runs.map(r => `${kindName(r.kind).toLowerCase()} ${r.m} g, ${r.T} °C`).join('; '),
       table: {
-        head: ['Lần', 'Loại hạt', 'm (g)', 'T (°C)', 't (phút)', 's (mm)', 'Em đọc (mm)', 'V O₂ (mL)'],
-        rows: st.runs.map((r, i) => [i + 1, r.alive ? 'Nảy mầm' : 'Luộc chín', r.m, r.T, RUN_MIN, r.s.toFixed(1), r.em === undefined ? '' : r.em, (r.s * S).toFixed(2)])
-          .concat(st.heat ? [['Nhiệt', 'Nảy mầm / Luộc', '', '25', '24 giờ', '', '', `T bình: ${st.heat.toFixed(1)} / 25.0 °C`]] : [])
+        head: ['Lần', 'Loại hạt', 'm (g)', 'T (°C)', 't', 's (mm)', 'Em đọc (mm)', 'Kết quả'],
+        rows: st.runs.map((r, i) => [i + 1, kindName(r.kind), r.m, r.T, RUN_MIN + ' phút', vn(r.s, 1), r.em === undefined ? '' : r.em, `V O₂ = ${vn(r.s * S, 3)} mL (≈ ${vn(rate(r) / r.m, 2)} mL/g/giờ)`])
+          .concat(st.co2Runs.map((r, i) => [`CO₂ ${i + 1}`, kindName(r.kind), r.m, r.T, r.min + ' phút', '', '', `Nước vôi ${TURB[r.k]} (${r.k}/3), đối chứng trong`]))
+          .concat(st.heatRuns.map((r, i) => [`Nhiệt ${i + 1}`, kindName(r.kind), r.m, r.T, r.hrs + ' giờ', '', '', `T bình ${vn(r.Tend, 1)} °C, đối chứng ${vn(r.T, 1)} °C`]))
       },
       chart: {
         type: 'line', xLabel: 'Thời gian (phút)', yLabel: 'Thể tích O₂ (mL)', xMax: RUN_MIN,
-        series: st.runs.map((r, i) => ({ name: `${r.alive ? '' : 'Luộc '}${r.m}g ${r.T}°C`, color: PAL[i], points: r.pts }))
+        series: st.runs.map((r, i) => ({ name: `${r.kind === 'alive' ? '' : kindName(r.kind) + ' '}${r.m} g ${r.T} °C`, color: PAL[i], points: r.pts }))
       },
-      conclusion: 'Hạt nảy mầm hô hấp mạnh: lấy O₂, thải CO₂ (làm đục nước vôi) và tỏa nhiệt. Hô hấp mạnh hơn khi nhiều hạt hơn và nhiệt độ gần tối ưu (khoảng 35°C)',
-      note: 'Hạt luộc chín đã chết, enzyme bị biến tính nên không hô hấp; đó là bình đối chứng. Hạt luộc phải được khử trùng (ví dụ tráng cồn hoặc dung dịch thuốc tím loãng), nếu không vi khuẩn, nấm mọc trên hạt cũng hô hấp và làm sai kết quả.'
+      conclusion: `Hạt nảy mầm hô hấp mạnh: lấy O₂ (khoảng ${vn(V25, 2)} mL/g/giờ ở 25 °C), thải CO₂ (làm đục nước vôi) và tỏa nhiệt. Hô hấp mạnh hơn khi nhiều hạt hơn và nhiệt độ gần tối ưu (khoảng 35 °C, Q10 ≈ 2); hạt khô hô hấp rất yếu, hạt luộc chín không hô hấp`,
+      note: `Ống mao dẫn Ø ${D_MM} mm nên S = π·r² = ${vn(S, 5)} mL/mm. Hạt luộc chín đã chết, enzyme bị biến tính nên không hô hấp; đó là bình đối chứng. Hạt luộc phải được khử trùng (ví dụ tráng cồn hoặc dung dịch thuốc tím loãng), nếu không vi khuẩn, nấm mọc trên hạt cũng hô hấp và làm sai kết quả.`
     };
   }
 

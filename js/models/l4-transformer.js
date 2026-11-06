@@ -31,8 +31,8 @@
     const m2 = api.mat(0x0EA5E9, { metalness: 0.5, roughness: 0.35 });
     const coils = () => {
       [c1, c2].forEach(o => o && o.parent && o.parent.remove(o));
-      c1 = api.tube(coilPts(T, -3.5, 0.78, Math.round(4 + s.N1 / 120), -1.7, 1.7), 0.06, m1, null, 600);
-      c2 = api.tube(coilPts(T, 3.5, 0.78, Math.round(4 + s.N2 / 160), -1.7, 1.7), 0.06, m2, null, 600);
+      c1 = api.tube(coilPts(T, -3.5, 0.78, Math.max(3, Math.round(s.N1 / 100)), -1.7, 1.7), 0.06, m1, null, 600);
+      c2 = api.tube(coilPts(T, 3.5, 0.78, Math.max(3, Math.round(s.N2 / 100)), -1.7, 1.7), 0.06, m2, null, 600);
       api.part(c1, { name: `Cuộn sơ cấp N₁ = ${s.N1} vòng`, rows: [['Nối với', 'Nguồn điện'], ['Nhiệm vụ', 'Dòng điện xoay chiều trong cuộn này tạo từ thông biến thiên trong lõi']] });
       api.part(c2, { name: `Cuộn thứ cấp N₂ = ${s.N2} vòng`, rows: [['Nối với', 'Tải tiêu thụ (bóng đèn)'], ['Nhiệm vụ', 'Từ thông biến thiên xuyên qua cuộn này sinh ra suất điện động cảm ứng']] });
     };
@@ -158,9 +158,10 @@
       s.UT = U; const r = loss(U), got = 1 - r.frac;
       const ei = Math.min(2.2, r.frac * 4 + (r.frac > 0.01 ? 0.25 : 0)); wires.forEach(w => { w.material.emissiveIntensity = ei; });
       houses.forEach((w, k) => { w.material.emissiveIntensity = got > (k + 0.5) / 4.5 ? 1.4 * got : 0.05; });
-      lbl.set(`U = ${vn(U, U < 1 ? 1 : 0)} kV · I = ${vn(r.I, r.I < 10 ? 1 : 0)} A · hao phí ${vn(r.frac * 100, r.frac < 0.01 ? 3 : 1)}%`);
-      info.set(`I = P / U = 1 000 000 / ${(U * 1000).toLocaleString('vi-VN')} = <b>${vn(r.I, 1)} A</b><br>ΔP = I²·R = ${vn(r.I, 1)}² × ${RL} = <b>${r.frac >= 1 ? 'lớn hơn cả công suất phát' : vn(r.dP / 1000, r.dP < 1000 ? 3 : 1) + ' kW'}</b><br>Điện tới nơi tiêu thụ: <b>${vn(got * 100, 1)}%</b>`);
-      if (U < 1) api.warn('low', 'Truyền tải ở 0,4 kV thì dòng trên dây tới 2500 A. Hao phí I²R tính ra còn lớn hơn cả công suất nhà máy: dây nóng đỏ, gần như không còn điện tới nhà dân.<br>Vì ΔP = P²R/U², tăng U lên 10 lần thì hao phí giảm <b>100 lần</b>. Đó là lí do phải dùng máy tăng áp.', '🔥 Dây nóng đỏ');
+      const over = r.frac >= 1;
+      lbl.set(`U = ${vn(U, U < 1 ? 1 : 0)} kV · I = ${vn(r.I, r.I < 10 ? 1 : 0)} A · ${over ? 'không truyền tải được' : 'hao phí ' + vn(r.frac * 100, r.frac < 0.01 ? 3 : 1) + '%'}`);
+      info.set(`I = P / U = 1 000 000 / ${(U * 1000).toLocaleString('vi-VN')} = <b>${vn(r.I, 1)} A</b><br>ΔP = I²·R = ${vn(r.I, 1)}² × ${RL} = <b>${over ? vn(r.I * r.I * RL / 1e6, 1) + ' MW' : vn(r.dP / 1000, r.dP < 1000 ? 3 : 1) + ' kW'}</b><br>${over ? '<b>Hao phí tính ra vượt cả công suất phát: ở điện áp này không thể truyền tải 1 MW (sụt áp trên dây quá lớn).</b> Công thức ΔP = I²R với I = P/U chỉ đúng khi hao phí còn nhỏ so với P.' : `Điện tới nơi tiêu thụ: <b>${vn(got * 100, 1)}%</b>`}`);
+      if (U < 1) api.warn('low', 'Truyền tải ở 0,4 kV thì dòng trên dây tới 2500 A. Hao phí I²R tính ra còn lớn hơn cả công suất nhà máy, tức là không thể truyền tải 1 MW ở điện áp này: sụt áp trên dây quá lớn, dây nóng đỏ, gần như không còn điện tới nhà dân.<br>Vì ΔP = P²R/U², tăng U lên 10 lần thì hao phí giảm <b>100 lần</b>. Đó là lí do phải dùng máy tăng áp.', '🔥 Dây nóng đỏ');
     };
     api.section('🗼 Truyền tải điện năng đi xa');
     api.choices({ label: 'Điện áp trên đường dây', items: ULIST.map(U => ({ t: vn(U, U < 1 ? 1 : 0) + ' kV', v: U })), value: s.UT, onPick: set });

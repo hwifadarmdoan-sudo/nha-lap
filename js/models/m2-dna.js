@@ -317,7 +317,8 @@
         }
         // chuỗi polypeptide nối dài trên ribosome
         peptide.forEach((p, i) => { if (p) p.position.set(rib.g.position.x - 0.6 - (k - i) * 0.55, 2.9 + Math.sin(i) * 0.25, 0.4); });
-        info.set(`Codon đang đọc ở vị trí P: <b>${codons[Math.min(k, codons.length - 1)]}</b> → ${AA[codons[Math.min(k, codons.length - 1)]] || ''}. Chuỗi: <b>${peptide.filter(Boolean).length}</b> amino acid`);
+        const kA = Math.min(k + 1, codons.length - 1), kP = Math.min(k, codons.length - 1);
+        info.set(`Codon đang đọc ở vị trí A: <b>${codons[kA]}</b> → ${AA[codons[kA]] || ''} · vị trí P: <b>${codons[kP]}</b> giữ chuỗi <b>${peptide.filter(Boolean).length}</b> amino acid · vị trí E: tRNA rời đi`);
         if (k >= codons.length && !peptide.length) k = 0;
       });
       api.label("5′", [-6.2, -1.2, 0], { cls: 'tag', color: '#E5534B' }); api.label("3′", [6.2, -1.2, 0], { cls: 'tag', color: '#2F80C0' });

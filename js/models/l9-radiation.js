@@ -43,9 +43,9 @@
     api.note('❓ Bật điện trường. Tia nào bị lệch <b>nhiều nhất</b>?');
     const qa = api.note('<span style="opacity:.6">Chọn một đáp án bên dưới.</span>');
     api.choices({ label: '', items: [{ t: 'α', v: 'a' }, { t: 'β⁻', v: 'b' }, { t: 'γ', v: 'g' }], value: -1, onPick(v) {
-      if (v === 'b') { qa.set('✅ Đúng. Electron nhẹ hơn hạt α khoảng 7300 lần nên dù điện tích nhỏ hơn vẫn bị lệch mạnh hơn nhiều, và lệch về phía bản dương.'); api.beep(880, 0.12, 'sine', 0.1); }
+      if (v === 'b') { qa.set('✅ Đúng. Độ lệch phụ thuộc điện tích, khối lượng và tốc độ hạt. Electron có khối lượng rất nhỏ nên dù bay rất nhanh vẫn lệch nhiều hơn hạt α, và lệch về phía bản dương.'); api.beep(880, 0.12, 'sine', 0.1); }
       else if (v === 'g') { qa.set('❌ Chưa đúng.'); api.warn(null, 'Tia γ là sóng điện từ, <b>không mang điện</b> nên đi thẳng, không lệch trong điện trường.<br>Nhìn lại: tia α (đỏ) lệch nhẹ về bản âm, tia β⁻ (xanh) lệch mạnh về bản dương.', '🤔 Xem lại'); }
-      else { qa.set('❌ Chưa đúng.'); api.warn(null, 'Hạt α mang điện +2e, lớn gấp đôi electron, nhưng lại <b>nặng</b> gấp khoảng 7300 lần electron. Lực điện như nhau thì vật càng nặng càng khó đổi hướng, nên α chỉ lệch nhẹ.<br>Tia β⁻ (electron) rất nhẹ nên lệch mạnh nhất.', '🤔 Xem lại'); }
+      else { qa.set('❌ Chưa đúng.'); api.warn(null, 'Độ lệch phụ thuộc điện tích, khối lượng và tốc độ hạt. Hạt α mang điện +2e nhưng <b>khối lượng rất lớn</b> so với electron nên khó đổi hướng, chỉ lệch nhẹ.<br>Tia β⁻ (electron) có khối lượng rất nhỏ nên dù bay rất nhanh vẫn lệch nhiều nhất.', '🤔 Xem lại'); }
     } });
     api.note('Thử chắn lần lượt: tờ giấy chặn được tia α; nhôm vài milimét chặn tia β; tia γ đi xuyên qua cả nhôm, phải dùng chì dày hoặc bê tông mới giảm mạnh được.');
     const info = api.note('');

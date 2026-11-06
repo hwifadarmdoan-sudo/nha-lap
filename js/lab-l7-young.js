@@ -150,9 +150,9 @@
         api.choices({ label: 'Hai khe', items: [{ t: 'Mở cả hai', v: false }, { t: 'Che khe S₂', v: true }], value: false, onPick(v) {
           st.block = v; if (!v || st.askedBlock) return; st.askedBlock = true;
           api.wait(1.2, () => api.ask({
-            q: 'Che một khe, các vạch tối biến mất, chỉ còn một vệt sáng mờ trải rộng. Vì sao?',
+            q: 'Che một khe, các vân giao thoa biến mất, chỉ còn hình nhiễu xạ qua một khe (vân giữa rộng, vài vân phụ mờ hai bên). Vì sao?',
             options: [{ t: 'Phải có hai sóng kết hợp gặp nhau mới giao thoa được', ok: true }, { t: 'Laser yếu đi một nửa nên không đủ sáng tạo vân', why: 'Vệt sáng vẫn rõ. Vấn đề là chỉ còn một nguồn sóng.' }, { t: 'Băng dính làm đổi màu ánh sáng', why: 'Ánh sáng qua khe còn lại vẫn cùng màu. Cái thiếu là nguồn thứ hai.' }],
-            explain: 'Vân sáng tối là chỗ sóng từ S₁ và S₂ tăng cường hoặc triệt tiêu nhau. Che một khe thì chỉ còn một sóng, không còn giao thoa. Đây là bằng chứng ánh sáng có tính chất sóng.'
+            explain: 'Vân sáng tối là chỗ sóng từ S₁ và S₂ tăng cường hoặc triệt tiêu nhau. Che một khe thì chỉ còn một sóng: không còn giao thoa của hai khe, chỉ còn nhiễu xạ qua một khe (vân sáng giữa rộng gấp đôi, các vân phụ mờ). Đây là bằng chứng ánh sáng có tính chất sóng.'
           }, () => { st.block = false; api.done('Sang laser bí ẩn ➜'); }));
         } });
       }

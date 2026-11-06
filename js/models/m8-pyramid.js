@@ -6,13 +6,15 @@
   const KIND = { num: 'Tháp số lượng', bio: 'Tháp sinh khối', ene: 'Tháp năng lượng' };
   const PRE = {
     grass: { name: 'Đồng cỏ', ground: 0x6FAE4E, sp: ['🌾 Cỏ', '🦗 Châu chấu', '🐸 Ếch', '🦅 Đại bàng'], dec: '🍄 Nấm, vi khuẩn',
-      num: [5000000, 700000, 35000, 3], bio: [809, 37, 11, 1.5], ene: [15000, 1500, 150, 15], decv: { num: 1e9, bio: 5, ene: 3000 } },
+      num: [5000000, 700000, 35000, 3], bio: [500, 20, 2, 0.3], ene: [15000, 1500, 150, 15], decv: { num: 1e9, bio: 5, ene: 3000 }, note: 'số liệu minh họa, hiệu suất ≈ 10%' },
     forest: { name: 'Rừng mưa nhiệt đới', ground: 0x2F7D3A, sp: ['🌳 Cây gỗ, dây leo', '🐛 Sâu, khỉ ăn lá', '🐍 Rắn, chim ăn sâu', '🐆 Báo'], dec: '🍄 Nấm, giun, vi khuẩn',
-      num: [120000, 20000, 600, 10], bio: [45000, 450, 50, 5], ene: [25000, 2500, 250, 25], decv: { num: 2e9, bio: 20, ene: 6000 } },
+      num: [120000, 20000, 600, 10], bio: [45000, 450, 50, 5], ene: [25000, 1250, 62, 3], decv: { num: 2e9, bio: 20, ene: 6000 }, note: 'số liệu minh họa, hiệu suất ≈ 5%' },
     parasite: { name: 'Ký sinh trùng trên cây', ground: 0x5E8F3A, sp: ['🌳 1 cây gỗ lớn', '🐛 Sâu ăn lá', '🦠 Ký sinh trùng', '🧫 Siêu ký sinh'], dec: '🍄 Vi khuẩn phân hủy',
-      num: [1, 3000, 40000, 150000], bio: [50000, 300, 3, 0.3], ene: [12000, 1200, 120, 12], decv: { num: 5e8, bio: 4, ene: 2400 } },
-    pond: { name: 'Ao / biển mở', ground: 0x2E7FB8, sp: ['🟢 Tảo phù du', '🦐 Động vật phù du', '🐟 Cá nhỏ', '🐬 Cá lớn'], dec: '🦠 Vi khuẩn đáy',
-      num: [9000000, 400000, 2000, 20], bio: [4, 21, 3, 0.5], ene: [8000, 800, 80, 8], decv: { num: 3e9, bio: 2, ene: 1600 } }
+      num: [1, 3000, 40000, 150000], bio: [50000, 300, 3, 0.3], ene: [12000, 1200, 120, 12], decv: { num: 5e8, bio: 4, ene: 2400 }, note: 'số liệu minh họa, hiệu suất ≈ 10%' },
+    pond: { name: 'Ao nước ngọt', ground: 0x2E7FB8, sp: ['🟢 Tảo phù du', '🦐 Động vật phù du', '🐟 Cá nhỏ', '🐟 Cá lớn'], dec: '🦠 Vi khuẩn đáy',
+      num: [9000000, 400000, 2000, 20], bio: [4, 21, 3, 0.5], ene: [8000, 1200, 180, 27], decv: { num: 3e9, bio: 2, ene: 1600 }, note: 'tháp sinh khối ngược (tảo sinh sản rất nhanh); hiệu suất ≈ 15%' },
+    sea: { name: 'Biển mở', ground: 0x1F5F9A, sp: ['🟢 Tảo phù du', '🦐 Động vật phù du', '🐟 Cá nhỏ', '🐬 Cá lớn'], dec: '🦠 Vi khuẩn',
+      num: [6000000, 300000, 1000, 5], bio: [3, 15, 2, 0.3], ene: [550, 83, 12, 2], decv: { num: 2e9, bio: 1, ene: 110 }, note: 'biển mở nghèo dinh dưỡng: năng lượng chỉ ≈ 500–600 kcal/m²/năm; hiệu suất ≈ 15%' }
   };
   const WARN_ENE = 'Cảnh báo kiến thức trọng tâm: Tháp Năng lượng LUÔN LUÔN có dạng chuẩn (đáy rộng, đỉnh nhọn) và KHÔNG BAO GIỜ bị đảo ngược! Mỗi bậc chỉ chuyển được khoảng 2–20% năng lượng lên bậc trên (quy tắc 10% chỉ là số ước lượng), phần lớn còn lại mất qua hô hấp tỏa nhiệt, chất thải và xác. Năng lượng không tự sinh ra, nên bậc trên không thể có nhiều hơn bậc dưới.';
   const INV_WHY = {
@@ -73,13 +75,15 @@
 
   // dòng hạt năng lượng
   function energyFlow(api, P) {
-    const T = api.T, V = api.V, g = P.g;
+    const T = api.T, V = api.V, g = P.g, p = PRE[preset];
     const sun = api.sphere(0.5, api.mat(0xFFD84A, { emissive: 0xFFC107, emissiveIntensity: 1.4 }), [-3.2, 6.2, -1], g, 20); sun.userData.noPick = true;
     const beam = api.mesh(new T.CylinderGeometry(0.15, 1.6, 5.6, 24, 1, true), api.mat(0xFFE88A, { opacity: 0.12, depthWrite: false, side: T.DoubleSide, emissive: 0xFFE070, emissiveIntensity: 0.6 }), [-1.6, 3.4, -0.5], g); beam.rotation.z = 0.5; beam.userData.noPick = true;
     const mk = (c, n, r) => { const a = []; for (let k = 0; k < n; k++) { const m = api.sphere(r || 0.07, api.mat(c, { emissive: c, emissiveIntensity: 0.8 }), null, g, 8); m.userData.noPick = true; m.userData.r = Math.random(); a.push(m); } return a; };
     const per = [mk(0xFFF27A, 60), mk(0xFFF27A, 20), mk(0xFFF27A, 7), mk(0xFFF27A, 3)];
     const loss = [mk(0xFF6B6B, 21), mk(0xB0B8C0, 3), mk(0xA07A50, 3)];
     const photons = mk(0xFFE070, 16, 0.06);
+    api.label('<span style="color:#FFF27A">●</span> hạt vàng đi lên: năng lượng chuyển sang bậc trên &nbsp; <span style="color:#FF6B6B">●</span> hạt đỏ tỏa ra: mất qua hô hấp (nhiệt) &nbsp; <span style="color:#B0B8C0">●</span> xám: chất thải &nbsp; <span style="color:#A07A50">●</span> nâu đi xuống: sang sinh vật phân giải', [0, -0.9, 0], { cls: 'plain' });
+    const e = p.ene; P.tiers.forEach((t, lv) => { if (lv < 3) api.label(`${fmt(e[lv])} kcal/m²/năm · eff ${(e[lv + 1] / e[lv] * 100).toFixed(0)}% ↑`, [t.w / 2 + 0.3, 0.45 + lv * 0.95, 0], { cls: 'tag', color: '#FFD84A' }); else api.label(`${fmt(e[lv])} kcal/m²/năm`, [t.w / 2 + 0.3, 0.45 + lv * 0.95, 0], { cls: 'tag', color: '#FFD84A' }); });
     let wave = 0;
     api.onFrame(dt => {
       const t = api.time * speed / 2;
@@ -114,9 +118,9 @@
       const v = perturbed(kind);
       if (cut >= 60 && warned < 1) { warned = 1; api.beep(330, 0.25, 'square', 0.06); api.beep(262, 0.35, 'square', 0.06, 0.2); }
       if (cut < 60) warned = 0;
-      api.caption(`${KIND[kind]} · ${PRE[preset].name}${cut ? ` · N₂ giảm ${cut}%: N₁ bùng nổ, N₃ suy giảm` : ''} · eff N₂/N₁ = ${(v[1] / v[0] * 100).toFixed(v[1] / v[0] < 0.01 ? 3 : 1)}%`);
+      api.caption(`${KIND[kind]} · ${PRE[preset].name}${cut ? ` · N₂ giảm ${cut}%: N₁ bùng nổ, N₃ suy giảm` : ''} · eff N₂/N₁ = ${(v[1] / v[0] * 100).toFixed(v[1] / v[0] < 0.01 ? 3 : 1)}%${PRE[preset].note ? ' · ' + PRE[preset].note : ''}`);
     });
-    api.choices({ label: '🌍 Hệ sinh thái mẫu', items: [{ t: '🌾 Đồng cỏ', v: 'grass' }, { t: '🌳 Rừng mưa', v: 'forest' }, { t: '🐛 Ký sinh', v: 'parasite' }, { t: '🌊 Ao / biển', v: 'pond' }], value: preset, onPick(v) { preset = v; chime(api); api.setTab(api.tab); } });
+    api.choices({ label: '🌍 Hệ sinh thái mẫu', items: [{ t: '🌾 Đồng cỏ', v: 'grass' }, { t: '🌳 Rừng mưa', v: 'forest' }, { t: '🐛 Ký sinh', v: 'parasite' }, { t: '🌊 Ao', v: 'pond' }, { t: '🌐 Biển mở', v: 'sea' }], value: preset, onPick(v) { preset = v; chime(api); api.setTab(api.tab); } });
     api.choices({ label: '🔺 Dạng tháp', items: [{ t: '▲ Chuẩn', v: 'std' }, { t: '▼ Đảo ngược', v: 'inv' }], value: isInverted(kind) ? 'inv' : 'std', onPick(v, c) {
       if (kind === 'ene' && v === 'inv') { api.warn('ene', WARN_ENE, '⚠️ Cảnh báo kiến thức trọng tâm'); api.beep(300, 0.3, 'square', 0.06); c.set('std', true); return; }
       preset = v === 'inv' ? (kind === 'num' ? 'parasite' : 'pond') : 'grass';

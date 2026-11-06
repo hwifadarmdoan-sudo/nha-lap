@@ -22,9 +22,9 @@
       lig: [['H', pol(pyrTh(107), 90), 1, 1.01], ['H', pol(pyrTh(107), 210), 1, 1.01], ['H', pol(pyrTh(107), 330), 1, 1.01]], lp: [v(0, 1, 0)], arcs: [[0, 1]] },
     H2O: { f: 'H₂O', name: 'Water', c: 'O', axe: 'AX₂E₂', shape: 'Gấp khúc (chữ V)', ang: '104,5°', angV: 104.5, hyb: 'sp³', polar: true, dip: v(0, 1, 0),
       lig: [['H', pol(180 - 52.25, 0), 1, 0.96], ['H', pol(180 - 52.25, 180), 1, 0.96]], lp: [pol(57.5, 90), pol(57.5, 270)], arcs: [[0, 1]] },
-    PCl5: { f: 'PCl₅', name: 'Phosphorus pentachloride', c: 'P', axe: 'AX₅', shape: 'Lưỡng chóp tam giác', ang: '90° và 120°', angV: 90, hyb: 'sp³d (mở rộng)', polar: false,
+    PCl5: { f: 'PCl₅', name: 'Phosphorus pentachloride', c: 'P', axe: 'AX₅', shape: 'Lưỡng chóp tam giác', ang: '90° và 120°', angV: 90, hyb: 'sp³d (mô hình cũ, ngoài chương trình 2018)', polar: false,
       lig: [['Cl', v(0, 1, 0), 1, 2.14], ['Cl', v(0, -1, 0), 1, 2.14], ['Cl', v(1, 0, 0), 1, 2.04], ['Cl', pol(90, 120), 1, 2.04], ['Cl', pol(90, 240), 1, 2.04]], lp: [], arcs: [[0, 2], [2, 3]] },
-    SF6: { f: 'SF₆', name: 'Sulfur hexafluoride', c: 'S', axe: 'AX₆', shape: 'Bát diện đều', ang: '90°', angV: 90, hyb: 'sp³d² (mở rộng)', polar: false,
+    SF6: { f: 'SF₆', name: 'Sulfur hexafluoride', c: 'S', axe: 'AX₆', shape: 'Bát diện đều', ang: '90°', angV: 90, hyb: 'sp³d² (mô hình cũ, ngoài chương trình 2018)', polar: false,
       lig: [['F', v(1, 0, 0), 1, 1.56], ['F', v(-1, 0, 0), 1, 1.56], ['F', v(0, 1, 0), 1, 1.56], ['F', v(0, -1, 0), 1, 1.56], ['F', v(0, 0, 1), 1, 1.56], ['F', v(0, 0, -1), 1, 1.56]], lp: [], arcs: [[0, 2]] }
   };
   const KEYS = Object.keys(MOL);

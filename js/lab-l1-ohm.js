@@ -164,7 +164,7 @@
         api.tapable(st.sw, () => {
           if (!st.amm) { api.setOn(st.sw, true); NL.game.toast('Chọn chỗ mắc ampe kế trước'); return; }
           setK(true);
-          if (st.amm === 'ser') { api.say('Mạch kín rồi: các electron bắt đầu chạy, kim ampe kế lệch khỏi 0'); NL.audio.play('hum'); api.done(); }
+          if (st.amm === 'ser') { api.say('Mạch kín rồi: electron tự do chuyển động có hướng, tạo thành dòng điện; kim ampe kế lệch khỏi 0'); NL.audio.play('hum'); api.done(); }
         });
       }
     },
@@ -246,7 +246,7 @@
     const series = [];
     keys.forEach(k => {
       const pts = st.rows.filter(r => r.core === k).map(r => [r.U, r.I]).sort((a, b) => a[0] - b[0]);
-      const R = k === 'x' ? st.rx : k, name = k === 'x' ? 'Rₓ' : k + ' Ω';
+      const R = k === 'x' ? st.rx : k, name = k === 'x' ? 'Lõi bí ẩn Rₓ' : `Lõi ${k} Ω`;
       series.push({ name, color: COL[k], dots: true, points: pts });
       series.push({ name: '', color: COL[k], dash: true, points: [[0, 0], [Math.min(24, 3.2 * R), Math.min(24, 3.2 * R) / R]] });
     });

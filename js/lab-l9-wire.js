@@ -64,7 +64,7 @@
   function short(c) {
     st.broke = true; const api = api_;
     st.glow.setAttribute('opacity', 0.8); P.spark(api, api.svg, BX + st.l * LPX / 2, BY, 22); P.smoke(api, api.svg, BX + st.l * LPX / 2, BY - 10); P.alarm(api);
-    setTimeout(() => api.lesson({ title: 'Dây có điện trở quá nhỏ nối thẳng vào pin thì chập mạch', text: `Dây ${MAT[st.mat].t.toLowerCase()} chỉ có R ≈ ${vn(c.R, 3)} Ω. Nối thẳng vào pin, dòng điện vọt lên ${vn(c.I, 1)} A, dây nóng đỏ và bốc khói.`, sub: 'Bài học: dây dẫn tốt có điện trở rất nhỏ, nối thẳng hai cực nguồn là đoản mạch. Phải mắc thêm điện trở bảo vệ R₀ để giới hạn dòng điện.', btn: '🔧 Lắp điện trở bảo vệ R₀' }, () => { st.broke = false; st.r0 = true; st.r0g.style.display = ''; st.glow.setAttribute('opacity', 0); }), 900);
+    setTimeout(() => api.lesson({ title: 'Dây có điện trở quá nhỏ nối thẳng vào pin thì chập mạch', text: `Dây ${MAT[st.mat].t.toLowerCase()} chỉ có R ≈ ${vn(c.R, 3)} Ω. Nối thẳng vào pin, dòng điện vọt lên ${vn(c.I, 1)} A: dây và pin nóng rất nhanh, pin chóng hỏng, có thể gây cháy.`, sub: 'Bài học: dây dẫn tốt có điện trở rất nhỏ, nối thẳng hai cực nguồn là đoản mạch. Phải mắc thêm điện trở bảo vệ R₀ để giới hạn dòng điện.', btn: '🔧 Lắp điện trở bảo vệ R₀' }, () => { st.broke = false; st.r0 = true; st.r0g.style.display = ''; st.glow.setAttribute('opacity', 0); }), 900);
   }
   function controls(api) {
     st.cM = api.choices({ label: 'Vật liệu dây', items: Object.keys(MAT).map(k => ({ t: MAT[k].t, v: k })), value: st.mat, onPick(v) { st.mat = v; geo(); } });
@@ -113,20 +113,20 @@
       }
     },
     {
-      label: 'Nhiệm vụ', text: 'Xưởng amply cần một cuộn điện trở đúng 8 Ω (sai lệch không quá 0,5 Ω) để lắp loa. Chọn dây rồi bấm Lắp', hint: 'R = ρl/S. Dây đồng, nhôm điện trở quá nhỏ. Thử nichrome hoặc constantan',
+      label: 'Nhiệm vụ', text: 'Xưởng amply cần một điện trở tải giả đúng 8 Ω (sai lệch không quá 0,5 Ω) để thử amply thay cho loa. Chọn dây rồi bấm Lắp', hint: 'R = ρl/S. Dây đồng, nhôm điện trở quá nhỏ. Thử nichrome hoặc constantan',
       enter(api) {
         controls(api);
         const d = api.panel('<button class="btn pop">🔊 Lắp vào amply</button>');
         d.querySelector('button').addEventListener('click', () => {
           const R = Rw();
           if (Math.abs(R - 8) <= 0.5) {
-            NL.audio.play('success'); api.say(`R = ${vn(R, 2)} Ω, vừa khít! Loa amply phát nhạc rõ ràng 🎵`);
+            NL.audio.play('success'); api.say(`R = ${vn(R, 2)} Ω, vừa khít! Amply chạy thử ổn định, kim đồng hồ đứng yên 🎵`);
             api.wait(1.2, () => api.ask({
               q: 'Vì sao dây điện trong nhà làm bằng đồng, còn dây nung của bếp điện làm bằng nichrome?',
               options: [{ t: 'Đồng điện trở suất nhỏ nên ít tỏa nhiệt trên đường dây, nichrome điện trở suất lớn nên tỏa nhiều nhiệt', ok: true }, { t: 'Đồng rẻ hơn nichrome, ngoài ra không khác gì', why: 'Xem cột R trong bảng: cùng kích thước, R của nichrome lớn gấp khoảng 65 lần đồng.' }, { t: 'Nichrome dẫn điện tốt hơn đồng', why: 'Ngược lại: nichrome có điện trở suất lớn, dẫn điện kém hơn đồng nhiều.' }],
               explain: 'Nhiệt tỏa ra Q = I²Rt. Dây dẫn cần R nhỏ để không nóng và không hao phí, nên dùng đồng (ρ ≈ 1,7·10⁻⁸ Ω·m). Dây nung cần R lớn và chịu nhiệt, nên dùng nichrome (ρ ≈ 1,1·10⁻⁶ Ω·m).'
             }, () => api.done('Xem kết quả ➜')));
-          } else { NL.audio.play('pop'); api.say(R < 8 ? `R = ${vn(R, R < 1 ? 3 : 2)} Ω, nhỏ quá: loa rè và amply nóng. Cần R lớn hơn` : `R = ${vn(R, 2)} Ω, lớn quá: loa kêu rất nhỏ. Cần R nhỏ hơn`); }
+          } else { NL.audio.play('pop'); api.say(R < 8 ? `R = ${vn(R, R < 1 ? 3 : 2)} Ω, nhỏ quá: dòng ra quá lớn, amply nóng. Cần R lớn hơn` : `R = ${vn(R, 2)} Ω, lớn quá: amply gần như không tải, không thử được. Cần R nhỏ hơn`); }
         });
       }
     },

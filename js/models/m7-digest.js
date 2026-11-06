@@ -8,7 +8,7 @@
     stom: { name: 'Dạ dày', sci: 'Gaster (Ventriculus)', rows: [['Cơ học', '3 lớp cơ (dọc, vòng, chéo) co bóp đảo trộn mạnh'], ['Dịch vị', 'HCl, pepsin, chất nhầy; 2 – 3 lít/ngày'], ['Hóa học', 'Pepsin: protein → chuỗi polypeptide ngắn'], ['pH', '1,5 – 2,0']] },
     pylor: { name: 'Cơ vòng môn vị', sci: 'Musculus sphincter pylori', rows: [['Vai trò', 'Mở từng đợt đưa dưỡng chấp xuống tá tràng']] },
     duo: { name: 'Tá tràng', sci: 'Duodenum', rows: [['Nhận', 'Dịch mật, dịch tụy qua nhú tá lớn'], ['Hóa học', 'Phân giải triệt để protein, lipid, carbohydrate'], ['pH', '≈ 8,0']] },
-    small: { name: 'Ruột non', sci: 'tá tràng, hỗng tràng, hồi tràng', rows: [['Dài', '≈ 6 m'], ['Cơ học', 'Nhu động, co thắt từng đoạn'], ['Hóa học', 'Dịch ruột: maltase, sucrase, lactase, peptidase'], ['Hấp thụ', 'Đơn phân: glucose, amino acid, acid béo, glycerol'], ['pH', '7,0 – 8,0']] },
+    small: { name: 'Ruột non', sci: 'tá tràng, hỗng tràng, hồi tràng', rows: [['Dài', '≈ 6 m'], ['Cơ học', 'Nhu động, co thắt từng đoạn'], ['Hóa học', 'Dịch tụy đổ vào tá tràng; enzyme gắn trên màng vi nhung mao (viền bàn chải): maltase, sucrase, lactase, peptidase'], ['Hấp thụ', 'Đơn phân: glucose, amino acid, acid béo, glycerol'], ['pH', '7,0 – 8,0']] },
     large: { name: 'Ruột già', sci: 'Intestinum crassum', rows: [['Gồm', 'Manh tràng, ruột thừa, đại tràng lên – ngang – xuống – xích ma, trực tràng'], ['Vai trò', 'Tái hấp thu nước và muối khoáng; vi khuẩn lên men, tạo phân'], ['Hóa học', 'Không tiết enzyme tiêu hóa']] },
     appx: { name: 'Ruột thừa', sci: 'Appendix vermiformis', rows: [['Vị trí', 'Đầu manh tràng'], ['Lưu ý', 'Viêm ruột thừa cần cấp cứu']] },
     rect: { name: 'Trực tràng và hậu môn', sci: 'Rectum & Anus', rows: [['Vai trò', 'Chứa phân; cơ vòng hậu môn mở để tống phân ra ngoài']] },
@@ -28,7 +28,7 @@
     thor: { name: 'Ống ngực (bạch huyết)', sci: 'Ductus thoracicus', rows: [['Chở', 'Bạch huyết giàu lipid từ ruột'], ['Đổ vào', 'Tĩnh mạch dưới đòn trái']] },
     cell: { name: 'Tế bào biểu mô ruột', sci: 'Enterocyte', rows: [['Đặc điểm', 'Mặt trên có vi nhung mao'], ['Vai trò', 'Hấp thụ đơn phân bằng khuếch tán và vận chuyển chủ động']] }
   };
-  const WARN_STARCH = 'Cảnh báo sinh học: Tinh bột không thể tiếp tục tiêu hóa hóa học tại dạ dày do môi trường acid mạnh pH 1.5 - 2.0 làm amylase nước bọt dần bị bất hoạt. Lưu ý: phần tinh bột nằm sâu trong viên thức ăn chưa thấm acid vẫn được amylase tiếp tục phân giải thêm một thời gian ngắn.';
+  const WARN_STARCH = 'Cảnh báo sinh học: Tinh bột không thể tiếp tục tiêu hóa hóa học tại dạ dày do môi trường acid mạnh pH 1,5–2,0 làm amylase nước bọt dần bị bất hoạt. Lưu ý: phần tinh bột nằm sâu trong viên thức ăn chưa thấm acid vẫn được amylase tiếp tục phân giải thêm một thời gian ngắn.';
   const STAGES = [
     ['Khoang miệng & thực quản', 'Nhai nghiền, amylase: tinh bột chín → maltose; nắp thanh quản đậy, thực quản nhu động'],
     ['Dạ dày', 'Co bóp đảo trộn; HCl + pepsin: protein → polypeptide; môn vị mở từng đợt'],

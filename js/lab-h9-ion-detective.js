@@ -115,13 +115,18 @@
       api.wait(2, () => {
         api.wait(ion === 'Fe²⁺' ? 2.6 : 0.3, () => { st.busy = false; });
         if (ion === 'Fe²⁺') {
-          let k = 0; api.loop(dt => {
-            k = Math.min(1, k + dt / 2.5);
+          let k = 0; const clock = api.panel('<div>⏱ Để ngoài không khí</div><div class="big-num"><span>0</span> giây</div>');
+          api.loop(dt => {
+            k = Math.min(1, k + dt / 6);
+            clock.querySelector('span').textContent = Math.round(k * 30);
+            // hóa nâu dần từ mặt thoáng xuống: phần trên chuyển trước
             t.ppt.setAttribute('fill', `rgb(${Math.round(201 - 41 * k)},${Math.round(220 - 150 * k)},${Math.round(196 - 166 * k)})`);
-            if (k >= 1) return false;
+            if (!t.pptTop) { t.pptTop = t.ppt.cloneNode(); t.ppt.after(t.pptTop); }
+            t.pptTop.setAttribute('fill', '#A0461E'); t.pptTop.setAttribute('opacity', Math.min(1, k * 1.6)); t.pptTop.setAttribute('height', Math.max(1, (+t.ppt.getAttribute('height') || 20) * Math.min(1, k * 1.3)));
+            if (k >= 1) { setTimeout(() => clock.remove(), 1500); return false; }
           });
           st.lens.set([{ f: 'Fe(OH)₃', n: 4 }, { f: 'O₂', n: 2 }, { f: 'Na⁺', n: 3 }, { f: 'SO₄²⁻', n: 2 }]);
-          api.say('Kết tủa trắng xanh chuyển dần sang nâu đỏ! 4Fe(OH)₂ + O₂ + 2H₂O → 4Fe(OH)₃');
+          api.say('Kết tủa trắng xanh hóa nâu đỏ dần từ mặt thoáng xuống trong khoảng 20–30 giây: 4Fe(OH)₂ + O₂ + 2H₂O → 4Fe(OH)₃');
         } else api.say('Sau một lúc, màu kết tủa không đổi');
       });
     });

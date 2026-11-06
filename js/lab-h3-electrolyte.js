@@ -4,7 +4,7 @@
   // dòng điện mô phỏng (mA) với dung dịch 0,1 M, nguồn 6 V; kind: mạnh / yếu / không
   const SOL = {
     NaCl: { t: 'NaCl 0,1 M', kind: 'Điện li mạnh', mA: 12, col: 'rgba(200,230,250,.6)', p: [{ f: 'Na⁺', n: 6 }, { f: 'Cl⁻', n: 6 }, { f: 'H₂O', n: 4 }] },
-    HCl: { t: 'HCl 0,1 M', kind: 'Điện li mạnh', mA: 30, col: 'rgba(205,232,250,.6)', p: [{ f: 'H⁺', n: 6 }, { f: 'Cl⁻', n: 6 }, { f: 'H₂O', n: 4 }] },
+    HCl: { t: 'HCl 0,1 M', kind: 'Điện li mạnh', mA: 40, col: 'rgba(205,232,250,.6)', p: [{ f: 'H⁺', n: 6 }, { f: 'Cl⁻', n: 6 }, { f: 'H₂O', n: 4 }] },
     AcOH: { t: 'CH₃COOH 0,1 M', kind: 'Điện li yếu', mA: 0.6, col: 'rgba(250,240,215,.6)', p: [{ f: 'CH₃COOH', n: 8 }, { f: 'H⁺', n: 1 }, { f: 'CH₃COO⁻', n: 1 }, { f: 'H₂O', n: 3 }] },
     Sug: { t: 'Đường 0,1 M', kind: 'Không điện li', mA: 0.002, col: 'rgba(250,245,225,.6)', p: [{ f: 'C₁₂H₂₂O₁₁', n: 6 }, { f: 'H₂O', n: 6 }] },
     W: { t: 'Nước cất', kind: 'Không điện li', mA: 0.001, col: 'rgba(220,240,255,.5)', p: [{ f: 'H₂O', n: 12 }] }
@@ -44,6 +44,7 @@
     el('path', { d: 'M8 -70 L30 -100', stroke: '#8FBBD8', 'stroke-width': 4 }, st.wash);
     api.text(st.wash, 0, 20, 'Bình tia nước cất', 12, '#6C88A3', 700);
     st.lens = NL.chem.lens(api, L, 130, 150, 78, { title: '🔍 Kính lúp hạt: trong cốc' }); st.lens.g.style.display = 'none';
+    api.text(st.lens.g, 0, 100, 'Hình minh họa phóng đại: thực tế CH₃COOH 0,1 M chỉ khoảng 1/75 phân tử phân li', 10, '#6C88A3', 700);
     wires();
   }
   function wires() {
@@ -97,7 +98,7 @@
       }
     },
     {
-      label: 'Trước cốc tiếp theo', text: 'Rửa điện cực bằng nước cất, hoặc đo tiếp luôn', hint: 'Chạm bình tia nước cất để rửa. Bấm Đo tiếp luôn nếu em muốn bỏ qua',
+      label: 'Rửa điện cực', text: 'Rửa điện cực bằng nước cất trước khi nhúng cốc mới, hoặc đo tiếp luôn', hint: 'Chạm bình tia nước cất để rửa. Bấm Đo tiếp luôn nếu em muốn bỏ qua',
       enter(api) {
         api.tween(st.probe, 640, 300, 400, wires);
         st.wash.style.display = ''; api.setOn(st.wash, true);

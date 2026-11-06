@@ -16,7 +16,7 @@
     gang: { name: 'Tế bào hạch', sci: 'Ganglion cell', rows: [['Vai trò', 'Phát điện thế hoạt động; sợi trục họp thành dây thần kinh thị giác']] },
     pinna: { name: 'Vành tai', sci: 'Auricula', rows: [['Vai trò', 'Hứng sóng âm, hướng vào ống tai']] },
     canal: { name: 'Ống tai ngoài', sci: 'Meatus acusticus externus', rows: [['Dài', '≈ 2,5 cm'], ['Có', 'Lông và tuyến ráy tai giữ bụi']] },
-    drum: { name: 'Màng nhĩ', sci: 'Membrana tympani', rows: [['Vai trò', 'Rung theo sóng âm, truyền vào chuỗi xương tai'], ['Diện tích', 'Lớn gấp ≈ 18 – 20 lần cửa sổ bầu dục']] },
+    drum: { name: 'Màng nhĩ', sci: 'Membrana tympani', rows: [['Vai trò', 'Rung theo sóng âm, truyền vào chuỗi xương tai'], ['Diện tích', 'Lớn gấp ≈ 17–20 lần cửa sổ bầu dục']] },
     oss: { name: 'Chuỗi xương tai', sci: 'Malleus – Incus – Stapes', rows: [['Gồm', 'Xương búa, xương đe, xương bàn đạp'], ['Vai trò', 'Đòn bẩy tăng lực rung ≈ 1,3 lần; cộng với màng nhĩ rộng gấp ≈ 17–20 lần cửa sổ bầu dục, áp lực tăng tổng cộng ≈ 20 lần'], ['Xương bàn đạp', 'Xương nhỏ nhất cơ thể, ấn vào cửa sổ bầu dục']] },
     eus: { name: 'Vòi nhĩ (Eustache)', sci: 'Tuba auditiva', rows: [['Nối', 'Tai giữa với họng'], ['Vai trò', 'Cân bằng áp suất 2 bên màng nhĩ']] },
     semi: { name: 'Ống bán khuyên', sci: 'Canales semicirculares', rows: [['Số lượng', '3 ống trên 3 mặt phẳng vuông góc'], ['Vai trò', 'Thăng bằng, cảm nhận chuyển động quay của đầu']] },
@@ -26,11 +26,11 @@
     tect: { name: 'Màng mái', sci: 'Tectorial membrane', rows: [['Vị trí', 'Phía trên tế bào lông, chạm đỉnh lông tơ'], ['Vai trò', 'Khi màng cơ sở rung, lông tơ cọ vào màng mái và bị bẻ cong']] },
     ihc: { name: 'Tế bào lông trong', sci: 'Inner hair cells (1 hàng)', rows: [['Số lượng', '≈ 3 500'], ['Vai trò', 'Thụ cảm chính, truyền ≈ 95% thông tin âm thanh lên não']] },
     ohc: { name: 'Tế bào lông ngoài', sci: 'Outer hair cells (3 hàng)', rows: [['Số lượng', '≈ 12 000'], ['Vai trò', 'Khuếch đại dao động, tăng độ nhạy']] },
-    stereo: { name: 'Lông tơ', sci: 'Stereocilia', rows: [['Cơ chế', 'Bị bẻ cong → kéo mở kênh K⁺ cảm ứng cơ học ở đỉnh'], ['Tổn thương', 'Tiếng ồn > 85 dB kéo dài làm gãy vĩnh viễn, không mọc lại']] },
-    kch: { name: 'Kênh K⁺ cảm ứng cơ học', sci: 'Mechanotransduction channel', rows: [['Mở khi', 'Lông tơ nghiêng về phía lông cao hơn'], ['Kết quả', 'K⁺ từ nội dịch tràn vào → khử cực tế bào lông → giải phóng chất dẫn truyền']] }
+    stereo: { name: 'Lông tơ', sci: 'Stereocilia', rows: [['Cơ chế', 'Bị bẻ cong → kéo mở kênh cation cảm ứng cơ học ở đỉnh (K⁺ từ nội dịch đi vào)'], ['Tổn thương', 'Từ 85 dB trong khoảng 8 giờ/ngày đã có nguy cơ gãy vĩnh viễn, không mọc lại']] },
+    kch: { name: 'Kênh cation cảm ứng cơ học', sci: 'Mechanotransduction channel', rows: [['Mở khi', 'Lông tơ nghiêng về phía lông cao hơn'], ['Kết quả', 'K⁺ từ nội dịch tràn vào → khử cực tế bào lông → giải phóng chất dẫn truyền']] }
   };
   const WARN_NEAR = 'Cảnh báo sinh lí: Vật thể ở gần hơn điểm cực cận của mắt, cơ thể mi đã co tối đa làm thể thủy tinh phồng hết cỡ nhưng ảnh vẫn rơi phía sau màng lưới khiến hình ảnh bị mờ!';
-  const WARN_NOISE = 'Cảnh báo thính giác: Âm thanh trên 85 dB kéo dài làm các lông tơ của tế bào lông bị gãy rụng vĩnh viễn (không mọc lại), dẫn đến giảm thính lực, có thể điếc. Hãy tránh nơi quá ồn và không nghe tai nghe quá to!';
+  const WARN_NOISE = 'Cảnh báo thính giác: Âm thanh từ 85 dB trong khoảng 8 giờ/ngày đã có nguy cơ làm các lông tơ của tế bào lông bị gãy rụng vĩnh viễn (không mọc lại), dẫn đến giảm thính lực, có thể điếc. Hãy tránh nơi quá ồn và không nghe tai nghe quá to!';
 
   let dist = 2, defect = 'normal', glasses = false, cb = 'none', eyeView = 'eye', freq = 1000, dB = 60, tone = false, damage = 0;
   const RET = { normal: 0.017, myopia: 0.0185, hyper: 0.0155 };
@@ -108,7 +108,7 @@
       blur.material.color.set(off < 0.08 ? 0x7CFF8A : 0xFFE070); fov.material.emissiveIntensity = off < 0.08 ? 1 : 0.2;
       dLab.el.innerHTML = `d = ${dist < 1 ? Math.round(dist * 100) + ' cm' : dist + ' m'}`;
       const state = off < 0.08 ? '✔ Ảnh rõ trên hoàng điểm' : o.off > 0 ? '✖ Ảnh sau màng lưới (mờ)' : '✖ Ảnh trước màng lưới (mờ)';
-      fLab.el.innerHTML = `${state}<br>Độ tụ thể thủy tinh ≈ ${o.P.toFixed(1)} D (điều tiết ${o.acc.toFixed(1)} D)`;
+      fLab.el.innerHTML = `${state}<br>Độ tụ của mắt (giác mạc + thể thủy tinh) ≈ ${o.P.toFixed(1)} D, riêng thể thủy tinh ≈ ${(o.P - 43).toFixed(1)} D (điều tiết ${o.acc.toFixed(1)} D)`;
       if (dist < 0.1 && defect === 'normal' && !warnNear) { warnNear = true; api.warn('near', WARN_NEAR, '⚠️ Cảnh báo sinh lí'); }
       if (dist >= 0.1) warnNear = false;
       api.caption(`${a > 0.5 ? 'Nhìn gần: cơ thể mi co, dây treo chùng, thể thủy tinh phồng' : 'Nhìn xa: cơ thể mi dãn, dây treo căng, thể thủy tinh xẹp'} · 1/f = 1/d + 1/d′ · d′ = ${(o.di * 1000).toFixed(1)} mm`);
@@ -281,7 +281,7 @@
     let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-height:${H}px;font-family:'Baloo 2',sans-serif">`;
     // trái: độ tụ thể thủy tinh theo khoảng cách
     const L = 46, R = 300, X = d => L + Math.log(d / 0.05) / Math.log(200) * (R - L), Y = p => 250 - (p - 56) / 16 * 210;
-    s += `<text x="${L}" y="18" font-size="13" font-weight="800" fill="#1F4E79">Độ tụ thể thủy tinh (D) theo khoảng cách vật</text>`;
+    s += `<text x="${L}" y="18" font-size="13" font-weight="800" fill="#1F4E79">Độ tụ của mắt (giác mạc + thể thủy tinh, D) theo khoảng cách vật</text>`;
     [56, 60, 64, 68, 72].forEach(p => { s += `<line x1="${L}" x2="${R}" y1="${Y(p)}" y2="${Y(p)}" stroke="#E3ECF4"/><text x="${L - 6}" y="${Y(p) + 4}" font-size="11" fill="#6C88A3" text-anchor="end">${p}</text>`; });
     [0.05, 0.1, 0.25, 1, 3, 10].forEach(d => { s += `<text x="${X(d)}" y="270" font-size="11" fill="#6C88A3" text-anchor="middle">${d < 1 ? d * 100 + 'cm' : d + 'm'}</text>`; });
     let pts = []; for (let k = 0; k <= 60; k++) { const d = 0.05 * Math.pow(200, k / 60); pts.push(`${X(d)},${Y(optics(d).P)}`); }
@@ -293,7 +293,7 @@
     s += `<line x1="${L2}" x2="${R2}" y1="${mid}" y2="${mid}" stroke="#E3ECF4"/>`;
     pts = []; const per = Math.max(1, Math.min(400, freq * 0.005 * 4)); for (let k = 0; k <= 400; k++) { const q = k / 400; pts.push(`${L2 + q * (R2 - L2)},${mid - A * Math.sin(q * Math.PI * 2 * Math.min(per, 60))}`); }
     s += `<polyline fill="none" stroke="#7A4FB5" stroke-width="2" points="${pts.join(' ')}"/>`;
-    if (dB > 85) s += `<text x="${L2}" y="270" font-size="12" font-weight="800" fill="#E5534B">⚠ Trên 85 dB: nguy cơ tổn thương lông tơ</text>`;
+    if (dB > 85) s += `<text x="${L2}" y="270" font-size="12" font-weight="800" fill="#E5534B">⚠ Từ 85 dB (8 giờ/ngày): nguy cơ tổn thương lông tơ</text>`;
     return s + '</svg>';
   }
 
@@ -314,8 +314,8 @@
             [3, 'Bộ phận điều chỉnh', 'Thể thủy tinh, cơ thể mi, đồng tử', 'Màng nhĩ và chuỗi xương tai (tăng áp lực ≈ 20 lần)', '–'],
             [4, 'Cơ chế ở tế bào thụ cảm', 'Photon phân giải rhodopsin / photopsin', 'Lông tơ bẻ cong mở kênh K⁺', 'Đổi điện thế màng → xung thần kinh'],
             [5, 'Dây thần kinh', 'Thị giác', 'Thính giác', '–'], [6, 'Vùng vỏ não', 'Thùy chẩm', 'Thùy thái dương', '–'],
-            [7, 'Bệnh, tật thường gặp', 'Cận thị, viễn thị, mù màu', 'Giảm thính lực do tiếng ồn > 85 dB', '–']] },
-          { name: 'Điều tiết mắt', head: ['Khoảng cách vật (m)', 'Độ tụ thể thủy tinh (D)', 'Điều tiết (D)', 'Ảnh d′ (mm)', 'Màng lưới (mm)', 'Kết quả'], rows: [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, dist].map(d => { const q = optics(d), off = (q.di - q.dr) * 1000; return [d, q.P.toFixed(1), q.acc.toFixed(1), (q.di * 1000).toFixed(2), (q.dr * 1000).toFixed(1), Math.abs(off) < 0.3 ? 'Rõ' : off > 0 ? 'Mờ, ảnh sau màng lưới' : 'Mờ, ảnh trước màng lưới']; }) },
+            [7, 'Bệnh, tật thường gặp', 'Cận thị, viễn thị, mù màu', 'Giảm thính lực do tiếng ồn từ 85 dB (8 giờ/ngày)', '–']] },
+          { name: 'Điều tiết mắt', head: ['Khoảng cách vật (m)', 'Độ tụ của mắt (D)', 'Điều tiết (D)', 'Ảnh d′ (mm)', 'Màng lưới (mm)', 'Kết quả'], rows: [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, dist].map(d => { const q = optics(d), off = (q.di - q.dr) * 1000; return [d, q.P.toFixed(1), q.acc.toFixed(1), (q.di * 1000).toFixed(2), (q.dr * 1000).toFixed(1), Math.abs(off) < 0.3 ? 'Rõ' : off > 0 ? 'Mờ, ảnh sau màng lưới' : 'Mờ, ảnh trước màng lưới']; }) },
           { name: 'Thính giác', head: ['Thông số', 'Giá trị'], rows: [['Tần số (Hz)', freq], ['Cường độ (dB)', dB], ['Vị trí rung mạnh nhất trên ốc tai', freq >= 2000 ? 'Gần đáy' : freq <= 300 ? 'Gần đỉnh' : 'Đoạn giữa'], ['Lông tơ bị gãy (%)', Math.round(damage * 100)], ['Ngưỡng nguy hiểm', '85 dB kéo dài']] }
         ],
         chart: { svg: chartSVG() }

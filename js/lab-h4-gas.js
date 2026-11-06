@@ -86,15 +86,17 @@
       label: 'O₂ · 1/4', text: 'Cho một thìa KMnO₄ (thuốc tím) vào ống nghiệm', hint: 'Kéo thìa vào miệng ống nghiệm',
       enter(api) {
         sideTable(api);
-        api.card({ kicker: '🥽 An toàn', text: 'Đeo kính bảo hộ. Ống nghiệm đặt hơi chúi miệng xuống để hơi nước không chảy ngược làm nứt ống. Không thổi tắt đèn cồn, đậy nắp để tắt.', btn: 'Đã hiểu ➜' });
+        api.card({ kicker: '🥽 An toàn', text: 'Đeo kính bảo hộ. Ống nghiệm đặt hơi chúc miệng xuống để hơi nước không chảy ngược làm nứt ống. Hơ nóng đều ống nghiệm rồi mới đun tập trung chỗ có hóa chất. Không thổi tắt đèn cồn, đậy nắp để tắt.', btn: 'Đã hiểu ➜' });
         if (!api.prediction) api.ask({ predict: true, q: 'Khí CO₂ nặng hơn không khí. Thu CO₂ vào bình bằng cách đẩy không khí thì đặt bình thế nào?', options: [{ t: 'Đặt ngửa bình' }, { t: 'Úp ngược bình' }, { t: 'Đặt thế nào cũng được' }] });
         api.setOn(st.spoon, true);
         api.draggable(st.spoon, { target: { x: 240, y: 300, r: 100 }, onDrop: () => { st.kmn.setAttribute('opacity', 1); st.spoon.style.display = 'none'; api.done(); } });
       }
     },
     {
-      label: 'O₂ · 2/4', text: 'Chạm vào ống nghiệm để đậy nút có ống dẫn, đưa đầu ống dẫn vào dưới bình thu', hint: 'Chạm ống nghiệm',
-      enter(api) { api.setOn(st.tubeA, true); api.tapable(st.tubeA, () => { st.pipeA.setAttribute('opacity', 1); api.done(); }); }
+      label: 'O₂ · 2/4', text: 'Nhét một nhúm bông vào miệng ống nghiệm, rồi chạm ống nghiệm để đậy nút có ống dẫn, đưa đầu ống dẫn vào dưới bình thu', hint: 'Chạm ống nghiệm',
+      enter(api) {
+        api.card({ kicker: '🧶 Nhúm bông', text: 'Nhét một nhúm bông ở miệng ống nghiệm để bột KMnO₄ không bị khí cuốn theo vào ống dẫn làm tắc ống và nhuộm tím nước trong chậu.', btn: 'Đã nhét bông ➜' }, () => { api.setOn(st.tubeA, true); api.tapable(st.tubeA, () => { st.pipeA.setAttribute('opacity', 1); api.done(); }); });
+      }
     },
     {
       label: 'O₂ · 3/4', text: 'Châm đèn cồn để đun nóng KMnO₄', hint: 'Chạm vào đèn cồn',

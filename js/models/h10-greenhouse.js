@@ -11,7 +11,7 @@
     O2: { f: 'O₂', gh: false, gwp: '0', life: 'Bền', src: '21% khí quyển', why: 'Hai nguyên tử giống hệt nhau: không có moment lưỡng cực khi dao động → không hấp thụ hồng ngoại' }
   };
   const SKY = [[14, '#e0f2fe'], [16.5, '#fef08a'], [20, '#f97316'], [24, '#ef4444'], [28, '#991b1b']];
-  let co2 = 280, ch4 = 720, n2o = 270, mode = 'both', labels = true, speed = 1, stat = { abs: 0, esc: 0, down: 0 };
+  let co2 = 425, ch4 = 1930, n2o = 337, mode = 'both', labels = true, speed = 1, stat = { abs: 0, esc: 0, down: 0 };
   const dF = () => 5.35 * Math.log(co2 / 280) + 0.036 * (Math.sqrt(ch4) - Math.sqrt(720)) + 0.12 * (Math.sqrt(n2o) - Math.sqrt(270));
   const temp = () => 14 + 0.8 * dF();
   const tAt = (c) => 14 + 0.8 * (5.35 * Math.log(c / 280) + 0.036 * (Math.sqrt(ch4) - Math.sqrt(720)) + 0.12 * (Math.sqrt(n2o) - Math.sqrt(270)));

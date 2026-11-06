@@ -5,7 +5,7 @@
   const FX = 300, FY = 430;
   const FUEL = {
     CH4: { t: 'CH₄ (khí methane, biogas)', s: 'CH₄', flame: '#4A8FE7', core: '#BFE0FF', h: 70, soot: 0, smoke: 0, pctC: 75, eq: 'CH₄ + 2O₂ → CO₂ + 2H₂O', see: 'Lửa xanh, không khói', sootTxt: 'Không có' },
-    C2H2: { t: 'C₂H₂ (khí acetylene)', s: 'C₂H₂', flame: '#FFC531', core: '#FFF4C2', h: 120, soot: 1, smoke: 1, pctC: 92.3, eq: '2C₂H₂ + 5O₂ → 4CO₂ + 2H₂O', see: 'Lửa vàng sáng, nhiều khói đen', sootTxt: 'Rất nhiều' },
+    C2H2: { t: 'C₂H₂ (acetylene, tức ethyne)', s: 'C₂H₂', flame: '#FFC531', core: '#FFF4C2', h: 120, soot: 1, smoke: 1, pctC: 92.3, eq: '2C₂H₂ + 5O₂ → 4CO₂ + 2H₂O', see: 'Lửa vàng sáng, nhiều khói đen', sootTxt: 'Rất nhiều' },
     WAX: { t: 'Nến (paraffin)', s: 'C₂₅H₅₂', flame: '#FFA531', core: '#FFE9B0', h: 80, soot: 0.45, smoke: 0.3, pctC: 85.2, eq: 'C₂₅H₅₂ + 38O₂ → 25CO₂ + 26H₂O', see: 'Lửa vàng, hơi có khói', sootTxt: 'Một ít' }
   };
   const KEYS = Object.keys(FUEL);
@@ -148,7 +148,7 @@
       enter(api) { st.fl.style.display = 'none'; st.smokeG.innerHTML = ''; st.lens.g.style.display = 'none'; api.showChart(result()); api.done('Trả lời câu hỏi ➜'); },
       onNext(api) {
         api.wrapUp({
-          right: 'C₂H₂ (khí acetylene)', truth: 'C₂H₂ có tỉ lệ carbon cao nhất (khoảng 92%), không khí không đủ oxygen để đốt hết nên còn nhiều muội than.',
+          right: 'C₂H₂ (acetylene, tức ethyne)', truth: 'C₂H₂ có tỉ lệ carbon cao nhất (khoảng 92%), không khí không đủ oxygen để đốt hết nên còn nhiều muội than.',
           sub: 'Bếp gas, biogas cháy lửa xanh vì CH₄ ít carbon và đủ không khí. Lửa vàng có khói là dấu hiệu cháy không hết, dễ sinh khí CO rất độc.',
           result: result(),
           quiz: [{

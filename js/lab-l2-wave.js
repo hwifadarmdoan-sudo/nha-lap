@@ -35,7 +35,7 @@
     st.iA = api.text(info, 0, 42, '', 15, '#1F4E79', 700);
     st.iR = api.text(info, 0, 72, '', 15, '#1F4E79', 700);
     st.iM = api.text(info, 0, 108, '', 14, '#6C88A3', 700);
-    api.text(L, 680, 330, 'Sáng = sóng mạnh', 13, '#6C88A3', 700); api.text(L, 680, 350, 'Phẳng lặng = vân cực tiểu', 13, '#6C88A3', 700);
+    api.text(L, 330, 318, 'Chú giải: sáng = vân cực đại (sóng mạnh) · phẳng lặng = vân cực tiểu', 13, '#6C88A3', 700);
     cv.addEventListener('pointerdown', e => {
       if (!st.mission) return;
       const r = cv.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * CW, py = (e.clientY - r.top) / r.height * CH;

@@ -353,6 +353,7 @@ NL.lab = (function () {
   return {
     autoAct,
     register(id, mod) { modules[id] = mod; }, open, close, hint, showHint,
-    get isOpen() { return !!cur; }, get current() { return cur && cur.id; }
+    get isOpen() { return !!cur; }, get current() { return cur && cur.id; },
+    get api() { return api; } // dùng khi kiểm thử tự động
   };
 })();

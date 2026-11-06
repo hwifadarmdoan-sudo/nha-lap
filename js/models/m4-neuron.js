@@ -20,7 +20,7 @@
     mito: { name: 'Ti thể', sci: 'Mitochondrion', rows: [['Vai trò', 'Cung cấp ATP để tái tổng hợp acetylcholine và vận chuyển bóng chứa']] },
     cach: { name: 'Kênh Ca²⁺ cảm ứng điện thế', sci: 'Voltage-gated Ca²⁺ channel', rows: [['Vị trí', 'Màng chùy trước synapse'], ['Mở khi', 'Xung điện đến làm màng mất phân cực'], ['Kết quả', 'Ca²⁺ tràn vào, kích thích bóng chứa hòa màng']] },
     cleft: { name: 'Khe synapse', sci: 'Synaptic cleft', rows: [['Độ rộng', '20 – 30 nm'], ['Chứa', 'Dịch ngoại bào, enzyme acetylcholinesterase'], ['Vai trò', 'Nơi ACh khuếch tán từ màng trước sang màng sau']] },
-    post: { name: 'Màng sau synapse', sci: 'Post-synaptic membrane', rows: [['Trên màng có', 'Thụ thể đặc hiệu gắn với kênh Na⁺ (kênh cảm ứng ligand)'], ['Kết quả', 'Na⁺ tràn vào, xuất hiện điện thế hoạt động mới'], POT, APV] },
+    post: { name: 'Màng sau synapse', sci: 'Post-synaptic membrane', rows: [['Trên màng có', 'Thụ thể acetylcholine là kênh cation cảm ứng ligand (chủ yếu Na⁺ đi vào)'], ['Kết quả', 'Na⁺ tràn vào làm màng sau khử cực (điện thế sau synapse); nếu cộng gộp đạt ngưỡng −55 mV thì phát sinh điện thế hoạt động mới'], POT, APV] },
     rec: { name: 'Thụ thể ACh – kênh Na⁺', sci: 'Nicotinic acetylcholine receptor', rows: [['Cấu tạo', '5 tiểu phần protein xếp quanh một lỗ kênh'], ['Hoạt động', '2 phân tử ACh gắn vào 2 tiểu phần α làm protein đổi cấu hình, mở cổng cho Na⁺ đi vào'], ['Loại kênh', 'Kênh cảm ứng ligand (hóa học)']] },
     ache: { name: 'Enzyme acetylcholinesterase', sci: 'Acetylcholinesterase (AChE)', rows: [['Vị trí', 'Khe synapse, sát màng sau'], ['Chức năng', 'Phân hủy ACh thành acetate và choline; choline được màng trước thu hồi để tái tổng hợp ACh'], ['Ý nghĩa', 'Giúp màng sau trở về trạng thái nghỉ']] },
     nach: { name: 'Kênh Na⁺ cảm ứng điện thế', sci: 'Voltage-gated Na⁺ channel', rows: [['Mở khi', 'Màng đạt ngưỡng −55 mV'], ['Kết quả', 'Na⁺ tràn vào gây mất phân cực, đảo cực lên +30 mV'], ['Bị khóa bởi', 'Tetrodotoxin (TTX) của cá nóc']] },
@@ -34,7 +34,7 @@
     'Kênh Ca²⁺ cảm ứng điện thế mở, Ca²⁺ tràn từ dịch ngoại bào vào chùy màng trước.',
     'Ca²⁺ làm bóng chứa di chuyển đến hòa màng trước, giải phóng acetylcholine vào khe synapse (xuất bào).',
     'Acetylcholine khuếch tán qua khe synapse (20 – 30 nm), gắn vào thụ thể đặc hiệu ở màng sau.',
-    'Kênh Na⁺ ở màng sau mở, Na⁺ tràn vào làm xuất hiện điện thế hoạt động mới và lan truyền đi.',
+    'Thụ thể (kênh cation) ở màng sau mở, Na⁺ tràn vào làm màng sau khử cực (điện thế sau synapse); nếu đạt ngưỡng −55 mV thì phát sinh điện thế hoạt động mới và lan truyền đi.',
     'Acetylcholinesterase phân hủy acetylcholine thành acetate và choline; màng trước thu hồi choline để tái tổng hợp, màng sau trở về nghỉ.'
   ];
 
@@ -423,7 +423,7 @@
             [6, 'Đang mô phỏng', myelin ? '✔' : '', myelin ? '' : '✔']] },
           { name: 'Nồng độ ion', head: ['Ion', 'Trong tế bào (mM)', 'Ngoài tế bào (mM)', 'Vai trò'], rows: [
             ['Na⁺', 15, 145, 'Đi vào gây mất phân cực, đảo cực'], ['K⁺', 140, 5, 'Đi ra tạo điện thế nghỉ, gây tái phân cực'],
-            ['Ca²⁺', 0.0001, 2, 'Đi vào chùy synapse, kích thích xuất bào'], ['Cl⁻', 10, 110, 'Góp phần ổn định điện thế nghỉ']] },
+            ['Ca²⁺', '0,0001', 2, 'Đi vào chùy synapse, kích thích xuất bào'], ['Cl⁻', 10, 110, 'Góp phần ổn định điện thế nghỉ']] },
           { name: 'Điện thế hoạt động', head: ['Thời gian (ms)', 'Điện thế màng (mV)', 'Giai đoạn'], rows: pts.map(p => [p[0], p[1], ttx ? 'Bị TTX khóa, không đạt ngưỡng' : phase(p[0])]) }
         ],
         chart: { type: 'line', series: [{ name: ttx ? 'Điện thế màng (TTX)' : 'Điện thế hoạt động', color: '#E0A100', points: pts }], xLabel: 'Thời gian (ms)', yLabel: 'mV', yMin: -90, yMax: 50, xMax: 5,

@@ -3,10 +3,10 @@
   const GC = { A: 0xE5534B, B: 0xF28C28, C: 0xF2C230, D: 0x7BC043, E: 0x2BB3A6, F: 0x3E8EDE, G: 0x7A5BD6, H: 0xD158A8, M: 0x8D6E63, N: 0xA1887F, O: 0x5C9EAD, P: 0x9CCC65, Q: 0xFFB74D, R: 0x90A4AE };
   const CEN = 0xFF4FA3;
   const FACT = {
-    del: { t: 'Mất đoạn', q: 'Thiếu gene → mất cân bằng hệ gene, thường gây chết hoặc giảm sức sống', ex: 'Mất đoạn nhánh ngắn NST số 5 ở người gây hội chứng tiếng mèo kêu (cri du chat); mất đoạn nhỏ ở NST 21 làm giảm sức sống. Ứng dụng: loại bỏ gene không mong muốn ở cây trồng.' },
+    del: { t: 'Mất đoạn', q: 'Thiếu gene → mất cân bằng hệ gene, thường gây chết hoặc giảm sức sống', ex: 'Mất đoạn nhánh ngắn NST số 5 ở người gây hội chứng tiếng mèo kêu (cri du chat); mất đoạn 7q11.23 gây hội chứng Williams. Ứng dụng: loại bỏ gene không mong muốn ở cây trồng.' },
     dup: { t: 'Lặp đoạn', q: 'Thừa gene (tăng số bản sao) → tăng hoặc giảm mức biểu hiện tính trạng', ex: 'Lặp đoạn ở đại mạch làm tăng hoạt tính enzyme amylase, có lợi cho công nghiệp sản xuất bia. Lặp đoạn tạo nguyên liệu cho tiến hóa (gene mới).' },
     inv: { t: 'Đảo đoạn', q: 'Không mất, không thừa gene; thay đổi trật tự gene → có thể thay đổi mức hoạt động của gene', ex: 'Đảo đoạn góp phần tăng sự đa dạng giữa các thứ, các nòi trong cùng một loài (ví dụ ở ruồi giấm, muỗi), là nguyên liệu cho tiến hóa.' },
-    tra: { t: 'Chuyển đoạn', q: 'Thay đổi nhóm gene liên kết; chuyển đoạn lớn thường giảm khả năng sinh sản', ex: 'Chuyển đoạn giữa NST 9 và 22 tạo NST Philadelphia gây ung thư máu tủy mãn tính (CML). Ứng dụng: chuyển gene mong muốn giữa các loài, tạo dòng côn trùng bất thụ để phòng trừ sâu hại.' }
+    tra: { t: 'Chuyển đoạn', q: 'Thay đổi nhóm gene liên kết; chuyển đoạn lớn thường giảm khả năng sinh sản', ex: 'Chuyển đoạn giữa NST 9 và 22 tạo NST Philadelphia gây bệnh bạch cầu tủy mạn tính (CML). Ứng dụng: chuyển gene mong muốn giữa các loài, tạo dòng côn trùng bất thụ để phòng trừ sâu hại.' }
   };
 
   let mode = 'del', sub = 'peri', tsub = 'recip', speed = 1, playing = true, manual = false, tool = 'cut';
@@ -44,7 +44,7 @@
       label, all, init, fin, flip: new Set(flip.map(t => t.uid)),
       states: [
         { rows: init, over: [], cap: 'NST ban đầu' },
-        { rows: S1, over: [], lasers, cap: 'Xuất hiện các điểm đứt gãy (tia laser cắt)', snd: 'cut' },
+        { rows: S1, over: [], lasers, cap: 'NST bị đứt gãy (do tia phóng xạ, tia UV, hóa chất, virus hoặc trao đổi chéo không cân); vạch đỏ đánh dấu điểm đứt', snd: 'cut' },
         { rows: S2rows, over: lifts, drop: drop.map(t => t.uid), cap: drop.length ? 'Đoạn bị đứt rơi ra ngoài và bị tiêu hủy' : spawn.length ? 'Đoạn B – C được nhân đôi' : 'Đoạn đứt tách khỏi NST', snd: flip.length ? 'twist' : null },
         { rows: S3rows, over: finLift, drop: drop.map(t => t.uid), flipOn: true, cap: flip.length ? 'Đoạn quay ngược 180°' : 'Đoạn di chuyển tới vị trí mới' },
         { rows: fin, over: [], drop: drop.map(t => t.uid), flipOn: true, cap: 'Các đoạn nối lại: NST đột biến', snd: 'join' }
