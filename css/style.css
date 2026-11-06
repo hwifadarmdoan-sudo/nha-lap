@@ -209,7 +209,8 @@ body.film #hud,body.film #teacher,body.film .t-alert{display:none!important}
 
 /* Thang máy góc nhìn POV */
 .elev-pov{position:fixed;inset:0;z-index:28;background:#8E9BA8;animation:fade .35s}
-.elev-pov svg{width:100%;height:100%;display:block}
+.elev-pov svg,.elev-pov canvas{width:100%;height:100%;display:block;touch-action:none}
+#elevCv{position:absolute;inset:0}
 .elev-pov .door-l,.elev-pov .door-r{transition:transform 1s ease-in-out}
 .elev-pov.closed .door-l,.elev-pov.closed .door-r{transform:translateX(0)!important}
 .elev-pov .fbtn{cursor:pointer}
