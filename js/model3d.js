@@ -180,7 +180,7 @@ NL.m3d = (function () {
 
   function resize() {
     if (!R || !st) return;
-    const w = root.clientWidth, h = root.clientHeight;
+    const w = root.clientWidth, h = cv.clientHeight || root.clientHeight; // có dải phế dung kế thì khung vẽ thấp hơn
     R.setSize(w, h, false);
     st.camera.aspect = w / h; st.camera.updateProjectionMatrix();
     if (st.strip) { const c = ui.stripCv, r = c.getBoundingClientRect(); c.width = r.width * 2; c.height = r.height * 2; }
@@ -316,7 +316,7 @@ NL.m3d = (function () {
     st.frames.forEach(fn => fn(dt, st.time));
     if (st.sel && st.sel.outline) { const k = 0.55 + 0.45 * Math.sin(st.time * 6); st.sel.outline.forEach(m => { m.material.opacity = 0.35 + 0.5 * k; }); }
     st.controls.update();
-    const w = root.clientWidth, h = root.clientHeight;
+    const w = root.clientWidth, h = cv.clientHeight || root.clientHeight;
     if (st.split) {
       R.setScissorTest(true);
       const hw = Math.floor(w / 2);

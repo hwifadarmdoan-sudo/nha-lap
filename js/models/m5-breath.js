@@ -3,6 +3,12 @@
   const PINK = 0xF29BAA, GRAY = 0x4A4A55, BONE = 0xEDE6D6, MUS = 0xC8585E;
   const INFO = {
     lung: { name: 'Phổi', sci: 'Pulmo (Lungs)', rows: [['Cấu tạo', 'Phổi phải 3 thùy, phổi trái 2 thùy; ≈ 300–500 triệu phế nang'], ['Diện tích trao đổi', '70 – 90 m²'], ['Bao ngoài', '2 lớp màng phổi, giữa là dịch màng phổi giúp phổi dãn theo lồng ngực']] },
+    lungR: { name: 'Phổi phải', sci: 'Pulmo dexter', rows: [['Cấu tạo', '3 thùy: trên, giữa, dưới; ngăn bởi 2 khe (rãnh liên thùy)'], ['Kích thước', 'To và ngắn hơn phổi trái (gan đẩy cơ hoành bên phải lên cao)'], ['Phế nang', '≈ 300 – 500 triệu phế nang cho cả 2 phổi, diện tích trao đổi 70 – 90 m²'], ['Bao ngoài', '2 lớp màng phổi, giữa là dịch màng phổi giúp phổi dãn theo lồng ngực']] },
+    lungL: { name: 'Phổi trái', sci: 'Pulmo sinister', rows: [['Cấu tạo', '2 thùy: trên và dưới, ngăn bởi 1 khe chếch'], ['Khuyết tim', 'Bờ trước thùy trên lõm vào để nhường chỗ cho tim'], ['Kích thước', 'Nhỏ và dài hơn phổi phải'], ['Bao ngoài', '2 lớp màng phổi, giữa là dịch màng phổi']] },
+    heart: { name: 'Tim', sci: 'Cor', rows: [['Vị trí', 'Trong trung thất, giữa 2 lá phổi, lệch sang trái, nằm trong khuyết tim của phổi trái'], ['Xem thêm', 'Mô hình Tim và hệ tuần hoàn (phòng Sinh)']] },
+    thyroid: { name: 'Sụn giáp', sci: 'Cartilago thyroidea', rows: [['Hình dạng', 'Hai mảnh sụn ghép lại như tấm khiên, nhô ra trước thành "trái táo Adam"'], ['Vai trò', 'Bảo vệ dây thanh, là nơi bám của dây thanh phía trước']] },
+    cricoid: { name: 'Sụn nhẫn', sci: 'Cartilago cricoidea', rows: [['Hình dạng', 'Vòng sụn kín hình chiếc nhẫn, nằm dưới sụn giáp'], ['Vai trò', 'Nền của thanh quản, nối với vòng sụn đầu tiên của khí quản']] },
+    vocal: { name: 'Dây thanh (nếp thanh âm)', sci: 'Plicae vocales', rows: [['Cấu tạo', '2 nếp niêm mạc có dây chằng đàn hồi, căng từ sụn giáp ra sau'], ['Phát âm', 'Khí từ phổi đi lên làm 2 dây thanh rung (≈ 100 – 300 lần/giây); dây càng căng, âm càng cao'], ['Khi thở', '2 dây mở rộng tạo khe thanh môn hình chữ V']] },
     dia: { name: 'Cơ hoành', sci: 'Diaphragma', rows: [['Hít vào', 'Co, dẹt phẳng, hạ xuống 1,5 – 3 cm'], ['Thở ra', 'Dãn, vòm cong trở lên'], ['Vai trò', 'Cơ hô hấp chính, tạo ≈ 70% thể tích khí hít vào']] },
     rib: { name: 'Khung xương sườn và cơ liên sườn', sci: 'Costae & Musculi intercostales', rows: [['Hít vào', 'Cơ liên sườn ngoài co, nâng xương sườn lên, xương ức nhô ra trước'], ['Thở ra', 'Cơ liên sườn ngoài dãn, lồng ngực hạ xuống'], ['Số đôi', '12 đôi xương sườn']] },
     trachea: { name: 'Khí quản', sci: 'Trachea', rows: [['Cấu tạo', '16 – 20 vòng sụn hình chữ C, mặt trong có lớp lông rung và tuyến nhầy'], ['Dài', '≈ 10 – 12 cm'], ['Vai trò', 'Dẫn khí, làm ẩm, làm ấm, lọc bụi']] },
@@ -74,42 +80,87 @@
 
   // ---------- Tab 1: thông khí ----------
   function buildBody(api, at) {
-    const T = api.T, V = api.V;
+    const T = api.T, V = api.V, rnd = api.rand(5);
     const g = api.group(null, at);
     // cột sống + xương ức
     const spine = api.group(g); for (let k = 0; k < 14; k++) api.box(0.5, 0.32, 0.5, BONE, [0, 3.2 - k * 0.42, -1.9], spine); spine.traverse(o => o.userData.noPick = true);
+    // xương sườn: bám cột sống phía sau, chạy vòng ra trước và chếch xuống dưới; đoạn trước là sụn sườn nối vào xương ức
     const ribs = api.group(g); api.tag(ribs, 'rib');
     const ribList = [];
+    const boneM = api.mat(BONE, { opacity: op }), cartM = api.mat(0xCFE3EE, { opacity: op });
     for (let k = 0; k < 10; k++) {
-      const y = 2.6 - k * 0.42, w = 1.6 + Math.sin((k + 1) / 11 * Math.PI) * 0.9, d = 1.5 + k * 0.04;
+      const y = 2.9 - k * 0.42, w = 1.6 + Math.sin((k + 1) / 11 * Math.PI) * 0.9, d = 1.5 + k * 0.04, drop = 0.75 + k * 0.03;
       const rg = api.group(ribs, [0, y, -1.9]);
-      [-1, 1].forEach(s => { const pts = []; for (let j = 0; j <= 12; j++) { const a = j / 12 * Math.PI; pts.push(V(s * Math.sin(a) * w, -Math.sin(a) * 0.35, (1 - Math.cos(a)) * d * 0.62)); } api.tube(pts, 0.07, api.mat(BONE, { opacity: op }), rg, 40); });
+      [-1, 1].forEach(s => {
+        const pt = a => V(s * Math.sin(a) * w, -Math.sin(a) * 0.12 - a / Math.PI * drop, (1 - Math.cos(a)) * d * 0.62);
+        const bone = [], cart = [];
+        for (let j = 0; j <= 14; j++) { const a = j / 14 * Math.PI; (a <= Math.PI * 0.72 ? bone : cart).push(pt(a)); }
+        cart.unshift(bone[bone.length - 1]);
+        api.tube(bone, 0.062, boneM, rg, 36);
+        if (k < 7) api.tube(cart, 0.055, cartM, rg, 16);
+        else api.tube(cart.slice(0, 3), 0.06, cartM, rg, 10);
+      });
       ribList.push(rg);
     }
-    const sternum = api.box(0.4, 3.2, 0.18, api.mat(BONE, { opacity: op }), [0, 1.2, 0.05], ribs);
+    const sternum = api.box(0.42, 2.9, 0.18, boneM, [0, 0.9, 0.12], ribs);
     api.part(ribs, INFO.rib);
-    // phổi
+    // phổi: phải 3 thùy, trái 2 thùy (khuyết tim); bán trong suốt để thấy cây phế quản bên trong
     const lungs = api.group(g); api.tag(lungs, 'tree');
-    const L = [-1, 1].map(s => { const m = api.sphere(1, api.mat(lungCol(T), { opacity: 0.85 * op, roughness: 0.7 }), [s * 0.95, 0.7, -0.6], lungs, 40); m.scale.set(0.82, 1.75, 0.95); m.userData.base = m.scale.clone(); return m; });
-    api.part(lungs, INFO.lung);
+    const lobes = [], lungG = [], treeG = [];
+    const C = [[-1.0, 0.7, -0.6], [1.0, 0.7, -0.6]];
+    const lobe = (parent, pos, sc, tint) => { const m = api.sphere(1, api.mat(lungCol(T), { opacity: 0.7 * op, roughness: 0.85, emissive: 0xF29BAA, emissiveIntensity: 0.22 }), pos, parent, 40); m.scale.set(...sc); m.userData.tint = tint; lobes.push(m); return m; };
+    // phổi phải (bên trái màn hình: người đứng quay mặt về phía em)
+    const R = api.group(lungs, C[0]); R.userData.base = new T.Vector3(1, 1, 1); lungG.push(R);
+    lobe(R, [0, 0.95, 0], [0.74, 0.85, 0.88], 0.2); lobe(R, [0.12, 0.0, 0.28], [0.64, 0.5, 0.72], 0.0); lobe(R, [-0.04, -0.72, -0.15], [0.86, 0.82, 0.95], 0.1);
+    api.part(R, INFO.lungR);
+    // phổi trái: thùy trên hẹp phía trong (khuyết tim), thùy dưới
+    const Lf = api.group(lungs, C[1]); Lf.userData.base = new T.Vector3(1, 1, 1); lungG.push(Lf);
+    lobe(Lf, [0.1, 0.95, -0.05], [0.66, 0.9, 0.86], 0.2); lobe(Lf, [0.02, -0.68, -0.15], [0.86, 0.85, 0.95], 0.0);
+    api.part(Lf, INFO.lungL);
+    // khe liên thùy (rãnh chếch, rãnh ngang) vẽ thành vòng mảnh sẫm màu trên mặt phổi
+    const fisM = api.mat(0x8E2F42, { opacity: 0.85, roughness: 0.9 });
+    const fissure = (parent, y, tilt, sc) => { const r = api.mesh(new T.TorusGeometry(1, 0.022, 6, 48), fisM, [0, y, 0], parent); r.rotation.x = Math.PI / 2 - tilt; r.scale.set(...sc); r.userData.noPick = true; return r; };
+    fissure(R, -0.1, 0.55, [0.84, 0.92, 1]); fissure(R, 0.5, 0.12, [0.74, 0.84, 1]); fissure(Lf, -0.05, 0.55, [0.84, 0.92, 1]);
+    // tim nằm trong khuyết tim của phổi trái
+    const heart = api.sphere(0.56, api.mat(0xB2404E, { roughness: 0.6 }), [0.3, 0.05, 0.05], g, 28); heart.scale.set(0.82, 0.98, 0.78); heart.rotation.z = -0.35; api.part(heart, INFO.heart);
+    // khí quản có vòng sụn chữ C, 2 phế quản chính, cây phế quản phân nhánh trong phổi
     const tr = api.group(g); api.tag(tr, 'tree');
-    api.cyl(0.16, 0.16, 2.2, 0xD9E6F2, [0, 3.6, -0.5], tr, 16); api.lineBetween([0, 2.5, -0.5], [-0.7, 1.9, -0.55], 0.12, 0xD9E6F2, tr); api.lineBetween([0, 2.5, -0.5], [0.7, 1.9, -0.55], 0.12, 0xD9E6F2, tr);
+    const trM = api.mat(0xD9E6F2, { roughness: 0.5 }), ringM = api.mat(0xF2F7FB, { roughness: 0.4 });
+    api.cyl(0.16, 0.16, 2.2, trM, [0, 3.6, -0.5], tr, 16);
+    for (let k = 0; k < 9; k++) { const rg = api.mesh(new T.TorusGeometry(0.17, 0.035, 6, 20, Math.PI * 1.6), ringM, [0, 2.75 + k * 0.22, -0.5], tr); rg.rotation.x = Math.PI / 2; rg.rotation.z = Math.PI * 0.7; }
+    api.lineBetween([0, 2.5, -0.5], [-0.75, 1.78, -0.55], 0.12, trM, tr); api.lineBetween([0, 2.5, -0.5], [0.75, 1.72, -0.55], 0.105, trM, tr);
     api.part(tr, INFO.trachea);
-    // cơ hoành vòm
-    const dia = api.mesh(new T.SphereGeometry(2.2, 40, 16, 0, Math.PI * 2, 0, Math.PI * 0.42), api.mat(MUS, { side: T.DoubleSide, opacity: 0.92 }), [0, -1.6, -0.7], g); dia.scale.set(1, 0.55, 0.85); api.tag(dia, 'rib'); api.part(dia, INFO.dia);
+    const brM = api.mat(0xF2F8FF, { roughness: 0.4, emissive: 0x9FD8FF, emissiveIntensity: 0.25 });
+    const branch = (parent, p, d, len, r, depth) => {
+      const e = p.clone().add(d.clone().multiplyScalar(len)); api.lineBetween(p, e, r, brM, parent);
+      if (!depth) return;
+      [-1, 1].forEach(s => { const nd = d.clone().applyAxisAngle(V(0, 0, 1), s * (0.42 + rnd() * 0.22)).applyAxisAngle(V(0, 1, 0), (rnd() - 0.5) * 1.1).normalize(); branch(parent, e, nd, len * 0.72, r * 0.7, depth - 1); });
+    };
+    [[0.25, -0.32], [-0.25, 0.32]].forEach(([hx, dx], i) => {
+      const tg = api.group(g, C[i]); api.tag(tg, 'tree'); treeG.push(tg);
+      branch(tg, V(hx, 1.05, 0.05), V(dx, -1, 0).normalize(), 0.62, 0.095, 4);
+      api.part(tg, INFO.bronchi);
+    });
+    // cơ hoành hình vòm: đỉnh vòm là điểm neo nhãn, hạ xuống khi hít vào
+    const dia = api.mesh(new T.SphereGeometry(2.2, 40, 16, 0, Math.PI * 2, 0, Math.PI * 0.42), api.mat(MUS, { side: T.DoubleSide, opacity: 0.92 }), [0, -1.95, -0.7], g); dia.scale.set(1, 0.5, 0.85); api.tag(dia, 'rib'); api.part(dia, INFO.dia);
+    const apex = new T.Object3D(); apex.position.set(0, 2.2, 0); dia.add(apex);
     // hạt khí
     const air = []; for (let k = 0; k < 14; k++) { const m = api.sphere(0.07, api.mat(0x5BD1FF, { emissive: 0x5BD1FF, emissiveIntensity: 0.6 }), null, g, 8); m.userData.noPick = true; air.push(m); }
-    api.label('Phổi', L[1], { off: [1.2, 0.6, 0] }); api.label('Cơ hoành', dia, { off: [1.9, -0.2, 0.6] }); api.label('Xương sườn', [-2.4, 1.8, -0.8], { cls: 'plain', parent: g }); api.label('Khí quản', [0, 4.4, -0.5], { cls: 'tag', color: '#5BD1FF', parent: g });
+    api.label('Phổi phải (3 thùy)', R, { off: [-1.5, 1.2, 0] }); api.label('Phổi trái (2 thùy)', Lf, { off: [1.5, 1.2, 0] });
+    api.label('Cơ hoành (vòm)', apex, { off: [2.5, -0.5, 0.9] }); api.label('Tim', heart, { off: [1.6, -1.0, 0.4], cls: 'plain' });
+    api.label('Xương sườn', [-2.4, 2.1, -0.8], { cls: 'plain', parent: g }); api.label('Khí quản', [0, 4.4, -0.5], { cls: 'tag', color: '#5BD1FF', parent: g }); api.label('Cây phế quản', treeG[0], { off: [-1.2, -1.3, 0.3], cls: 'plain' });
     return {
       g, update(b) {
         const a = Math.max(-2.5, Math.min(6, b.a)), k = a * 0.06;
-        L.forEach(m => { m.scale.set(m.userData.base.x * (1 + k), m.userData.base.y * (1 + k * 0.8), m.userData.base.z * (1 + k)); m.material.color.copy(lungCol(T)); });
-        dia.scale.y = Math.max(0.12, 0.55 - a * 0.07); dia.position.y = -1.6 - a * 0.08;
+        const col = lungCol(T);
+        lungG.concat(treeG).forEach(m => m.scale.set(1 + k, 1 + k * 0.8, 1 + k));
+        lobes.forEach(m => m.material.color.copy(col).lerp(new T.Color(0xFFFFFF), m.userData.tint));
+        dia.scale.y = Math.max(0.12, 0.5 - a * 0.07); dia.position.y = -1.95 - a * 0.08;
         ribList.forEach((r, i) => r.rotation.x = -a * 0.025 * (1 - i * 0.04));
-        sternum.position.z = 0.05 + a * 0.05; sternum.position.y = 1.2 + a * 0.03;
+        sternum.position.z = 0.12 + a * 0.05; sternum.position.y = 0.9 + a * 0.03;
         air.forEach((m, i) => { const p = ((b.u * 3 + i / 14) % 1); const y = b.inh ? 4.7 - p * 2.6 : 2.1 + p * 2.6; m.position.set(0.05 * Math.sin(i), y, -0.5); m.material.color.set(b.inh ? 0x5BD1FF : 0xB8C2CC); m.material.emissive.set(b.inh ? 0x5BD1FF : 0x6E7781); });
       },
-      opacity(o) { api.setOpacity(ribs, o); api.setOpacity(lungs, o); }
+      opacity(o) { api.setOpacity(ribs, o); lobes.forEach(m => m.material.opacity = 0.7 * o); }
     };
   }
   function buildBell(api, at) {
@@ -191,10 +242,19 @@
     for (let k = 0; k < 9; k++) api.mesh(new T.TorusGeometry(0.44, 0.05, 6, 24), 0xE8EEF3, [0.65, -0.4 - k * 0.42, 0], trG).rotation.x = Math.PI / 2;
     api.part(trG, INFO.trachea);
     const lar = api.mesh(new T.CylinderGeometry(0.5, 0.44, 0.7, 24, 1, true), soft(0x7FC4F0, 0.5), [0.65, 0.05, 0]); api.part(lar, INFO.larynx); api.tag(lar, 'tree');
+    // sụn giáp (tấm khiên phía trước), sụn nhẫn (vòng kín phía dưới), 2 dây thanh căng từ trước ra sau
+    const thy = api.mesh(new T.CylinderGeometry(0.56, 0.5, 0.62, 24, 1, true, Math.PI * 0.55, Math.PI * 0.9), api.mat(0xE8EEF3, { side: T.DoubleSide, roughness: 0.4 }), [0, 0, 0], lar); thy.rotation.y = -Math.PI / 2; api.part(thy, INFO.thyroid); api.tag(thy, 'tree');
+    const cri = api.mesh(new T.TorusGeometry(0.46, 0.08, 8, 28), api.mat(0xE8EEF3, { roughness: 0.4 }), [0.65, -0.42, 0]); cri.rotation.x = Math.PI / 2; api.part(cri, INFO.cricoid); api.tag(cri, 'tree');
+    const vc = api.group(null, [0.65, 0.05, 0]); api.tag(vc, 'tree');
+    const cords = [-1, 1].map(s => { const c = api.mesh(new T.CapsuleGeometry(0.04, 0.7, 4, 10), api.mat(0xFFF4F4, { emissive: 0xFF8899, emissiveIntensity: 0 }), [0, 0, s * 0.13], vc); c.rotation.z = Math.PI / 2; c.userData.side = s; return c; });
+    api.part(vc, INFO.vocal);
     const eso = api.mesh(new T.CylinderGeometry(0.36, 0.36, 4.4, 24, 1, true), soft(0xF2A65A, 0.4), [-0.55, -2.1, 0]); eso.scale.z = 0.7; api.part(eso, INFO.eso); api.tag(eso, 'epi');
     // nắp thanh quản: bản lề phía trước lối vào thanh quản
     const epi = api.group(null, [1.12, 0.35, 0]); api.tag(epi, 'epi');
-    const leaf = api.mesh(new T.SphereGeometry(0.5, 20, 14), api.mat(0xFFE08A, { emissive: 0xFFB000, emissiveIntensity: 0 }), [0, 0.45, 0], epi); leaf.scale.set(0.22, 1, 0.75);
+    const leafSh = new T.Shape(); leafSh.moveTo(0, 0); leafSh.bezierCurveTo(0.5, 0.2, 0.46, 0.78, 0, 1.0); leafSh.bezierCurveTo(-0.46, 0.78, -0.5, 0.2, 0, 0);
+    const leafGeo = new T.ExtrudeGeometry(leafSh, { depth: 0.09, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 2 }); leafGeo.translate(0, 0, -0.045);
+    const leaf = api.mesh(leafGeo, api.mat(0xFFE08A, { emissive: 0xFFB000, emissiveIntensity: 0, side: T.DoubleSide }), [0, 0, 0], epi); leaf.rotation.y = Math.PI / 2;
+    api.mesh(new T.CylinderGeometry(0.025, 0.025, 0.9, 6), 0xE0A100, [0.03, 0.47, 0], epi).userData.noPick = true;
     api.part(epi, INFO.epi);
     // viên thức ăn + hạt khí
     const bolus = api.sphere(0.32, 0x9A6233, null, null, 20); bolus.userData.noPick = true; bolus.visible = false;
@@ -206,6 +266,7 @@
     const airIn = P([[3.4, 3.5], [1.4, 3.6], [0.1, 3.3], [-0.3, 2.2], [0.3, 0.9], [0.65, 0.0], [0.65, -4]]);
     const airTalk = P([[0.65, -4], [0.65, 0.0], [0.3, 0.9], [0.4, 1.8], [1.6, 2.1], [3.6, 2.1]]);
     api.label('Nắp thanh quản', epi, { off: [1.4, 0.8, 0], cls: 'tag', color: '#E0A100' }); api.label('Khí quản', [0.65, -3, 0], { off: [1.3, 0, 0] }); api.label('Thực quản', [-0.55, -3, 0], { off: [-1.4, 0, 0] });
+    api.label('Sụn giáp', thy, { cls: 'plain', off: [1.6, 0.25, 0] }); api.label('Sụn nhẫn', cri, { cls: 'plain', off: [1.6, -0.3, 0] }); api.label('Dây thanh', vc, { cls: 'tag', color: '#FF8899', off: [-1.7, -0.5, 0] });
     api.label('Khoang mũi', nose, { cls: 'plain', off: [0, 0.6, 0] }); api.label('Khoang miệng', [2.2, 2.3, 0], { cls: 'plain' }); api.label('Họng', phar, { cls: 'plain', off: [-1.0, 0.6, 0] }); api.label('Thanh quản', lar, { cls: 'plain', off: [1.4, -0.2, 0] });
     let food = null, ang = 0.15, coughT = -99;
     const feed = () => { if (food) return; food = { t0: api.time, choke: false }; bolus.visible = true; api.beep(330, 0.08, 'sine', 0.1); };
@@ -233,14 +294,16 @@
       } else palate.rotation.z = -0.2;
       ang += (target - ang) * Math.min(1, dt * 8); epi.rotation.z = ang;
       leaf.material.emissiveIntensity = ang > 0.8 ? 0.5 : 0;
-      lar.position.y = 0.05 + (ang - 0.15) * 0.15; epi.position.y = 0.35 + (ang - 0.15) * 0.15;
+      lar.position.y = 0.05 + (ang - 0.15) * 0.15; epi.position.y = 0.35 + (ang - 0.15) * 0.15; vc.position.y = lar.position.y; cri.position.y = -0.42 + (ang - 0.15) * 0.15;
+      const vib = airMode === 'talk' || airMode === 'cough';
+      cords.forEach(c => { c.position.z = c.userData.side * (vib ? 0.05 + 0.03 * Math.sin(now * 70 + c.userData.side) : 0.13); c.material.emissiveIntensity = vib ? 0.6 : 0; });
       air.forEach((m, i) => {
         m.visible = airMode !== 'stop';
         const sp = airMode === 'cough' ? 1.6 : 0.35, p = (now * sp + i / 16) % 1;
         const c = airMode === 'in' ? airIn : airMode === 'talk' ? airTalk : cough;
         m.position.copy(c.getPointAt(p)); m.material.color.set(airMode === 'cough' ? 0xFF6B6B : airMode === 'talk' ? 0xB8C2CC : 0x5BD1FF);
       });
-      api.caption(food && food.choke ? 'Thức ăn lọt vào khí quản → phản xạ ho sặc' : food ? 'Nuốt: lưỡi gà đậy khoang mũi, nắp thanh quản đậy khí quản, thức ăn vào thực quản' : talk ? 'Đang nói: khí từ phổi đi lên qua thanh quản, nắp thanh quản mở' : 'Hít thở: nắp thanh quản mở, khí thông xuống khí quản');
+      api.caption(food && food.choke ? 'Thức ăn lọt vào khí quản → phản xạ ho sặc' : food ? 'Nuốt: lưỡi gà đậy khoang mũi, nắp thanh quản đậy khí quản, thức ăn vào thực quản' : talk ? 'Đang nói: khí từ phổi đi lên làm 2 dây thanh khép lại và rung, nắp thanh quản mở' : 'Hít thở: nắp thanh quản mở, 2 dây thanh mở rộng, khí thông xuống khí quản');
     });
     api.choices({ label: '👅 Chế độ', items: [{ t: '🌬 Hít thở', v: 'breathe' }, { t: '🍙 Nuốt', v: 'swallow' }], value: epiMode, onPick(v) { epiMode = v; if (v === 'swallow') feed(); } });
     api.button('🍙 Cho một miếng ăn', () => feed());
