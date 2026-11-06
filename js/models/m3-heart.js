@@ -81,6 +81,10 @@
     // mạch máu lớn
     const vs = api.group(H); api.tag(vs, 'vessel');
     const ao = api.tube([[0.55, 0.45, 0], [0.5, 1.6, 0.1], [0.2, 3.0, 0], [-0.6, 3.3, -0.3], [-1.1, 2.6, -0.8], [-1.0, 0.5, -1.4]], 0.32, RED, vs); api.part(ao, INFO.aorta); s.ao = ao;
+    // cung động mạch chủ và 3 nhánh: thân cánh tay đầu, động mạch cảnh chung trái, động mạch dưới đòn trái
+    const arch = api.group(vs);
+    [[-0.05, 'Thân động mạch cánh tay đầu'], [-0.38, 'Động mạch cảnh chung trái'], [-0.7, 'Động mạch dưới đòn trái']].forEach(([x, n], k) => { const t = api.tube([[x, 3.2, -0.1 - k * 0.1], [x - 0.1, 4.0, -0.15 - k * 0.1], [x - 0.25 + (k === 2 ? -0.3 : 0), 4.6, -0.2 - k * 0.1]], 0.1 - k * 0.012, RED, arch); api.part(t, { name: n, sci: 'Nhánh của cung động mạch chủ', rows: [['Chở', 'Máu giàu O₂ lên đầu, cổ và hai tay'], ['Thứ tự từ phải sang trái', 'Thân động mạch cánh tay đầu → động mạch cảnh chung trái → động mạch dưới đòn trái']] }); });
+    s.arch = arch;
     const pa = api.tube([[-0.35, 0.65, 0], [-0.2, 1.9, 0.3], [0.7, 2.5, 0.2], [2.2, 2.6, 0], [3.2, 2.5, 0]], 0.27, BLUE, vs); api.part(pa, INFO.pa);
     const pa2 = api.tube([[0.4, 2.45, 0.25], [-1.0, 2.7, 0.3], [-2.8, 2.6, 0.2]], 0.22, BLUE, vs); api.part(pa2, INFO.pa);
     const svc = api.tube([[-1.6, 1.9, 0], [-1.7, 3.2, 0], [-1.7, 4.2, 0]], 0.3, BLUE, vs); const ivc = api.tube([[-1.7, 0.6, -0.3], [-1.9, -0.8, -0.8], [-2.0, -2.8, -0.8]], 0.32, BLUE, vs);
@@ -88,6 +92,18 @@
     const pvg = api.group(vs);
     [[2.4, 1.9, 0.2], [2.5, 1.2, 0.3], [2.4, 1.7, -0.6], [2.5, 1.0, -0.5]].forEach(p => pvg.add(api.tube([[1.9, p[1] * 0.85 + 0.2, p[2] * 0.4], [p[0], p[1], p[2]], [p[0] + 0.9, p[1], p[2]]], 0.15, RED, pvg)));
     api.part(pvg, INFO.pv);
+    // cơ nhú và dây chằng van (giữ lá van không lật ngược lên nhĩ khi thất co)
+    const papG = api.group(H); api.tag(papG, 'valve');
+    const papInfo = { name: 'Cơ nhú và dây chằng van', sci: 'Papillary muscles & chordae tendineae', rows: [['Cơ nhú', 'Khối cơ nhô lên từ thành tâm thất, co cùng lúc với thất'], ['Dây chằng', 'Sợi gân nối cơ nhú với mép lá van 2 lá và van 3 lá'], ['Vai trò', 'Giữ lá van đóng kín, không bị lật ngược lên tâm nhĩ khi tâm thất co bóp tạo áp lực lớn']] };
+    const chM = api.mat(0xF7F1E3, { roughness: 0.6 });
+    s.chords = [];
+    [[s.tri, -1.65, -1.9, -0.75, -1.95], [s.mit, 0.65, -2.2, 1.7, -2.3]].forEach(([valve, xa, ya, xb, yb]) => {
+      [[xa, ya, 0], [xb, yb, 1]].forEach(([x, y, li]) => {
+        const pap = api.mesh(new T.ConeGeometry(0.17, 0.6, 10), api.mat(MUSCLE, { roughness: 0.7 }), [x, y, 0.2], papG); pap.userData.myo = true;
+        for (let k = 0; k < 2; k++) { const c = api.cyl(0.015, 0.015, 1, chM, [0, 0, 0], papG); c.userData.noPick = true; s.chords.push({ c, top: V(x, y + 0.3, 0.2), leaf: valve.userData.l[li], k, li }); }
+      });
+    });
+    api.part(papG, papInfo);
     // mảng xơ vữa trong động mạch chủ
     const pl = api.mesh(new T.TorusGeometry(0.26, 0.01, 10, 30), api.mat(0xF2D675), [0.5, 1.75, 0.08], vs); pl.rotation.x = Math.PI / 2; pl.userData.noPick = true; s.plaque = pl;
     // hệ dẫn truyền
@@ -102,9 +118,12 @@
     // nhãn
     api.label('Tâm nhĩ phải', s.RA, { off: [-0.6, 1.0, 0] }); api.label('Tâm nhĩ trái', s.LA, { off: [0.6, 1.0, 0] });
     api.label('Tâm thất phải', s.RV, { off: [-0.8, -0.6, 0.5] }); api.label('Tâm thất trái', s.LV, { off: [0.9, -0.8, 0.5] });
-    api.label('Động mạch chủ', [0.2, 3.5, 0], { cls: 'tag', color: '#E8343A' }); api.label('Động mạch phổi', [2.6, 2.95, 0], { cls: 'tag', color: '#4D6FD6' });
-    api.label('Tĩnh mạch chủ trên', [-1.7, 4.45, 0], { cls: 'tag', color: '#4D6FD6' }); api.label('Tĩnh mạch chủ dưới', [-2.0, -3.05, -0.8], { cls: 'tag', color: '#4D6FD6' });
-    api.label('Tĩnh mạch phổi', [3.75, 1.45, 0], { cls: 'tag', color: '#E8343A' });
+    api.label('Cung động mạch chủ', [0.2, 3.5, 0], { cls: 'tag', color: '#E8343A', parent: H }); api.label('Động mạch phổi', [2.6, 2.95, 0], { cls: 'tag', color: '#4D6FD6', parent: H });
+    api.label('Tĩnh mạch chủ trên', [-1.7, 4.45, 0], { cls: 'tag', color: '#4D6FD6', parent: H }); api.label('Tĩnh mạch chủ dưới', [-2.0, -3.05, -0.8], { cls: 'tag', color: '#4D6FD6', parent: H });
+    api.label('Tĩnh mạch phổi', [3.75, 1.45, 0], { cls: 'tag', color: '#E8343A', parent: H }); api.label('3 nhánh cung động mạch chủ', [-0.4, 4.85, -0.2], { cls: 'plain', parent: H });
+    api.label('Cơ nhú, dây chằng', papG, { cls: 'plain', off: [1.4, -1.6, 0.3] }); api.label('Mỏm tim', [1.2, -3.2, 0], { cls: 'plain', parent: H });
+    // tim thật là khối nón lệch: mỏm tim hướng xuống dưới, sang trái (bên phải màn hình)
+    H.rotation.z = -0.28;
     // hạt máu
     const mkFlow = (pts, color, n) => {
       const curve = new T.CatmullRomCurve3(pts.map(p => V(...p)));
@@ -142,6 +161,12 @@
       const set = (v, open, gap) => { const a = open ? 1.2 : (gap || 0); v.userData.l[0].rotation.z += (-a - v.userData.l[0].rotation.z) * Math.min(1, dt * 18); v.userData.l[1].rotation.z += (a - v.userData.l[1].rotation.z) * Math.min(1, dt * 18); };
       set(s.tri, ph !== 1); set(s.mit, ph !== 1, regurg ? 0.45 : 0); set(s.pul, ph === 1); set(s.aov, ph === 1);
       s.jet.visible = regurg && ph === 1; if (s.jet.visible) s.jet.scale.set(1, 0.6 + 0.4 * Math.sin((t - 0.1) / 0.3 * Math.PI), 1);
+      // dây chằng nối cơ nhú với mép lá van (toạ độ trong nhóm tim)
+      s.chords.forEach(ch => {
+        const tip = new api.T.Vector3(ch.li ? -0.5 : 0.5, 0, (ch.k - 0.5) * 0.3); ch.leaf.localToWorld(tip); s.H.worldToLocal(tip);
+        const d = tip.clone().sub(ch.top), len = Math.max(0.05, d.length());
+        ch.c.position.copy(ch.top).add(d.multiplyScalar(0.5)); ch.c.scale.set(1, len, 1); ch.c.quaternion.setFromUnitVectors(new api.T.Vector3(0, 1, 0), d.normalize());
+      });
       // xung điện
       const e = (m, k) => { if (!m.material.userData.sv) m.material.emissiveIntensity = 0.15 + k; };
       e(s.SA, t < 0.06 ? 1.3 : 0); e(s.AV, t > 0.09 && t < 0.17 ? 1.3 : 0);
@@ -201,10 +226,14 @@
     const cap = api.group(); api.tag(cap, 'cap');
     const capNet = (c) => { const g = api.group(cap, c); for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2; api.tube([[Math.cos(a) * 0.3, Math.sin(a) * 0.3, 0.5], [Math.cos(a + 0.6) * 0.6, Math.sin(a + 0.6) * 0.6, 0.55], [Math.cos(a + 1.2) * 0.3, Math.sin(a + 1.2) * 0.3, 0.5]], 0.025, 0xC060A0, g, 12); } return g; };
     api.part(cap, INFO.cap);
-    // vòng nhỏ: thất phải → ĐM phổi → mao mạch phổi → TM phổi → nhĩ trái
-    const rSmall = [[-0.5, 0.6, 0.2], [-0.9, 1.8, 0.3], [-1.4, 2.9, 0.4], [-0.2, 3.6, 0.5], [1.4, 2.9, 0.4], [0.9, 1.8, 0.3], [0.5, 0.6, 0.2]];
-    const sa = api.tube(rSmall.slice(0, 4), 0.14, BLUE, small), sv = api.tube(rSmall.slice(3), 0.14, RED, small);
-    api.part(sa, INFO.pa); api.part(sv, INFO.pv);
+    // vòng nhỏ: thất phải → thân động mạch phổi → chia 2 nhánh sang phổi phải và phổi trái (song song) → mao mạch phổi → tĩnh mạch phổi của mỗi phổi → nhĩ trái
+    const trunk = [[-0.5, 0.6, 0.2], [-0.4, 1.3, 0.3], [-0.3, 1.9, 0.35]];
+    const toL = [[-0.3, 1.9, 0.35], [-0.9, 2.3, 0.4], [-1.5, 2.8, 0.45]], toR = [[-0.3, 1.9, 0.35], [0.5, 2.3, 0.4], [1.3, 2.8, 0.45]];
+    const backL = [[-1.3, 3.6, 0.45], [-0.3, 3.2, 0.4], [0.3, 2.0, 0.3], [0.5, 0.6, 0.2]], backR = [[1.5, 3.6, 0.45], [1.2, 2.6, 0.4], [0.7, 1.6, 0.3], [0.5, 0.6, 0.2]];
+    const rSmallL = trunk.concat(toL.slice(1), [[-1.4, 3.2, 0.5]], backL), rSmallR = trunk.concat(toR.slice(1), [[1.4, 3.2, 0.5]], backR);
+    api.part(api.tube(trunk, 0.16, BLUE, small), INFO.pa); api.part(api.tube(toL, 0.13, BLUE, small), INFO.pa); api.part(api.tube(toR, 0.13, BLUE, small), INFO.pa);
+    api.part(api.tube(backL, 0.12, RED, small), INFO.pv); api.part(api.tube(backR, 0.12, RED, small), INFO.pv);
+    api.label('Thân động mạch phổi chia 2', [-0.3, 1.9, 0.35], { cls: 'plain', off: [-1.9, 0.1, 0] });
     capNet([-1.4, 3.2, 0]); capNet([1.4, 3.2, 0]);
     // vòng lớn: thất trái → ĐM chủ → các cơ quan → TM chủ → nhĩ phải
     const routes = organs.map(([n, p]) => {
@@ -217,7 +246,7 @@
     // hạt máu
     const parts = [];
     const add = (pts, c1, c2, swap, grp) => { const curve = new T.CatmullRomCurve3(pts.map(p => V(...p))); for (let k = 0; k < 10; k++) { const m = api.sphere(0.09, c1, null, null, 8); m.userData.noPick = true; m.material.emissive = new T.Color(c1); m.material.emissiveIntensity = 0.4; parts.push({ m, curve, u: k / 10, c1, c2, swap, grp }); } };
-    add(rSmall, BLUE, RED, 0.5, 'small');
+    add(rSmallL, BLUE, RED, 0.5, 'small'); add(rSmallR, BLUE, RED, 0.5, 'small');
     routes.forEach(r => add(r.out.concat([[r.p[0], r.p[1], 0.5]], r.back), RED, BLUE, 0.5, 'big'));
     api.onFrame(dt => parts.forEach(p => {
       p.u = (p.u + dt * 0.12 * HR / 75) % 1; p.m.position.copy(p.curve.getPointAt(p.u));
@@ -227,7 +256,7 @@
     const applyPath = () => {
       api.setOpacity(small, path === 'big' ? 0.2 : 1); api.setOpacity(big, path === 'small' ? 0.2 : 1);
       api.caption(path === 'small' ? 'Vòng tuần hoàn nhỏ' : path === 'big' ? 'Vòng tuần hoàn lớn' : '2 vòng tuần hoàn');
-      note.set(path === 'small' ? '<b>Vòng nhỏ:</b> Tâm thất phải → Động mạch phổi (đỏ thẫm) → Mao mạch phổi (thải CO₂, nhận O₂) → Tĩnh mạch phổi (đỏ tươi) → Tâm nhĩ trái'
+      note.set(path === 'small' ? '<b>Vòng nhỏ:</b> Tâm thất phải → Thân động mạch phổi (đỏ thẫm) chia 2 nhánh sang phổi phải và phổi trái → Mao mạch phổi (thải CO₂, nhận O₂) → Tĩnh mạch phổi của mỗi phổi (đỏ tươi) → Tâm nhĩ trái. Máu không đi từ phổi này sang phổi kia.'
         : path === 'big' ? '<b>Vòng lớn:</b> Tâm thất trái → Động mạch chủ (đỏ tươi) → Mao mạch các cơ quan (nhường O₂, nhận CO₂) → Tĩnh mạch chủ trên, dưới (đỏ thẫm) → Tâm nhĩ phải'
           : 'Màu đỏ: máu giàu O₂. Màu xanh: máu giàu CO₂ (đỏ thẫm). Chọn một vòng để làm sáng đường đi.');
     };
