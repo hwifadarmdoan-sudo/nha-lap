@@ -153,12 +153,16 @@ NL.learn = (function () {
   // Một câu hỏi trắc nghiệm hiện đè lên bàn thí nghiệm.
   // opt: { q, options: [{ t, ok, why }], predict, explain, kicker } ; cb({ chosen, firstTry })
   function ask(opt, cb) {
-    const box = document.createElement('div'); box.className = 'quiz' + (opt.dock ? ' dock' : '');
+    const low = !opt.dock && /đồ thị|biểu đồ|hình|đường cong|trục|màn hình|vân/i.test(opt.q || '');
+    const box = document.createElement('div'); box.className = 'quiz' + (opt.dock ? ' dock' : '') + (low ? ' low' : '');
     const kick = opt.kicker || (opt.predict ? '🤔 Em đoán xem' : '❓ Câu hỏi');
-    box.innerHTML = `<div class="quiz-card"><div class="quiz-kick">${kick}</div><div class="quiz-q">${decorate(opt.q)}</div>
+    box.innerHTML = `<div class="quiz-card"><div class="quiz-head"><div class="quiz-kick">${kick}</div><button class="quiz-hide pop" type="button">👁 Ẩn câu hỏi</button></div><div class="quiz-q">${decorate(opt.q)}</div>
       <div class="quiz-opts">${opt.options.map((o, i) => `<button class="quiz-opt pop" data-i="${i}">${esc(o.t)}</button>`).join('')}</div>
       <div class="quiz-fb hidden"></div><button class="btn pop quiz-next hidden">Tiếp ➜</button></div>`;
     (opt.parent || $('lab')).appendChild(box); bindTerms(box);
+    // Ẩn câu hỏi để xem biểu đồ, hình ảnh phía sau; khung thu thành thanh nhỏ ở cạnh dưới
+    const hideBtn = box.querySelector('.quiz-hide');
+    hideBtn.addEventListener('click', () => { NL.audio.play('click'); const on = box.classList.toggle('min'); hideBtn.textContent = on ? '📝 Hiện câu hỏi' : '👁 Ẩn câu hỏi'; });
     let wrongOnce = false, firstChoice = null;
     const fb = box.querySelector('.quiz-fb'), next = box.querySelector('.quiz-next');
     box.querySelectorAll('.quiz-opt').forEach(b => b.addEventListener('click', e => {

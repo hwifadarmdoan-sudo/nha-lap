@@ -9,6 +9,8 @@ window.NL = window.NL || {};
     2: { name: 'Vật lí', color: '#3D8BD9', icon: '🧲', ready: true }
   };
   // Tầng 4 Sinh: 10 phòng theo thứ tự trong bản đặc tả "Môn Sinh" (29/10). Mã phòng 2A, 2B giữ như cũ để không mất kết quả đã lưu.
+  // Mã phòng hiện cho học sinh: S1–S10 (Sinh, id nội bộ 2A–2J giữ để không mất kết quả đã lưu), H1–H10, L1–L10
+  NL.roomCode = e => e.floor === 4 ? 'S' + e.no : e.id;
   NL.EXPERIMENTS = [
     { id: '2A', floor: 4, hook: 'Mỗi hơi em thở có O₂ do cây xanh nhả ra khi quang hợp.', grade: 'Sinh 11 · Quang hợp ở thực vật', no: 1, short: 'Quang hợp', name: 'Đếm bọt khí rong', icon: '🌿', ready: true },
     { id: '2C', floor: 4, hook: 'Nhai cơm thật lâu thấy ngọt dần: enzyme trong nước bọt đang làm việc đấy.', grade: 'Sinh 10 · Enzyme, chuyển hoá ở tế bào', no: 2, short: 'Enzyme', name: 'Nhiệt độ và enzyme amylase', icon: '🧪', ready: true },
@@ -373,7 +375,7 @@ window.NL = window.NL || {};
     [1.6, 11, 17.2, 26.4].forEach(x => s.objects.push({ kind: 'plant', x, y: 6.3, w: 0.8, d: 0.8, solid: true }));
     exps.forEach((e, k) => {
       const a = doorX(k), b = a + 1.7, m = (a + b) / 2;
-      s.deco.push({ kind: 'door', side: 'N', a, b, label: e.no + ' · ' + e.short, color: sub.color, locked: !e.ready, sub: e.ready ? null : 'Sắp có', high: k % 2 === 1 });
+      s.deco.push({ kind: 'door', side: 'N', a, b, label: NL.roomCode(e) + ' · ' + e.short, color: sub.color, locked: !e.ready, sub: e.ready ? null : 'Sắp có', high: k % 2 === 1 });
       s.triggers.push({ x1: a - 0.15, y1: 0, x2: b + 0.15, y2: 0.9, type: e.ready ? 'goto' : 'locked', to: 'lab-' + e.id, spawn: 'default' });
       s.spawns['fromLab' + e.id] = { x: m, y: 1.5 };
       s.doors[e.id] = { x: m, y: 0.7 };

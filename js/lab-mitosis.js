@@ -179,7 +179,7 @@
       onNext(api) { st.onFocus = null; api.goto(3); }
     },
     {
-      label: () => `Nhận diện · ${st.found.size}/4 kì phân chia`, text: 'Chạm vào một tế bào để đoán nó đang ở kì nào', hint: 'Kéo vi trường để tìm các tế bào có NST màu tím đậm. Cần tìm đủ 4 kì: đầu, giữa, sau, cuối',
+      label: () => `Nhận diện · ${Math.min(st.found.size, 4)}/4 kì phân chia`, text: 'Chạm vào một tế bào để đoán nó đang ở kì nào', hint: 'Kéo vi trường để tìm các tế bào có NST màu tím đậm. Cần tìm đủ 4 kì: đầu, giữa, sau, cuối',
       enter(api) {
         idTable(api);
         st.onPick = c => {
@@ -196,7 +196,7 @@
             if (c.p) st.found.add(c.p);
             st.selRing.setAttribute('opacity', 0); idTable(api);
             if (st.found.size >= 4 || st.ids.length >= 12) { api.say(st.found.size >= 4 ? 'Em đã tìm đủ 4 kì phân chia!' : 'Em đã nhận diện 12 tế bào, đủ rồi!'); api.done('Đếm vi trường ➜'); }
-            else { document.getElementById('stepNo').textContent = `Nhận diện · ${st.found.size}/4 kì phân chia`; api.say(c.p ? 'Tìm tiếp tế bào ở kì khác' : 'Đây là tế bào chưa phân chia. Tìm tế bào có NST tím đậm nhé'); st.onPick = pickFn; }
+            else { document.getElementById('stepNo').textContent = `Nhận diện · ${Math.min(st.found.size, 4)}/4 kì phân chia`; api.say(c.p ? 'Tìm tiếp tế bào ở kì khác' : 'Đây là tế bào chưa phân chia. Tìm tế bào có NST tím đậm nhé'); st.onPick = pickFn; }
           });
         };
         const pickFn = st.onPick;

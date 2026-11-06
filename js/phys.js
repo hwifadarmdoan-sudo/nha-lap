@@ -83,5 +83,7 @@ NL.phys = (function () {
   // khớp đường thẳng qua gốc y = kx (bình phương tối thiểu)
   function fitK(pts) { let a = 0, b = 0; pts.forEach(([x, y]) => { a += x * y; b += x * x; }); return b ? a / b : 0; }
 
-  return { gauss, measure, vn, meter, flow, spark, smoke, alarm, recButton, fitK };
+  // Nhãn đếm số lần đo: không vượt tổng, quá yêu cầu thì ghi "6 điểm (đủ 5)"
+  function cnt(n, need, unit) { return n > need ? `${n} ${unit} (đủ ${need})` : `${n}/${need} ${unit}`; }
+  return { gauss, measure, vn, meter, flow, spark, smoke, alarm, recButton, fitK, cnt };
 })();

@@ -140,13 +140,13 @@
       }
     },
     {
-      label: () => `T theo l · ${st.rows.filter(r => r.N === 10).length}/4 lần`, text: 'Đổi chiều dài dây rồi đo chu kì. Đo 4 chiều dài khác nhau', hint: 'Kéo thanh l, bấm ⏱ Đo chu kì và chờ đếm xong',
+      label: () => `T theo l · ${P.cnt(st.rows.filter(r => r.N === 10).length, 4, 'lần')}`, text: 'Đổi chiều dài dây rồi đo chu kì. Đo 4 chiều dài khác nhau', hint: 'Kéo thanh l, bấm ⏱ Đo chu kì và chờ đếm xong',
       enter(api) {
         sideTable(api); controls(api, { method: true });
         measBtn(api, row => {
           if (st.rows.some(r => r.N === 10 && Math.abs(r.l - row.l) < 0.05 && r.m === row.m)) { NL.game.toast('Chiều dài này đo rồi, chọn l khác xa hơn'); return; }
           st.rows.push(row); sideTable(api); NL.audio.play('ting');
-          const n = st.rows.filter(r => r.N === 10).length; $('stepNo').textContent = `T theo l · ${n}/4 lần`;
+          const n = st.rows.filter(r => r.N === 10).length; $('stepNo').textContent = `T theo l · ${P.cnt(n, 4, 'lần')}`;
           if (n >= 4) api.done('Thử đổi quả nặng ➜');
         });
       }

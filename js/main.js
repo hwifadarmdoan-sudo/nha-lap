@@ -187,7 +187,7 @@
   // Lối tắt vào thẳng thí nghiệm: ?tn=2A, ?tn=2B… hoặc số phòng ?tn=1 … ?tn=10
   const TN = (() => {
     const q = (params.get('tn') || '').toLowerCase(); if (!q) return null;
-    const alias = { bubbles: '2A', bot: '2A', plasmo: '2B', co: '2B', enzyme: '2C', mendel: '2D', dna: '2E', gel: '2E', hohap: '2F', tim: '2G', naymam: '2H', nguyenphan: '2I', quanthe: '2J', kimloai: 'H1', chuando: 'H2', dienli: 'H3', khi: 'H4', traodoi: 'H5', ester: 'H6', anmon: 'H7', dotchay: 'H8', thamtu: 'H9', dinhsat: 'H10', ohm: 'L1', song: 'L2', khucxa: 'L3', conlac: 'L4', rlc: 'L5', faraday: 'L6', young: 'L7', coanang: 'L8', dientro: 'L9', quangdien: 'L10' };
+    const alias = { bubbles: '2A', bot: '2A', plasmo: '2B', co: '2B', enzyme: '2C', mendel: '2D', dna: '2E', gel: '2E', hohap: '2F', tim: '2G', naymam: '2H', nguyenphan: '2I', quanthe: '2J', kimloai: 'H1', chuando: 'H2', dienli: 'H3', khi: 'H4', traodoi: 'H5', ester: 'H6', anmon: 'H7', dotchay: 'H8', thamtu: 'H9', dinhsat: 'H10', ohm: 'L1', song: 'L2', khucxa: 'L3', conlac: 'L4', rlc: 'L5', faraday: 'L6', young: 'L7', coanang: 'L8', conang: 'L8', dientro: 'L9', quangdien: 'L10' };
     const e = findRoom(alias[q] || q);
     return e ? e.id : null;
   })();
@@ -261,7 +261,7 @@
       const e = left[0], d = s.doors[e.id];
       return { x: d.x, y: d.y, text: `Vào phòng ${e.no} · ${e.short}` };
     }
-    if (s.floor > 1 && s.floor < 4 && !s.doors && !/^models/.test(g.scene)) return { x: 8, y: 0.7, text: 'Tầng này sắp có. Quay lại thang máy nhé' };
+    if (s.floor > 1 && s.floor < 4 && !s.doors && !/^models/.test(g.scene)) return { x: 8, y: 0.7, text: 'Tầng này chưa có phòng. Quay lại thang máy nhé' };
     return null;
   }
   function showGuide() {
@@ -404,7 +404,16 @@
   // Đi nhanh: chọn phòng hoặc nhập mã phòng thầy cô gửi (số phòng 1–10 hoặc 2A…), vào thẳng bàn thí nghiệm
   function findRoom(q) {
     q = String(q || '').trim().toLowerCase().replace(/^phòng\s*/, '').replace(/\s+/g, '');
-    return NL.EXPERIMENTS.find(x => x.ready && (x.id.toLowerCase() === q || (x.floor === 4 && String(x.no) === q)));
+    return NL.EXPERIMENTS.find(x => x.ready && (x.id.toLowerCase() === q || NL.roomCode(x).toLowerCase() === q || (x.floor === 4 && String(x.no) === q)));
+  }
+  function findModel(q) {
+    q = String(q || '').trim().toLowerCase().replace(/^mô hình\s*/, '').replace(/\s+/g, '');
+    return (NL.MODELS || []).find(m => m.id.toLowerCase() === q);
+  }
+  function jumpModel(m) {
+    $('jump').classList.add('hidden'); NL.audio.play('pop');
+    g.tut.elevator = 1; goScene(m.floor === 4 ? 'models' : 'models' + m.floor, 'default');
+    NL.lab.close(); NL.m3d && NL.m3d.open(m.id);
   }
   function jumpTo(e) {
     $('jump').classList.add('hidden'); NL.audio.play('pop');
@@ -422,16 +431,25 @@
       const h = document.createElement('div'); h.className = 'jump-floor'; h.textContent = `${NL.SUBJECTS[f].icon} Tầng ${f} · ${NL.SUBJECTS[f].name}`; grid.appendChild(h);
       list.forEach(e => {
         const b = document.createElement('button'); b.className = 'jump-room pop' + (g.results[e.id] ? ' done' : '');
-        b.innerHTML = `<b>${e.icon} ${f === 4 ? e.no : e.id} · ${e.short}${g.results[e.id] ? ' ✓' : ''}</b><span>${e.grade || ''}</span>`;
+        b.innerHTML = `<b>${e.icon} ${NL.roomCode(e)} · ${e.short}${g.results[e.id] ? ' ✓' : ''}</b><span>${e.grade || ''}</span>`;
         b.onclick = () => jumpTo(e); grid.appendChild(b);
       });
+      // Phòng mô hình 3D của tầng: M1–M10, HM1–HM10, LM1–LM10, bấm là mở thẳng mô hình
+      const ms = (NL.MODELS || []).filter(m => m.floor === f); if (!ms.length || !NL.m3d) return;
+      const hm = document.createElement('div'); hm.className = 'jump-floor sub'; hm.textContent = `🧊 Mô hình 3D · ${NL.SUBJECTS[f].name}`; grid.appendChild(hm);
+      ms.forEach(m => {
+        const sc = (g.models || {})[m.id];
+        const b = document.createElement('button'); b.className = 'jump-room model pop' + (sc ? ' done' : '');
+        b.innerHTML = `<b>${m.icon} ${m.id} · ${m.short}${sc ? ' ✓' : ''}</b><span>${sc ? `ôn tập ${sc.score}/${sc.total}` : m.name}</span>`;
+        b.onclick = () => jumpModel(m); grid.appendChild(b);
+      });
     });
-    $('jumpNote').textContent = 'Thầy cô gửi link vào thẳng phòng: ' + location.origin + location.pathname + '?tn=<mã phòng, ví dụ 3, H3 hoặc L3>';
+    $('jumpNote').textContent = 'Thầy cô gửi link vào thẳng phòng: ' + location.origin + location.pathname + '?tn=<mã phòng, ví dụ S3, H3, L3 hoặc M3>';
     $('jumpIn').value = ''; $('jump').classList.remove('hidden');
   });
   $('jumpForm').addEventListener('submit', ev => {
-    ev.preventDefault(); const e = findRoom($('jumpIn').value);
-    if (e) jumpTo(e); else $('jumpNote').textContent = 'Không có phòng này. Phòng Sinh nhập số 1–10, phòng Hóa nhập H1–H10, phòng Lí nhập L1–L10 nhé';
+    ev.preventDefault(); const e = findRoom($('jumpIn').value), m = e ? null : findModel($('jumpIn').value);
+    if (e) jumpTo(e); else if (m) jumpModel(m); else $('jumpNote').textContent = 'Không có phòng này. Phòng Sinh nhập S1–S10, Hóa H1–H10, Lí L1–L10; mô hình nhập M1–M10, HM1–HM10, LM1–LM10 nhé';
   });
   $('jumpClose').addEventListener('click', () => { NL.audio.play('click'); $('jump').classList.add('hidden'); });
 
@@ -505,14 +523,12 @@
     const prev = g.results[id], sc = starsOf(result);
     result.stars = Math.max(sc.n, (prev && prev.stars) || 0);
     if (prev && prev.stars > sc.n) result.stars = prev.stars;
+    result.t = Date.now(); result.tries = ((prev && prev.tries) || 0) + 1;
     g.results[id] = result;
     g.order = g.order.filter(x => x !== id).concat(id);
     const wasLocked = !g.unlocked; g.unlocked = true; persist();
     NL.audio.play('success');
     confetti();
-    const starTxt = '⭐'.repeat(sc.n) + '☆'.repeat(3 - sc.n);
-    const head = sc.n === 3 ? 'Xuất sắc!' : 'Hoàn thành!';
-    const tips = (sc.learned.length ? '\n💥 Bài học thu được: ' + sc.learned.length : '') + (sc.miss.length ? '\n' + sc.miss.map(t => '• ' + t).join('\n') + '\nLàm lại để lấy đủ 3 sao nhé' : '');
     const fl = (NL.EXPERIMENTS.find(e => e.id === id) || {}).floor;
     const nextE = NL.EXPERIMENTS.find(e => e.floor === fl && e.ready && !g.results[e.id]);
     const celebrate = () => {
@@ -521,12 +537,42 @@
       if (wasLocked) setTimeout(() => { $('emoSpecial').classList.remove('locked'); NL.audio.play('unlock'); toast('Mở khóa điệu nhảy riêng 🕺'); }, 1200);
       setTimeout(() => { g.status = ''; }, 8000);
     };
-    bigMsg(starTxt, `${head}\n${result.title}${tips}`, () => {
+    resultScreen(id, result, sc, nextE, celebrate);
+  }
+  // Màn kết quả đứng yên sau câu hỏi cuối: bảng số liệu, biểu đồ, nút tải file. Chỉ rời phòng khi em bấm.
+  function resultScreen(id, r, sc, nextE, celebrate) {
+    const lab = $('lab'); lab.querySelectorAll('.lab-result').forEach(x => x.remove());
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+    const e = NL.EXPERIMENTS.find(x => x.id === id) || { id, floor: 0 };
+    const starTxt = '⭐'.repeat(sc.n) + '☆'.repeat(3 - sc.n);
+    const head = sc.n === 3 ? 'Xuất sắc!' : 'Hoàn thành!';
+    const tb = r.table ? `<table><tr>${r.table.head.map(h => `<th>${h}</th>`).join('')}</tr>${r.table.rows.map(row => `<tr>${row.map(v => `<td>${v}</td>`).join('')}</tr>`).join('')}</table>` : '';
+    const ch = r.chart && NL.chartSVG ? NL.chartSVG(r.chart, 420, 200) : '';
+    const q = r.quiz || [], qr = q.filter(x => x.ok).length;
+    const box = document.createElement('div'); box.className = 'quiz lab-result';
+    box.innerHTML = `<div class="quiz-card res-card">
+      <div class="quiz-kick">🏁 ${head} ${starTxt}</div>
+      <div class="quiz-q">${NL.roomCode(e)} · ${esc(r.title)}</div>
+      <div class="rep-sub">Thông số em chọn: ${esc(r.param)}${q.length ? ` · Câu hỏi: đúng ngay ${qr}/${q.length}` : ''}${sc.learned.length ? ` · 💥 Bài học: ${sc.learned.length}` : ''}</div>
+      ${sc.miss.length ? `<div class="quiz-fb warn">${sc.miss.map(t => '• ' + esc(t)).join('<br>')}<br>Làm lại để lấy đủ 3 sao nhé</div>` : ''}
+      <div class="rep-flex">${tb ? `<div>${tb}</div>` : ''}${ch ? `<div style="flex:1;min-width:240px">${ch}</div>` : ''}</div>
+      ${r.conclusion ? `<div class="res-concl">Kết luận: ${r.conclusion}</div>` : ''}
+      <div class="rep-dl"><button class="btn small pop" data-k="csv">📥 Tải file Excel</button><button class="btn small pop" data-k="jpg">🖼 Lưu ảnh biểu đồ</button></div>
+      <div class="res-btns"><button class="btn ghost pop" data-k="redo">🔁 Làm lại thí nghiệm</button>${nextE ? `<button class="btn ghost pop" data-k="next">Sang phòng ${NL.roomCode(nextE)} ➜</button>` : ''}<button class="btn big pop" data-k="leave">Rời phòng</button></div></div>`;
+    lab.appendChild(box);
+    box.addEventListener('click', ev => {
+      const k = ev.target.dataset && ev.target.dataset.k; if (!k) return;
+      NL.audio.play('click');
+      if (k === 'csv') { NL.exportData.csv(r); return; }
+      if (k === 'jpg') { NL.exportData.jpg(r); return; }
+      box.remove();
+      if (k === 'redo') { NL.lab.close(); NL.lab.open(id); return; }
       NL.lab.close(); celebrate();
-      if (nextE) { toast(`Phòng tiếp theo: ${nextE.no} · ${nextE.short}`, 1800); setTimeout(() => jumpTo(nextE), 1600); }
-      else setTimeout(() => toast(`Em đã làm hết các phòng ${NL.SUBJECTS[fl].name}! Ra ban công hóng gió nhé 🌿`, 3500), 2500);
-    }, nextE ? `Sang phòng ${nextE.no} ➜` : 'Nhảy ăn mừng 💃', ['🔁 Làm lại thí nghiệm', () => { NL.lab.close(); NL.lab.open(id); }],
-    nextE ? ['💃 Ăn mừng tại chỗ', () => { NL.lab.close(); celebrate(); setTimeout(() => toast('Mệt quá, ra ban công hóng gió nhé 🌿', 3500), 2500); }] : null);
+      if (k === 'next' && nextE) { setTimeout(() => jumpTo(nextE), 600); return; }
+      if (nextE) toast(`Phòng tiếp theo: ${NL.roomCode(nextE)} · ${nextE.short}. Em bấm 🧭 để đi nhanh nhé`, 3500);
+      else setTimeout(() => toast(`Em đã làm hết các phòng ${NL.SUBJECTS[fl0(e)].name}! Ra ban công hóng gió nhé 🌿`, 3500), 1500);
+    });
+    function fl0(e) { return e.floor || 4; }
   }
   function confetti() {
     const box = document.createElement('div'); box.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden';
@@ -664,7 +710,7 @@
   function onTrigger(tr) {
     if (tr.type === 'goto') { NL.audio.play('door'); goScene(tr.to, tr.spawn); }
     else if (tr.type === 'elevator') { enterElevator(); }
-    else if (tr.type === 'locked') { toast('Phòng này sắp có, quay lại sau nhé'); }
+    else if (tr.type === 'locked') { toast('Phòng này chưa mở, em thử phòng khác nhé'); }
     else if (tr.type === 'bench' && !g.teacher) { if (!g.pendingBench) benchPrompt(true, tr.exp); }
     else if (tr.type === 'model' && !g.teacher) { if (!g.pendingModel) modelPrompt(tr.model); else { g.pendingModel = null; openModel(tr.model); } }
     else if (tr.type === 'balcony') { if (!g.teacher) toast('🌤 Gió mát quá!', 1500); }
@@ -674,9 +720,10 @@
   // ---------- chị lễ tân ở sảnh ----------
   const NPC_LINES = [
     'Chào {n}! Đây là <b>tòa A1 · Nhà Láp</b>, nơi em làm thí nghiệm ảo 👋',
-    '<b>Tầng 4 · Khoa Sinh</b>: 10 phòng thí nghiệm ảo và <b>Phòng Mô hình 3D</b> với 10 mô hình xoay được.',
+    'Tòa nhà có ba tầng môn học: <b>Tầng 2 · Vật lí</b>, <b>Tầng 3 · Hóa học</b>, <b>Tầng 4 · Sinh học</b>.',
+    'Mỗi tầng có <b>10 phòng thí nghiệm</b> và <b>1 phòng mô hình 3D</b> với 10 mô hình xoay, chạm được.',
     'Làm xong mỗi bài, em trả lời vài câu hỏi nhỏ rồi xem <b>báo cáo</b>, tải bảng số liệu và ảnh biểu đồ.',
-    'Tầng 2 Lý và tầng 3 Hóa <b>sắp mở</b>. Giờ em vào thang máy, bấm <b>số 4</b> nhé!'
+    'Giờ em vào thang máy, bấm <b>số 2, 3 hoặc 4</b> để lên tầng mình thích nhé!'
   ];
   function npcTalk() {
     let box = $('npcTalk');

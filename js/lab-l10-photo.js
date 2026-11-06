@@ -96,7 +96,7 @@
       }
     },
     {
-      label: () => `Đường I–U · ${st.rows.length}/6 điểm`, text: 'Đèn lam 450 nm, cường độ 80%. Đổi U_AK rồi bấm Ghi. Ghi 6 điểm, có cả U_AK âm làm dòng về 0 và U_AK dương lớn', hint: 'U_AK âm thì điện trường đẩy electron quay về cathode',
+      label: () => `Đường I–U · ${P.cnt(st.rows.length, 6, 'điểm')}`, text: 'Đèn lam 450 nm, cường độ 80%. Đổi U_AK rồi bấm Ghi. Ghi 6 điểm, có cả U_AK âm làm dòng về 0 và U_AK dương lớn', hint: 'U_AK âm thì điện trường đẩy electron quay về cathode',
       enter(api) {
         st.lam = 450; st.pw = 0.8; st.U = 0;
         sideTable(api);
@@ -105,7 +105,7 @@
           const c = calc();
           if (st.rows.some(r => Math.abs(r.U - st.U) < 0.15)) { NL.game.toast('U_AK này gần lần trước, chọn giá trị khác'); return; }
           st.rows.push({ U: st.U, I: Math.max(0, P.measure(c.I, 0.015, 0.1)) }); sideTable(api); NL.audio.play('ting');
-          $('stepNo').textContent = `Đường I–U · ${st.rows.length}/6 điểm`;
+          $('stepNo').textContent = `Đường I–U · ${P.cnt(st.rows.length, 6, 'điểm')}`;
           if (st.rows.length >= 6) { const z = st.rows.some(r => r.U < 0 && r.I === 0), s = st.rows.some(r => r.U >= 2); if (z && s) api.done('Sang kim loại bí ẩn ➜'); else NL.game.toast(z ? 'Cần một điểm U_AK từ 2 V trở lên' : 'Cần một điểm U_AK âm mà dòng về đúng 0'); }
         });
       }

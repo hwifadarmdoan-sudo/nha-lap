@@ -102,9 +102,12 @@
         + `<div class="cond-row"><span>Giao phối</span>${seg('mating', [['random', 'Ngẫu phối'], ['inbred', 'Giao phối gần (cận huyết)']])}</div>`
         + (P.mating === 'inbred' ? rng('F', 'Mức giao phối gần mỗi thế hệ ΔF =', 0.05, 0.5, 0.05) : '')
         + `<div class="cond-row"><span>Giá trị thích nghi (chim ăn bướm)</span></div>` + rng('wAA', 'w(AA) đen =', 0, 1, 0.05) + rng('wAa', 'w(Aa) xám =', 0, 1, 0.05) + rng('waa', 'w(aa) trắng =', 0, 1, 0.05)
+        + `<div class="cond-row"><span>Số thế hệ</span>${seg('gens', [[10, '10'], [50, '50'], [100, '100'], [500, '500']])}</div>`
+        // Tuỳ chọn ít dùng gom vào "Nâng cao", thu gọn mặc định (góp ý 6/11)
+        + `<div class="fold ${st.advOpen ? '' : 'closed'}" data-fold="1"><div class="fold-h"><span>⚙️ Nâng cao: đột biến, di nhập gene</span></div>`
         + `<div class="cond-row"><span>Đột biến A→a (u) và a→A (v)</span>${seg('u', [[0, 'u = 0'], [0.0001, '10⁻⁴'], [0.001, '10⁻³']])}${seg('v', [[0, 'v = 0'], [0.0001, '10⁻⁴'], [0.001, '10⁻³']])}</div>`
-        + rng('m', 'Di nhập gene m =', 0, 0.5, 0.05) + (P.m > 0 ? rng('pm', 'Tần số A nơi đến p(m) =', 0, 1, 0.05) : '')
-        + `<div class="cond-row"><span>Số thế hệ</span>${seg('gens', [[10, '10'], [50, '50'], [100, '100'], [500, '500']])}</div>`;
+        + rng('m', 'Di nhập gene m =', 0, 0.5, 0.05) + (P.m > 0 ? rng('pm', 'Tần số A nơi đến p(m) =', 0, 1, 0.05) : '') + `</div>`;
+      const fh = card.querySelector('.fold-h'); fh.onclick = () => { NL.audio.play('click'); st.advOpen = !st.advOpen; fh.parentElement.classList.toggle('closed', !st.advOpen); };
       card.querySelectorAll('[data-k]').forEach(b => b.onclick = () => {
         NL.audio.play('click'); const k = b.dataset.k, v = b.dataset.v; P[k] = isNaN(+v) ? v : +v; draw();
         if (k === 'mating' && v === 'inbred') api.card({ kicker: '🔬 Giải thích khoa học', text: 'Bướm là động vật đơn tính nên không tự phối được, nhưng có thể giao phối gần (cận huyết). Hệ số nội phối F tích luỹ qua các thế hệ: AA = p² + Fpq, Aa = 2pq(1 − F), aa = q² + Fpq.', sub: 'Giao phối gần làm tăng tỉ lệ đồng hợp, giảm dị hợp, không làm đổi tần số allele. Quần thể lệch khỏi cân bằng Hardy–Weinberg (χ² vượt ngưỡng).' });

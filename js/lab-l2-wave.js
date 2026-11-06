@@ -123,7 +123,7 @@
       }
     },
     {
-      label: () => `Đếm vân · ${st.rows.length}/3 lần`, text: 'Đổi f hoặc a, đếm số dải sóng mạnh cắt qua đoạn S₁S₂ rồi bấm Ghi. Làm 3 lần', hint: 'Bật "Hiện đường cực đại" nếu khó đếm. Đếm cả dải chính giữa',
+      label: () => `Đếm vân · ${P.cnt(st.rows.length, 3, 'lần')}`, text: 'Đổi f hoặc a, đếm số dải sóng mạnh cắt qua đoạn S₁S₂ rồi bấm Ghi. Làm 3 lần', hint: 'Bật "Hiện đường cực đại" nếu khó đếm. Đếm cả dải chính giữa',
       enter(api) {
         st.mode = 'one'; sideTable(api); controls(api);
         P.recButton(api, '📌 Ghi và đếm vân', () => {
@@ -137,7 +137,7 @@
             explain: `Hai vân cực đại liền kề trên S₁S₂ cách nhau λ/2. Với a/λ = ${vn(r, 2)}, k nhận các giá trị từ −${Math.floor(r)} đến ${Math.floor(r)}, tức ${N} vân.`
           }, res => {
             st.rows.push({ f: st.f, l: lam(), a: st.a, n: N, r }); sideTable(api);
-            $('stepNo').textContent = `Đếm vân · ${st.rows.length}/3 lần`;
+            $('stepNo').textContent = `Đếm vân · ${P.cnt(st.rows.length, 3, 'lần')}`;
             if (st.rows.length >= 3) api.done('Thử đảo pha ➜');
           });
         });

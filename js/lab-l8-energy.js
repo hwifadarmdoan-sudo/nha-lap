@@ -115,7 +115,7 @@
       }
     },
     {
-      label: () => `Ghi năng lượng · ${st.rows.length}/5 lần`, text: 'Ván đang trượt qua lại. Bấm Ghi ở 5 độ cao khác nhau, có cả gần đáy và gần đỉnh', hint: 'Bấm lúc ván ở các độ cao khác nhau',
+      label: () => `Ghi năng lượng · ${P.cnt(st.rows.length, 5, 'lần')}`, text: 'Ván đang trượt qua lại. Bấm Ghi ở 5 độ cao khác nhau, có cả gần đáy và gần đỉnh', hint: 'Bấm lúc ván ở các độ cao khác nhau',
       enter(api) {
         sideTable(api);
         if (!st.run) release(api);
@@ -124,7 +124,7 @@
           if (st.rows.some(r => Math.abs(r.h - e.h) < 0.4)) { NL.game.toast('Độ cao này gần lần trước, chờ ván tới chỗ khác'); return; }
           const K = Math.round(P.measure(e.K, 0.01, 1)), U = Math.round(P.measure(e.U, 0.01, 1));
           st.rows.push({ h: e.h, v: e.v, K, U, W: K + U }); sideTable(api); NL.audio.play('ting');
-          $('stepNo').textContent = `Ghi năng lượng · ${st.rows.length}/5 lần`;
+          $('stepNo').textContent = `Ghi năng lượng · ${P.cnt(st.rows.length, 5, 'lần')}`;
           if (st.rows.length >= 5) { const hs = st.rows.map(r => r.h); if (Math.min(...hs) < 1.2 && Math.max(...hs) > 2.5) api.done('Sang nhiệm vụ cắm cờ ➜'); else NL.game.toast('Cần thêm một lần ' + (Math.min(...hs) >= 1.2 ? 'gần đáy (dưới 1,2 m)' : 'gần đỉnh (trên 2,5 m)')); }
         });
       }

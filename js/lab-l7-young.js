@@ -132,13 +132,13 @@
       }
     },
     {
-      label: () => `Đo khoảng vân · ${st.rows.length}/4 lần`, text: 'Chọn màu, a và D. Chạm hai vân sáng cách xa nhau trên màn phóng to để đo khoảng vân i. Đo 4 lần với cách đặt khác nhau', hint: 'Chọn hai vân cách nhau nhiều khoảng vân thì đo chính xác hơn',
+      label: () => `Đo khoảng vân · ${P.cnt(st.rows.length, 4, 'lần')}`, text: 'Chọn màu, a và D. Chạm hai vân sáng cách xa nhau trên màn phóng to để đo khoảng vân i. Đo 4 lần với cách đặt khác nhau', hint: 'Chọn hai vân cách nhau nhiều khoảng vân thì đo chính xác hơn',
       enter(api) {
         sideTable(api); controls(api); st.meas = true;
         st.onMeasure = r => {
           if (st.rows.some(q => q.lam === r.lam && q.a === r.a && q.D === r.D)) { NL.game.toast('Cách đặt này đã đo rồi, đổi màu, a hoặc D'); return; }
           st.rows.push(r); sideTable(api); NL.audio.play('ting');
-          $('stepNo').textContent = `Đo khoảng vân · ${st.rows.length}/4 lần`;
+          $('stepNo').textContent = `Đo khoảng vân · ${P.cnt(st.rows.length, 4, 'lần')}`;
           if (st.rows.length >= 4) api.done('Thử che một khe ➜');
         };
       }

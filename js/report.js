@@ -187,11 +187,24 @@ NL.report = (function () {
     box.innerHTML = '';
     const p0 = document.createElement('div'); p0.className = 'rep-page';
     const ready = NL.EXPERIMENTS.filter(e => e.ready), done = ready.filter(e => g.results[e.id]).length;
-    p0.innerHTML = `<div class="rep-head"><div id="repAv"></div><div><h3>Báo cáo của ${esc(g.name)}</h3><div class="rep-sub">Nhà Láp · Đã hoàn thành ${done}/${ready.length} thí nghiệm</div><div class="rep-sub">${new Date().toLocaleDateString('vi-VN')}</div></div></div>
-      <ul class="rep-list">${ready.map(e => {
-        const r = g.results[e.id], ord = g.order.indexOf(e.id);
-        return `<li class="rep-go" data-go="${e.id}"><span class="st ${r ? 'ok' : ''}">${r ? '✓' : ''}</span>Phòng ${e.no} · ${e.name}${r && r.stars ? ' ' + '⭐'.repeat(r.stars) : ''}${r ? ` <span class="rep-sub">(lần ${ord + 1})</span>` : ''} <span class="rep-arrow">${r ? 'Làm lại' : 'Đến phòng'} ➜</span></li>`;
-      }).join('')}<li class="rep-sub">Tầng 2 Lý, tầng 3 Hóa: sắp có</li></ul>`;
+    const when = r => r.t ? new Date(r.t).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+    // Nhóm theo tầng: Tầng 2 Vật lí (L1–L10), Tầng 3 Hóa học (H1–H10), Tầng 4 Sinh học (2A–2J); mỗi dòng ghi mã và tên phòng.
+    const floors = [2, 3, 4].filter(f => NL.SUBJECTS[f] && ready.some(e => e.floor === f));
+    const expHtml = floors.map(f => {
+      const sub = NL.SUBJECTS[f], list = ready.filter(e => e.floor === f), n = list.filter(e => g.results[e.id]).length;
+      return `<li class="rep-floor">${sub.icon} Tầng ${f} · ${sub.name} <span class="rep-sub">(${n}/${list.length})</span></li>` + list.map(e => {
+        const r = g.results[e.id];
+        return `<li class="rep-go" data-go="${e.id}"><span class="st ${r ? 'ok' : ''}">${r ? '✓' : ''}</span><div class="rep-txt"><b>${NL.roomCode(e)}</b> · ${e.name}${r && r.stars ? ' ' + '⭐'.repeat(r.stars) : ''}${r ? `<div class="rep-sub">${r.tries > 1 ? `làm ${r.tries} lần · ` : ''}${when(r)}</div>` : ''}</div><span class="rep-arrow">${r ? 'Làm lại' : 'Đến phòng'} ➜</span></li>`;
+      }).join('');
+    }).join('');
+    // Mô hình 3D: điểm 10 câu ôn tập (đúng ngay lần đầu) của từng mô hình, lưu ở g.models
+    const ms = g.models || {}, mList = (NL.MODELS || []).filter(m => ms[m.id]);
+    const modelHtml = `<li class="rep-floor">🧊 Mô hình 3D <span class="rep-sub">(đã ôn ${mList.length}/${(NL.MODELS || []).length})</span></li>` + (mList.length ? [2, 3, 4].map(f => mList.filter(m => m.floor === f).map(m => {
+      const sc = ms[m.id];
+      return `<li class="rep-go" data-model="${m.id}"><span class="st ok">✓</span><div class="rep-txt"><b>${m.id}</b> · ${m.name}<div class="rep-sub">đúng ngay ${sc.score}/${sc.total} câu${sc.t ? ' · ' + when(sc) : ''}</div></div><span class="rep-arrow">Ôn lại ➜</span></li>`;
+    }).join('')).join('') : '<li class="rep-sub">Chưa ôn tập mô hình nào. Vào phòng mô hình, bấm "Ôn tập mô hình (10 câu)" nhé</li>');
+    p0.innerHTML = `<div class="rep-head"><div id="repAv"></div><div><h3>Báo cáo của ${esc(g.name)}</h3><div class="rep-sub">Nhà Láp · Đã hoàn thành ${done}/${ready.length} thí nghiệm · ${mList.length}/${(NL.MODELS || []).length} mô hình</div><div class="rep-sub">${new Date().toLocaleDateString('vi-VN')}</div></div></div>
+      <ul class="rep-list">${expHtml}${modelHtml}</ul>`;
     box.appendChild(p0);
     p0.querySelector('#repAv').appendChild(avatar(g.look));
     p0.querySelectorAll('[data-go]').forEach(li => li.onclick = () => {
@@ -199,11 +212,15 @@ NL.report = (function () {
       NL.audio.play('click'); $('report').classList.add('hidden'); NL.lab.close();
       NL.helpers.jumpTo(NL.EXPERIMENTS.find(e => e.id === li.dataset.go));
     });
+    p0.querySelectorAll('[data-model]').forEach(li => li.onclick = () => {
+      if (g.teacher || !NL.m3d) return;
+      NL.audio.play('click'); $('report').classList.add('hidden'); NL.lab.close(); NL.m3d.open(li.dataset.model);
+    });
     g.order.forEach(id => {
       const r = g.results[id]; if (!r) return;
       const p = document.createElement('div'); p.className = 'rep-page';
       const tb = `<table><tr>${r.table.head.map(h => `<th>${h}</th>`).join('')}</tr>${r.table.rows.map(row => `<tr>${row.map(v => `<td>${v}</td>`).join('')}</tr>`).join('')}</table>`;
-      p.innerHTML = `<h3>✓ ${r.title}</h3><div class="rep-sub">Thông số em chọn: ${r.param} · ${esc(g.name)}</div>
+      p.innerHTML = `<h3>✓ ${NL.roomCode(NL.EXPERIMENTS.find(e => e.id === id) || { id, floor: 0 })} · ${r.title}</h3><div class="rep-sub">Thông số em chọn: ${r.param} · ${esc(g.name)}${r.t ? ' · ' + when(r) : ''}${r.tries > 1 ? ' · làm ' + r.tries + ' lần' : ''}</div>
         <div class="rep-flex"><div>${tb}</div><div style="flex:1;min-width:260px">${NL.chartSVG(r.chart, 420, 200)}</div></div>
         <div style="font-weight:800;color:#1F4E79;margin-top:6px">Kết luận: ${r.conclusion}</div>${r.note ? `<div class="rep-sub">${r.note}</div>` : ''}${(r.lessons || []).length ? `<div class="rep-sub">💥 Bài học từ lần làm sai: ${r.lessons.map(esc).join(' · ')}</div>` : ''}${quizBlock(r)}
         <div class="rep-dl"><button class="btn small pop" data-csv="${id}">📥 Tải file Excel</button><button class="btn small pop" data-jpg="${id}">🖼 Lưu ảnh biểu đồ</button></div>`;

@@ -87,7 +87,7 @@ NL.elevator = (function () {
     moveHand(778 + 19, b._y + 46, 280, () => {
       b.querySelector('.face').setAttribute('fill', b._ready ? '#FFE9A8' : '#FFD6D6');
       setTimeout(() => moveHand(880, 620, 400), 250);
-      if (!b._ready) { NL.helpers.toast('Tầng ' + f + ' sắp có, em lên tầng 4 nhé'); setTimeout(() => b.querySelector('.face').setAttribute('fill', '#F7F9FB'), 600); return; }
+      if (!b._ready) { NL.helpers.toast('Tầng ' + f + ' không có phòng học, em chọn tầng 2, 3 hoặc 4 nhé'); setTimeout(() => b.querySelector('.face').setAttribute('fill', '#F7F9FB'), 600); return; }
       if (f === cur) { $('elevTip').textContent = 'Em đang ở tầng này rồi'; setTimeout(() => b.querySelector('.face').setAttribute('fill', '#F7F9FB'), 600); return; }
       ride(f, b);
     });

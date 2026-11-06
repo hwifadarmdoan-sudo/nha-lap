@@ -169,10 +169,10 @@
       }
     },
     {
-      label: () => `Đo I theo U · ${st.rows.length}/5 điểm`, text: 'Đổi U, đọc hai đồng hồ rồi bấm Ghi số liệu. Ghi ít nhất 5 điểm', hint: 'Mỗi lần kéo U sang mức mới rồi bấm 📌 Ghi số liệu',
+      label: () => `Đo I theo U · ${P.cnt(st.rows.length, 5, 'điểm')}`, text: 'Đổi U, đọc hai đồng hồ rồi bấm Ghi số liệu. Ghi ít nhất 5 điểm', hint: 'Mỗi lần kéo U sang mức mới rồi bấm 📌 Ghi số liệu',
       enter(api) {
         sideTable(api); controls(api, [5, 10, 15]);
-        P.recButton(api, '📌 Ghi số liệu', () => { if (record(api) && st.rows.length >= 5) { api.say('Đủ 5 điểm rồi. Em có thể đổi lõi đo thêm, hoặc sang nhiệm vụ robot'); api.done('Sang nhiệm vụ robot ➜'); } $('stepNo').textContent = `Đo I theo U · ${st.rows.length}/5 điểm`; });
+        P.recButton(api, '📌 Ghi số liệu', () => { if (record(api) && st.rows.length >= 5) { api.say('Đủ 5 điểm rồi. Em có thể đổi lõi đo thêm, hoặc sang nhiệm vụ robot'); api.done('Sang nhiệm vụ robot ➜'); } $('stepNo').textContent = `Đo I theo U · ${P.cnt(st.rows.length, 5, 'điểm')}`; });
       }
     },
     {
@@ -187,14 +187,14 @@
       }
     },
     {
-      label: () => `Lõi bí ẩn · ${st.rows.filter(r => r.core === 'x').length}/3 điểm`, text: 'Lắp lõi bí ẩn Rₓ. Đo 3 điểm rồi đoán xem Rₓ bằng bao nhiêu', hint: 'Tính U/I cho từng lần đo rồi lấy trung bình',
+      label: () => `Lõi bí ẩn · ${P.cnt(st.rows.filter(r => r.core === 'x').length, 3, 'điểm')}`, text: 'Lắp lõi bí ẩn Rₓ. Đo 3 điểm rồi đoán xem Rₓ bằng bao nhiêu', hint: 'Tính U/I cho từng lần đo rồi lấy trung bình',
       enter(api) {
         setCore('x'); if (st.uCtl) st.uCtl.set(0);
         sideTable(api); controls(api, null);
         P.recButton(api, '📌 Ghi số liệu', () => {
           if (!record(api)) return;
           const xs = st.rows.filter(r => r.core === 'x');
-          $('stepNo').textContent = `Lõi bí ẩn · ${xs.length}/3 điểm`;
+          $('stepNo').textContent = `Lõi bí ẩn · ${P.cnt(xs.length, 3, 'điểm')}`;
           if (xs.length === 3) {
             const avg = xs.reduce((s, r) => s + r.U / r.I, 0) / 3; st.rxAvg = avg;
             api.ask({

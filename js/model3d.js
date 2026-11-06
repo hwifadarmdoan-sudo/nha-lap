@@ -211,6 +211,7 @@ NL.m3d = (function () {
     def.init && def.init(api);
     setTab(tabs[0].v);
     ui.hint.classList.remove('gone'); clearTimeout(st.hintT); st.hintT = setTimeout(() => ui.hint.classList.add('gone'), 6000);
+    st.quizT = setTimeout(() => invite('timer'), 120000);
     lastT = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
   }
 
@@ -232,6 +233,7 @@ NL.m3d = (function () {
     st.tab = v;
     ui.tabs.querySelectorAll('.m3d-tab').forEach((b, k) => b.classList.toggle('on', (st.def.tabs || [])[k] && st.def.tabs[k].v === v));
     st.def.build(api, v);
+    quizCard();
     moreHint();
     if (!st.home) view({ pos: [0, 2, 12], target: [0, 0, 0] });
     homeView(true);
@@ -242,8 +244,32 @@ NL.m3d = (function () {
     const upd = () => m.classList.toggle('gone', ui.side.scrollTop + ui.side.clientHeight >= ui.side.scrollHeight - 12);
     ui.side.onscroll = upd; requestAnimationFrame(upd); setTimeout(upd, 400);
   }
+  // Thẻ "Ôn tập mô hình (10 câu)" cố định ở đầu bảng điều khiển, hiện ở mọi tab
+  function quizCard() {
+    const sc = ((NL.game && NL.game.models) || {})[st.id], n = ((NL.QUIZ && NL.QUIZ[st.id]) || []).length;
+    const d = document.createElement('div'); d.className = 'm3d-ctl m3d-quizcard';
+    d.innerHTML = `<div class="m3d-row"><span>📝 Ôn tập mô hình (${n || 10} câu)</span></div><div class="m3d-quizsub">${sc ? `Lần tốt nhất: đúng ngay ${sc.score}/${sc.total} câu` : 'Xem xong, làm thử để điểm vào báo cáo'}</div><button class="btn small pop">${sc ? 'Ôn lại' : 'Làm ngay'}</button>`;
+    d.querySelector('button').onclick = () => { NL.audio.play('click'); runQuiz(); };
+    ui.side.prepend(d);
+  }
+  // Lời mời ôn tập: sau 2 phút xem mô hình, hoặc khi em bấm đóng lần đầu mà chưa làm
+  function invite(why) {
+    if (!st || st.quizDone || st.invited) return;
+    st.invited = true; clearTimeout(st.quizT);
+    root.querySelectorAll('.m3d-invite').forEach(x => x.remove());
+    const d = document.createElement('div'); d.className = 'm3d-invite';
+    d.innerHTML = `<b>Em đã xem xong mô hình?</b><p>Làm 10 câu ôn tập nhé, điểm sẽ được ghi vào báo cáo.</p><div><button class="btn small pop" data-k="go">📝 Làm 10 câu</button><button class="btn small ghost pop" data-k="no">${why === 'close' ? 'Rời mô hình' : 'Để sau'}</button></div>`;
+    root.appendChild(d);
+    d.addEventListener('click', e => {
+      const k = e.target.dataset && e.target.dataset.k; if (!k) return;
+      NL.audio.play('click'); d.remove();
+      if (k === 'go') runQuiz(); else if (why === 'close') close();
+    });
+  }
   function close() {
     if (!st) return;
+    if (!st.quizDone && !st.invited && !root.querySelector('.quiz')) { invite('close'); return; }
+    clearTimeout(st.quizT); root.querySelectorAll('.m3d-invite').forEach(x => x.remove());
     cancelAnimationFrame(raf);
     st.def.destroy && st.def.destroy(api);
     clearTab();
@@ -584,7 +610,9 @@ NL.m3d = (function () {
     let k = 0, right = 0;
     const next = () => {
       if (k >= list.length) {
-        const g = NL.game; if (g) { g.models = g.models || {}; const best = Math.max(right, (g.models[st.id] || {}).score || 0); g.models[st.id] = { score: best, total: list.length }; NL.persist && NL.persist(); }
+        const g = NL.game; if (g) { g.models = g.models || {}; const best = Math.max(right, (g.models[st.id] || {}).score || 0); g.models[st.id] = { score: best, total: list.length, t: Date.now() }; NL.persist && NL.persist(); }
+        st.quizDone = true; clearTimeout(st.quizT);
+        const qc = ui.side.querySelector('.m3d-quizcard'); if (qc) { qc.querySelector('.m3d-quizsub').textContent = `Lần này: đúng ngay ${right}/${list.length} câu`; qc.querySelector('button').textContent = 'Ôn lại'; }
         NL.audio.play(right >= 8 ? 'success' : 'ting');
         NL.learn.card({ parent: root, kicker: '🏁 Kết quả kiểm tra', text: `Em đúng ngay lần đầu ${right}/${list.length} câu`, sub: right >= 8 ? 'Xuất sắc! Em nắm rất chắc mô hình này' : right >= 5 ? 'Khá lắm! Xem lại mô hình ở những phần em còn lúng túng nhé' : 'Em xoay, chạm vào từng bộ phận để xem thẻ thông tin rồi làm lại nhé', btn: 'Đóng' });
         return;

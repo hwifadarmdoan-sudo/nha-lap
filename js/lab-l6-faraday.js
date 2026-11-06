@@ -122,13 +122,13 @@
       }
     },
     {
-      label: () => `Đo dòng · ${st.rows.length}/6 lần`, text: 'Mỗi lần đẩy vào hoặc kéo ra, bấm Ghi để lưu số chỉ lớn nhất của kim. Ghi 6 lần, đổi số vòng dây, có cả đẩy vào và kéo ra', hint: 'Thử đẩy nhanh, đẩy chậm, đổi cực nam châm',
+      label: () => `Đo dòng · ${P.cnt(st.rows.length, 6, 'lần')}`, text: 'Mỗi lần đẩy vào hoặc kéo ra, bấm Ghi để lưu số chỉ lớn nhất của kim. Ghi 6 lần, đổi số vòng dây, có cả đẩy vào và kéo ra', hint: 'Thử đẩy nhanh, đẩy chậm, đổi cực nam châm',
       enter(api) {
         enableDrag(true); sideTable(api); controls(api); st.peak = null;
         P.recButton(api, '📌 Ghi lần vừa đẩy', () => {
           const p = st.peak; if (!p || Math.abs(p.I) < 0.05) { NL.game.toast('Đẩy hoặc kéo nam châm trước rồi mới ghi'); return; }
           st.rows.push({ N: st.N, pol: st.pol, dir: p.dir, v: p.v, I: P.measure(p.I, 0.02, 0.01) }); st.peak = null; sideTable(api); NL.audio.play('ting');
-          $('stepNo').textContent = `Đo dòng · ${st.rows.length}/6 lần`;
+          $('stepNo').textContent = `Đo dòng · ${P.cnt(st.rows.length, 6, 'lần')}`;
           if (st.rows.length >= 6) {
             const dirs = new Set(st.rows.map(r => r.dir)), ns = new Set(st.rows.map(r => r.N));
             if (dirs.size > 1 && ns.size > 1) api.done('Sang nhiệm vụ đèn pin ➜');

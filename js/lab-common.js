@@ -191,6 +191,12 @@ NL.lab = (function () {
     const d = document.createElement('div'); d.className = cls || 'slider-card'; d.innerHTML = html || '';
     $('labSide').appendChild(d); return d;
   }
+  // nhóm thu gọn được ở bảng bên phải: fold('Nâng cao', false) trả về thẻ để đặt các điều khiển vào trong
+  function fold(title, open) {
+    const d = panel(`<div class="fold-h"><span>${title}</span></div>`, 'slider-card fold' + (open ? '' : ' closed'));
+    d.querySelector('.fold-h').addEventListener('click', () => { NL.audio.play('click'); d.classList.toggle('closed'); });
+    return d;
+  }
   // thanh trượt kèm ô gõ số: { label, min, max, step, value, unit, onInput(v) }
   function slider(o) {
     const d = panel(`<div>${o.label}</div><div class="big-num"><input class="num-in" type="number" min="${o.min}" max="${o.max}" step="${o.step || 1}" value="${+(Math.round(o.value / (o.step || 1)) * (o.step || 1)).toFixed(3)}"> <small>${o.unit || ''}</small></div><input type="range" min="${o.min}" max="${o.max}" step="${o.step || 1}" value="${o.value}"><div class="warn-line"></div>`);
@@ -263,7 +269,7 @@ NL.lab = (function () {
     bank(n) { return NL.learn.bank(cur.id, n); },
     get prediction() { return cur.predict; },
     el, g, place, tween, draggable, setOn, tapable, moveHand, restHands,
-    loop, wait, panel, slider, choices, table, showChart, wrapUp,
+    loop, wait, panel, fold, slider, choices, table, showChart, wrapUp,
     hideNext() { clearTimeout(autoT); $('btnNext').classList.add('hidden'); },
     get svg() { return layer; },
     get side() { return $('labSide'); },

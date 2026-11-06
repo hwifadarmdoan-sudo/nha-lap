@@ -107,21 +107,21 @@
       }
     },
     {
-      label: () => `Đo góc · ${st.rows.length}/4 lần`, text: 'Đổi góc tới i, đọc góc khúc xạ r rồi bấm Ghi. Đo 4 góc, có thể đổi sang thủy tinh', hint: 'Kéo thanh góc tới, rồi bấm 📌 Ghi số liệu',
+      label: () => `Đo góc · ${P.cnt(st.rows.length, 4, 'lần')}`, text: 'Đổi góc tới i, đọc góc khúc xạ r rồi bấm Ghi. Đo 4 góc, có thể đổi sang thủy tinh', hint: 'Kéo thanh góc tới, rồi bấm 📌 Ghi số liệu',
       enter(api) {
         sideTable(api);
         api.choices({ label: 'Khối bên dưới', items: [{ t: 'Nước', v: 'w' }, { t: 'Sao Thủy', v: 'g' }], value: st.med, onPick: setMed });
         slider(api);
-        P.recButton(api, '📌 Ghi số liệu', () => { if (record(api)) { $('stepNo').textContent = `Đo góc · ${st.rows.length}/4 lần`; if (st.rows.length >= 4) api.done('Đo khối nhựa bí ẩn ➜'); } });
+        P.recButton(api, '📌 Ghi số liệu', () => { if (record(api)) { $('stepNo').textContent = `Đo góc · ${P.cnt(st.rows.length, 4, 'lần')}`; if (st.rows.length >= 4) api.done('Đo khối nhựa bí ẩn ➜'); } });
       }
     },
     {
-      label: () => `Khối bí ẩn · ${st.rows.filter(x => x.med === 'x').length}/3 lần`, text: 'Thay bằng khối nhựa bí ẩn. Đo 3 góc rồi tìm chiết suất n của nó', hint: 'n = sin i / sin r, lấy trung bình 3 lần đo',
+      label: () => `Khối bí ẩn · ${P.cnt(st.rows.filter(x => x.med === 'x').length, 3, 'lần')}`, text: 'Thay bằng khối nhựa bí ẩn. Đo 3 góc rồi tìm chiết suất n của nó', hint: 'n = sin i / sin r, lấy trung bình 3 lần đo',
       enter(api) {
         setMed('x'); sideTable(api); slider(api);
         P.recButton(api, '📌 Ghi số liệu', () => {
           if (!record(api)) return;
-          const xs = st.rows.filter(x => x.med === 'x'); $('stepNo').textContent = `Khối bí ẩn · ${xs.length}/3 lần`;
+          const xs = st.rows.filter(x => x.med === 'x'); $('stepNo').textContent = `Khối bí ẩn · ${P.cnt(xs.length, 3, 'lần')}`;
           if (xs.length < 3) return;
           const avg = xs.reduce((s, x) => s + x.k, 0) / 3; st.xAvg = avg;
           api.ask({

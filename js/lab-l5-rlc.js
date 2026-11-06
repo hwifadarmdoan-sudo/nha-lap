@@ -111,14 +111,14 @@
       }
     },
     {
-      label: () => `Dò đài · ${st.rows.length}/6 điểm`, text: 'Vặn tụ xoay C, đọc I rồi bấm Ghi. Ghi 6 điểm, có cả hai phía của điểm I lớn nhất', hint: 'Thử C nhỏ (2–6 μF) và C lớn (15–30 μF), rồi tìm chỗ I lớn nhất',
+      label: () => `Dò đài · ${P.cnt(st.rows.length, 6, 'điểm')}`, text: 'Vặn tụ xoay C, đọc I rồi bấm Ghi. Ghi 6 điểm, có cả hai phía của điểm I lớn nhất', hint: 'Thử C nhỏ (2–6 μF) và C lớn (15–30 μF), rồi tìm chỗ I lớn nhất',
       enter(api) {
         sideTable(api); controls(api, { R: true });
         P.recButton(api, '📌 Ghi số liệu', () => {
           const c = calc(); if (!c.I) { NL.game.toast('Radio đang tắt hoặc hỏng'); return; }
           if (st.rows.some(r => Math.abs(r.C - st.C) < 0.4 && r.f === st.f)) { NL.game.toast('Giá trị C này gần với lần trước, chọn C khác'); return; }
           st.rows.push({ f: st.f, C: st.C, R: st.R, I: Math.max(0, P.measure(c.I, 0.01, 0.001)) }); sideTable(api); NL.audio.play('ting');
-          $('stepNo').textContent = `Dò đài · ${st.rows.length}/6 điểm`;
+          $('stepNo').textContent = `Dò đài · ${P.cnt(st.rows.length, 6, 'điểm')}`;
           const C0 = 1e6 / ((TAU * 50) ** 2 * Lh()), lo = st.rows.some(r => r.C < C0 * 0.9), hi = st.rows.some(r => r.C > C0 * 1.1);
           if (st.rows.length >= 6) { if (lo && hi) api.done('Sang nhiệm vụ bắt đài ➜'); else NL.game.toast('Cần thêm điểm ở phía ' + (lo ? 'C lớn' : 'C nhỏ') + ' của đỉnh'); }
         });

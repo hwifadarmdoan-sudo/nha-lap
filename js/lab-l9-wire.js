@@ -88,7 +88,7 @@
       }
     },
     {
-      label: () => `Đo điện trở · ${st.rows.length}/6 lần`, text: 'Đổi dây rồi bấm Ghi. Mỗi lần chỉ được đổi MỘT thứ: vật liệu, chiều dài hoặc tiết diện. Ghi 6 lần, đổi đủ cả ba thứ', hint: 'Đổi một thứ, ghi, rồi mới đổi thứ khác',
+      label: () => `Đo điện trở · ${P.cnt(st.rows.length, 6, 'lần')}`, text: 'Đổi dây rồi bấm Ghi. Mỗi lần chỉ được đổi MỘT thứ: vật liệu, chiều dài hoặc tiết diện. Ghi 6 lần, đổi đủ cả ba thứ', hint: 'Đổi một thứ, ghi, rồi mới đổi thứ khác',
       enter(api) {
         sideTable(api); controls(api);
         P.recButton(api, '📌 Ghi số liệu', () => {
@@ -107,7 +107,7 @@
           }
           const U = P.measure(c.U, 0.004, 0.0001), I = P.measure(c.I, 0.004, 0.0001);
           Object.assign(cur, { U, I, R: U / I }); st.rows.push(cur); sideTable(api); NL.audio.play('ting');
-          $('stepNo').textContent = `Đo điện trở · ${st.rows.length}/6 lần`;
+          $('stepNo').textContent = `Đo điện trở · ${P.cnt(st.rows.length, 6, 'lần')}`;
           if (st.rows.length >= 6) { const ks = new Set(st.rows.map(r => r.kind).filter(Boolean)); if (ks.size === 3) api.done('Sang nhiệm vụ xưởng amply ➜'); else NL.game.toast('Cần có lần chỉ đổi ' + ['mat', 'l', 'S'].filter(k => !ks.has(k)).map(k => ({ mat: 'vật liệu', l: 'chiều dài', S: 'tiết diện' })[k]).join(', ')); }
         });
       }
