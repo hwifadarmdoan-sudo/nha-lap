@@ -32,6 +32,12 @@
     const eL = mkLine(0xEF4444), bL = mkLine(0x3B82F6), eS = mkSeg(0xEF4444), bS = mkSeg(0x3B82F6);
     eL.userData.group = eS.userData.group = 'E'; bL.userData.group = bS.userData.group = 'B';
     const eLab = api.label('E (điện trường)', [0, 0, 0], { cls: 'tag', color: '#EF4444' }), bLab = api.label('B (từ trường)', [0, 0, 0], { cls: 'tag', color: '#3B82F6' });
+    // vùng chạm để xem thẻ (đường vẽ mảnh không chạm được)
+    const hbE = api.hitbox(X1 - X0, 2 * AE + 0.4, 0.5, [0, 0, 0]); hbE.userData.group = 'E';
+    api.part(hbE, { name: 'Điện trường E', rows: [['Phương dao động', 'Thẳng đứng, vuông góc với phương truyền sóng'], ['Cùng pha với B', 'E và B đạt cực đại, bằng 0 cùng lúc tại mỗi điểm'], ['Tỉ lệ', 'E = cB trong chân không']] });
+    const hbB = api.hitbox(X1 - X0, 0.5, 2 * AB + 0.4, [0, 0, 0]); hbB.userData.group = 'B';
+    api.part(hbB, { name: 'Từ trường B', rows: [['Phương dao động', 'Nằm ngang, vuông góc với cả E và phương truyền'], ['Sóng ngang', 'E ⊥ B ⊥ hướng truyền: sóng điện từ là sóng ngang'], ['Không cần môi trường', 'Truyền được trong chân không với tốc độ c ≈ 3·10⁸ m/s']] });
+    api.part(tip, { name: 'Phương truyền sóng', rows: [['Tốc độ', 'c = 3·10⁸ m/s trong chân không'], ['Liên hệ', 'c = λ·f']] });
     // vùng nước
     const water = api.box(8, 5, 5, api.mat(0x38BDF8, { opacity: 0.16, depthWrite: false }), [4, 0, 0]); water.visible = false;
     api.part(water, { name: 'Nước (chiết suất n ≈ 1,33)', rows: [['Tốc độ sóng', 'v = c/n, chậm hơn trong chân không'], ['Tần số', 'Giữ nguyên, do nguồn phát quyết định'], ['Bước sóng', 'λ = v/f nên ngắn lại']] });
@@ -107,6 +113,8 @@
     const ledM = api.mat(0x14532D, { emissive: 0x22C55E, emissiveIntensity: 0 });
     const led = api.sphere(0.3, ledM, [0, -2.2, 0]); const ledLight = new T.PointLight(0x22C55E, 0, 6); led.add(ledLight);
     api.part(led, { name: 'Đèn LED báo tín hiệu', rows: [['Độ sáng', 'Theo cường độ tín hiệu thu được']] });
+    api.hitbox(1.4, 4.6, 1.4, [0, 0, 0], tx, rod); api.hitbox(1.4, 3.4, 1.4, [0, 0, 0], rx, rrod); api.hitbox(1, 1, 1, [0, -2.2, 0], rx, led);
+    const hbW = api.hitbox(13, 0.3, 13, [0, 0, 0], tx); api.part(hbW, { name: 'Mặt sóng lan ra từ ăng-ten', rows: [['Vòng vàng', 'Các mặt sóng cách nhau một bước sóng λ, lan ra với tốc độ c'], ['Cường độ', 'Giảm dần khi ra xa ăng-ten phát']] });
     const info = api.note('');
     let t = 0, sig = 0;
     api.section('📡 Ăng-ten phát và thu');

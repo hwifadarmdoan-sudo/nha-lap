@@ -20,6 +20,8 @@
     const lp = api.label('+ + + +', [-1.5, 2.25, 0], { cls: 'plain', color: '#EF4444' }), ln = api.label('− − − −', [-1.5, -2.25, 0], { cls: 'plain', color: '#38BDF8' });
     api.part(pTop, { name: 'Bản tụ điện tích dương', rows: [['Điện trường', 'Hướng từ bản dương xuống bản âm'], ['Hút', 'Hạt mang điện âm (β⁻)']] });
     api.part(pBot, { name: 'Bản tụ điện tích âm', rows: [['Hút', 'Hạt mang điện dương (α)']] });
+    const beam = api.hitbox(9.5, 3.3, 1.6, [-1.3, 0, 0]);
+    api.part(beam, { name: 'Chùm tia phóng xạ trong điện trường', rows: [['Tia α (đỏ)', 'Mang điện +2e, nặng: lệch ít về bản âm'], ['Tia β⁻ (xanh)', 'Mang điện −e, rất nhẹ: lệch mạnh về bản dương'], ['Tia γ (vàng)', 'Không mang điện: đi thẳng'], ['Mẹo', 'Chạm vào từng hạt đang bay để xem thẻ riêng']], focus: false });
     const shield = api.box(0.25, 4.6, 3, api.mat(0xF8FAFC), [XB, 0, 0]);
     const shLab = api.label('', [XB, 2.7, 0], { cls: 'tag', color: '#94A3B8' });
     const det = api.group(null, [XD, 0, 0]);
@@ -28,7 +30,7 @@
     const detL = api.label('', [XD, 1.6, 0], { cls: 'tag', color: '#22C55E' });
     // hạt
     const pool = [], geo = new T.SphereGeometry(1, 10, 8);
-    Object.keys(TYPES).forEach(k => { const m = api.mat(TYPES[k].col, { emissive: TYPES[k].col, emissiveIntensity: 0.9 }); for (let i = 0; i < 40; i++) { const o = api.mesh(geo, m); o.scale.setScalar(TYPES[k].r); if (k === 'g') o.scale.set(0.24, 0.06, 0.06); o.visible = false; o.userData = { k, on: false, noPick: true }; pool.push(o); } });
+    Object.keys(TYPES).forEach(k => { const m = api.mat(TYPES[k].col, { emissive: TYPES[k].col, emissiveIntensity: 0.9 }); for (let i = 0; i < 40; i++) { const o = api.mesh(geo, m); o.scale.setScalar(TYPES[k].r); if (k === 'g') o.scale.set(0.24, 0.06, 0.06); o.visible = false; o.userData = { k, on: false, noPick: false }; api.part(o, { name: TYPES[k].t, rows: [['Bản chất', TYPES[k].what], ['Trong điện trường', k === 'a' ? 'Lệch về bản âm (điện tích dương), lệch ít vì nặng' : k === 'b' ? 'Lệch mạnh về bản dương (điện tích âm, rất nhẹ)' : 'Không lệch (không mang điện)'], ['Bị chặn bởi', k === 'a' ? 'Một tờ giấy, vài cm không khí' : k === 'b' ? 'Tấm nhôm dày vài mm' : 'Tấm chì dày hoặc bê tông']], focus: false }); pool.push(o); } });
     const counts = { a: 0, b: 0, g: 0 }; let cWin = { a: [], b: [], g: [] };
     let acc = 0, t = 0;
     const setShield = v => {

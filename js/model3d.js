@@ -121,7 +121,13 @@ NL.m3d = (function () {
       if (p) d.move(p);
     });
     cv.addEventListener('pointerup', e => {
-      if (st && st.dragging) { const d = st.dragging; st.dragging = null; st.controls.enabled = true; d.end && d.end(); down = null; return; }
+      if (st && st.dragging) {
+        const d = st.dragging; st.dragging = null; st.controls.enabled = true; d.end && d.end();
+        // chạm (không kéo) vào vật kéo được: vẫn hiện thẻ thông tin, trừ khi mô hình tắt (tapSelect)
+        const ts = typeof d.tapSelect === 'function' ? d.tapSelect() : d.tapSelect !== false;
+        const mv = down ? Math.hypot(e.clientX - down.x, e.clientY - down.y) : 99, dt0 = down ? performance.now() - down.t : 1e9;
+        if (!ts || mv > 7 || dt0 > 600) { down = null; return; }
+      }
       if (!down || !st) return;
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y), dt = performance.now() - down.t;
       down = null;
@@ -129,7 +135,8 @@ NL.m3d = (function () {
       const hit = pick(e);
       if (st.pickHandler && st.pickHandler(hit, e)) return;
       let o = hit && hit.object;
-      while (o && !(o.userData && o.userData.part)) o = o.parent;
+      while (o && !(o.userData && (o.userData.part || o.userData.proxy))) o = o.parent;
+      if (o && o.userData.proxy) { o = o.userData.proxy; while (o && !(o.userData && o.userData.part)) o = o.parent; }
       if (o) select(o); else deselect();
     });
     cv.addEventListener('wheel', e => {
@@ -144,14 +151,24 @@ NL.m3d = (function () {
   function ndc(e) { const r = cv.getBoundingClientRect(); return new T.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); }
   function pick(e, list) {
     const rc = ray(); rc.setFromCamera(ndc(e), st.camera);
+    const hasPart = o => { while (o) { if (o.userData && (o.userData.part || o.userData.proxy)) return true; o = o.parent; } return false; };
     const hits = rc.intersectObjects(list || [st.root], true).filter(h => {
       let o = h.object; if (h.object.userData.noPick) return false;
+      if ((h.object.isPoints || h.object.isLine) && !hasPart(h.object)) return false; // hạt, đường mảnh không có thẻ: bỏ qua
       while (o) { if (!o.visible) return false; o = o.parent; }
-      const m = h.object.material; return !(m && m.opacity !== undefined && m.opacity < 0.06 && !h.object.userData.part);
+      const m = h.object.material; return !(m && m.opacity !== undefined && m.opacity < 0.06 && !h.object.userData.part && !h.object.userData.hitbox);
     });
+    // vùng chạm vô hình (api.hitbox): ưu tiên nếu không có vật đặc nằm trước nó
+    const hb = hits.find(h => h.object.userData.hitbox), solid0 = hits.find(h => { const m = h.object.material; return !h.object.userData.hitbox && (!m || m.opacity === undefined || m.opacity >= 0.5 || h.object.isInstancedMesh); });
+    if (hb && (!solid0 || hb.distance <= solid0.distance + 1e-6)) return hb;
     // bỏ qua lớp vỏ gần như trong suốt (màng, thành) nếu phía sau còn bộ phận đặc hơn
-    const solid = hits.find(h => { const m = h.object.material; return !m || m.opacity === undefined || m.opacity >= 0.5 || h.object.isInstancedMesh; });
-    return solid || hits[0] || null;
+    const solid = solid0;
+    if (solid) return solid;
+    // toàn lớp trong suốt (thành, màng, không bào…): ưu tiên vật nhỏ nhất nằm bên trong, không phải lớp vỏ bao ngoài
+    const size = o => { const g = o.geometry; if (!g) return 1e9; if (!g.boundingSphere) g.computeBoundingSphere(); const sc = new T.Vector3(); o.getWorldScale(sc); return g.boundingSphere.radius * Math.max(sc.x, sc.y, sc.z); };
+    let best = null, bs = Infinity;
+    hits.forEach(h => { if (h.object.userData.hitbox || !hasPart(h.object)) return; const r = size(h.object); if (r < bs - 1e-6) { bs = r; best = h; } });
+    return best || hits[0] || null;
   }
   function planePoint(e, d) {
     const rc = ray(); rc.setFromCamera(ndc(e), st.camera);
@@ -440,7 +457,7 @@ NL.m3d = (function () {
     });
     const outline = [];
     [...own].slice(0, 50).forEach(m => {
-      if (m.isInstancedMesh || !m.geometry) return;
+      if (m.isInstancedMesh || !m.geometry || m.userData.hitbox) return;
       const om = new T.Mesh(m.geometry, new T.MeshBasicMaterial({ color: 0x3DFFF0, side: T.BackSide, transparent: true, opacity: 0.7, depthWrite: false }));
       om.scale.setScalar(1.08); om.userData.isOutline = om.userData.noPick = true; m.add(om); outline.push(om);
     });
@@ -579,6 +596,20 @@ NL.m3d = (function () {
   // ---------- kéo thả vật trong không gian ----------
   // o: { start(p), move(p), end(), normal: Vector3 (mặt phẳng kéo), anchor }
   function draggable(obj, o) { const d = Object.assign({ obj }, o); st.drags.push(d); return d; }
+  // Vùng chạm vô hình: để chạm trúng vật mảnh (dây, đường, hạt nhỏ). target: vật thật sẽ được chọn khi chạm vào vùng này.
+  function hitbox(w, h, d, pos, parent, target) {
+    const m = new T.Mesh(new T.BoxGeometry(w, h, d), new T.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+    if (pos) m.position.set(...pos); (parent || st.root).add(m);
+    m.userData.hitbox = true; if (target) m.userData.proxy = target;
+    return m;
+  }
+  function hitboxOf(obj, pad, target) {
+    obj.updateWorldMatrix(true, true);
+    const b = new T.Box3().setFromObject(obj); if (b.isEmpty()) return null;
+    const c = b.getCenter(new T.Vector3()), sz = b.getSize(new T.Vector3()), q = pad == null ? 0.3 : pad;
+    const m = hitbox(sz.x + 2 * q, sz.y + 2 * q, sz.z + 2 * q, null, null, target || obj);
+    m.position.copy(c); return m;
+  }
 
   // ---------- bảng số liệu ----------
   let dataBox = null, dataTimer = 0;
@@ -664,7 +695,7 @@ NL.m3d = (function () {
     get root() { return st.root; }, get tab() { return st.tab; }, get time() { return st.time; }, get sel() { return st.sel; },
     get renderer() { return R; }, get el() { return root; },
     mat, mesh, part, tag, groupVis, setOpacity, select, deselect, focusObj, flyTo, view, homeView,
-    label, section, note, slider, toggle, choices, button, checklist, warn, toast, strip, stripOff, clip, levels,
+    label, section, note, slider, toggle, choices, button, checklist, warn, toast, strip, stripOff, clip, levels, hitbox, hitboxOf,
     splitScene, unsplit, draggable,
     onFrame(fn) { st.frames.push(fn); return fn; },
     // khung HTML riêng của từng chế độ (tự xóa khi đổi tab)
@@ -710,5 +741,5 @@ NL.m3d = (function () {
     rand(seed) { let s = seed || 1; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
   };
 
-  return { register, open, close, get isOpen() { return !!st || opening; }, api, DEFS };
+  return { register, open, close, debugPick: (x, y) => { const h = pick({ clientX: x, clientY: y }); if (!h) return null; const rc = ray(); rc.setFromCamera(ndc({ clientX: x, clientY: y }), st.camera); return { hit: (h.object.userData.part || {}).name || h.object.type, all: rc.intersectObjects([st.root], true).slice(0, 8).map(q => [(q.object.userData.part || (q.object.parent && q.object.parent.userData.part) || {}).name || q.object.type, q.object.material && q.object.material.opacity, +q.distance.toFixed(2)]) }; }, get isOpen() { return !!st || opening; }, api, DEFS };
 })();

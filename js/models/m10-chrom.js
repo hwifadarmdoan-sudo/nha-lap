@@ -64,6 +64,7 @@
         api.part(m, { name: `Gene ${t.g}`, sci: 'Gene band', rows: [['Trên', 'xyz'.includes(t.g) ? '' : (('MNOPQR'.includes(t.g)) ? 'NST số 2' : 'NST số 1')], ['Lưu ý', 'Mỗi băng màu đại diện cho một gene hoặc một nhóm gene']] });
         const ar = api.mesh(new T.ConeGeometry(0.12, 0.3, 10), api.mat(0xFFFFFF), [0.05, 0, 0.42], g); ar.rotation.z = -Math.PI / 2; ar.userData.noPick = true;
         const sp = api.textSprite(t.g, { h: 0.55, parent: g, pos: [0, 0.82, 0], color: '#FFFFFF', bg: 'rgba(15,30,50,.7)' }); sp.userData.noPick = true;
+        api.hitbox(1.0, 1.3, 1.0, [0, 0.2, 0], g, m);
       }
       g.userData.t = t; g.scale.setScalar(0.001); meshes.set(t.uid, g); return g;
     };
@@ -126,7 +127,7 @@
     const before = () => manRows.map(r => r.slice());
     const commit = (name, b4, m) => { record(name, b4, manRows, m); cutMarks.clear(); sel = null; reflow(); };
     meshes.forEach(g => api.draggable(g, {
-      normal: new T.Vector3(0, 0, 1),
+      normal: new T.Vector3(0, 0, 1), tapSelect: () => !manual,
       start(p) { if (!manual) return; this.p0 = p.clone(); this.moved = false; const loc = locate(g.userData.t.uid); if (!loc) return; if (tool === 'drag' && sel && sel.includes(g.userData.t.uid)) { dragging = { uids: sel.slice(), off: sel.map(uid => meshes.get(uid).position.clone().sub(p)) }; } },
       move(p) { if (!manual || !dragging) return; this.moved = true; dragging.uids.forEach((uid, k) => meshes.get(uid).position.copy(p.clone().add(dragging.off[k])).setZ(0.6)); },
       end() {

@@ -60,16 +60,18 @@
     const earth = api.sphere(1, api.mat(0x3B82F6, { roughness: 0.75 }), [0, 0, 0], null, 48);
     api.part(earth, { name: 'Trái Đất', rows: [['Bóng của Trái Đất', 'Hình nón tối phía sau, ngược hướng Mặt Trời'], ['Nguyệt thực', 'Khi Mặt Trăng đi vào vùng bóng tối này (luôn vào đêm trăng tròn)']] });
     // mặt phẳng hoàng đạo và quỹ đạo Mặt Trăng nghiêng
-    const ecl = api.mesh(new T.RingGeometry(ORB - 0.02, ORB + 0.02, 128), api.mat(0xFACC15, { opacity: 0.5, side: T.DoubleSide, depthWrite: false })); ecl.rotation.x = -Math.PI / 2; ecl.userData.noPick = true;
-    const og = api.group(); const orb = api.mesh(new T.RingGeometry(ORB - 0.03, ORB + 0.03, 128), api.mat(0xE5E7EB, { opacity: 0.6, side: T.DoubleSide, depthWrite: false }), null, og); orb.rotation.x = -Math.PI / 2; orb.userData.noPick = true;
+    const ecl = api.mesh(new T.RingGeometry(ORB - 0.02, ORB + 0.02, 128), api.mat(0xFACC15, { opacity: 0.5, side: T.DoubleSide, depthWrite: false })); ecl.rotation.x = -Math.PI / 2; api.part(ecl, { name: 'Hoàng đạo (mặt phẳng quỹ đạo Trái Đất)', rows: [['Là gì', 'Mặt phẳng Trái Đất quay quanh Mặt Trời'], ['Nhật thực, nguyệt thực', 'Chỉ xảy ra khi Mặt Trăng ở gần mặt phẳng này (hai điểm nút) đúng lúc trăng non hoặc trăng tròn']], focus: false });
+    const og = api.group(); const orb = api.mesh(new T.RingGeometry(ORB - 0.03, ORB + 0.03, 128), api.mat(0xE5E7EB, { opacity: 0.6, side: T.DoubleSide, depthWrite: false }), null, og); orb.rotation.x = -Math.PI / 2; api.part(orb, { name: 'Quỹ đạo Mặt Trăng', rows: [['Nghiêng', 'Khoảng 5° so với hoàng đạo (vẽ phóng to 15°)'], ['Hệ quả', 'Hầu hết tháng, Mặt Trăng đi lệch trên hoặc dưới bóng Trái Đất nên không có nhật thực, nguyệt thực']], focus: false });
     const moon = api.sphere(0.36, api.mat(0xD1D5DB, { roughness: 0.9 }), [ORB, 0, 0], null, 32);
     api.part(moon, { name: 'Mặt Trăng', rows: [['Chu kì', '29,5 ngày từ trăng non tới trăng non'], ['Quỹ đạo', 'Nghiêng khoảng 5° so với mặt phẳng quỹ đạo Trái Đất'], ['Nhật thực', 'Khi Mặt Trăng che Mặt Trời (luôn vào ngày trăng non)']] });
     // bóng tối (nón) của Trái Đất và Mặt Trăng
-    const umbra = api.mesh(new T.ConeGeometry(1, 9, 32, 1, true), api.mat(0x020617, { opacity: 0.22, depthWrite: false, side: T.DoubleSide })); umbra.rotation.z = -Math.PI / 2; umbra.position.set(4.5, 0, 0); umbra.userData.noPick = true;
-    const mShadow = api.mesh(new T.ConeGeometry(0.36, 3.2, 24, 1, true), api.mat(0x020617, { opacity: 0.45, depthWrite: false, side: T.DoubleSide })); mShadow.userData.noPick = true;
+    const umbra = api.mesh(new T.ConeGeometry(1, 9, 32, 1, true), api.mat(0x020617, { opacity: 0.22, depthWrite: false, side: T.DoubleSide })); umbra.rotation.z = -Math.PI / 2; umbra.position.set(4.5, 0, 0); api.part(umbra, { name: 'Vùng bóng tối (umbra) của Trái Đất', rows: [['Hình dạng', 'Hình nón kéo dài phía sau Trái Đất, ngược hướng Mặt Trời'], ['Nguyệt thực', 'Khi Mặt Trăng đi vào vùng này: trăng tròn tối đi, có màu đỏ do khí quyển Trái Đất khúc xạ ánh sáng đỏ']], focus: false });
+    const mShadow = api.mesh(new T.ConeGeometry(0.36, 3.2, 24, 1, true), api.mat(0x020617, { opacity: 0.45, depthWrite: false, side: T.DoubleSide })); api.part(mShadow, { name: 'Bóng của Mặt Trăng', rows: [['Nhật thực', 'Khi bóng này quét lên Trái Đất: nơi trong vùng tối thấy nhật thực toàn phần, vùng nửa tối thấy một phần'], ['Nhỏ', 'Bóng tối của Mặt Trăng chỉ rộng vài trăm km trên mặt đất']], focus: false });
     api.label('Hoàng đạo (mặt phẳng quỹ đạo Trái Đất)', [0, 0, ORB + 0.6], { cls: 'plain' });
     const status = api.label('', [0, 3.2, 0], { cls: 'tag', color: '#FDE047' });
     api.label('☀ Ánh sáng Mặt Trời', [-9, 1.4, 0], { cls: 'plain' });
+    const hbL = api.hitbox(10, 2.2, 2.2, [-9, 0, 0]);
+    api.part(hbL, { name: 'Ánh sáng Mặt Trời', rows: [['Đi tới', 'Chiếu sáng nửa Trái Đất và nửa Mặt Trăng hướng về Mặt Trời'], ['Bị che', 'Nhật thực: Mặt Trăng che ánh sáng tới Trái Đất. Nguyệt thực: Trái Đất che ánh sáng tới Mặt Trăng']], focus: false });
     const place = () => {
       const th = s.ph * Math.PI / 180, nd = s.node * Math.PI / 180;
       og.rotation.set(0, 0, 0); og.rotateY(nd); og.rotateX(INC);
@@ -100,7 +102,7 @@
     api.note('0° là trăng non (Mặt Trăng nằm giữa Mặt Trời và Trái Đất), 180° là trăng tròn. Đặt hướng giao tuyến về 0° rồi bấm Trăng non để thấy nhật thực.<br>Góc nghiêng quỹ đạo được vẽ phóng to để dễ thấy, thật ra chỉ khoảng 5°.');
     api.onFrame(dt => { if (s.spin) { s.ph = (s.ph + dt * 25) % 360; ph.set(Math.round(s.ph), true); place(); } });
     place();
-    api.view({ pos: [-4, 6, 16], target: [-4, 0, 0], min: 3, max: 40 });
+    api.view({ pos: [-3.5, 5.5, 15], target: [-3, 0, 0], min: 3, max: 40 }); // Trái Đất, Mặt Trăng ở giữa màn, không chui dưới bảng bên phải
   }
 
   NL.m3d.register('LM1', {

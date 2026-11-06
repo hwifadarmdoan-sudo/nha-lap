@@ -395,7 +395,7 @@
         api.onPick(hit => rulerPick(api, hit));
         api.view({ pos: [0, 2.5, 9], target: [0, 0, 0], min: 2, max: 25 });
       } else if (tab === 'mrna') {
-        const g = buildMRNA(api, null, 'AUGGCUUUCGGAAAAUGG', 0); api.part(g, INFO.mrna);
+        const g = buildMRNA(api, null, 'AUGGCUUUCGGAAAAUGG', 0); api.part(g, INFO.mrna); api.hitboxOf(g, 0.35);
         api.label("5′", [-4.2, 0.9, 0], { cls: 'tag', color: '#E5534B' }); api.label("3′", [4.2, 0.9, 0], { cls: 'tag', color: '#2F80C0' });
         api.note('mRNA là <b>mạch đơn</b>, dùng đường ribose và base <b>U</b> thay cho T. Mỗi 3 nucleotide là một codon.');
         api.toggle({ label: '📏 Thước đo 3D', value: ruler, onChange(v) { ruler = v; if (!v) clearRuler(api); } });
@@ -408,7 +408,7 @@
         api.view({ pos: [0, 0.8, 17], target: [0, 0.8, 0], min: 3, max: 30 });
       } else {
         const r = buildRibosome(api, null, [0, 0.3, 0]); void r;
-        const m = buildMRNA(api, null, 'AUGGCUUUCGGAAAA', 0); m.position.y = -1.1; api.part(m, INFO.mrna);
+        const m = buildMRNA(api, null, 'AUGGCUUUCGGAAAA', 0); m.position.y = -1.1; api.part(m, INFO.mrna); api.hitboxOf(m, 0.35);
         api.label('Tiểu đơn vị lớn', [0, 2.3, 0]); api.label('Tiểu đơn vị bé', [0, -1.8, 1.2]);
         api.note('rRNA (dây hồng) kết hợp với protein (hạt tím) tạo 2 tiểu đơn vị của <b>ribosome</b>.');
         api.view({ pos: [0, 1, 9], target: [0, 0, 0], min: 3, max: 25 });
