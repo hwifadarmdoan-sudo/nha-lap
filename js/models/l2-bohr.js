@@ -1,5 +1,5 @@
 // Mô hình Lí 2: nguyên tử Rutherford – Bohr. Z từ 1 đến 36 (proton, neutron của đồng vị phổ biến nhất, electron theo lớp),
-// mẫu Rutherford sụp đổ theo điện từ học cổ điển, quang phổ vạch hydro (Lyman, Balmer, Paschen). Công thức Bohr chỉ đúng cho H.
+// mẫu Rutherford sụp đổ theo điện từ học cổ điển, quang phổ vạch hydrogen (Lyman, Balmer, Paschen). Công thức Bohr chỉ đúng cho H.
 (function () {
   // số neutron của đồng vị phổ biến nhất, Z = 1…36 (Cu-63 và Zn-64 đều có 34 neutron)
   const NEU = [0, 2, 4, 5, 6, 6, 7, 8, 10, 10, 12, 12, 14, 14, 16, 16, 18, 22, 20, 20, 24, 26, 28, 28, 30, 30, 32, 30, 34, 34, 38, 42, 42, 46, 44, 48];
@@ -57,7 +57,7 @@
     const zs = api.slider({ label: 'Số hiệu nguyên tử Z', min: 1, max: 36, step: 1, value: s.Z, unit: '', onInput(v) { s.Z = v; rebuild(); } });
     api.choices({ label: 'Mẫu nguyên tử', items: [{ t: 'Bohr (trạng thái dừng)', v: 'bohr' }, { t: 'Rutherford (cổ điển)', v: 'ruth' }], value: s.mode, onPick(v) { s.mode = v; s.collapse = 0; s.saidRuth = false; } });
     api.button('↺ Dựng lại nguyên tử', () => zs.set(s.Z));
-    api.note('Proton đỏ, neutron xám, electron xanh. Số neutron lấy theo đồng vị phổ biến nhất. Hình vẽ chỉ minh họa số electron trên từng lớp; công thức bán kính và năng lượng của Bohr chỉ đúng cho nguyên tử hydro.');
+    api.note('Proton đỏ, neutron xám, electron xanh. Số neutron lấy theo đồng vị phổ biến nhất. Hình vẽ chỉ minh họa số electron trên từng lớp; công thức bán kính và năng lượng của Bohr chỉ đúng cho nguyên tử hydrogen.');
     rebuild();
     api.view({ pos: [0, 5, 12], target: [0, 0, 0], min: 2, max: 30 });
   }
@@ -65,7 +65,7 @@
   function spectrum(api) {
     const T = api.T, K = 0.16, rad = n => K * n * n + 0.25;
     const nucl = api.sphere(0.22, api.mat(0xEF4444), [0, 0, 0], null, 20);
-    api.part(nucl, { name: 'Hạt nhân hydro (1 proton)', rows: [['Điện tích', '+e']] });
+    api.part(nucl, { name: 'Hạt nhân hydrogen (1 proton)', rows: [['Điện tích', '+e']] });
     for (let n = 1; n <= 6; n++) {
       const ring = api.mesh(new T.TorusGeometry(rad(n), 0.02, 8, 160), api.mat(0x7DD3FC, { opacity: 0.5, depthWrite: false })); ring.rotation.x = Math.PI / 2;
       api.part(ring, { name: `Quỹ đạo dừng n = ${n}`, rows: [['Bán kính', `rₙ = n²r₀ = ${n * n} × 0,053 nm = ${vn(n * n * 0.053, 3)} nm`], ['Năng lượng', `Eₙ = −13,6/n² = ${vn(-13.6 / (n * n), 2)} eV`]], focus: false });
@@ -99,11 +99,11 @@
       res.set(`Electron nhảy từ n = ${s.up} xuống n = ${s.low}, phát ra 1 photon<br>ε = E${s.up} − E${s.low} = <b>${vn(dE, 2)} eV</b><br>λ = hc/ε ≈ <b>${vn(L, 0)} nm</b> · dãy ${ser}`);
       api.beep(300 + 2e5 / L, 0.25, 'sine', 0.12);
     };
-    api.section('🌈 Quang phổ vạch hydro');
+    api.section('🌈 Quang phổ vạch hydrogen');
     api.choices({ label: 'Mức năng lượng ban đầu (trên)', items: [2, 3, 4, 5, 6].map(n => ({ t: 'n = ' + n, v: n })), value: s.up, onPick(v) { s.up = v; cur = v; } });
     api.choices({ label: 'Mức năng lượng sau (dưới)', items: [1, 2, 3].map(n => ({ t: 'n = ' + n, v: n })), value: s.low, onPick(v) { s.low = v; } });
     api.button('✨ Cho electron chuyển mức', emit);
-    api.note('Electron chỉ phát photon khi chuyển từ mức cao xuống mức thấp. Năng lượng photon đúng bằng hiệu hai mức: ε = E<sub>cao</sub> − E<sub>thấp</sub>. Vì các mức là rời rạc nên quang phổ hydro là các <b>vạch</b> riêng biệt, không liên tục.');
+    api.note('Electron chỉ phát photon khi chuyển từ mức cao xuống mức thấp. Năng lượng photon đúng bằng hiệu hai mức: ε = E<sub>cao</sub> − E<sub>thấp</sub>. Vì các mức là rời rạc nên quang phổ hydrogen là các <b>vạch</b> riêng biệt, không liên tục.');
     // dải quang phổ ở dưới màn hình
     api.strip({ h: innerHeight < 500 ? 62 : 96, draw(x, w, h) {
       x.clearRect(0, 0, w, h); x.fillStyle = '#0B1220'; x.fillRect(0, 0, w, h);
@@ -120,13 +120,13 @@
 
   NL.m3d.register('LM2', {
     title: 'Nguyên tử Rutherford – Bohr',
-    tabs: [{ t: '⚛️ Cấu tạo nguyên tử', v: 'atom' }, { t: '🌈 Quang phổ hydro', v: 'spec' }],
+    tabs: [{ t: '⚛️ Cấu tạo nguyên tử', v: 'atom' }, { t: '🌈 Quang phổ hydrogen', v: 'spec' }],
     init() { s = { Z: 6, mode: 'bohr', up: 3, low: 2, lines: [] }; },
     build(api, tab) { if (tab === 'atom') atom(api); else spectrum(api); },
     data() {
       const C = NL.chem3d, el = C.EL[s.Z - 1], N = NEU[s.Z - 1];
       return {
-        title: 'Mức năng lượng và vạch quang phổ của hydro', sub: `Nguyên tố đang xem: ${el.vi} (${el.sym}), ${s.Z} proton, ${N} neutron, ${s.Z} electron, lớp ${C.shells(s.Z).join('-')}`,
+        title: 'Mức năng lượng và vạch quang phổ của hydrogen', sub: `Nguyên tố đang xem: ${el.vi} (${el.sym}), ${s.Z} proton, ${N} neutron, ${s.Z} electron, lớp ${C.shells(s.Z).join('-')}`,
         sheets: [
           { name: 'Mức năng lượng H', head: ['n', 'rₙ (nm)', 'Eₙ (eV)'], rows: [1, 2, 3, 4, 5, 6].map(n => [n, vn(0.053 * n * n, 3), vn(-13.6 / (n * n), 3)]) },
           { name: 'Vạch em đã tạo', head: ['Từ n', 'Xuống n', 'ε (eV)', 'λ (nm)'], rows: s.lines.length ? s.lines.map(l => [l.n, l.m, vn(l.dE, 3), vn(l.L, 1)]) : [['–', '–', '–', '–']] }

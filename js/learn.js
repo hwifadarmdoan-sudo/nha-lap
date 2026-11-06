@@ -99,7 +99,7 @@ NL.learn = (function () {
       text: 'Dung dịch iodine. Gặp tinh bột thì chuyển màu xanh tím, hết tinh bột thì giữ màu vàng nâu.', pic: ''
     },
     allele: {
-      words: ['allele', 'alen'], name: 'Allele (alen)',
+      words: ['allele', 'allele'], name: 'Allele (allele)',
       text: 'Các phiên bản khác nhau của cùng một gene, ví dụ A và a.', pic: ''
     },
     tamthu: {
@@ -111,12 +111,12 @@ NL.learn = (function () {
       text: 'Số dưới của huyết áp: áp lực máu khi tim giãn ra nghỉ giữa hai nhịp.', pic: ''
     },
     kytg: {
-      words: ['kỳ trung gian'], name: 'Kỳ trung gian',
-      text: 'Giai đoạn tế bào lớn lên và nhân đôi DNA, trước khi bước vào nguyên phân. Đây là phần dài nhất của chu kỳ tế bào.', pic: ''
+      words: ['kì trung gian'], name: 'Kì trung gian',
+      text: 'Giai đoạn tế bào lớn lên và nhân đôi DNA, trước khi bước vào nguyên phân. Đây là phần dài nhất của chu kì tế bào.', pic: ''
     },
     nguyenphan: {
       words: ['nguyên phân'], name: 'Nguyên phân',
-      text: 'Cách tế bào chia một thành hai tế bào con giống hệt nhau, gồm kỳ đầu, giữa, sau, cuối.', pic: ''
+      text: 'Cách tế bào chia một thành hai tế bào con giống hệt nhau, gồm kì đầu, giữa, sau, cuối.', pic: ''
     },
     giaytham: {
       words: ['giấy thấm'], name: 'Giấy thấm',

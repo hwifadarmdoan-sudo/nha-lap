@@ -124,7 +124,7 @@
         api.tapable(st.pw, () => {
           if (!st.gog) {
             P.alarm(api); api.setOn(st.pw, false);
-            api.lesson({ title: 'Bật laser khi chưa đeo kính bảo hộ', text: 'Tia laser hội tụ năng lượng vào một điểm rất nhỏ. Nếu lỡ chiếu vào mắt hoặc phản xạ từ mặt kim loại vào mắt, võng mạc có thể bị tổn thương vĩnh viễn.', sub: 'Bài học: đeo kính bảo hộ trước khi bật laser, không bao giờ nhìn thẳng vào tia laser hay chiếu vào mắt người khác.', btn: '🥽 Đeo kính trước' }, () => {});
+            api.lesson({ title: 'Bật laser khi chưa đeo kính bảo hộ', text: 'Tia laser hội tụ năng lượng vào một điểm rất nhỏ. Nếu lỡ chiếu vào mắt hoặc phản xạ từ mặt kim loại vào mắt, màng lưới có thể bị tổn thương vĩnh viễn.', sub: 'Bài học: đeo kính bảo hộ trước khi bật laser, không bao giờ nhìn thẳng vào tia laser hay chiếu vào mắt người khác.', btn: '🥽 Đeo kính trước' }, () => {});
             return;
           }
           st.on = true; st.pwT.textContent = '● Đang chiếu'; NL.audio.play('hum'); api.say('Trên màn hiện ra các vạch sáng tối xen kẽ: vân giao thoa'); ready();

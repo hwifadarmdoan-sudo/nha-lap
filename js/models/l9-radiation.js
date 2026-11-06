@@ -2,7 +2,7 @@
 (function () {
   const vn = (v, d) => (+v).toFixed(d).replace('.', ',');
   const TYPES = {
-    a: { t: 'Tia α (alpha)', col: 0xEF4444, r: 0.17, v: 3.2, ay: -1.6, stop: 1, what: 'Hạt nhân heli ⁴₂He, mang điện +2e' },
+    a: { t: 'Tia α (alpha)', col: 0xEF4444, r: 0.17, v: 3.2, ay: -1.6, stop: 1, what: 'Hạt nhân helium ⁴₂He, mang điện +2e' },
     b: { t: 'Tia β⁻ (beta)', col: 0x38BDF8, r: 0.09, v: 6, ay: 9, stop: 2, what: 'Electron, mang điện −e, rất nhẹ' },
     g: { t: 'Tia γ (gamma)', col: 0xFDE047, r: 0.08, v: 8, ay: 0, stop: 9, what: 'Sóng điện từ năng lượng rất cao (photon), không mang điện' }
   };
@@ -75,7 +75,7 @@
   }
 
   // ---------- chu kì bán rã ----------
-  const ISO = { i131: { t: 'Iốt-131', T: 8, u: 'ngày', use: 'Chẩn đoán và điều trị bệnh tuyến giáp' }, c14: { t: 'Cacbon-14', T: 5730, u: 'năm', use: 'Xác định tuổi cổ vật, hóa thạch' }, rn222: { t: 'Radon-222', T: 3.8, u: 'ngày', use: 'Khí phóng xạ tự nhiên trong đất đá' } };
+  const ISO = { i131: { t: 'iodine-131', T: 8, u: 'ngày', use: 'Chẩn đoán và điều trị bệnh tuyến giáp' }, c14: { t: 'Carbon-14', T: 5730, u: 'năm', use: 'Xác định tuổi cổ vật, hóa thạch' }, rn222: { t: 'Radon-222', T: 3.8, u: 'ngày', use: 'Khí phóng xạ tự nhiên trong đất đá' } };
   function halfLife(api) {
     const T = api.T, NG = 20, N0 = NG * NG;
     const im = new T.InstancedMesh(new T.SphereGeometry(0.2, 12, 8), api.mat(0xFFFFFF, { emissive: 0xFFFFFF, emissiveIntensity: 0.25 }), N0), m4 = new T.Matrix4();

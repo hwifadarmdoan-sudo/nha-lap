@@ -2,7 +2,7 @@
 (function () {
   const P = NL.phys, vn = P.vn, D2R = Math.PI / 180;
   const OX = 310, OY = 260, TOP = 80, BOT = 470, LEFT = 50, RIGHT = 570, RAD = 175;
-  const MED = { w: { t: 'Nước', n: 1.33, col: 'rgba(90,170,230,.35)' }, g: { t: 'Thủy tinh', n: 1.5, col: 'rgba(160,220,210,.4)' }, x: { t: 'Nhựa bí ẩn', n: 1.46, col: 'rgba(230,200,140,.35)' } };
+  const MED = { w: { t: 'Nước', n: 1.33, col: 'rgba(90,170,230,.35)' }, g: { t: 'Sao Thủy', n: 1.5, col: 'rgba(160,220,210,.4)' }, x: { t: 'Nhựa bí ẩn', n: 1.46, col: 'rgba(230,200,140,.35)' } };
   let st, api_;
   const $ = id => document.getElementById(id);
 
@@ -110,7 +110,7 @@
       label: () => `Đo góc · ${st.rows.length}/4 lần`, text: 'Đổi góc tới i, đọc góc khúc xạ r rồi bấm Ghi. Đo 4 góc, có thể đổi sang thủy tinh', hint: 'Kéo thanh góc tới, rồi bấm 📌 Ghi số liệu',
       enter(api) {
         sideTable(api);
-        api.choices({ label: 'Khối bên dưới', items: [{ t: 'Nước', v: 'w' }, { t: 'Thủy tinh', v: 'g' }], value: st.med, onPick: setMed });
+        api.choices({ label: 'Khối bên dưới', items: [{ t: 'Nước', v: 'w' }, { t: 'Sao Thủy', v: 'g' }], value: st.med, onPick: setMed });
         slider(api);
         P.recButton(api, '📌 Ghi số liệu', () => { if (record(api)) { $('stepNo').textContent = `Đo góc · ${st.rows.length}/4 lần`; if (st.rows.length >= 4) api.done('Đo khối nhựa bí ẩn ➜'); } });
       }

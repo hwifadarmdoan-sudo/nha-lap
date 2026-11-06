@@ -128,7 +128,7 @@
         d.querySelectorAll('.seg-b').forEach(b => b.addEventListener('click', () => {
           if (b.dataset.k === 'nose') {
             NL.audio.play('click');
-            api.lesson({ title: 'Ghé sát mũi ngửi thẳng vào ống', text: 'Ối, cay xè mũi! Trong ống vẫn còn hơi acetic acid và axit đặc, hít thẳng một luồng đậm rất hại đường thở.', sub: 'Bài học: không bao giờ ghé mũi vào miệng ống. Để ống cách mặt, dùng tay phẩy nhẹ cho một ít hơi bay tới mũi.', btn: '🔁 Ngửi lại cho đúng' }, () => b.remove());
+            api.lesson({ title: 'Ghé sát mũi ngửi thẳng vào ống', text: 'Ối, cay xè mũi! Trong ống vẫn còn hơi acetic acid và acid đặc, hít thẳng một luồng đậm rất hại đường thở.', sub: 'Bài học: không bao giờ ghé mũi vào miệng ống. Để ống cách mặt, dùng tay phẩy nhẹ cho một ít hơi bay tới mũi.', btn: '🔁 Ngửi lại cho đúng' }, () => b.remove());
             return;
           }
           d.remove(); st.smell = null; NL.audio.play('ting');

@@ -2,14 +2,14 @@
 // Khoảng cách và kích thước KHÔNG theo tỉ lệ thật (ghi rõ trên màn hình); chu kì quỹ đạo là số liệu thật.
 (function () {
   const PL = [
-    { n: 'Thủy tinh', e: 'Mercury', a: 0.387, T: 0.241, r: 0.17, c: 0x9CA3AF, d: '4 879 km', m: 'Không có', x: 'Gần Mặt Trời nhất, ngày nóng 430 °C, đêm lạnh −180 °C vì gần như không có khí quyển' },
-    { n: 'Kim tinh', e: 'Venus', a: 0.723, T: 0.615, r: 0.3, c: 0xE8C27A, d: '12 104 km', m: 'Không có', x: 'Nóng nhất hệ Mặt Trời (~465 °C) do khí quyển CO₂ dày gây hiệu ứng nhà kính rất mạnh' },
+    { n: 'Sao Thủy', e: 'Mercury', a: 0.387, T: 0.241, r: 0.17, c: 0x9CA3AF, d: '4 879 km', m: 'Không có', x: 'Gần Mặt Trời nhất, ngày nóng 430 °C, đêm lạnh −180 °C vì gần như không có khí quyển' },
+    { n: 'Sao Kim', e: 'Venus', a: 0.723, T: 0.615, r: 0.3, c: 0xE8C27A, d: '12 104 km', m: 'Không có', x: 'Nóng nhất hệ Mặt Trời (~465 °C) do khí quyển CO₂ dày gây hiệu ứng nhà kính rất mạnh' },
     { n: 'Trái Đất', e: 'Earth', a: 1, T: 1, r: 0.32, c: 0x3B82F6, d: '12 742 km', m: '1 (Mặt Trăng)', x: 'Hành tinh duy nhất biết có sự sống, có nước lỏng trên bề mặt' },
-    { n: 'Hỏa tinh', e: 'Mars', a: 1.524, T: 1.881, r: 0.24, c: 0xDC6B3C, d: '6 779 km', m: '2', x: 'Màu đỏ do bụi sắt oxit, có núi lửa Olympus Mons cao nhất hệ Mặt Trời' },
-    { n: 'Mộc tinh', e: 'Jupiter', a: 5.203, T: 11.86, r: 0.9, c: 0xD9A066, d: '139 820 km', m: '95', x: 'Lớn nhất, là hành tinh khí. Vết Đỏ Lớn là cơn bão rộng hơn cả Trái Đất' },
-    { n: 'Thổ tinh', e: 'Saturn', a: 9.537, T: 29.46, r: 0.76, c: 0xE9D29B, d: '116 460 km', m: '146', x: 'Có hệ vành đai rực rỡ làm từ băng và đá, khối lượng riêng nhỏ hơn nước' },
-    { n: 'Thiên vương tinh', e: 'Uranus', a: 19.19, T: 84.01, r: 0.5, c: 0x8FD3E0, d: '50 724 km', m: '28', x: 'Trục quay nghiêng gần 98°, như đang "lăn" trên quỹ đạo' },
-    { n: 'Hải vương tinh', e: 'Neptune', a: 30.07, T: 164.8, r: 0.48, c: 0x4F6FE0, d: '49 244 km', m: '16', x: 'Xa nhất, gió mạnh nhất hệ Mặt Trời (hơn 2 000 km/h)' }
+    { n: 'Sao Hỏa', e: 'Mars', a: 1.524, T: 1.881, r: 0.24, c: 0xDC6B3C, d: '6 779 km', m: '2', x: 'Màu đỏ do bụi sắt oxit, có núi lửa Olympus Mons cao nhất hệ Mặt Trời' },
+    { n: 'Sao Mộc', e: 'Jupiter', a: 5.203, T: 11.86, r: 0.9, c: 0xD9A066, d: '139 820 km', m: '95', x: 'Lớn nhất, là hành tinh khí. Vết Đỏ Lớn là cơn bão rộng hơn cả Trái Đất' },
+    { n: 'Sao Thổ', e: 'Saturn', a: 9.537, T: 29.46, r: 0.76, c: 0xE9D29B, d: '116 460 km', m: '146', x: 'Có hệ vành đai rực rỡ làm từ băng và đá, khối lượng riêng nhỏ hơn nước' },
+    { n: 'Sao Thiên Vương', e: 'Uranus', a: 19.19, T: 84.01, r: 0.5, c: 0x8FD3E0, d: '50 724 km', m: '28', x: 'Trục quay nghiêng gần 98°, như đang "lăn" trên quỹ đạo' },
+    { n: 'Sao Hải Vương', e: 'Neptune', a: 30.07, T: 164.8, r: 0.48, c: 0x4F6FE0, d: '49 244 km', m: '16', x: 'Xa nhất, gió mạnh nhất hệ Mặt Trời (hơn 2 000 km/h)' }
   ];
   const R = a => 3.2 + 3.9 * Math.sqrt(a); // khoảng cách hiển thị (nén)
   const vn = (v, d) => (+v).toFixed(d).replace('.', ',');
@@ -33,10 +33,10 @@
       const lab = api.label(p.n, g, { cls: 'plain', off: [0, p.r + 0.35, 0] });
       return { p, g, rr, ph: k * 0.8, lab };
     });
-    // vành đai tiểu hành tinh giữa Hỏa tinh và Mộc tinh
+    // vành đai tiểu hành tinh giữa Sao Hỏa và Sao Mộc
     const rnd = api.rand(9), n = 400, im = new T.InstancedMesh(new T.IcosahedronGeometry(0.05, 0), api.mat(0x8B7E6E), n), m4 = new T.Matrix4();
     for (let k = 0; k < n; k++) { const a = rnd() * 6.283, r = R(2.2 + rnd() * 1.1); m4.makeTranslation(Math.cos(a) * r, (rnd() - 0.5) * 0.3, Math.sin(a) * r); im.setMatrixAt(k, m4); }
-    api.root.add(im); api.part(im, { name: 'Vành đai tiểu hành tinh', rows: [['Vị trí', 'Giữa Hỏa tinh và Mộc tinh (2,2 – 3,3 AU)'], ['Thành phần', 'Hàng triệu khối đá, kim loại nhỏ']] });
+    api.root.add(im); api.part(im, { name: 'Vành đai tiểu hành tinh', rows: [['Vị trí', 'Giữa Sao Hỏa và Sao Mộc (2,2 – 3,3 AU)'], ['Thành phần', 'Hàng triệu khối đá, kim loại nhỏ']] });
     api.onFrame(dt => {
       if (!s.pause) s.t += dt * s.speed;
       s.pl.forEach(o => { const a = o.ph + 2 * Math.PI * s.t / o.p.T; o.g.position.set(Math.cos(a) * o.rr, 0, -Math.sin(a) * o.rr); o.g.rotation.y += dt * 2; });

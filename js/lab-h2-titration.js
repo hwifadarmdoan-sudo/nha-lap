@@ -42,7 +42,7 @@
     el('rect', { x: -35, y: -50, width: 70, height: 48, fill: 'rgba(200,230,250,.6)' }, bk);
     api.text(bk, 0, 26, 'HCl chưa biết nồng độ', 13, '#6C88A3', 700);
     st.pip = A.pipette(api, L, 110, 380, { len: 150 });
-    st.ph = A.dropper(api, L, 215, 505, 'Phenol.', '#F4F0FF');
+    st.ph = A.dropper(api, L, 215, 505, 'Phenolphthalein', '#F4F0FF');
     st.lens = NL.chem.lens(api, L, 640, 170, 82, { title: '🔍 Kính lúp hạt: trong bình' }); st.lens.g.style.display = 'none';
   }
   function setFlask(V) {

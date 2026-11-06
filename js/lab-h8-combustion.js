@@ -4,7 +4,7 @@
   const A = NL.art;
   const FX = 300, FY = 430;
   const FUEL = {
-    CH4: { t: 'CH₄ (khí metan, biogas)', s: 'CH₄', flame: '#4A8FE7', core: '#BFE0FF', h: 70, soot: 0, smoke: 0, pctC: 75, eq: 'CH₄ + 2O₂ → CO₂ + 2H₂O', see: 'Lửa xanh, không khói', sootTxt: 'Không có' },
+    CH4: { t: 'CH₄ (khí methane, biogas)', s: 'CH₄', flame: '#4A8FE7', core: '#BFE0FF', h: 70, soot: 0, smoke: 0, pctC: 75, eq: 'CH₄ + 2O₂ → CO₂ + 2H₂O', see: 'Lửa xanh, không khói', sootTxt: 'Không có' },
     C2H2: { t: 'C₂H₂ (khí acetylene)', s: 'C₂H₂', flame: '#FFC531', core: '#FFF4C2', h: 120, soot: 1, smoke: 1, pctC: 92.3, eq: '2C₂H₂ + 5O₂ → 4CO₂ + 2H₂O', see: 'Lửa vàng sáng, nhiều khói đen', sootTxt: 'Rất nhiều' },
     WAX: { t: 'Nến (paraffin)', s: 'C₂₅H₅₂', flame: '#FFA531', core: '#FFE9B0', h: 80, soot: 0.45, smoke: 0.3, pctC: 85.2, eq: 'C₂₅H₅₂ + 38O₂ → 25CO₂ + 26H₂O', see: 'Lửa vàng, hơi có khói', sootTxt: 'Một ít' }
   };
@@ -81,7 +81,7 @@
       label: () => `Chất đốt ${st.rows.length + 1}/3`, text: 'Chọn chất đốt rồi chạm bật lửa để đốt', hint: 'Chọn một chất bên phải, rồi chạm bật lửa đỏ',
       enter(api) {
         sideTable(api);
-        if (!api.prediction) api.ask({ predict: true, q: 'Đốt chất nào trong không khí sẽ có nhiều khói đen (muội than) nhất?', options: [{ t: 'CH₄ (khí metan)' }, { t: 'C₂H₂ (khí acetylene)' }, { t: 'Cả hai như nhau' }] });
+        if (!api.prediction) api.ask({ predict: true, q: 'Đốt chất nào trong không khí sẽ có nhiều khói đen (muội than) nhất?', options: [{ t: 'CH₄ (khí methane)' }, { t: 'C₂H₂ (khí acetylene)' }, { t: 'Cả hai như nhau' }] });
         st.fl.style.display = 'none'; st.smokeG.innerHTML = ''; st.lens.g.style.display = 'none';
         st.sootSpot.setAttribute('rx', 0); st.sootSpot.setAttribute('ry', 0);
         const left = KEYS.filter(k => !st.done[k]);

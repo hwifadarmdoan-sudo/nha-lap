@@ -1,4 +1,4 @@
-// Mô hình Lí 5: động cơ điện một chiều (lực từ F = BIL lên hai cạnh khung, cổ góp đổi chiều dòng điện, vị trí chết, mô men theo góc) và quy tắc bàn tay trái.
+// Mô hình Lí 5: động cơ điện một chiều (lực từ F = BIL lên hai cạnh khung, cổ góp đổi chiều dòng điện, vị trí chết, moment theo góc) và quy tắc bàn tay trái.
 (function () {
   const vn = (v, d) => (+v).toFixed(d).replace('.', ',');
   const B = 0.5, AREA = 0.002, RES = 4, J = 1.25e-4, FR = 2e-5, SLOW = 20; // T, m², Ω, kg·m², ma sát, chiếu chậm 20 lần
@@ -16,7 +16,7 @@
       const ln = api.lineBetween([-3, y, z], [3, y, z], 0.018, api.mat(0xFDE047, { opacity: 0.45, depthWrite: false }), fl); ln.userData.noPick = true;
       const c = api.mesh(new T.ConeGeometry(0.08, 0.24, 8), api.mat(0xFDE047, { opacity: 0.6 }), [0.9, y, z], fl); c.rotation.z = -Math.PI / 2; c.userData.noPick = true;
     });
-    // rô to: khung dây + trục + cổ góp
+    // rotor: khung dây + trục + cổ góp
     const rotor = api.group();
     const turns = () => Math.round(3 + s.N / 50);
     let coil = null;
@@ -60,7 +60,7 @@
     const sw = () => (s.comm ? (Math.cos(s.phi) >= 0 ? 1 : -1) : 1);
     const torque = (I, phi) => s.N * B * AREA * I * Math.cos(phi) * (s.comm ? (Math.cos(phi) >= 0 ? 1 : -1) : 1);
     api.section('⚙️ Động cơ điện một chiều');
-    const runBtn = api.button('▶ Đóng mạch', b => { s.on = !s.on; b.textContent = s.on ? '⏸ Ngắt mạch' : '▶ Đóng mạch'; if (s.on && Math.abs(s.w) < 0.05 && Math.abs(Math.cos(s.phi)) < 0.03) api.warn('dead', 'Khung dây đang nằm ở <b>vị trí chết</b>: mặt khung vuông góc với đường sức. Hai lực từ lúc này cùng phương thẳng đứng, ngược chiều và nằm trong mặt phẳng khung nên không tạo mô men quay. Đứng yên ở đây thì đóng mạch động cơ cũng không tự khởi động được.<br>Khi đang quay, khung vẫn vượt qua vị trí này nhờ <b>quán tính</b>. Động cơ thật dùng nhiều khung dây đặt lệch nhau để không bao giờ kẹt.', '🤔 Vì sao không quay?'); });
+    const runBtn = api.button('▶ Đóng mạch', b => { s.on = !s.on; b.textContent = s.on ? '⏸ Ngắt mạch' : '▶ Đóng mạch'; if (s.on && Math.abs(s.w) < 0.05 && Math.abs(Math.cos(s.phi)) < 0.03) api.warn('dead', 'Khung dây đang nằm ở <b>vị trí chết</b>: mặt khung vuông góc với đường sức. Hai lực từ lúc này cùng phương thẳng đứng, ngược chiều và nằm trong mặt phẳng khung nên không tạo moment quay. Đứng yên ở đây thì đóng mạch động cơ cũng không tự khởi động được.<br>Khi đang quay, khung vẫn vượt qua vị trí này nhờ <b>quán tính</b>. Động cơ thật dùng nhiều khung dây đặt lệch nhau để không bao giờ kẹt.', '🤔 Vì sao không quay?'); });
     api.slider({ label: 'Điện áp nguồn U', min: 0, max: 12, step: 1, value: s.U, unit: 'V', onInput(v) { s.U = v; } });
     api.choices({ label: 'Số vòng dây N', items: [50, 100, 200].map(n => ({ t: n + ' vòng', v: n })), value: s.N, onPick(v) { s.N = v; buildCoil(); } });
     api.button('🔁 Đổi cực nguồn', () => { s.pol *= -1; api.toast('Đã đổi cực nguồn: dòng điện trong khung đổi chiều'); });
@@ -78,7 +78,7 @@
       x.strokeStyle = '#334155'; x.lineWidth = 1; x.beginPath(); x.moveTo(L0, mid); x.lineTo(w - 16, mid); x.stroke();
       x.font = `700 ${Math.round(h / 7)}px 'Baloo 2', sans-serif`; x.fillStyle = '#94A3B8';
       [0, 90, 180, 270, 360].forEach(d => x.fillText(d + '°', X(d * Math.PI / 180) - 10, h - 4));
-      x.fillText('Mô men', 6, mid + 4); x.fillStyle = '#F59E0B'; x.fillText(s.comm ? 'có cổ góp: luôn cùng chiều' : 'không cổ góp: đổi chiều mỗi nửa vòng', L0, 20);
+      x.fillText('Moment', 6, mid + 4); x.fillStyle = '#F59E0B'; x.fillText(s.comm ? 'có cổ góp: luôn cùng chiều' : 'không cổ góp: đổi chiều mỗi nửa vòng', L0, 20);
       x.strokeStyle = '#F59E0B'; x.lineWidth = 2; x.beginPath();
       for (let k = 0; k <= 200; k++) { const a = k / 200 * 2 * Math.PI, v = Math.cos(a) * (s.comm ? Math.sign(Math.cos(a)) || 0 : 1) * s.pol; const px = X(a), py = mid - v * A; k ? x.lineTo(px, py) : x.moveTo(px, py); }
       x.stroke();
@@ -103,10 +103,10 @@
       [curA, curB].forEach((c, k) => { c.rotation.x = ((k ? -1 : 1) * sg > 0) ? Math.PI / 2 : -Math.PI / 2; c.scale.setScalar(I ? 1 : 0.001); });
       const rpm = Math.abs(s.w) * 60 / (2 * Math.PI);
       batL.set(`${s.pol > 0 ? '+ −' : '− +'}  ${s.U} V`);
-      info.set(`I = ${vn(Math.abs(I), 2)} A · F mỗi cạnh = N·B·I·l = ${vn(F, 2)} N<br>Mô men lúc này: <b>${vn(Math.abs(torque(I, s.phi)) * 1000, 1)} mN·m</b> · tốc độ ${vn(rpm, 0)} vòng/phút<br><span style="opacity:.7">Hình được chiếu chậm ${SLOW} lần</span>`);
+      info.set(`I = ${vn(Math.abs(I), 2)} A · F mỗi cạnh = N·B·I·l = ${vn(F, 2)} N<br>Moment lúc này: <b>${vn(Math.abs(torque(I, s.phi)) * 1000, 1)} mN·m</b> · tốc độ ${vn(rpm, 0)} vòng/phút<br><span style="opacity:.7">Hình được chiếu chậm ${SLOW} lần</span>`);
       if (!s.comm && s.on) res.set(Math.abs(s.w) < 0.4 ? 'Khung đã dừng ở vị trí chết vì không có cổ góp.' : 'Không có cổ góp: khung lắc qua lắc lại quanh vị trí chết...');
       else if (!s.on) res.set('Bấm Đóng mạch để cho dòng điện chạy qua khung dây.');
-      else if (s.comm && s.on && rpm > 50) res.set('Khung quay đều một chiều. Khi khung vuông góc với đường sức, mô men bằng 0 nhưng khung vẫn vượt qua nhờ quán tính.');
+      else if (s.comm && s.on && rpm > 50) res.set('Khung quay đều một chiều. Khi khung vuông góc với đường sức, moment bằng 0 nhưng khung vẫn vượt qua nhờ quán tính.');
     });
     void runBtn;
     api.view({ pos: [4.5, 5, 11], target: [0, -0.3, 0.6], min: 4, max: 30 });
@@ -170,9 +170,9 @@
       const angs = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360], I0 = s.U / RES;
       const tq = (n, a, c) => { const cs = Math.cos(a * Math.PI / 180); return n * B * AREA * I0 * cs * (c ? (Math.abs(cs) < 1e-9 ? 0 : Math.sign(cs)) : 1) * 1000; };
       return {
-        title: 'Mô men lực từ lên khung dây theo góc quay', sub: `U = ${s.U} V, R = ${RES} Ω, dòng khởi động I = ${vn(I0, 2)} A, B = ${vn(B, 1)} T, diện tích khung 20 cm². Góc 90° và 270° là vị trí chết.`,
-        sheets: [{ name: 'Mô men theo góc', head: ['Góc (°)', 'Có cổ góp, 100 vòng (mN·m)', 'Không cổ góp, 100 vòng (mN·m)', 'Có cổ góp, 200 vòng (mN·m)'], rows: angs.map(a => [a, vn(tq(100, a, 1), 1), vn(tq(100, a, 0), 1), vn(tq(200, a, 1), 1)]) }],
-        chart: { type: 'line', xLabel: 'Góc quay (°)', yLabel: 'Mô men (mN·m)', xMin: 0, xMax: 360, yMin: -Math.ceil(tq(200, 0, 1) / 10) * 10, yMax: Math.ceil(tq(200, 0, 1) / 10) * 10 || 10,
+        title: 'Moment lực từ lên khung dây theo góc quay', sub: `U = ${s.U} V, R = ${RES} Ω, dòng khởi động I = ${vn(I0, 2)} A, B = ${vn(B, 1)} T, diện tích khung 20 cm². Góc 90° và 270° là vị trí chết.`,
+        sheets: [{ name: 'Moment theo góc', head: ['Góc (°)', 'Có cổ góp, 100 vòng (mN·m)', 'Không cổ góp, 100 vòng (mN·m)', 'Có cổ góp, 200 vòng (mN·m)'], rows: angs.map(a => [a, vn(tq(100, a, 1), 1), vn(tq(100, a, 0), 1), vn(tq(200, a, 1), 1)]) }],
+        chart: { type: 'line', xLabel: 'Góc quay (°)', yLabel: 'Moment (mN·m)', xMin: 0, xMax: 360, yMin: -Math.ceil(tq(200, 0, 1) / 10) * 10, yMax: Math.ceil(tq(200, 0, 1) / 10) * 10 || 10,
           series: [{ name: 'Có cổ góp, 100 vòng', color: '#F59E0B', dots: true, points: angs.map(a => [a, +tq(100, a, 1).toFixed(2)]) }, { name: 'Không cổ góp, 100 vòng', color: '#38BDF8', dots: true, points: angs.map(a => [a, +tq(100, a, 0).toFixed(2)]) }, { name: 'Có cổ góp, 200 vòng', color: '#E86A92', dots: true, points: angs.map(a => [a, +tq(200, a, 1).toFixed(2)]) }] }
       };
     }

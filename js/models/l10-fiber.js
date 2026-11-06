@@ -1,12 +1,12 @@
-// Mô hình Lí 10: phản xạ toàn phần (góc giới hạn sin i_gh = n₂/n₁, chỉ xảy ra khi đi từ môi trường chiết quang hơn sang kém hơn) và sợi quang (dẫn ánh sáng qua khúc uốn, góc nhận ánh sáng, rò sáng khi uốn gắt).
+// Mô hình Lí 10: phản xạ toàn phần (góc tới hạn sin i_gh = n₂/n₁, chỉ xảy ra khi đi từ môi trường chiết quang hơn sang kém hơn) và sợi quang (dẫn ánh sáng qua khúc uốn, góc nhận ánh sáng, rò sáng khi uốn gắt).
 (function () {
   const vn = (v, d) => (+v).toFixed(d).replace('.', ',');
   const D = Math.PI / 180;
   const PAIRS = {
-    gl: { t: 'Thủy tinh → không khí', n1: 1.5, n2: 1, m1: 'Thủy tinh', m2: 'Không khí' },
+    gl: { t: 'Sao Thủy → không khí', n1: 1.5, n2: 1, m1: 'Sao Thủy', m2: 'Không khí' },
     wa: { t: 'Nước → không khí', n1: 1.33, n2: 1, m1: 'Nước', m2: 'Không khí' },
     di: { t: 'Kim cương → không khí', n1: 2.42, n2: 1, m1: 'Kim cương', m2: 'Không khí' },
-    ag: { t: 'Không khí → thủy tinh', n1: 1, n2: 1.5, m1: 'Không khí', m2: 'Thủy tinh' }
+    ag: { t: 'Không khí → thủy tinh', n1: 1, n2: 1.5, m1: 'Không khí', m2: 'Sao Thủy' }
   };
   const fresnel = (n1, n2, i) => { const st = n1 / n2 * Math.sin(i); if (st >= 1) return 1; const t = Math.asin(st), ci = Math.cos(i), ct = Math.cos(t); const rs = ((n1 * ci - n2 * ct) / (n1 * ci + n2 * ct)) ** 2, rp = ((n1 * ct - n2 * ci) / (n1 * ct + n2 * ci)) ** 2; return (rs + rp) / 2; };
   let s = null;
@@ -42,14 +42,14 @@
         const r = Math.asin(st); ray([0, 0], [R * Math.sin(r), R * Math.cos(r)], Math.max(0.12, 1 - Rf), 0.03 + 0.03 * (1 - Rf)); arc(1.4, 0, r, 0x4ADE80);
         txt = `Định luật khúc xạ: n₁·sin i = n₂·sin r<br>${vn(P.n1, 2)} × sin ${s.i}° = ${vn(P.n2, 2)} × sin r → r = <b>${vn(r / D, 1)}°</b><br>Phản xạ một phần: ${vn(Rf * 100, 0)}% · khúc xạ: ${vn((1 - Rf) * 100, 0)}%`;
       } else txt = `<b>Phản xạ toàn phần!</b> sin r tính ra bằng ${vn(st, 2)} > 1 nên không có tia khúc xạ. 100% ánh sáng phản xạ trở lại.`;
-      txt += ic ? `<br>Góc giới hạn: sin i<sub>gh</sub> = n₂/n₁ → i<sub>gh</sub> = <b>${vn(ic / D, 1)}°</b>` : '<br>Ánh sáng đi từ môi trường chiết quang <b>kém</b> sang chiết quang <b>hơn</b>: không có góc giới hạn.';
+      txt += ic ? `<br>Góc tới hạn: sin i<sub>gh</sub> = n₂/n₁ → i<sub>gh</sub> = <b>${vn(ic / D, 1)}°</b>` : '<br>Ánh sáng đi từ môi trường chiết quang <b>kém</b> sang chiết quang <b>hơn</b>: không có góc tới hạn.';
       info.set(txt);
-      if (!ic && s.i >= 80) api.warn('noTIR', 'Ánh sáng đang đi từ không khí (n = 1) vào thủy tinh (n = 1,5). Lúc này tia khúc xạ luôn lệch <b>gần</b> pháp tuyến hơn tia tới, nên dù góc tới lớn tới đâu vẫn luôn có tia khúc xạ.<br>Phản xạ toàn phần chỉ xảy ra khi ánh sáng đi từ môi trường chiết quang <b>hơn</b> sang môi trường chiết quang <b>kém</b>, với góc tới lớn hơn góc giới hạn.', '🤔 Không phản xạ toàn phần');
+      if (!ic && s.i >= 80) api.warn('noTIR', 'Ánh sáng đang đi từ không khí (n = 1) vào thủy tinh (n = 1,5). Lúc này tia khúc xạ luôn lệch <b>gần</b> pháp tuyến hơn tia tới, nên dù góc tới lớn tới đâu vẫn luôn có tia khúc xạ.<br>Phản xạ toàn phần chỉ xảy ra khi ánh sáng đi từ môi trường chiết quang <b>hơn</b> sang môi trường chiết quang <b>kém</b>, với góc tới lớn hơn góc tới hạn.', '🤔 Không phản xạ toàn phần');
     };
     api.section('💎 Phản xạ toàn phần');
     api.choices({ label: 'Ánh sáng đi từ … sang …', items: Object.keys(PAIRS).map(k => ({ t: PAIRS[k].t, v: k })), value: s.pair, onPick(v) { s.pair = v; update(); } });
     api.slider({ label: 'Góc tới i', min: 0, max: 89, step: 1, value: s.i, unit: '°', lazy: true, onInput(v) { s.i = v; update(); } });
-    api.note('🎯 Tăng dần góc tới, tìm góc mà tia khúc xạ vừa biến mất. So sánh góc đó giữa nước, thủy tinh và kim cương. Kim cương lấp lánh vì góc giới hạn rất nhỏ.');
+    api.note('🎯 Tăng dần góc tới, tìm góc mà tia khúc xạ vừa biến mất. So sánh góc đó giữa nước, thủy tinh và kim cương. Kim cương lấp lánh vì góc tới hạn rất nhỏ.');
     update();
     api.view({ pos: [0, 0.5, 13], target: [0, 0, 0], min: 4, max: 30 });
   }
@@ -113,7 +113,7 @@
       const core = api.mesh(new T.TubeGeometry(curve, 240, A, 20, false), api.mat(0x67E8F9, { opacity: 0.22, depthWrite: false, roughness: 0.05 }), null, fg);
       const clad = api.mesh(new T.TubeGeometry(curve, 240, A + 0.22, 20, false), api.mat(0xE2E8F0, { opacity: 0.1, depthWrite: false }), null, fg);
       api.part(core, { name: 'Lõi sợi quang', rows: [['Chiết suất', `n₁ = ${vn(NCORE, 2)} (lớn hơn vỏ)`], ['Ánh sáng', 'Phản xạ toàn phần liên tiếp ở mặt phân cách lõi – vỏ nên đi dọc theo lõi, kể cả khi sợi bị uốn cong']] });
-      api.part(clad, { name: 'Vỏ sợi quang', rows: [['Chiết suất', `n₂ = ${vn(NCLAD, 2)}`], ['Góc giới hạn lõi – vỏ', `i_gh = ${vn(Math.asin(NCLAD / NCORE) / D, 1)}°`]] });
+      api.part(clad, { name: 'Vỏ sợi quang', rows: [['Chiết suất', `n₂ = ${vn(NCLAD, 2)}`], ['Góc tới hạn lõi – vỏ', `i_gh = ${vn(Math.asin(NCLAD / NCORE) / D, 1)}°`]] });
       det.position.set(Rb, Rb + LV + 0.25, 0);
       const cx = (-LS - 3 + Rb) / 2 + 1.2, cy = (Rb + LV) / 2, dist = Math.max(14, (Rb + LS + 3) * 1.25, (Rb + LV + 2) * 1.9);
       api.view({ pos: [cx, cy + 0.5, dist], target: [cx, cy, 0], min: 4, max: 45 }); if (built) api.homeView(); built = true;
@@ -130,9 +130,9 @@
       rg.traverse(o => { o.userData.noPick = true; });
       detM.emissiveIntensity = r.ok ? 1.5 : 0;
       const na = Math.sqrt(NCORE * NCORE - NCLAD * NCLAD), amax = Math.asin(Math.min(1, na)) / D;
-      info.set(`${r.ok ? `✅ Ánh sáng tới đầu thu sau <b>${r.n}</b> lần phản xạ toàn phần.` : r.leak ? '❌ Ánh sáng <b>rò ra ngoài</b> (chấm cam): góc tới ở mặt lõi – vỏ nhỏ hơn góc giới hạn.' : '❌ Không tới được đầu thu.'}<br>Góc nhận lớn nhất của sợi (sợi thẳng): sin α<sub>max</sub> = √(n₁² − n₂²) = ${vn(na, 3)} → α<sub>max</sub> ≈ <b>${vn(amax, 1)}°</b>`);
-      if (r.leak && s.al > amax + 0.5) api.warn('wide', `Tia laser chiếu lệch quá ${vn(amax, 0)}° so với trục sợi. Vào trong lõi, tia gặp mặt lõi – vỏ với góc tới <b>nhỏ hơn góc giới hạn</b> ${vn(Math.asin(NCLAD / NCORE) / D, 1)}° nên một phần lớn ánh sáng khúc xạ ra vỏ rồi mất đi.<br>Muốn dẫn sáng tốt phải chiếu tia gần như dọc theo trục sợi.`, '💡 Rò sáng');
-      else if (r.leak) api.warn('bend', 'Sợi quang bị <b>uốn quá gắt</b>. Ở chỗ cong, tia sáng gặp thành sợi với góc tới nhỏ hơn, có lúc nhỏ hơn góc giới hạn nên ánh sáng rò ra ngoài. Vì vậy cáp quang khi lắp đặt có quy định bán kính uốn tối thiểu.', '💡 Rò sáng ở khúc uốn');
+      info.set(`${r.ok ? `✅ Ánh sáng tới đầu thu sau <b>${r.n}</b> lần phản xạ toàn phần.` : r.leak ? '❌ Ánh sáng <b>rò ra ngoài</b> (chấm cam): góc tới ở mặt lõi – vỏ nhỏ hơn góc tới hạn.' : '❌ Không tới được đầu thu.'}<br>Góc nhận lớn nhất của sợi (sợi thẳng): sin α<sub>max</sub> = √(n₁² − n₂²) = ${vn(na, 3)} → α<sub>max</sub> ≈ <b>${vn(amax, 1)}°</b>`);
+      if (r.leak && s.al > amax + 0.5) api.warn('wide', `Tia laser chiếu lệch quá ${vn(amax, 0)}° so với trục sợi. Vào trong lõi, tia gặp mặt lõi – vỏ với góc tới <b>nhỏ hơn góc tới hạn</b> ${vn(Math.asin(NCLAD / NCORE) / D, 1)}° nên một phần lớn ánh sáng khúc xạ ra vỏ rồi mất đi.<br>Muốn dẫn sáng tốt phải chiếu tia gần như dọc theo trục sợi.`, '💡 Rò sáng');
+      else if (r.leak) api.warn('bend', 'Sợi quang bị <b>uốn quá gắt</b>. Ở chỗ cong, tia sáng gặp thành sợi với góc tới nhỏ hơn, có lúc nhỏ hơn góc tới hạn nên ánh sáng rò ra ngoài. Vì vậy cáp quang khi lắp đặt có quy định bán kính uốn tối thiểu.', '💡 Rò sáng ở khúc uốn');
     };
     api.section('🧵 Sợi quang');
     api.slider({ label: 'Góc chiếu laser α', min: 0, max: 70, step: 1, value: s.al, unit: '°', lazy: true, onInput(v) { s.al = v; update(); } });
@@ -151,9 +151,9 @@
       const amax = Rb => { let a = 0; for (let x = 0; x <= 70; x += 1) { if (passes(Rb, x)) a = x; else break; } return a; };
       const am = Rbs.map(amax);
       return {
-        title: 'Góc giới hạn và sợi quang', sub: `Lõi n₁ = ${vn(NCORE, 2)}, vỏ n₂ = ${vn(NCLAD, 2)}, mô hình phóng to: lõi rộng 0,8 cm, vỏ chiết suất thấp để dễ quan sát (sợi thật mảnh như sợi tóc, n₂ chỉ nhỏ hơn n₁ khoảng 1%). Uốn càng gắt, góc chiếu chấp nhận được càng nhỏ.`,
+        title: 'Góc tới hạn và sợi quang', sub: `Lõi n₁ = ${vn(NCORE, 2)}, vỏ n₂ = ${vn(NCLAD, 2)}, mô hình phóng to: lõi rộng 0,8 cm, vỏ chiết suất thấp để dễ quan sát (sợi thật mảnh như sợi tóc, n₂ chỉ nhỏ hơn n₁ khoảng 1%). Uốn càng gắt, góc chiếu chấp nhận được càng nhỏ.`,
         sheets: [
-          { name: 'Góc giới hạn', head: ['Ánh sáng đi từ', 'Sang', 'n₁', 'n₂', 'Góc giới hạn'], rows: Object.values(PAIRS).map(P => [P.m1, P.m2, vn(P.n1, 2), vn(P.n2, 2), P.n1 > P.n2 ? vn(Math.asin(P.n2 / P.n1) / D, 1) + '°' : 'Không có']).concat([['Lõi sợi quang', 'Vỏ sợi quang', vn(NCORE, 2), vn(NCLAD, 2), vn(Math.asin(NCLAD / NCORE) / D, 1) + '°']]) },
+          { name: 'Góc tới hạn', head: ['Ánh sáng đi từ', 'Sang', 'n₁', 'n₂', 'Góc tới hạn'], rows: Object.values(PAIRS).map(P => [P.m1, P.m2, vn(P.n1, 2), vn(P.n2, 2), P.n1 > P.n2 ? vn(Math.asin(P.n2 / P.n1) / D, 1) + '°' : 'Không có']).concat([['Lõi sợi quang', 'Vỏ sợi quang', vn(NCORE, 2), vn(NCLAD, 2), vn(Math.asin(NCLAD / NCORE) / D, 1) + '°']]) },
           { name: 'Uốn sợi', head: ['Bán kính uốn (cm)', 'Góc chiếu lớn nhất vẫn dẫn được sáng (°)'], rows: Rbs.map((r, k) => [vn(r, 1), vn(am[k], 1)]) }
         ],
         chart: { type: 'line', xLabel: 'Bán kính uốn (cm)', yLabel: 'Góc chiếu lớn nhất (°)', xMin: 2, xMax: 10, yMin: 0, yMax: 60, series: [{ name: 'α lớn nhất', color: '#38BDF8', dots: true, points: Rbs.map((r, k) => [r, am[k]]) }] }

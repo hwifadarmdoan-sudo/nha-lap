@@ -203,7 +203,7 @@ NL.m3d = (function () {
     st = { id, def, meta, scene, camera, controls, frames: [], parts: [], drags: [], labels: [], warned: {}, sel: null, tab: null, home: null, clip: null };
     ui.title.textContent = def.title || meta.name; ui.no.textContent = 'Mô hình ' + (meta.no || '');
     root.classList.toggle('dark', true); root.classList.toggle('light', false);
-    root.classList.remove('side-off');
+    root.classList.remove('side-off'); root.classList.toggle('info-bottom', !!def.infoBottom);
     setBg(); resize();
     const tabs = def.tabs || [{ t: def.title, v: 'main' }];
     ui.tabs.innerHTML = tabs.length > 1 ? tabs.map((t, k) => `<button class="m3d-tab pop" data-i="${k}">${t.t}</button>`).join('') : '';

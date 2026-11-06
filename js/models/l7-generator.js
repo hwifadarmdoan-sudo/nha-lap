@@ -1,4 +1,4 @@
-// Mô hình Lí 7: máy phát điện xoay chiều (khung dây quay trong từ trường, vành khuyên và cổ góp, e = NBSω·cos, từ thông và suất điện động lệch pha) và đinamô xe đạp.
+// Mô hình Lí 7: máy phát điện xoay chiều (khung dây quay trong từ trường, vành khuyên và cổ góp, e = NBSω·cos, từ thông và suất điện động lệch pha) và dynamo xe đạp.
 (function () {
   const vn = (v, d) => (+v).toFixed(d).replace('.', ',');
   const B = 0.2, S = 0.02, SLOW = 50; // T, m², chiếu chậm 50 lần
@@ -104,7 +104,7 @@
     api.view({ pos: [5, 4.5, 12], target: [0, -0.6, 0.6], min: 4, max: 30 });
   }
 
-  // ---------- đinamô xe đạp ----------
+  // ---------- dynamo xe đạp ----------
   function dynamo(api) {
     const T = api.T;
     const wheel = api.group(null, [-3.47, 0, 0]);
@@ -112,13 +112,13 @@
     api.mesh(new T.TorusGeometry(2.75, 0.07, 8, 60), api.mat(0xCBD5E1, { metalness: 0.8 }), [0, 0, 0], wheel);
     for (let k = 0; k < 16; k++) { const a = k * Math.PI / 8; api.lineBetween([0, 0, 0], [2.75 * Math.cos(a), 2.75 * Math.sin(a), 0], 0.015, api.mat(0xE5E7EB, { metalness: 0.8 }), wheel); }
     api.cyl(0.25, 0.25, 0.4, api.mat(0x94A3B8, { metalness: 0.8 }), [0, 0, 0], wheel).rotation.x = Math.PI / 2;
-    api.part(tire, { name: 'Bánh xe đạp', rows: [['Bán kính', '35 cm'], ['Khi xe chạy', 'Lốp xe làm quay núm của đinamô']] });
-    // đinamô: núm tì vào lốp, trục song song trục bánh xe, thân nằm phía sau
+    api.part(tire, { name: 'Bánh xe đạp', rows: [['Bán kính', '35 cm'], ['Khi xe chạy', 'Lốp xe làm quay núm của dynamo']] });
+    // dynamo: núm tì vào lốp, trục song song trục bánh xe, thân nằm phía sau
     const dy = api.group(null, [0, 0, 0]), ZB = -1.7;
     const roller = api.cyl(0.25, 0.25, 0.5, api.mat(0x475569, { metalness: 0.6 }), [0, 0, 0], dy); roller.rotation.x = Math.PI / 2;
     api.cyl(0.05, 0.05, 1.6, api.mat(0xCBD5E1, { metalness: 0.8 }), [0, 0, -0.8], dy).rotation.x = Math.PI / 2;
     const shell = api.cyl(0.95, 0.95, 1.6, api.mat(0x94A3B8, { metalness: 0.5, opacity: 0.18, depthWrite: false }), [0, 0, ZB], dy); shell.rotation.x = Math.PI / 2;
-    api.part(shell, { name: 'Đinamô xe đạp', rows: [['Bên trong', 'Một nam châm quay và một cuộn dây đứng yên'], ['Khác máy phát ở tab trước', 'Ở đây nam châm quay (rô to), cuộn dây đứng yên (stato). Kết quả như nhau: từ thông qua cuộn dây biến thiên']] });
+    api.part(shell, { name: 'Dynamo xe đạp', rows: [['Bên trong', 'Một nam châm quay và một cuộn dây đứng yên'], ['Khác máy phát ở tab trước', 'Ở đây nam châm quay (rotor), cuộn dây đứng yên (stator). Kết quả như nhau: từ thông qua cuộn dây biến thiên']] });
     const mag = api.group(dy, [0, 0, ZB]);
     api.box(0.5, 0.6, 0.8, api.mat(0xEF4444), [0, 0.3, 0], mag); api.box(0.5, 0.6, 0.8, api.mat(0x3B82F6), [0, -0.3, 0], mag);
     api.part(mag, { name: 'Nam châm quay', rows: [['Quay cùng núm', 'Mỗi vòng quay làm từ thông qua cuộn dây đổi chiều hai lần']] });
@@ -129,7 +129,7 @@
     api.lineBetween([1.05, 0.1, ZB], [2.95, 0.95, ZB], 0.03, api.mat(0x94A3B8)); api.lineBetween([1.05, -0.1, ZB + 0.1], [3.45, 0.95, ZB], 0.03, api.mat(0x94A3B8));
     const info = api.note(''), hist = [];
     let t = 0, ph = 0, wp = 0;
-    api.section('🚲 Đinamô xe đạp');
+    api.section('🚲 Dynamo xe đạp');
     api.slider({ label: 'Tốc độ xe', min: 0, max: 30, step: 1, value: s.v, unit: 'km/h', onInput(v) { s.v = v; if (v === 0) api.toast('Xe dừng: đèn tắt ngay'); } });
     api.note('Đạp nhanh hơn thì nam châm quay nhanh hơn: từ thông biến thiên nhanh hơn nên điện áp <b>lớn hơn</b> và tần số cũng <b>lớn hơn</b>. Nhìn dải đồ thị bên dưới.');
     api.strip({ h: innerHeight < 500 ? 62 : 100, draw(x, w, h) {
@@ -152,7 +152,7 @@
 
   NL.m3d.register('LM7', {
     title: 'Máy phát điện xoay chiều',
-    tabs: [{ t: '⚡ Máy phát điện', v: 'gen' }, { t: '🚲 Đinamô xe đạp', v: 'dyn' }],
+    tabs: [{ t: '⚡ Máy phát điện', v: 'gen' }, { t: '🚲 Dynamo xe đạp', v: 'dyn' }],
     init() { s = { n: 20, N: 250, out: 'ring', phi: 0.3, pause: false, burnt: false, v: 15 }; },
     build(api, tab) { if (tab === 'gen') generator(api); else dynamo(api); },
     data() {

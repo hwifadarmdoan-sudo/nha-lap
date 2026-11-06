@@ -1,15 +1,15 @@
-// Mô hình 9: Mắt và tai. Kéo vật để mắt tự điều tiết (1/f = 1/d + 1/d′), cận / viễn thị và kính, võng mạc que – nón, mù màu; tai 3 phần, sóng âm và vị trí cảm nhận trên ốc tai; cơ quan Corti, kênh K⁺, tiếng ồn làm gãy lông tơ.
+// Mô hình 9: Mắt và tai. Kéo vật để mắt tự điều tiết (1/f = 1/d + 1/d′), cận / viễn thị và kính, màng lưới que – nón, mù màu; tai 3 phần, sóng âm và vị trí cảm nhận trên ốc tai; cơ quan Corti, kênh K⁺, tiếng ồn làm gãy lông tơ.
 (function () {
   const INFO = {
     cornea: { name: 'Giác mạc', sci: 'Cornea', rows: [['Đặc điểm', 'Trong suốt, cong, không có mạch máu'], ['Vai trò', 'Khúc xạ ánh sáng mạnh nhất (≈ 43 điốp)']] },
     iris: { name: 'Mống mắt và đồng tử', sci: 'Iris & Pupil', rows: [['Vai trò', 'Điều chỉnh lượng ánh sáng vào mắt'], ['Sáng mạnh', 'Đồng tử co nhỏ'], ['Tối', 'Đồng tử dãn to']] },
-    lens: { name: 'Thủy tinh thể', sci: 'Lens', rows: [['Bản chất', 'Thấu kính hội tụ trong suốt, đàn hồi'], ['Nhìn gần', 'Phồng lên, tăng độ cong → tăng độ tụ'], ['Nhìn xa', 'Xẹp mỏng, giảm độ tụ'], ['Công thức', '1/f = 1/d + 1/d′']] },
-    cil: { name: 'Cơ thể mi và dây treo', sci: 'Ciliary body & Zinn zonules', rows: [['Nhìn gần', 'Cơ thể mi co → dây treo chùng → thủy tinh thể phồng'], ['Nhìn xa', 'Cơ thể mi dãn → dây treo căng → thủy tinh thể xẹp']] },
+    lens: { name: 'Thể thủy tinh', sci: 'Lens', rows: [['Bản chất', 'Thấu kính hội tụ trong suốt, đàn hồi'], ['Nhìn gần', 'Phồng lên, tăng độ cong → tăng độ tụ'], ['Nhìn xa', 'Xẹp mỏng, giảm độ tụ'], ['Công thức', '1/f = 1/d + 1/d′']] },
+    cil: { name: 'Cơ thể mi và dây treo', sci: 'Ciliary body & Zinn zonules', rows: [['Nhìn gần', 'Cơ thể mi co → dây treo chùng → thể thủy tinh phồng'], ['Nhìn xa', 'Cơ thể mi dãn → dây treo căng → thể thủy tinh xẹp']] },
     vit: { name: 'Thể thủy tinh', sci: 'Corpus vitreum', rows: [['Bản chất', 'Chất keo trong suốt'], ['Vai trò', 'Giữ hình dạng cầu mắt, cho ánh sáng đi qua']] },
-    retina: { name: 'Võng mạc', sci: 'Retina', rows: [['Chứa', 'Tế bào que (≈ 120 triệu) và tế bào nón (≈ 6 triệu)'], ['Vai trò', 'Biến ánh sáng thành xung thần kinh']] },
+    retina: { name: 'Màng lưới', sci: 'Retina', rows: [['Chứa', 'Tế bào que (≈ 120 triệu) và tế bào nón (≈ 6 triệu)'], ['Vai trò', 'Biến ánh sáng thành xung thần kinh']] },
     fovea: { name: 'Hoàng điểm (điểm vàng)', sci: '', rows: [['Đặc điểm', 'Tập trung nhiều tế bào nón. Riêng hố trung tâm ở giữa hoàng điểm chỉ có tế bào nón, không có tế bào que'], ['Vai trò', 'Nơi nhìn rõ nhất, cảm nhận màu']] },
     blind: { name: 'Điểm mù', sci: 'Optic disc', rows: [['Đặc điểm', 'Nơi dây thần kinh thị giác đi ra, không có tế bào thụ cảm'], ['Kết quả', 'Ảnh rơi vào đây không được nhìn thấy']] },
-    optic: { name: 'Dây thần kinh thị giác', sci: 'Nervus opticus', rows: [['Dẫn', 'Xung từ tế bào hạch võng mạc về vỏ não thị giác (thùy chẩm)']] },
+    optic: { name: 'Dây thần kinh thị giác', sci: 'Nervus opticus', rows: [['Dẫn', 'Xung từ tế bào hạch màng lưới về vỏ não thị giác (thùy chẩm)']] },
     rod: { name: 'Tế bào que', sci: 'Rod cell', rows: [['Sắc tố', 'Rhodopsin'], ['Nhạy', 'Ánh sáng yếu (nhìn lúc chạng vạng), không phân biệt màu'], ['Bước sóng nhạy nhất', '≈ 498 nm']] },
     cone: { name: 'Tế bào nón', sci: 'Cone cell (S, M, L)', rows: [['Sắc tố', 'Photopsin'], ['Loại', 'Nón xanh lam ≈ 420 nm, xanh lục ≈ 534 nm, đỏ ≈ 564 nm'], ['Vai trò', 'Nhìn màu và nhìn rõ chi tiết khi đủ sáng']] },
     bip: { name: 'Tế bào hai cực', sci: 'Bipolar cell', rows: [['Vai trò', 'Nhận tín hiệu từ que, nón truyền tới tế bào hạch']] },
@@ -29,7 +29,7 @@
     stereo: { name: 'Lông tơ', sci: 'Stereocilia', rows: [['Cơ chế', 'Bị bẻ cong → kéo mở kênh K⁺ cảm ứng cơ học ở đỉnh'], ['Tổn thương', 'Tiếng ồn > 85 dB kéo dài làm gãy vĩnh viễn, không mọc lại']] },
     kch: { name: 'Kênh K⁺ cảm ứng cơ học', sci: 'Mechanotransduction channel', rows: [['Mở khi', 'Lông tơ nghiêng về phía lông cao hơn'], ['Kết quả', 'K⁺ từ nội dịch tràn vào → khử cực tế bào lông → giải phóng chất dẫn truyền']] }
   };
-  const WARN_NEAR = 'Cảnh báo sinh lí: Vật thể ở gần hơn điểm cực cận của mắt, cơ thể mi đã co tối đa làm thủy tinh thể phồng hết cỡ nhưng ảnh vẫn rơi phía sau võng mạc khiến hình ảnh bị mờ!';
+  const WARN_NEAR = 'Cảnh báo sinh lí: Vật thể ở gần hơn điểm cực cận của mắt, cơ thể mi đã co tối đa làm thể thủy tinh phồng hết cỡ nhưng ảnh vẫn rơi phía sau màng lưới khiến hình ảnh bị mờ!';
   const WARN_NOISE = 'Cảnh báo thính giác: Âm thanh trên 85 dB kéo dài làm các lông tơ của tế bào lông bị gãy rụng vĩnh viễn (không mọc lại), dẫn đến giảm thính lực, có thể điếc. Hãy tránh nơi quá ồn và không nghe tai nghe quá to!';
 
   let dist = 2, defect = 'normal', glasses = false, cb = 'none', eyeView = 'eye', freq = 1000, dB = 60, tone = false, damage = 0;
@@ -58,7 +58,7 @@
     const cil = api.mesh(new T.TorusGeometry(1.55, 0.2, 12, 40), api.mat(0xB0505A), [0, 0, 0], cilG); cil.rotation.y = Math.PI / 2;
     const zon = []; for (let k = 0; k < 16; k++) { const m = api.mesh(new T.CylinderGeometry(0.012, 0.012, 1, 4), api.mat(0xFFFFFF, { opacity: 0.8 }), null, cilG); m.userData.a = k / 16 * Math.PI * 2; zon.push(m); }
     api.part(cilG, INFO.cil);
-    // võng mạc (nửa sau), hoàng điểm, điểm mù, dây thần kinh
+    // màng lưới (nửa sau), hoàng điểm, điểm mù, dây thần kinh
     const retG = api.group(eye); api.tag(retG, 'retina');
     const ret = api.mesh(new T.SphereGeometry(2.82, 48, 24, Math.PI / 2, Math.PI, 0, Math.PI), api.mat(0xE0734F, { opacity: 0.55, side: T.DoubleSide, depthWrite: false }), [-0.25, 0, 0], retG); api.part(ret, INFO.retina);
     const fov = api.sphere(0.16, api.mat(0xFFD84A, { emissive: 0xFFC107, emissiveIntensity: 0.3 }), [2.55, 0, 0], retG, 16); api.part(fov, INFO.fovea);
@@ -78,8 +78,8 @@
     rays.forEach(r => r.forEach(m => m.geometry = new T.CylinderGeometry(0.025, 0.025, 1, 5)));
     const dLab = api.label('', obj, { off: [0, 1.0, 0], cls: 'tag', color: '#E0A100' });
     const fLab = api.label('', [3.2, -1.6, 0], { cls: 'plain' });
-    api.label('Giác mạc', cornea, { off: [-0.4, 1.4, 0], cls: 'plain' }); api.label('Thủy tinh thể', lens, { off: [0, 1.5, 0] }); api.label('Cơ thể mi', [LX, -1.6, 0], { off: [0, -0.5, 0], cls: 'plain' });
-    api.label('Võng mạc', [2.3, 1.6, 0], { cls: 'plain' }); api.label('Hoàng điểm', fov, { off: [0.9, 0.3, 0], cls: 'tag', color: '#E0A100' }); api.label('Điểm mù', bs, { off: [0.6, -0.4, 0.3], cls: 'plain' }); api.label('Dây thần kinh thị giác', [4.6, 0, 1.6], { cls: 'plain' });
+    api.label('Giác mạc', cornea, { off: [-0.4, 1.4, 0], cls: 'plain' }); api.label('Thể thủy tinh', lens, { off: [0, 1.5, 0] }); api.label('Cơ thể mi', [LX, -1.6, 0], { off: [0, -0.5, 0], cls: 'plain' });
+    api.label('Màng lưới', [2.3, 1.6, 0], { cls: 'plain' }); api.label('Hoàng điểm', fov, { off: [0.9, 0.3, 0], cls: 'tag', color: '#E0A100' }); api.label('Điểm mù', bs, { off: [0.6, -0.4, 0.3], cls: 'plain' }); api.label('Dây thần kinh thị giác', [4.6, 0, 1.6], { cls: 'plain' });
     let dragX = null;
     api.draggable(flame, { normal: new T.Vector3(0, 0, 1), move(p) { dragX = p.x; dist = +xToD(p.x).toFixed(2); if (sl) sl.set(dist, true); } });
     let sl = null, warnNear = false;
@@ -87,7 +87,7 @@
       const o = optics(dist), dr = o.dr;
       const retX = LX + dr * U;
       eye.scale.set(1, 1, 1); ball.scale.x = retG.scale.x = 1 + (dr - 0.017) * U / 2.9 * 0.5; ball.position.x = retG.position.x = (dr - 0.017) * U * 0.5;
-      // thủy tinh thể và cơ thể mi
+      // thể thủy tinh và cơ thể mi
       const a = Math.min(1, o.acc / 10);
       lens.scale.set(0.42 + 0.33 * a, 1, 1);
       cil.geometry.dispose(); cil.geometry = new T.TorusGeometry(1.6 - 0.22 * a, 0.17 + 0.1 * a, 12, 40);
@@ -107,17 +107,17 @@
       const off = Math.abs(o.off) * U; blur.position.set(retX - 0.03, imgY, 0); blur.scale.setScalar(Math.max(0.05, Math.min(1.2, off * 0.55)));
       blur.material.color.set(off < 0.08 ? 0x7CFF8A : 0xFFE070); fov.material.emissiveIntensity = off < 0.08 ? 1 : 0.2;
       dLab.el.innerHTML = `d = ${dist < 1 ? Math.round(dist * 100) + ' cm' : dist + ' m'}`;
-      const state = off < 0.08 ? '✔ Ảnh rõ trên hoàng điểm' : o.off > 0 ? '✖ Ảnh sau võng mạc (mờ)' : '✖ Ảnh trước võng mạc (mờ)';
-      fLab.el.innerHTML = `${state}<br>Độ tụ thủy tinh thể ≈ ${o.P.toFixed(1)} D (điều tiết ${o.acc.toFixed(1)} D)`;
+      const state = off < 0.08 ? '✔ Ảnh rõ trên hoàng điểm' : o.off > 0 ? '✖ Ảnh sau màng lưới (mờ)' : '✖ Ảnh trước màng lưới (mờ)';
+      fLab.el.innerHTML = `${state}<br>Độ tụ thể thủy tinh ≈ ${o.P.toFixed(1)} D (điều tiết ${o.acc.toFixed(1)} D)`;
       if (dist < 0.1 && defect === 'normal' && !warnNear) { warnNear = true; api.warn('near', WARN_NEAR, '⚠️ Cảnh báo sinh lí'); }
       if (dist >= 0.1) warnNear = false;
-      api.caption(`${a > 0.5 ? 'Nhìn gần: cơ thể mi co, dây treo chùng, thủy tinh thể phồng' : 'Nhìn xa: cơ thể mi dãn, dây treo căng, thủy tinh thể xẹp'} · 1/f = 1/d + 1/d′ · d′ = ${(o.di * 1000).toFixed(1)} mm`);
+      api.caption(`${a > 0.5 ? 'Nhìn gần: cơ thể mi co, dây treo chùng, thể thủy tinh phồng' : 'Nhìn xa: cơ thể mi dãn, dây treo căng, thể thủy tinh xẹp'} · 1/f = 1/d + 1/d′ · d′ = ${(o.di * 1000).toFixed(1)} mm`);
     });
     sl = api.slider({ label: '🕯 Khoảng cách vật', min: 0.05, max: 10, step: 0.05, value: dist, unit: 'm', onInput(v) { dist = v; dragX = null; } });
-    api.choices({ label: '👓 Tật khúc xạ', items: [{ t: 'Mắt thường', v: 'normal' }, { t: 'Cận thị', v: 'myopia' }, { t: 'Viễn thị', v: 'hyper' }], value: defect, onPick(v) { defect = v; glasses = false; api.setTab('eye'); api.toast(v === 'myopia' ? 'Trục cầu mắt dài: kéo vật ra xa xem ảnh rơi trước võng mạc' : v === 'hyper' ? 'Trục cầu mắt ngắn: kéo vật lại gần xem ảnh rơi sau võng mạc' : 'Mắt bình thường'); } });
-    if (defect !== 'normal') api.toggle({ label: defect === 'myopia' ? 'Đeo kính phân kỳ (−4,8 D)' : 'Đeo kính hội tụ (+4 D)', value: glasses, onChange(v) { glasses = v; } });
-    api.button('🔬 Xem võng mạc vi mô', () => { eyeView = 'retina'; api.setTab('eye'); });
-    api.checklist([{ k: 'cornea', label: 'Giác mạc' }, { k: 'lens', label: 'Thủy tinh thể' }, { k: 'cil', label: 'Cơ thể mi & Dây treo' }, { k: 'retina', label: 'Võng mạc' }, { k: 'optic', label: 'Dây thần kinh thị giác' }]);
+    api.choices({ label: '👓 Tật khúc xạ', items: [{ t: 'Mắt thường', v: 'normal' }, { t: 'Cận thị', v: 'myopia' }, { t: 'Viễn thị', v: 'hyper' }], value: defect, onPick(v) { defect = v; glasses = false; api.setTab('eye'); api.toast(v === 'myopia' ? 'Trục cầu mắt dài: kéo vật ra xa xem ảnh rơi trước màng lưới' : v === 'hyper' ? 'Trục cầu mắt ngắn: kéo vật lại gần xem ảnh rơi sau màng lưới' : 'Mắt bình thường'); } });
+    if (defect !== 'normal') api.toggle({ label: defect === 'myopia' ? 'Đeo kính phân kì (−4,8 D)' : 'Đeo kính hội tụ (+4 D)', value: glasses, onChange(v) { glasses = v; } });
+    api.button('🔬 Xem màng lưới vi mô', () => { eyeView = 'retina'; api.setTab('eye'); });
+    api.checklist([{ k: 'cornea', label: 'Giác mạc' }, { k: 'lens', label: 'Thể thủy tinh' }, { k: 'cil', label: 'Cơ thể mi & Dây treo' }, { k: 'retina', label: 'Màng lưới' }, { k: 'optic', label: 'Dây thần kinh thị giác' }]);
     api.view({ pos: [-2.6, 3.2, 12], target: [-2.2, 0, 0], min: 3, max: 24 });
   }
   function retinaView(api) {
@@ -279,9 +279,9 @@
   function chartSVG() {
     const W = 640, H = 300;
     let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-height:${H}px;font-family:'Baloo 2',sans-serif">`;
-    // trái: độ tụ thủy tinh thể theo khoảng cách
+    // trái: độ tụ thể thủy tinh theo khoảng cách
     const L = 46, R = 300, X = d => L + Math.log(d / 0.05) / Math.log(200) * (R - L), Y = p => 250 - (p - 56) / 16 * 210;
-    s += `<text x="${L}" y="18" font-size="13" font-weight="800" fill="#1F4E79">Độ tụ thủy tinh thể (D) theo khoảng cách vật</text>`;
+    s += `<text x="${L}" y="18" font-size="13" font-weight="800" fill="#1F4E79">Độ tụ thể thủy tinh (D) theo khoảng cách vật</text>`;
     [56, 60, 64, 68, 72].forEach(p => { s += `<line x1="${L}" x2="${R}" y1="${Y(p)}" y2="${Y(p)}" stroke="#E3ECF4"/><text x="${L - 6}" y="${Y(p) + 4}" font-size="11" fill="#6C88A3" text-anchor="end">${p}</text>`; });
     [0.05, 0.1, 0.25, 1, 3, 10].forEach(d => { s += `<text x="${X(d)}" y="270" font-size="11" fill="#6C88A3" text-anchor="middle">${d < 1 ? d * 100 + 'cm' : d + 'm'}</text>`; });
     let pts = []; for (let k = 0; k <= 60; k++) { const d = 0.05 * Math.pow(200, k / 60); pts.push(`${X(d)},${Y(optics(d).P)}`); }
@@ -310,12 +310,12 @@
         sheets: [
           { name: 'So sánh mắt – tai', head: ['STT', 'Tiêu chí so sánh', 'Cơ quan Thị giác (Mắt)', 'Cơ quan Thính giác (Tai)', 'Dạng năng lượng kích thích & Tế bào thụ cảm'], rows: [
             [1, 'Kích thích thích hợp', 'Ánh sáng 380 – 760 nm', 'Sóng âm 20 – 20 000 Hz', 'Quang năng / cơ năng (dao động)'],
-            [2, 'Bộ phận thu nhận', 'Võng mạc', 'Cơ quan Corti trong ốc tai', 'Tế bào que, nón / tế bào lông'],
-            [3, 'Bộ phận điều chỉnh', 'Thủy tinh thể, cơ thể mi, đồng tử', 'Màng nhĩ và chuỗi xương tai (tăng áp lực ≈ 20 lần)', '–'],
+            [2, 'Bộ phận thu nhận', 'Màng lưới', 'Cơ quan Corti trong ốc tai', 'Tế bào que, nón / tế bào lông'],
+            [3, 'Bộ phận điều chỉnh', 'Thể thủy tinh, cơ thể mi, đồng tử', 'Màng nhĩ và chuỗi xương tai (tăng áp lực ≈ 20 lần)', '–'],
             [4, 'Cơ chế ở tế bào thụ cảm', 'Photon phân giải rhodopsin / photopsin', 'Lông tơ bẻ cong mở kênh K⁺', 'Đổi điện thế màng → xung thần kinh'],
             [5, 'Dây thần kinh', 'Thị giác', 'Thính giác', '–'], [6, 'Vùng vỏ não', 'Thùy chẩm', 'Thùy thái dương', '–'],
             [7, 'Bệnh, tật thường gặp', 'Cận thị, viễn thị, mù màu', 'Giảm thính lực do tiếng ồn > 85 dB', '–']] },
-          { name: 'Điều tiết mắt', head: ['Khoảng cách vật (m)', 'Độ tụ thủy tinh thể (D)', 'Điều tiết (D)', 'Ảnh d′ (mm)', 'Võng mạc (mm)', 'Kết quả'], rows: [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, dist].map(d => { const q = optics(d), off = (q.di - q.dr) * 1000; return [d, q.P.toFixed(1), q.acc.toFixed(1), (q.di * 1000).toFixed(2), (q.dr * 1000).toFixed(1), Math.abs(off) < 0.3 ? 'Rõ' : off > 0 ? 'Mờ, ảnh sau võng mạc' : 'Mờ, ảnh trước võng mạc']; }) },
+          { name: 'Điều tiết mắt', head: ['Khoảng cách vật (m)', 'Độ tụ thể thủy tinh (D)', 'Điều tiết (D)', 'Ảnh d′ (mm)', 'Màng lưới (mm)', 'Kết quả'], rows: [0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10, dist].map(d => { const q = optics(d), off = (q.di - q.dr) * 1000; return [d, q.P.toFixed(1), q.acc.toFixed(1), (q.di * 1000).toFixed(2), (q.dr * 1000).toFixed(1), Math.abs(off) < 0.3 ? 'Rõ' : off > 0 ? 'Mờ, ảnh sau màng lưới' : 'Mờ, ảnh trước màng lưới']; }) },
           { name: 'Thính giác', head: ['Thông số', 'Giá trị'], rows: [['Tần số (Hz)', freq], ['Cường độ (dB)', dB], ['Vị trí rung mạnh nhất trên ốc tai', freq >= 2000 ? 'Gần đáy' : freq <= 300 ? 'Gần đỉnh' : 'Đoạn giữa'], ['Lông tơ bị gãy (%)', Math.round(damage * 100)], ['Ngưỡng nguy hiểm', '85 dB kéo dài']] }
         ],
         chart: { svg: chartSVG() }

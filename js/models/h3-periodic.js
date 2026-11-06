@@ -1,4 +1,4 @@
-// Mô hình Hóa 3: Bảng tuần hoàn 3D (118 nguyên tố). Chạm ô để xem 8 thông tin và nguyên tử Bohr; tô màu theo nhóm, bán kính hoặc độ âm điện; tìm kiếm; xu hướng theo chu kỳ.
+// Mô hình Hóa 3: Bảng tuần hoàn 3D (118 nguyên tố). Chạm ô để xem 8 thông tin và nguyên tử Bohr; tô màu theo nhóm, bán kính hoặc độ âm điện; tìm kiếm; xu hướng theo chu kì.
 (function () {
   const C3 = () => NL.chem3d;
   const W = 1.1, X0 = -9.35, Z0 = -5;
@@ -16,23 +16,23 @@
     x.fillStyle = col; x.fillRect(0, 0, 128, 128);
     x.fillStyle = 'rgba(15,27,43,.9)'; x.textAlign = 'left'; x.font = "800 26px 'Baloo 2', sans-serif"; x.fillText(e.Z, 10, 30);
     x.textAlign = 'center'; x.font = `800 ${e.sym.length > 2 ? 46 : 58}px 'Baloo 2', sans-serif`; x.fillText(e.sym, 64, 86);
-    x.font = "700 17px 'Baloo 2', sans-serif"; x.fillText(e.vi.length > 11 ? e.vi.slice(0, 10) + '…' : e.vi, 64, 116);
+    x.font = "700 17px 'Baloo 2', sans-serif"; x.fillText(e.en.length > 11 ? e.en.slice(0, 10) + '…' : e.en, 64, 116);
     const t = new T.CanvasTexture(c); t.colorSpace = T.SRGBColorSpace; t.anisotropy = 4; return t;
   }
   function info(e) {
     const f = v => C3().fmtVN(v);
     return {
-      name: `${e.vi === e.en ? e.en : e.vi + ' / ' + e.en} (${e.sym})`, sci: C3().CAT[e.cat].t, focus: false,
+      name: `${e.vi === e.en ? e.en : e.en + ' (' + e.vi + ')'} (${e.sym})`, sci: C3().CAT[e.cat].t, focus: false,
       rows: [
         ['1. Số hiệu nguyên tử Z', `${e.Z} → ${e.Z} proton, ${e.Z} electron`],
         ['2. Ký hiệu', `<b>${e.sym}</b>`],
-        ['3. Tên', `${e.vi} / ${e.en}`],
+        ['3. Tên', e.vi === e.en ? e.en : `${e.en} (${e.vi})`],
         ['4. Nguyên tử khối', e.mass.startsWith('[') ? `${e.mass} (đồng vị bền nhất)` : `${f(+e.mass)} amu`],
-        ['5. Cấu hình electron', C3().config(e.Z) + (e.Z > 103 ? ' (dự đoán)' : '') + `<br><small>Số electron từng lớp: ${C3().shells(e.Z).join(', ')}</small>`],
+        ['5. Cấu hình electron', C3().config(e.Z) + (e.Z > 103 ? ' (dự đoán)' : '') + `<br><small>Số electron từng lớp: ${C3().shells(e.Z).join(', ')}${e.Z > 18 ? ' · thứ tự điền: 4s trước 3d' : ''}</small>`],
         ['6. Số oxi hóa thường gặp', e.ox || 'Chưa rõ (chỉ tồn tại vài giây trong phòng thí nghiệm)'],
         ['7. Bán kính nguyên tử', e.r ? `${e.r} pm` : 'Chưa đo được'],
         ['8. Độ âm điện (Pauling)', e.chi ? `${e.chiEst ? '≈ ' : ''}${f(e.chi)}` : (e.group === 18 ? 'Không xác định (khí hiếm hầu như không tạo liên kết)' : 'Chưa xác định')],
-        ['Vị trí', `Ô ${e.Z}, chu kỳ ${e.period}, ${e.f != null ? (e.period === 6 ? 'họ Lanthan' : 'họ Actini') + ' (nhóm IIIB)' : 'nhóm ' + e.group}`]
+        ['Vị trí', `Ô ${e.Z}, chu kì ${e.period}, ${e.f != null ? (e.period === 6 ? 'họ Lanthan' : 'họ Actini') + ' (nhóm IIIB)' : 'nhóm ' + e.group}`]
       ]
     };
   }
@@ -61,14 +61,15 @@
     lifted = tile; tile.position.y = 0.35; tile.children[0].material.emissive.setHex(0x33FFE6); tile.children[0].material.emissiveIntensity = 0.35;
     api.info(tile.userData.part); api.beep(1320, 0.12, 'sine', 0.08);
     buildBohr(api, e);
-    api.caption(`${e.sym} · ${e.vi}: ${C3().config(e.Z)}`);
+    api.caption(`${e.sym} · ${e.en}: ${C3().config(e.Z)}`);
     if (e.Z === 9) api.warn('F', 'Fluorine là nguyên tố có <b>độ âm điện lớn nhất (3,98)</b>, có khả năng hút electron mạnh nhất trong tất cả các nguyên tố!', '🔬 Thông điệp khoa học');
-    else if (e.Z === 55 || e.Z === 87) api.warn('CsFr', `${e.vi} có <b>bán kính nguyên tử rất lớn</b> (${e.r} pm) và <b>độ âm điện nhỏ nhất</b> (${C3().fmtVN(e.chi)}), thể hiện tính kim loại cực kỳ mạnh mẽ!`, '🔬 Thông điệp khoa học');
+    else if (e.Z === 55 || e.Z === 87) api.warn('CsFr', `${e.en} có <b>bán kính nguyên tử rất lớn</b> (${e.r} pm) và <b>độ âm điện nhỏ nhất</b> (${C3().fmtVN(e.chi)}), thể hiện tính kim loại cực kì mạnh mẽ!`, '🔬 Thông điệp khoa học');
     else if (e.group === 18 && e.f == null) api.warn('noble', 'Các nguyên tố khí hiếm có lớp electron ngoài cùng <b>bão hòa bền vững</b> (ns²np⁶, riêng He là 1s²), do đó ở điều kiện thường chúng hầu như không tham gia phản ứng hóa học.', '🔬 Thông điệp khoa học');
     void tile;
   }
 
   NL.m3d.register('HM3', {
+    infoBottom: true, // thẻ thông tin đặt dưới giữa để không che cột IA–IIA
     title: 'Bảng tuần hoàn và nguyên tử Bohr',
     init(api) { [300, 500, 800, 1300].forEach((f, k) => api.beep(f, 0.12, 'sine', 0.05, k * 0.04)); },
     build(api) {
@@ -84,7 +85,7 @@
         api.part(g, info(e)); g.userData.el = e;
         tiles[e.Z] = g;
       });
-      // nhãn nhóm và chu kỳ
+      // nhãn nhóm và chu kì
       for (let gN = 1; gN <= 18; gN++) api.textSprite(String(gN), { h: 0.35, pos: [X0 + (gN - 1) * W, 0.2, Z0 - 0.85], color: '#93C5FD' });
       for (let p = 1; p <= 7; p++) api.textSprite(String(p), { h: 0.35, pos: [X0 - 0.9, 0.2, Z0 + (p - 1) * W], color: '#93C5FD' });
       api.textSprite('Họ Lanthan', { h: 0.32, pos: [X0 + 1.1, 0.2, Z0 + 8.4 * W], color: '#F9A8D4' }); api.textSprite('Họ Actini', { h: 0.32, pos: [X0 + 1.1, 0.2, Z0 + 9.4 * W], color: '#F0ABFC' });
@@ -98,7 +99,7 @@
       const C = C3().CAT;
       api.note(mode === 'cat' ? `<div class="hm-legend">${Object.keys(C).map(k => `<span><i style="background:${C[k].c}"></i>${C[k].t}</span>`).join('')}</div>`
         : `<div class="hm-legend"><span><i style="background:#38BDF8"></i>${mode === 'r' ? 'Nhỏ' : 'Thấp'}</span><span><i style="background:#FDE047"></i>Trung bình</span><span><i style="background:#EF4444"></i>${mode === 'r' ? 'Lớn' : 'Cao'}</span><span><i style="background:#475569"></i>Chưa có số liệu</span></div>` +
-          (mode === 'r' ? 'Trong một chu kỳ, bán kính <b>giảm</b> từ trái sang phải; trong một nhóm, bán kính <b>tăng</b> từ trên xuống.' : 'Trong một chu kỳ, độ âm điện <b>tăng</b> từ trái sang phải; trong một nhóm, độ âm điện <b>giảm</b> từ trên xuống.'));
+          (mode === 'r' ? 'Trong một chu kì, bán kính <b>giảm</b> từ trái sang phải; trong một nhóm, bán kính <b>tăng</b> từ trên xuống.' : 'Trong một chu kì, độ âm điện <b>tăng</b> từ trái sang phải; trong một nhóm, độ âm điện <b>giảm</b> từ trên xuống.'));
       api.button('⚛️ Xem gần nguyên tử Bohr', () => api.flyTo(api.V(0.6, 3.4, 3.2), api.V(0.6, 2.4, -3.9)));
       api.note('Bán kính: bán kính cộng hóa trị (pm). Nguyên tố từ Z = 104 trở đi chỉ tồn tại rất ngắn nên chưa đo được.');
       api.view({ pos: [0, 14, 12.5], target: [0, 0.6, -0.2], min: 3, max: 40 });
@@ -107,10 +108,10 @@
     data() {
       const e0 = C3().EL[selZ - 1], row = C3().EL.filter(e => e.period === e0.period && e.f == null);
       return {
-        title: `Xu hướng biến đổi trong chu kỳ ${e0.period}`,
-        sub: `Đang chọn ${e0.sym} (${e0.vi}). Từ trái sang phải: điện tích hạt nhân tăng, số lớp electron không đổi → electron bị hút chặt hơn`,
-        sheets: [{ name: 'Chu kỳ ' + e0.period, head: ['Z', 'Ký hiệu', 'Tên', 'Nhóm', 'Cấu hình electron', 'Bán kính (pm)', 'Độ âm điện', 'Loại'], rows: row.map(e => [e.Z, e.sym, `${e.vi} / ${e.en}`, e.group, C3().config(e.Z), e.r || '–', e.chi ? (e.chiEst ? '≈' : '') + C3().fmtVN(e.chi) : '–', C3().CAT[e.cat].t]) }],
-        chart: { type: 'line', title: `Chu kỳ ${e0.period}: bán kính và độ âm điện theo nhóm`, xMin: 0, xMax: 20, yMax: 400, series: [
+        title: `Xu hướng biến đổi trong chu kì ${e0.period}`,
+        sub: `Đang chọn ${e0.sym} (${e0.en}). Từ trái sang phải: điện tích hạt nhân tăng, số lớp electron không đổi → electron bị hút chặt hơn`,
+        sheets: [{ name: 'Chu kì ' + e0.period, head: ['Z', 'Ký hiệu', 'Tên', 'Nhóm', 'Cấu hình electron', 'Bán kính (pm)', 'Độ âm điện', 'Loại'], rows: row.map(e => [e.Z, e.sym, e.vi === e.en ? e.en : `${e.en} (${e.vi})`, e.group, C3().config(e.Z), e.r || '–', e.chi ? (e.chiEst ? '≈' : '') + C3().fmtVN(e.chi) : '–', C3().CAT[e.cat].t]) }],
+        chart: { type: 'line', title: `Chu kì ${e0.period}: bán kính và độ âm điện theo nhóm`, xMin: 0, xMax: 20, yMax: 400, series: [
           { name: 'Bán kính (pm)', color: '#F59E0B', points: row.filter(e => e.r).map(e => [e.group, e.r]) },
           { name: 'Độ âm điện × 100', color: '#38BDF8', points: row.filter(e => e.chi).map(e => [e.group, Math.round(e.chi * 100)]) }], yLabel: 'pm  |  độ âm điện × 100', xLabel: 'Nhóm' }
       };

@@ -1,13 +1,13 @@
-// Thí nghiệm 2I: quan sát nguyên phân ở đỉnh rễ hành qua kính hiển vi ảo, nhận diện các kỳ.
+// Thí nghiệm 2I: quan sát nguyên phân ở đỉnh rễ hành qua kính hiển vi ảo, nhận diện các kì.
 (function () {
-  const PH = ['Kỳ trung gian', 'Kỳ đầu', 'Kỳ giữa', 'Kỳ sau', 'Kỳ cuối'];
+  const PH = ['Kì trung gian', 'Kì đầu', 'Kì giữa', 'Kì sau', 'Kì cuối'];
   const P_ODDS = [0.72, 0.1, 0.05, 0.05, 0.08];
   const HINT = [
-    'Nhân còn nguyên, có hạch nhân, chưa thấy NST rõ: đó là Kỳ trung gian.',
-    'NST bắt đầu co xoắn thành sợi, màng nhân mờ dần: đặc điểm của Kỳ đầu.',
-    'Các NST co xoắn cực đại, xếp thành 1 hàng ở mặt phẳng xích đạo: đặc điểm của Kỳ giữa!',
-    'Hai nhóm NST đang tách nhau đi về hai cực tế bào: đặc điểm của Kỳ sau.',
-    'Hai nhân mới hình thành ở hai đầu, giữa tế bào xuất hiện vách ngăn: đặc điểm của Kỳ cuối.'
+    'Nhân còn nguyên, có nhân con, chưa thấy NST rõ: đó là Kì trung gian.',
+    'NST bắt đầu co xoắn thành sợi, màng nhân mờ dần: đặc điểm của Kì đầu.',
+    'Các NST co xoắn cực đại, xếp thành 1 hàng ở mặt phẳng xích đạo: đặc điểm của Kì giữa!',
+    'Hai nhóm NST đang tách nhau đi về hai cực tế bào: đặc điểm của Kì sau.',
+    'Hai nhân mới hình thành ở hai đầu, giữa tế bào xuất hiện vách ngăn: đặc điểm của Kì cuối.'
   ];
   const CW = 22, CH = 16, COLS = 30, ROWS = 20; // bản đồ tiêu bản
   const FX = 500, FY = 255, FR = 175;           // vi trường hình tròn
@@ -133,7 +133,7 @@
   }
   function idTable(api) {
     if (!st.tbl || !st.tbl.card.isConnected) st.tbl = api.table(['Tế bào', 'Em chọn', 'Đáp án', '']);
-    st.tbl.set(st.ids.slice(-6).map(r => ['#' + r.id, r.em.replace('Kỳ ', ''), r.right.replace('Kỳ ', ''), r.ok ? '✅' : '❌']));
+    st.tbl.set(st.ids.slice(-6).map(r => ['#' + r.id, r.em.replace('Kì ', ''), r.right.replace('Kì ', ''), r.ok ? '✅' : '❌']));
   }
 
   const steps = [
@@ -179,7 +179,7 @@
       onNext(api) { st.onFocus = null; api.goto(3); }
     },
     {
-      label: () => `Nhận diện · ${st.found.size}/4 kỳ phân chia`, text: 'Chạm vào một tế bào để đoán nó đang ở kỳ nào', hint: 'Kéo vi trường để tìm các tế bào có NST màu tím đậm. Cần tìm đủ 4 kỳ: đầu, giữa, sau, cuối',
+      label: () => `Nhận diện · ${st.found.size}/4 kì phân chia`, text: 'Chạm vào một tế bào để đoán nó đang ở kì nào', hint: 'Kéo vi trường để tìm các tế bào có NST màu tím đậm. Cần tìm đủ 4 kì: đầu, giữa, sau, cuối',
       enter(api) {
         idTable(api);
         st.onPick = c => {
@@ -188,15 +188,15 @@
           st.selRing.setAttribute('x', c.x - 0.5); st.selRing.setAttribute('y', c.y - 0.5); st.selRing.setAttribute('opacity', 1);
           let first = null;
           api.ask({
-            kicker: `🔬 Tế bào #${c.id}`, q: 'Tế bào này đang ở kỳ nào của nguyên phân?',
+            kicker: `🔬 Tế bào #${c.id}`, q: 'Tế bào này đang ở kì nào của nguyên phân?',
             options: PH.map((t, k) => ({ t, ok: k === c.p, why: HINT[c.p] }))
           }, r => {
             first = r.answer;
             st.ids.push({ id: c.id, mag: st.mag, sharp: sharp(), em: first, right: PH[c.p], ok: r.firstTry });
             if (c.p) st.found.add(c.p);
             st.selRing.setAttribute('opacity', 0); idTable(api);
-            if (st.found.size >= 4 || st.ids.length >= 12) { api.say(st.found.size >= 4 ? 'Em đã tìm đủ 4 kỳ phân chia!' : 'Em đã nhận diện 12 tế bào, đủ rồi!'); api.done('Đếm vi trường ➜'); }
-            else { document.getElementById('stepNo').textContent = `Nhận diện · ${st.found.size}/4 kỳ phân chia`; api.say(c.p ? 'Tìm tiếp tế bào ở kỳ khác' : 'Đây là tế bào chưa phân chia. Tìm tế bào có NST tím đậm nhé'); st.onPick = pickFn; }
+            if (st.found.size >= 4 || st.ids.length >= 12) { api.say(st.found.size >= 4 ? 'Em đã tìm đủ 4 kì phân chia!' : 'Em đã nhận diện 12 tế bào, đủ rồi!'); api.done('Đếm vi trường ➜'); }
+            else { document.getElementById('stepNo').textContent = `Nhận diện · ${st.found.size}/4 kì phân chia`; api.say(c.p ? 'Tìm tiếp tế bào ở kì khác' : 'Đây là tế bào chưa phân chia. Tìm tế bào có NST tím đậm nhé'); st.onPick = pickFn; }
           });
         };
         const pickFn = st.onPick;
@@ -204,25 +204,25 @@
       onNext(api) { st.onPick = null; api.goto(4); }
     },
     {
-      label: 'Đếm vi trường', text: 'Đếm số tế bào ở từng kỳ trong vi trường đang xem', hint: 'Kỳ nào có nhiều tế bào nhất?',
+      label: 'Đếm vi trường', text: 'Đếm số tế bào ở từng kì trong vi trường đang xem', hint: 'Kì nào có nhiều tế bào nhất?',
       enter(api) {
         const vis = visibleCells(), cnt = PH.map((_, k) => vis.filter(c => c.p === k).length);
         st.count = { total: vis.length, cnt };
-        api.table(['Kỳ', 'Số tế bào', '%']).set(PH.map((t, k) => [t, cnt[k], Math.round(cnt[k] / vis.length * 100) + '%']).concat([['Tổng', vis.length, '100%']]));
+        api.table(['Kì', 'Số tế bào', '%']).set(PH.map((t, k) => [t, cnt[k], Math.round(cnt[k] / vis.length * 100) + '%']).concat([['Tổng', vis.length, '100%']]));
         api.ask({
-          predict: true, kicker: '🤔 Em nghĩ sao', q: 'Phần lớn tế bào ở Kỳ trung gian. Điều đó cho biết gì?',
-          options: [{ t: 'Kỳ trung gian kéo dài nhất trong chu kỳ tế bào' }, { t: 'Tế bào ở kỳ trung gian bị chết' }, { t: 'Kính hiển vi chỉ nhìn rõ kỳ trung gian' }]
+          predict: true, kicker: '🤔 Em nghĩ sao', q: 'Phần lớn tế bào ở Kì trung gian. Điều đó cho biết gì?',
+          options: [{ t: 'Kì trung gian kéo dài nhất trong chu kì tế bào' }, { t: 'Tế bào ở kì trung gian bị chết' }, { t: 'Kính hiển vi chỉ nhìn rõ kì trung gian' }]
         }, () => api.done('Xem biểu đồ ➜'));
       },
       onNext(api) { api.goto(5); }
     },
     {
-      label: 'Kết quả', text: 'Tỉ lệ tế bào ở từng kỳ trong vi trường', hint: 'Cột cao nhất: kỳ chiếm thời gian dài nhất',
+      label: 'Kết quả', text: 'Tỉ lệ tế bào ở từng kì trong vi trường', hint: 'Cột cao nhất: kì chiếm thời gian dài nhất',
       enter(api) { api.showChart(result()); api.done('Trả lời câu hỏi ➜'); },
       onNext(api) {
         api.wrapUp({
-          right: 'Kỳ trung gian kéo dài nhất trong chu kỳ tế bào', truth: 'kỳ trung gian chiếm phần lớn thời gian của chu kỳ tế bào nên gặp nhiều nhất.',
-          sub: 'Trong các kỳ phân chia, kỳ giữa và kỳ sau diễn ra nhanh nên ít gặp hơn.',
+          right: 'Kì trung gian kéo dài nhất trong chu kì tế bào', truth: 'kì trung gian chiếm phần lớn thời gian của chu kì tế bào nên gặp nhiều nhất.',
+          sub: 'Trong các kì phân chia, kì giữa và kì sau diễn ra nhanh nên ít gặp hơn.',
           quiz: QUIZ, bank: 4, result: result()
         });
       }
@@ -238,26 +238,26 @@
         rows: st.ids.map(r => ['#' + r.id, r.mag + '×', r.sharp ? 'Đã nét' : 'Chưa nét', r.em, r.right, r.ok ? 'Đúng' : 'Sai'])
           .concat(PH.map((t, k) => ['Vi trường', '', '', t, c.cnt[k] + ' tế bào', Math.round(c.cnt[k] / c.total * 100) + '%']))
       },
-      chart: { labels: PH.map(t => t.replace('Kỳ ', '')), yLabel: '% tế bào trong vi trường', series: [{ name: 'Tỉ lệ', color: '#9B6BD6', values: c.cnt.map(n => Math.round(n / c.total * 100)) }] },
-      conclusion: 'Chu kỳ tế bào gồm kỳ trung gian và quá trình nguyên phân. Nguyên phân có 4 kỳ: đầu, giữa, sau, cuối. Kỳ trung gian chiếm nhiều thời gian nhất của chu kỳ tế bào nên số tế bào ở kỳ này nhiều nhất',
+      chart: { labels: PH.map(t => t.replace('Kì ', '')), yLabel: '% tế bào trong vi trường', series: [{ name: 'Tỉ lệ', color: '#9B6BD6', values: c.cnt.map(n => Math.round(n / c.total * 100)) }] },
+      conclusion: 'Chu kì tế bào gồm kì trung gian và quá trình nguyên phân. Nguyên phân có 4 kì: đầu, giữa, sau, cuối. Kì trung gian chiếm nhiều thời gian nhất của chu kì tế bào nên số tế bào ở kì này nhiều nhất',
       note: 'Đỉnh rễ hành có mô phân sinh, tế bào phân chia liên tục nên dễ quan sát nguyên phân.'
     };
   }
 
   const QUIZ = [
     {
-      kicker: '❓ Vì sao?', q: 'Vì sao người ta thường chọn kỳ giữa để đếm và quan sát hình dạng nhiễm sắc thể?',
+      kicker: '❓ Vì sao?', q: 'Vì sao người ta thường chọn kì giữa để đếm và quan sát hình dạng nhiễm sắc thể?',
       options: [
         { t: 'NST co xoắn cực đại và xếp gọn một hàng nên dễ nhìn nhất', ok: true },
-        { t: 'Kỳ giữa kéo dài nhất', why: 'Kỳ giữa diễn ra khá nhanh. Hãy nghĩ tới hình dạng NST lúc này.' },
-        { t: 'Lúc này màng nhân dày lên', why: 'Ở kỳ giữa màng nhân đã biến mất. Hãy nhớ lại NST trông thế nào.' }
+        { t: 'Kì giữa kéo dài nhất', why: 'Kì giữa diễn ra khá nhanh. Hãy nghĩ tới hình dạng NST lúc này.' },
+        { t: 'Lúc này màng nhân dày lên', why: 'Ở kì giữa màng nhân đã biến mất. Hãy nhớ lại NST trông thế nào.' }
       ],
-      explain: 'Ở kỳ giữa NST co ngắn, dày nhất và xếp ở mặt phẳng xích đạo nên thấy rõ số lượng và hình dạng.'
+      explain: 'Ở kì giữa NST co ngắn, dày nhất và xếp ở mặt phẳng xích đạo nên thấy rõ số lượng và hình dạng.'
     }
   ];
 
   NL.lab.register('2I', {
-    goal: 'Tế bào ở đỉnh rễ hành phân chia ra sao? Em có tìm đủ các kỳ không?', clearSide: true, build, steps,
+    goal: 'Tế bào ở đỉnh rễ hành phân chia ra sao? Em có tìm đủ các kì không?', clearSide: true, build, steps,
     // dùng khi kiểm thử tự động
     auto(api) {
       if (st.onFocus) { st.coarse = st.z0 - (st.mag === 40 ? 0 : 0); st.fine = 0; st.fCtl && st.fCtl.set(0); applyFocus(); if (st.mag !== 40 && api.step === 2) { st.mag = 40; st.z0 = st.coarse; placeMap(); applyFocus(); } st.onFocus(); return 'focus'; }

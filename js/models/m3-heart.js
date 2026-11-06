@@ -1,4 +1,4 @@
-// Mô hình 3: Tim 4 ngăn bổ dọc, chu kỳ tim + hệ dẫn truyền + điện tâm đồ, bệnh lý, 2 vòng tuần hoàn, trao đổi khí ở mao mạch.
+// Mô hình 3: Tim 4 ngăn bổ dọc, chu kì tim + hệ dẫn truyền + điện tâm đồ, bệnh lý, 2 vòng tuần hoàn, trao đổi khí ở mao mạch.
 (function () {
   const RED = 0xE8343A, BLUE = 0x4D6FD6, MUSCLE = 0xC8585E;
   const INFO = {
@@ -14,7 +14,7 @@
     pa: { name: 'Động mạch phổi', sci: 'Pulmonary artery', rows: [['Chở', 'Máu nghèo O₂ từ tâm thất phải lên phổi'], ['Huyết áp', '≈ 25/10 mmHg'], ['Lưu ý', 'Là động mạch duy nhất chở máu nghèo O₂']] },
     vc: { name: 'Tĩnh mạch chủ trên và dưới', sci: 'Superior / inferior vena cava', rows: [['Chở', 'Máu nghèo O₂ từ khắp cơ thể về tâm nhĩ phải'], ['Áp lực', '≈ 0–5 mmHg']] },
     pv: { name: 'Tĩnh mạch phổi', sci: 'Pulmonary veins', rows: [['Chở', 'Máu giàu O₂ từ phổi về tâm nhĩ trái'], ['Lưu ý', 'Là tĩnh mạch duy nhất chở máu giàu O₂']] },
-    SA: { name: 'Nút xoang nhĩ', sci: 'Sinoatrial (SA) node', rows: [['Vị trí', 'Thành tâm nhĩ phải, gần chỗ đổ của tĩnh mạch chủ trên'], ['Vai trò', 'Tự phát xung điện theo chu kỳ, là "máy tạo nhịp" của tim'], ['Tần số', '60–100 xung/phút khi nghỉ']] },
+    SA: { name: 'Nút xoang nhĩ', sci: 'Sinoatrial (SA) node', rows: [['Vị trí', 'Thành tâm nhĩ phải, gần chỗ đổ của tĩnh mạch chủ trên'], ['Vai trò', 'Tự phát xung điện theo chu kì, là "máy tạo nhịp" của tim'], ['Tần số', '60–100 xung/phút khi nghỉ']] },
     AV: { name: 'Nút nhĩ thất', sci: 'Atrioventricular (AV) node', rows: [['Vị trí', 'Vách giữa nhĩ và thất'], ['Vai trò', 'Nhận xung từ nút xoang nhĩ, làm chậm khoảng 0,09 giây để nhĩ co xong rồi thất mới co']] },
     His: { name: 'Bó His và mạng Purkinje', sci: 'Bundle of His & Purkinje fibers', rows: [['Vị trí', 'Chạy dọc vách liên thất rồi tỏa khắp thành 2 tâm thất'], ['Vai trò', 'Dẫn xung tốc độ cao làm 2 tâm thất co đồng bộ']] },
     septum: { zoom: 5, name: 'Vách liên thất', sci: 'Interventricular septum', rows: [['Vai trò', 'Ngăn hoàn toàn máu giàu O₂ (trái) và máu nghèo O₂ (phải)']] },
@@ -24,9 +24,9 @@
     rbc: { name: 'Hồng cầu', sci: 'Erythrocyte (red blood cell)', rows: [['Hình dạng', 'Đĩa lõm 2 mặt, không nhân, đường kính ≈ 7,5 µm'], ['Chứa', 'Hemoglobin gắn O₂ (đỏ tươi) hoặc ít O₂ (đỏ thẫm)'], ['Ý nghĩa', 'Xếp hàng đơn đi chậm qua mao mạch giúp tăng diện tích và thời gian trao đổi khí']] }
   };
   let HR = 75, myoOp = 0.85, plaque = 0, regurg = false, path = 'all', capMode = 'lung';
-  const hist = []; // lưu số liệu áp lực + ECG một chu kỳ
+  const hist = []; // lưu số liệu áp lực + ECG một chu kì
 
-  // điện tâm đồ (mV) và áp lực thất trái (mmHg) theo pha u ∈ [0,1) của chu kỳ chuẩn 0,8 s
+  // điện tâm đồ (mV) và áp lực thất trái (mmHg) theo pha u ∈ [0,1) của chu kì chuẩn 0,8 s
   function ecg(u) {
     const t = u * 0.8, g = (c, w, a) => a * Math.exp(-((t - c) * (t - c)) / (2 * w * w));
     return g(0.05, 0.022, 0.15) - g(0.165, 0.008, 0.12) + g(0.18, 0.009, 1.1) - g(0.198, 0.009, 0.25) + g(0.42, 0.04, 0.3);
@@ -260,7 +260,7 @@
       mols.push({ m, o2, t: R(), x: (R() - 0.5) * 14, z: (R() - 0.5) * 1.6 });
     }
     api.label(lungSide ? 'O₂ vào máu, CO₂ ra phế nang' : 'O₂ ra tế bào, CO₂ vào máu', [0, -1.7, 0], { cls: 'tag', color: '#2F80C0' });
-    api.label('<span style="color:#E03030">●● O₂ (oxy)</span> &nbsp; <span style="color:#C9CED6">●●● CO₂ (cacbon điôxit)</span>', [0, -2.4, 0], { cls: 'plain' });
+    api.label('<span style="color:#E03030">●● O₂ (oxygen)</span> &nbsp; <span style="color:#C9CED6">●●● CO₂ (carbon dioxide)</span>', [0, -2.4, 0], { cls: 'plain' });
     api.onFrame(dt => {
       cells.forEach(c => {
         c.m.position.x += dt * 0.9; if (c.m.position.x > 8.5) { c.m.position.x = -8.5; c.sat = lungSide ? 0 : 1; }
@@ -290,7 +290,7 @@
       const sick = plaque > 0 || regurg;
       return {
         title: 'Hai vòng tuần hoàn và thông số bệnh lý',
-        sub: `Nhịp tim ${HR} nhịp/phút · Chu kỳ tim ${(60 / HR).toFixed(2)} s (nhĩ co ${(0.1 * 75 / HR).toFixed(2)} s, thất co ${(0.3 * 75 / HR).toFixed(2)} s, dãn chung ${(0.4 * 75 / HR).toFixed(2)} s)`,
+        sub: `Nhịp tim ${HR} nhịp/phút · Chu kì tim ${(60 / HR).toFixed(2)} s (nhĩ co ${(0.1 * 75 / HR).toFixed(2)} s, thất co ${(0.3 * 75 / HR).toFixed(2)} s, dãn chung ${(0.4 * 75 / HR).toFixed(2)} s)`,
         sheets: [
           { name: 'Thông số', head: ['STT', 'Thông số / Tiêu chí', 'Trạng thái bình thường', 'Trạng thái Xơ vữa / Hở van', 'Đánh giá chẩn đoán y khoa'], rows: [
             [1, 'Huyết áp động mạch (mmHg)', '120/80', `${sbp}/${dbp}`, sbp >= 140 ? 'Tăng huyết áp' : sbp >= 130 ? 'Huyết áp cao' : 'Bình thường'],
@@ -302,7 +302,7 @@
             [7, 'Vòng tuần hoàn lớn', 'Thất trái → ĐM chủ → cơ quan → TM chủ → nhĩ phải', sick ? 'Tim phải co bóp mạnh hơn' : 'Không đổi', 'Cung cấp O₂, chất dinh dưỡng']] },
           { name: 'Áp lực và ECG', head: ['Thời gian (s)', 'Áp lực thất trái (mmHg)', 'ECG (mV × 100)'], rows: pts.map((p, k) => [p[0], p[1], ep[k][1]]) }
         ],
-        chart: { type: 'line', series: [{ name: 'Áp lực thất trái (mmHg)', color: '#E5534B', points: pts }, { name: 'ECG (mV×100)', color: '#3FB37F', points: ep.map(p => [p[0], Math.max(0, p[1])]) }], xLabel: 'Thời gian trong 1 chu kỳ (s)', yLabel: 'mmHg', yMax: Math.max(160, Math.ceil(Math.max(...pts.map(p => p[1])) / 20) * 20 + 20) }
+        chart: { type: 'line', series: [{ name: 'Áp lực thất trái (mmHg)', color: '#E5534B', points: pts }, { name: 'ECG (mV×100)', color: '#3FB37F', points: ep.map(p => [p[0], Math.max(0, p[1])]) }], xLabel: 'Thời gian trong 1 chu kì (s)', yLabel: 'mmHg', yMax: Math.max(160, Math.ceil(Math.max(...pts.map(p => p[1])) / 20) * 20 + 20) }
       };
     },
     liveData: true

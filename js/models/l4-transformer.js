@@ -24,7 +24,7 @@
     [[0, 2.5, 8, 1], [0, -2.5, 8, 1]].forEach(([x, y, w, h]) => api.box(w, h, 1, coreM, [x, y, 0], core));
     [[-3.5, 0], [3.5, 0]].forEach(([x]) => api.box(1, 4, 1, coreM, [x, 0, 0], core));
     for (let k = -4; k <= 4; k++) { const l = api.box(8.04, 0.012, 1.02, api.mat(0x334155), [0, 2.5, k * 0.11], core); l.userData.noPick = true; }
-    api.part(core, { name: 'Lõi thép kỹ thuật điện', rows: [['Cấu tạo', 'Nhiều lá thép mỏng ghép cách điện với nhau'], ['Vai trò', 'Dẫn từ thông đi khép kín qua cả hai cuộn dây'], ['Vì sao ghép lá mỏng', 'Giảm dòng điện Fu-cô làm nóng lõi']] });
+    api.part(core, { name: 'Lõi thép kỹ thuật điện', rows: [['Cấu tạo', 'Nhiều lá thép mỏng ghép cách điện với nhau'], ['Vai trò', 'Dẫn từ thông đi khép kín qua cả hai cuộn dây'], ['Vì sao ghép lá mỏng', 'Giảm dòng điện Foucault làm nóng lõi']] });
 
     let c1 = null, c2 = null;
     const m1 = api.mat(0xD97706, { metalness: 0.6, roughness: 0.35, emissive: 0xFF2200, emissiveIntensity: 0 });

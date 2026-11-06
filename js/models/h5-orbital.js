@@ -110,7 +110,7 @@
       const e = C3().EL[Z - 1], sh = C3().shells(Z);
       return {
         title: `Nguyên tử ${e.sym} (${e.vi}) và năng lượng ion hóa thứ nhất`,
-        sub: 'IE₁ tăng dần trong một chu kỳ, giảm mạnh khi sang chu kỳ mới (bắt đầu lớp electron mới)',
+        sub: 'IE₁ tăng dần trong một chu kì, giảm mạnh khi sang chu kì mới (bắt đầu lớp electron mới)',
         sheets: [
           { name: 'Nguyên tử ' + e.sym, head: ['Đại lượng', 'Giá trị'], rows: [['Proton (P)', Z], ['Neutron (N)', NEU[Z]], ['Electron (E)', Z], ['Cấu hình electron', C3().config(Z)], ...sh.map((n, i) => [`Lớp ${SHELL[i]} (n = ${i + 1})`, n + ' electron']), ['Bán kính nguyên tử (pm)', e.r], ['Độ âm điện (Pauling)', e.chi ? C3().fmtVN(e.chi) : '–'], ['IE₁ (kJ/mol)', IE1[Z]]] },
           { name: '23 nguyên tố', head: ['Z', 'Ký hiệu', 'Cấu hình electron', 'K', 'L', 'M', 'N', 'Bán kính (pm)', 'Độ âm điện', 'IE₁ (kJ/mol)'], rows: LIST.map(z => { const x = C3().EL[z - 1], s = C3().shells(z); return [z, x.sym, C3().config(z), s[0] || 0, s[1] || 0, s[2] || 0, s[3] || 0, x.r, x.chi ? C3().fmtVN(x.chi) : '–', IE1[z]]; }) }

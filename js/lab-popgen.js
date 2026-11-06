@@ -4,6 +4,7 @@
   const TRUNK = { x: 70, y: 70, w: 520, h: 380 };
   const MOTHS = 36;
   let st;
+  const vn = (x, d) => NL.fmt(x, d);
 
   function binom(n, p) {
     if (n * p * (1 - p) > 30) { // xấp xỉ chuẩn khi n lớn
@@ -16,20 +17,21 @@
 
   // một thế hệ: giao phối → chọn lọc → đột biến → di nhập gene → biến động di truyền
   function nextGen(s, P) {
-    let f;
-    if (P.mating === 'self') f = [s.f[0] + s.f[1] / 4, s.f[1] / 2, s.f[2] + s.f[1] / 4];
-    else { const p = s.p, q = 1 - p, F = P.mating === 'inbred' ? P.F : 0; f = [p * p + F * p * q, 2 * p * q * (1 - F), q * q + F * p * q]; }
+    // giao phối gần: hệ số nội phối F tích luỹ qua các thế hệ, F(t) = 1 − (1 − ΔF)^t
+    const Fnow = P.mating === 'inbred' ? 1 - (1 - (s.F || 0)) * (1 - P.F) : 0;
+    const p0 = s.p, q0 = 1 - p0;
+    let f = [p0 * p0 + Fnow * p0 * q0, 2 * p0 * q0 * (1 - Fnow), q0 * q0 + Fnow * p0 * q0];
     const w = [P.wAA, P.wAa, P.waa], wbar = f[0] * w[0] + f[1] * w[1] + f[2] * w[2] || 1e-9;
     let fs = f.map((x, i) => x * w[i] / wbar);
     let p = fs[0] + fs[1] / 2;
     const p2 = p - P.u * p + P.v * (1 - p);
     const p3 = (1 - P.m) * p2 + P.m * P.pm;
-    // giữ thành phần kiểu gene (cho tự phối), chỉnh theo p mới
+    // giữ thành phần kiểu gene (cho giao phối gần), chỉnh theo p mới
     if (p > 0 && p < 1) { const r = p3 / p, r2 = (1 - p3) / (1 - p); fs = [fs[0] * r, fs[1] * (r + r2) / 2, fs[2] * r2]; const t = fs[0] + fs[1] + fs[2]; fs = fs.map(x => x / t); }
     let obs;
     if (P.N < 10000) { obs = multi(P.N, fs).map(c => c / P.N); }
     else obs = fs;
-    return { p: obs[0] + obs[1] / 2, f: obs };
+    return { p: obs[0] + obs[1] / 2, f: obs, F: Fnow };
   }
 
   function stats(g, N) {
@@ -51,7 +53,7 @@
 
   function build(api) {
     const L = api.svg, el = api.el;
-    st = { runs: [], P: { N: 1000, p0: 0.5, mating: 'random', F: 0.5, wAA: 1, wAa: 1, waa: 1, u: 0, v: 0, m: 0, pm: 0.5, gens: 50 } };
+    st = { runs: [], P: { N: 1000, p0: 0.5, mating: 'random', F: 0.25, wAA: 1, wAa: 1, waa: 1, u: 0, v: 0, m: 0, pm: 0.5, gens: 50 } };
     const tr = TRUNK;
     st.bark = el('rect', { x: tr.x, y: tr.y, width: tr.w, height: tr.h, rx: 30, fill: '#B9A584' }, L);
     for (let k = 0; k < 14; k++) el('path', { d: `M${tr.x + 20 + k * 37} ${tr.y + 10} q${10 - Math.random() * 20} ${tr.h / 2} 0 ${tr.h - 20}`, stroke: 'rgba(90,70,40,.35)', 'stroke-width': 3, fill: 'none' }, L);
@@ -62,8 +64,8 @@
     st.genTxt = api.text(L, tr.x + tr.w / 2, tr.y + tr.h + 34, 'Thế hệ F₀', 18, '#1F4E79', 800);
     const lg = api.g(L, 0, 0);
     [['AA', 'đen'], ['Aa', 'xám'], ['aa', 'trắng']].forEach(([k, t], i) => {
-      el('rect', { x: tr.x + 40 + i * 170, y: tr.y + tr.h + 52, width: 18, height: 14, rx: 3, fill: COL[k], stroke: '#555' }, lg);
-      api.text(lg, tr.x + 90 + i * 170, tr.y + tr.h + 64, `${k}: bướm ${t}`, 13, '#6C88A3', 700);
+      el('rect', { x: tr.x + 30 + i * 175, y: tr.y + tr.h + 52, width: 14, height: 14, rx: 3, fill: COL[k], stroke: '#555' }, lg);
+      api.text(lg, tr.x + 50 + i * 175, tr.y + tr.h + 64, `${k}: bướm ${t}`, 13, '#6C88A3', 700).setAttribute('text-anchor', 'start');
     });
     api.text(lg, tr.x + tr.w / 2, tr.y + tr.h + 86, 'Giả định trội không hoàn toàn để nhìn thấy cả 3 kiểu gene (bướm bạch dương thật: allele đen trội)', 11, '#8A9AAD', 600);
     colorMoths([0.25, 0.5, 0.25]);
@@ -97,15 +99,15 @@
     const draw = () => {
       card.innerHTML = `<div class="cond-row"><span>Số cá thể N</span>${seg('N', [[20, '20'], [100, '100'], [1000, '1000'], [10000, '10000']])}</div>`
         + rng('p0', 'Tần số A ban đầu p₀ =', 0, 1, 0.05)
-        + `<div class="cond-row"><span>Giao phối</span>${seg('mating', [['random', 'Ngẫu phối'], ['inbred', 'Giao phối gần'], ['self', 'Tự phối']])}</div>`
-        + (P.mating === 'inbred' ? rng('F', 'Hệ số nội phối F =', 0, 1, 0.05) : '')
+        + `<div class="cond-row"><span>Giao phối</span>${seg('mating', [['random', 'Ngẫu phối'], ['inbred', 'Giao phối gần (cận huyết)']])}</div>`
+        + (P.mating === 'inbred' ? rng('F', 'Mức giao phối gần mỗi thế hệ ΔF =', 0.05, 0.5, 0.05) : '')
         + `<div class="cond-row"><span>Giá trị thích nghi (chim ăn bướm)</span></div>` + rng('wAA', 'w(AA) đen =', 0, 1, 0.05) + rng('wAa', 'w(Aa) xám =', 0, 1, 0.05) + rng('waa', 'w(aa) trắng =', 0, 1, 0.05)
         + `<div class="cond-row"><span>Đột biến A→a (u) và a→A (v)</span>${seg('u', [[0, 'u = 0'], [0.0001, '10⁻⁴'], [0.001, '10⁻³']])}${seg('v', [[0, 'v = 0'], [0.0001, '10⁻⁴'], [0.001, '10⁻³']])}</div>`
         + rng('m', 'Di nhập gene m =', 0, 0.5, 0.05) + (P.m > 0 ? rng('pm', 'Tần số A nơi đến p(m) =', 0, 1, 0.05) : '')
         + `<div class="cond-row"><span>Số thế hệ</span>${seg('gens', [[10, '10'], [50, '50'], [100, '100'], [500, '500']])}</div>`;
       card.querySelectorAll('[data-k]').forEach(b => b.onclick = () => {
         NL.audio.play('click'); const k = b.dataset.k, v = b.dataset.v; P[k] = isNaN(+v) ? v : +v; draw();
-        if (k === 'mating' && v === 'self') api.card({ kicker: '🔬 Giải thích khoa học', text: 'Tự phối qua các thế hệ làm bướm xám Aa giảm đi một nửa sau mỗi thế hệ, bướm đen AA và bướm trắng aa tăng lên.', sub: 'Quần thể sẽ lệch khỏi cân bằng Hardy–Weinberg (χ² vượt ngưỡng).' });
+        if (k === 'mating' && v === 'inbred') api.card({ kicker: '🔬 Giải thích khoa học', text: 'Bướm là động vật đơn tính nên không tự phối được, nhưng có thể giao phối gần (cận huyết). Hệ số nội phối F tích luỹ qua các thế hệ: AA = p² + Fpq, Aa = 2pq(1 − F), aa = q² + Fpq.', sub: 'Giao phối gần làm tăng tỉ lệ đồng hợp, giảm dị hợp, không làm đổi tần số allele. Quần thể lệch khỏi cân bằng Hardy–Weinberg (χ² vượt ngưỡng).' });
       });
       card.querySelectorAll('[data-r]').forEach(r => {
         r.oninput = () => { P[r.dataset.r] = +r.value; r.previousElementSibling.querySelector('b').textContent = r.value; };
@@ -122,11 +124,11 @@
   function showLive(api, g, s, gen) {
     const c = liveCard(api), ok = s.chi <= 3.841;
     c.innerHTML = `<table><tr><th></th><th>Thực tế</th><th>HW</th></tr>
-      <tr><td>p(A)</td><td>${g.p.toFixed(3)}</td><td></td></tr>
-      <tr><td>AA đen</td><td>${g.f[0].toFixed(3)}</td><td>${s.e[0].toFixed(3)}</td></tr>
-      <tr><td>Aa xám</td><td>${g.f[1].toFixed(3)}</td><td>${s.e[1].toFixed(3)}</td></tr>
-      <tr><td>aa trắng</td><td>${g.f[2].toFixed(3)}</td><td>${s.e[2].toFixed(3)}</td></tr>
-      <tr><td>χ²</td><td>${s.chi.toFixed(2)}</td><td style="color:${ok ? 'var(--ok)' : 'var(--red)'}">${ok ? 'Chưa thấy lệch HW' : 'Lệch HW'}</td></tr></table>`;
+      <tr><td>p(A)</td><td>${vn(g.p, 3)}</td><td></td></tr>${g.F ? `<tr><td>F nội phối</td><td>${vn(g.F, 2)}</td><td></td></tr>` : ''}
+      <tr><td>AA đen</td><td>${vn(g.f[0], 3)}</td><td>${vn(s.e[0], 3)}</td></tr>
+      <tr><td>Aa xám</td><td>${vn(g.f[1], 3)}</td><td>${vn(s.e[1], 3)}</td></tr>
+      <tr><td>aa trắng</td><td>${vn(g.f[2], 3)}</td><td>${vn(s.e[2], 3)}</td></tr>
+      <tr><td>χ²</td><td>${vn(s.chi, 2)}</td><td style="color:${ok ? 'var(--ok)' : 'var(--red)'}">${ok ? 'Chưa thấy lệch HW' : 'Lệch HW'}</td></tr></table>`;
     st.genTxt.textContent = 'Thế hệ F' + gen;
   }
 
@@ -165,7 +167,7 @@
 
   const steps = [
     {
-      label: () => `Lần chạy ${st.runs.length + 1}/3 · Cài đặt`, text: 'Chọn các nhân tố tác động lên quần thể bướm', hint: 'Lần 1 thử để mặc định. Lần 2 thử chọn lọc hoặc tự phối. Lần 3 thử N = 20',
+      label: () => `Lần chạy ${st.runs.length + 1}/3 · Cài đặt`, text: 'Chọn các nhân tố tác động lên quần thể bướm', hint: 'Lần 1 thử để mặc định. Lần 2 thử chọn lọc hoặc giao phối gần. Lần 3 thử N = 20',
       enter(api) {
         if (!st.runs.length && !api.prediction) api.ask({
           predict: true, q: 'Quần thể lớn, ngẫu phối, không có chọn lọc, đột biến hay di nhập gene. Qua 50 thế hệ, tần số allele A sẽ…?',
@@ -186,7 +188,7 @@
         const r = st.runs[st.runs.length - 1], last = r.hist[r.hist.length - 1];
         showLive(api, last.g, last.s, last.gen);
         const need = 3 - st.runs.length;
-        api.say(`p(A): ${r.P.p0} → ${last.g.p.toFixed(2)} sau ${r.P.gens} thế hệ. ` + (need > 0 ? `Chạy thêm ${need} lần với nhân tố khác` : 'Đủ 3 lần chạy!'));
+        api.say(`p(A): ${vn(r.P.p0, 2)} → ${vn(last.g.p, 2)} sau ${r.P.gens} thế hệ. ` + (need > 0 ? `Chạy thêm ${need} lần với nhân tố khác` : 'Đủ 3 lần chạy!'));
         api.done(need > 0 ? 'Chạy lần nữa ➜' : 'Xem đồ thị ➜');
       },
       onNext(api) { api.goto(st.runs.length < 3 ? 0 : 3); }
@@ -207,7 +209,7 @@
   function desc(P) {
     const a = [];
     if (P.N < 1000) a.push('N=' + P.N);
-    if (P.mating !== 'random') a.push(P.mating === 'self' ? 'tự phối' : 'giao phối gần F=' + P.F);
+    if (P.mating !== 'random') a.push('giao phối gần ΔF=' + vn(P.F, 2));
     if (P.wAA < 1 || P.wAa < 1 || P.waa < 1) a.push(`w=${P.wAA}/${P.wAa}/${P.waa}`);
     if (P.u || P.v) a.push('đột biến');
     if (P.m) a.push('di nhập m=' + P.m);
@@ -218,8 +220,8 @@
     const rows = [];
     st.runs.forEach((r, i) => {
       const every = Math.max(1, Math.round(r.P.gens / 10));
-      r.hist.filter(h => h.gen % every === 0 || h.gen === r.P.gens).forEach(h => rows.push([i + 1, desc(r.P), 'F' + h.gen, h.g.p.toFixed(3), (1 - h.g.p).toFixed(3),
-        `${h.g.f[0].toFixed(3)} / ${h.s.e[0].toFixed(3)}`, `${h.g.f[1].toFixed(3)} / ${h.s.e[1].toFixed(3)}`, `${h.g.f[2].toFixed(3)} / ${h.s.e[2].toFixed(3)}`, h.s.mae.toFixed(4), h.s.chi.toFixed(2)]));
+      r.hist.filter(h => h.gen % every === 0 || h.gen === r.P.gens).forEach(h => rows.push([i + 1, desc(r.P), 'F' + h.gen, vn(h.g.p, 3), vn(1 - h.g.p, 3),
+        `${vn(h.g.f[0], 3)} / ${vn(h.s.e[0], 3)}`, `${vn(h.g.f[1], 3)} / ${vn(h.s.e[1], 3)}`, `${vn(h.g.f[2], 3)} / ${vn(h.s.e[2], 3)}`, vn(h.s.mae, 4), vn(h.s.chi, 2)]));
     });
     const maxG = Math.max(...st.runs.map(r => r.P.gens));
     return {
@@ -230,7 +232,7 @@
         series: st.runs.map((r, i) => ({ name: `Lần ${i + 1}`, color: PAL[i], points: r.hist.filter((h, k) => r.hist.length < 120 || k % Math.ceil(r.hist.length / 120) === 0).map(h => [h.gen, +h.g.p.toFixed(3)]) }))
       },
       conclusion: 'Quần thể lớn, ngẫu phối, không chịu tác động của nhân tố tiến hóa thì tần số allele và thành phần kiểu gene giữ ổn định (p² : 2pq : q²). Chọn lọc, đột biến, di nhập gene, giao phối không ngẫu nhiên và yếu tố ngẫu nhiên làm thay đổi cấu trúc di truyền của quần thể',
-      note: 'Tự phối và giao phối gần làm tăng đồng hợp, giảm dị hợp nhưng không đổi tần số allele. Quần thể càng nhỏ, yếu tố ngẫu nhiên càng mạnh.'
+      note: 'Giao phối gần (cận huyết) làm tăng đồng hợp, giảm dị hợp nhưng không đổi tần số allele. Quần thể càng nhỏ, yếu tố ngẫu nhiên càng mạnh.'
     };
   }
 
