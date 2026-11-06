@@ -81,10 +81,12 @@ NL.chem3d = (function () {
     const T = api.T, A = a.isVector3 ? a : new T.Vector3(...a), B = b.isVector3 ? b : new T.Vector3(...b);
     const g = api.group(parent); g.userData.order = order;
     const d = B.clone().sub(A).normalize(), r = o.r || 0.085;
-    const s = api.lineBetween(A, B, r, api.mat(SIGMA, { roughness: 0.4 }), g); api.tag(s, 'sigma');
+    // liên kết đôi: hai que song song đối xứng qua trục (σ xám + π tím); liên kết ba: que σ ở giữa, hai que π hai bên
+    const p = order >= 1.5 ? perpTo(T, d, o.perp) : null;
+    const sOff = order === 2 ? p.clone().multiplyScalar(-0.14) : new T.Vector3();
+    const s = api.lineBetween(A.clone().add(sOff), B.clone().add(sOff), r, api.mat(SIGMA, { roughness: 0.4 }), g); api.tag(s, 'sigma');
     if (order >= 1.5) {
-      const p = perpTo(T, d, o.perp), off = order === 3 ? [p.clone().multiplyScalar(0.2), p.clone().multiplyScalar(-0.2)] : [p.clone().multiplyScalar(0.2)];
-      if (order === 3) { const q = d.clone().cross(p).normalize(); off[1] = q.multiplyScalar(0.2); }
+      const off = order === 3 ? [p.clone().multiplyScalar(0.24), p.clone().multiplyScalar(-0.24)] : [p.clone().multiplyScalar(order === 2 ? 0.14 : 0.2)];
       off.forEach(v => {
         const pm = api.lineBetween(A.clone().add(v), B.clone().add(v), r * 0.75, api.mat(PI, { roughness: 0.35, emissive: PI, emissiveIntensity: 0.2, opacity: order === 1.5 ? 0.45 : 1 }), g);
         api.tag(pm, 'pi');

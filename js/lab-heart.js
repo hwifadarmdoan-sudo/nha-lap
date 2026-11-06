@@ -6,7 +6,8 @@
     run: { t: '🏃 Chạy 10 km/h', met: 8, leg: 42, f: 2.8, belt: 160, kmh: 10 }
   };
   const ORDER = ['rest', 'walk', 'run']; // lần 1 nghỉ, lần 2 đi bộ, lần 3 chạy để thấy rõ sự thay đổi
-  const PROF = { normal: { t: 'Bình thường', hr: 72, run: 78, walk: 30 }, athlete: { t: 'Vận động viên', hr: 54, run: 72, walk: 25 } };
+  // hồi phục hai pha: pha nhanh (tau1) rồi pha chậm (tau2); người thường cần 5–10 phút, vận động viên nhanh hơn
+  const PROF = { normal: { t: 'Bình thường', hr: 72, run: 78, walk: 30, tau1: 30, tau2: 300 }, athlete: { t: 'Vận động viên', hr: 54, run: 72, walk: 25, tau1: 25, tau2: 150 } };
   const NEED = 60; // giữ một trạng thái ít nhất 60 giây cho nhịp tim ổn định
   let st;
 
@@ -27,12 +28,23 @@
     const g = api.g(api.svg, x, y), el = api.el;
     const mkLimb = (ox, oy, len, w, color) => { const l = api.g(g, ox, oy); el('rect', { x: -w / 2, y: 0, width: w, height: len, rx: w / 2, fill: color }, l); return l; };
     st.legB = mkLimb(0, -70, 70, 15, '#2E4A70'); st.armB = mkLimb(0, -138, 56, 12, '#E9B48E');
+    // thân: áo thể thao có bóng khối, quần, giày
     el('rect', { x: -20, y: -145, width: 40, height: 80, rx: 16, fill: '#5BB4EA' }, g);
-    el('circle', { cx: 0, cy: -168, r: 22, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 2 }, g);
+    el('path', { d: 'M8 -145 h12 a16 16 0 0 1 0 32 v48 h-12 Z', fill: '#000', opacity: 0.12 }, g);
+    el('rect', { x: -20, y: -80, width: 40, height: 14, rx: 6, fill: '#2E4A70' }, g);
+    el('ellipse', { cx: 0, cy: -168, rx: 22, ry: 23, fill: '#FFE0C4', stroke: '#E8B998', 'stroke-width': 2 }, g);
+    el('path', { d: 'M10 -185 a22 22 0 0 1 10 24 v8 h-6 v-18 Z', fill: '#000', opacity: 0.08 }, g);
     el('path', { d: 'M-22 -172 Q-20 -196 2 -194 Q24 -192 22 -170 Q12 -184 -22 -172 Z', fill: '#3A2A20' }, g);
     el('circle', { cx: 8, cy: -168, r: 2.5, fill: '#333' }, g);
+    el('path', { d: 'M4 -158 q6 4 12 0', stroke: '#C8826A', 'stroke-width': 1.5, fill: 'none' }, g);
+    // điện cực dán ngực nối máy điện tâm đồ
+    st.pads = api.g(g, 0, 0);
+    [[-11, -128], [9, -128], [-2, -104]].forEach(([px, py]) => { el('circle', { cx: px, cy: py, r: 5, fill: '#F2F5F8', stroke: '#8C9AAC', 'stroke-width': 1.5 }, st.pads); el('circle', { cx: px, cy: py, r: 1.8, fill: '#C0392B' }, st.pads); });
+    el('path', { d: 'M-11 -128 C -12 -118, 0 -112, -2 -104 M9 -128 C 10 -118, 2 -112, -2 -104 M-2 -104 C 40 -100, 150 -150, 200 -220', stroke: '#C0392B', 'stroke-width': 1.6, fill: 'none', opacity: 0.85 }, st.pads);
     st.legF = mkLimb(0, -70, 70, 15, '#36557F'); st.armF = mkLimb(0, -138, 56, 12, '#FFD3B0');
+    el('rect', { x: -9, y: 62, width: 20, height: 9, rx: 4, fill: '#F2F5F8' }, st.legF); el('rect', { x: -9, y: 62, width: 20, height: 9, rx: 4, fill: '#F2F5F8' }, st.legB);
     st.cuffOn = el('rect', { x: -9, y: 8, width: 18, height: 20, rx: 4, fill: '#2F80C0', opacity: 0 }, st.armF);
+    st.cuffWire = el('path', { d: 'M0 18 C 60 70, 180 120, 240 104', stroke: '#2F80C0', 'stroke-width': 2.5, fill: 'none', opacity: 0 }, st.armF);
     st.sweat = api.g(g, 0, 0); st.sweat.style.opacity = 0;
     [[-28, -178], [26, -186], [30, -160]].forEach(([sx, sy]) => el('path', { d: `M${sx} ${sy} q-4 7 0 10 q4 -3 0 -10 Z`, fill: '#7FC8F0' }, st.sweat));
     return g;
@@ -87,12 +99,21 @@
   function sim(api) {
     let beltX = 0, legT = 0, logT = 0, lastBeat = 0;
     api.loop(dt => {
-      const sdt = dt * st.speed, tg = target(), up = tg.hr > st.HR;
-      const tau = up ? 30 : 70; // lên nhanh, hồi phục chậm (3–5 phút)
-      st.HR += (tg.hr - st.HR) * (1 - Math.exp(-sdt / tau));
-      st.SBP += (tg.sbp - st.SBP) * (1 - Math.exp(-sdt / tau));
-      st.DBP += (tg.dbp - st.DBP) * (1 - Math.exp(-sdt / tau));
+      const sdt = dt * st.speed, tg = target(), down = tg.hr < st.HR - 0.5;
       st.t += sdt; st.held += sdt; logT += sdt;
+      if (down) {
+        // hồi phục hai pha: phút đầu giảm nhanh 20–30 nhịp, sau đó giảm chậm dần về nhịp nghỉ, không bao giờ thấp hơn nhịp nghỉ
+        if (!st.down) st.down = { t0: st.t, hr: st.HR, sbp: st.SBP, dbp: st.DBP };
+        const pf = PROF[st.prof], sec = st.t - st.down.t0, f = 0.35 * Math.exp(-sec / pf.tau1) + 0.65 * Math.exp(-sec / pf.tau2);
+        st.HR = Math.max(tg.hr, tg.hr + (st.down.hr - tg.hr) * f);
+        st.SBP = Math.max(tg.sbp, tg.sbp + (st.down.sbp - tg.sbp) * f);
+        st.DBP = tg.dbp + (st.down.dbp - tg.dbp) * f;
+      } else {
+        st.down = null; const tau = 30; // lên nhanh
+        st.HR += (tg.hr - st.HR) * (1 - Math.exp(-sdt / tau));
+        st.SBP += (tg.sbp - st.SBP) * (1 - Math.exp(-sdt / tau));
+        st.DBP += (tg.dbp - st.DBP) * (1 - Math.exp(-sdt / tau));
+      }
       if (logT >= 5) { logT = 0; st.log.push([+(st.t / 60).toFixed(2), Math.round(st.HR), Math.round(st.SBP), Math.round(st.DBP)]); }
       // người và máy chạy
       const a = st.stopped ? ACT.rest : ACT[st.act]; legT += dt * a.f * Math.PI * 2;
@@ -135,7 +156,7 @@
         api.setOn(st.cuff, true);
         api.draggable(st.cuff, {
           target: { x: 170, y: 300, r: 110 }, snap: false, onDrop: () => {
-            st.cuff.style.display = 'none'; st.cuffOn.setAttribute('opacity', 1);
+            st.cuff.style.display = 'none'; st.cuffOn.setAttribute('opacity', 1); st.cuffWire.setAttribute('opacity', 1);
             st.cuffed = true; st.ecgOff.remove(); NL.audio.play('ting');
             api.say('Đã gắn xong! Điện tâm đồ lấy từ các điện cực dán trên ngực; băng quấn chỉ dùng để đo huyết áp'); api.done();
           }
@@ -191,7 +212,8 @@
         st.onTick = () => {
           const s = st.t - st.recStart;
           card.querySelector('#htRec').textContent = Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-          if (s >= 180) { st.onTick = null; st.rec3 = Math.round(st.HR); api.say(`Sau 3 phút nghỉ: ${st.peak} → ${st.rec3} bpm. Tim hồi phục từ từ`); api.done('Xem đồ thị ➜'); }
+          if (s >= 60 && !st.rec1) { st.rec1 = Math.round(st.HR); api.say(`Phút đầu giảm nhanh: ${st.peak} → ${st.rec1} bpm. Sau đó giảm chậm dần`); }
+          if (s >= 180) { st.onTick = null; st.rec3 = Math.round(st.HR); const rest = PROF[st.prof].hr; api.say(`Sau 3 phút nghỉ: ${st.peak} → ${st.rec1} → ${st.rec3} bpm, vẫn cao hơn nhịp nghỉ ${rest}. ${st.prof === 'athlete' ? 'Vận động viên hồi phục nhanh hơn người thường' : 'Người thường cần 5–10 phút mới về hẳn nhịp nghỉ'}`); api.done('Xem đồ thị ➜'); }
         };
       },
       onNext(api) { api.goto(5); }

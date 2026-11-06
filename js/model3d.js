@@ -317,20 +317,56 @@ NL.m3d = (function () {
 
   // ---------- nhãn chữ bám theo vật 3D ----------
   const _v = () => st._v || (st._v = new T.Vector3());
+  // Mỗi nhãn có điểm neo trên bộ phận; nhãn đặt lệch (off) được nối bằng đường dẫn tới điểm neo. Nhãn chồng nhau thì đẩy xuống.
+  function leads() {
+    if (st.leads) return st.leads;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('class', 'm3d-leads');
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'path'), dot = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    line.setAttribute('class', 'lead'); dot.setAttribute('class', 'lead-dot'); svg.appendChild(line); svg.appendChild(dot);
+    ui.labels.insertBefore(svg, ui.labels.firstChild);
+    return (st.leads = { svg, line, dot });
+  }
   function updateLabels(w, h) {
-    const split = !!st.split;
+    const split = !!st.split, placed = [], L = leads();
+    let dLine = '', dDot = '';
     st.labels.forEach(l => {
       let vis = l.on;
       if (vis && l.obj) { let o = l.obj; while (o) { if (!o.visible) { vis = false; break; } o = o.parent; } }
       if (!vis) { l.el.style.display = 'none'; return; }
-      const p = _v();
-      if (l.obj) { l.obj.getWorldPosition(p); if (l.off) p.add(l.off); } else p.copy(l.pos);
-      p.project(st.camera);
+      const p = _v(), a = l.obj && l.off ? new T.Vector3() : null;
+      if (l.obj) {
+        l.obj.getWorldPosition(p);
+        if (a) { // điểm neo: tâm hình học của vật (với lưới có hình), không phải gốc toạ độ của nhóm
+          const g = l.obj.geometry;
+          if (g) { if (!g.boundingBox) g.computeBoundingBox(); g.boundingBox.getCenter(a); l.obj.localToWorld(a); } else a.copy(p);
+        }
+        if (l.off) p.add(l.off);
+      } else p.copy(l.pos);
+      p.project(st.camera); if (a) a.project(st.camera);
       if (p.z > 1) { l.el.style.display = 'none'; return; }
       const W = split ? w / 2 : w, x0 = split && l.right ? w / 2 : 0;
+      let x = x0 + (p.x * 0.5 + 0.5) * W, y = (-p.y * 0.5 + 0.5) * h;
+      const bw = l.el.offsetWidth || 60, bh = l.el.offsetHeight || 22, hid = l.el.style.visibility === 'hidden';
+      if (hid) { l.el.style.display = ''; l.el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`; return; }
+      // tránh chồng nhãn: đẩy xuống dưới nhãn đã đặt
+      for (let k = 0; k < 4; k++) {
+        const hit = placed.find(r => Math.abs(r.x - x) < (r.w + bw) / 2 + 2 && Math.abs(r.y - y) < (r.h + bh) / 2 + 2);
+        if (!hit) break; y = hit.y + (hit.h + bh) / 2 + 3;
+      }
+      placed.push({ x, y, w: bw, h: bh });
       l.el.style.display = '';
-      l.el.style.transform = `translate(${x0 + (p.x * 0.5 + 0.5) * W}px, ${(-p.y * 0.5 + 0.5) * h}px) translate(-50%, -50%)`;
+      l.el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+      if (a && a.z <= 1) {
+        const ax = x0 + (a.x * 0.5 + 0.5) * W, ay = (-a.y * 0.5 + 0.5) * h, dx = ax - x, dy = ay - y;
+        if (Math.hypot(dx, dy) > Math.max(bw, bh) * 0.6) {
+          // bắt đầu từ mép hộp nhãn
+          const t = Math.min(dx ? (bw / 2 + 1) / Math.abs(dx) : 9, dy ? (bh / 2 + 1) / Math.abs(dy) : 9);
+          dLine += `M${(x + dx * t).toFixed(1)} ${(y + dy * t).toFixed(1)}L${ax.toFixed(1)} ${ay.toFixed(1)}`;
+          dDot += `M${(ax - 2.5).toFixed(1)} ${ay.toFixed(1)}a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0`;
+        }
+      }
     });
+    L.line.setAttribute('d', dLine); L.dot.setAttribute('d', dDot);
   }
   function label(text, target, o = {}) {
     const el = document.createElement('div'); el.className = 'm3d-lab ' + (o.cls || ''); el.innerHTML = text;

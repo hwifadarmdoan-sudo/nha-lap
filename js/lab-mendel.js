@@ -41,7 +41,7 @@
   }
   const ratio = (cls, obs) => {
     const vals = cls.map(c => obs[c] || 0), min = Math.min(...vals.filter(v => v > 0));
-    return vals.map(v => (v / min).toFixed(2).replace(/\.?0+$/, '')).join(' : ');
+    return vals.map(v => NL.fmt(+(v / min).toFixed(2), 2).replace(/,?0+$/, '')).join(' : ');
   };
 
   // ---------- hình vẽ ----------
@@ -51,37 +51,68 @@
     if (wr) api.el('path', { d: `M${x - r * .6} ${y} q${r * .3} ${-r * .5} ${r * .6} 0 q${r * .3} ${r * .5} ${r * .6} 0`, stroke: yel ? '#B08518' : '#3F7F38', 'stroke-width': 1.5, fill: 'none' }, parent);
     return c;
   }
-  function plant(api, x, who) {
+  // Hoa đậu Hà Lan dạng cánh bướm: cánh cờ (to, phía sau), hai cánh bên, cánh thìa ôm nhị và nhụy; có bản hoa tím và hoa trắng
+  function peaFlower(api, parent, color) {
+    const el = api.el, fl = api.g(parent, 0, 0), purple = color === 'purple';
+    const std = purple ? '#B06BD6' : '#F6F2FF', stdS = purple ? '#7E3FA8' : '#C9B8E0', wing = purple ? '#8E44AD' : '#EFE9FF', keel = purple ? '#E9D5F5' : '#FFFFFF';
+    el('path', { d: 'M0 -4 C -26 -8, -30 -36, -16 -46 C -8 -52, 8 -52, 16 -46 C 30 -36, 26 -8, 0 -4 Z', fill: std, stroke: stdS, 'stroke-width': 1.5 }, fl); // cánh cờ
+    el('path', { d: 'M0 -8 C -4 -22, -2 -34, 0 -44', stroke: stdS, 'stroke-width': 1, fill: 'none', opacity: .6 }, fl);
+    el('path', { d: 'M-2 -2 C -22 -4, -30 12, -20 22 C -12 28, -4 18, -2 -2 Z', fill: wing, stroke: stdS, 'stroke-width': 1.3 }, fl); // cánh bên trái
+    el('path', { d: 'M2 -2 C 22 -4, 30 12, 20 22 C 12 28, 4 18, 2 -2 Z', fill: wing, stroke: stdS, 'stroke-width': 1.3 }, fl); // cánh bên phải
+    el('path', { d: 'M-8 -2 C -12 10, -6 24, 4 26 C 12 24, 14 12, 8 -2 Z', fill: keel, stroke: stdS, 'stroke-width': 1.3 }, fl); // cánh thìa ôm nhị, nhụy
+    fl.stamens = api.g(fl, 0, 0);
+    [-3, 0, 3].forEach(x => { el('line', { x1: x, y1: 10, x2: x * 1.4, y2: 0, stroke: '#D9C27A', 'stroke-width': 1 }, fl.stamens); el('circle', { cx: x * 1.4, cy: 0, r: 1.6, fill: '#F2C94C' }, fl.stamens); });
+    el('line', { x1: 0, y1: 12, x2: 0, y2: -1, stroke: '#7FBF7F', 'stroke-width': 1.3 }, fl); el('circle', { cx: 0, cy: -2, r: 1.8, fill: '#6DB36D' }, fl); // nhụy
+    el('path', { d: 'M-7 18 L0 30 L7 18 Z', fill: '#6DB36D' }, fl); // đài
+    el('path', { d: 'M0 30 C 2 40, -2 48, 0 56', stroke: '#3D9A5B', 'stroke-width': 2, fill: 'none' }, fl); // cuống
+    return fl;
+  }
+  function plant(api, x, who, color) {
     const g = api.g(api.svg, x, 0), el = api.el;
     el('path', { d: 'M-34 400 L34 400 L26 452 L-26 452 Z', fill: '#C9714A' }, g);
     el('rect', { x: -38, y: 392, width: 76, height: 14, rx: 5, fill: '#B5603C' }, g);
-    el('path', { d: 'M0 395 C -6 330, 8 280, 0 210', stroke: '#3D9A5B', 'stroke-width': 7, fill: 'none', 'stroke-linecap': 'round' }, g);
-    [[-1, 350], [1, 320], [-1, 285], [1, 250]].forEach(([s, y]) => el('ellipse', { cx: s * 26, cy: y, rx: 24, ry: 11, fill: '#58C08A', transform: `rotate(${s * -20} ${s * 26} ${y})` }, g));
-    const fl = api.g(g, 0, 205);
-    [0, 72, 144, 216, 288].forEach(a => el('ellipse', { cx: 0, cy: -12, rx: 9, ry: 14, fill: '#F4F0FF', stroke: '#C9B8F0', 'stroke-width': 1.5, transform: `rotate(${a})` }, fl));
-    el('circle', { r: 6, fill: '#F2C94C' }, fl);
+    el('path', { d: 'M0 395 C -6 330, 8 280, 0 210', stroke: '#3D9A5B', 'stroke-width': 6, fill: 'none', 'stroke-linecap': 'round' }, g);
+    // lá kép có tua cuốn, lá kèm to
+    [[-1, 350], [1, 320], [-1, 285], [1, 250]].forEach(([s, y]) => {
+      el('path', { d: `M0 ${y} C ${s * 14} ${y - 4}, ${s * 26} ${y - 2}, ${s * 40} ${y}`, stroke: '#3D9A5B', 'stroke-width': 2.5, fill: 'none' }, g);
+      [0.35, 0.7].forEach(k => el('ellipse', { cx: s * 40 * k, cy: y - 2, rx: 11, ry: 6.5, fill: '#58C08A', stroke: '#3D9A5B', 'stroke-width': 1, transform: `rotate(${s * -22} ${s * 40 * k} ${y - 2})` }, g));
+      el('path', { d: `M${s * 40} ${y} q${s * 8} -4 ${s * 10} 2 q-2 6 ${s * -6} 4`, stroke: '#3D9A5B', 'stroke-width': 1.3, fill: 'none' }, g); // tua cuốn
+    });
+    const fl = api.g(g, 0, 205); fl.stamens = peaFlower(api, fl, color || 'purple').stamens;
+    const bud = api.g(g, -14, 232); // nụ
+    el('path', { d: 'M0 0 C -5 -8, -3 -18, 0 -22 C 3 -18, 5 -8, 0 0 Z', fill: color === 'white' ? '#F6F2FF' : '#C48BE0', stroke: '#6DB36D', 'stroke-width': 1.2 }, bud);
+    el('path', { d: 'M0 0 C 4 4, 8 2, 12 -2', stroke: '#3D9A5B', 'stroke-width': 1.5, fill: 'none' }, bud);
     g.pod = api.g(g, 30, 300);
     g.lab = api.text(g, 0, 478, '', 16, '#1F4E79', 800);
     api.text(g, 0, 500, who, 13, '#6C88A3', 700);
     g.flower = fl;
     return g;
   }
+  // Quả đậu tách vỏ: hai mảnh vỏ mở ra, hạt gắn vào mép vỏ bằng cuống nhỏ; màu và hình dạng hạt theo kiểu gene
   function drawPod(api, p, geno) {
     p.pod.innerHTML = '';
-    api.el('path', { d: 'M0 0 C 20 -10, 50 -6, 64 8 C 50 18, 20 16, 0 0 Z', fill: '#8FD18A', stroke: '#4E9A45', 'stroke-width': 2 }, p.pod);
-    [14, 30, 46].forEach(x => seed(api, p.pod, x, 5, 6, pheno(geno)));
+    const el = api.el;
+    el('path', { d: 'M0 0 C 18 -14, 50 -12, 66 2 C 50 8, 18 10, 0 0 Z', fill: '#79BF72', stroke: '#4E9A45', 'stroke-width': 2 }, p.pod); // mảnh vỏ sau
+    el('path', { d: 'M0 0 C 16 16, 48 20, 66 2 C 50 26, 16 28, 0 0 Z', fill: '#9BD894', stroke: '#4E9A45', 'stroke-width': 2 }, p.pod); // mảnh vỏ trước mở ra
+    el('path', { d: 'M0 0 L-8 -3', stroke: '#4E9A45', 'stroke-width': 2.5, 'stroke-linecap': 'round' }, p.pod);
+    [14, 30, 46].forEach(x => { el('line', { x1: x, y1: 2, x2: x, y2: 8, stroke: '#4E9A45', 'stroke-width': 1.5 }, p.pod); seed(api, p.pod, x, 12, 6, pheno(geno)); });
     p.lab.textContent = geno + ' · ' + pheno(geno).toLowerCase();
   }
 
   function build(api) {
     const L = api.svg, el = api.el;
     st = { mode: 1, cross: 'Aa × Aa', N: 100, runs: [], pollinated: false };
-    st.p1 = plant(api, 130, 'Cây mẹ (P₁)');
-    st.p2 = plant(api, 420, 'Cây bố (P₂)');
+    st.p1 = plant(api, 130, 'Cây mẹ (P₁)', 'purple');
+    st.p2 = plant(api, 420, 'Cây bố (P₂)', 'white');
     api.text(L, 275, 250, '×', 54, '#E5534B', 800);
+    // cọ lông thụ phấn: cán gỗ, đai kim loại, đầu lông nâu
     st.brush = api.g(L, 275, 420);
-    el('rect', { x: -4, y: -70, width: 8, height: 70, rx: 4, fill: '#C99A6B' }, st.brush);
-    el('path', { d: 'M-7 -70 L7 -70 L4 -94 L-4 -94 Z', fill: '#F2C94C' }, st.brush);
+    el('path', { d: 'M-4 -2 L-5 -70 L5 -70 L4 -2 Z', fill: '#C99A6B', stroke: '#8E6A3E', 'stroke-width': 1 }, st.brush);
+    el('line', { x1: -1, y1: -8, x2: -2, y2: -64, stroke: '#E0B98A', 'stroke-width': 1.2 }, st.brush);
+    el('rect', { x: -6, y: -84, width: 12, height: 16, rx: 2, fill: '#C0C8D0', stroke: '#8A949E', 'stroke-width': 1 }, st.brush);
+    el('path', { d: 'M-6 -84 C -7 -96, -4 -104, 0 -108 C 4 -104, 7 -96, 6 -84 Z', fill: '#7A4B24' }, st.brush);
+    [-3, 0, 3].forEach(x => el('line', { x1: x, y1: -86, x2: x * 0.4, y2: -104, stroke: '#A2693A', 'stroke-width': 1 }, st.brush));
+    st.brushTip = el('circle', { cx: 0, cy: -106, r: 3.5, fill: '#F2C94C', opacity: 0 }, st.brush);
     api.text(L, 275, 440, 'Cọ thụ phấn', 13, '#6C88A3', 700);
     // khay hạt đời con
     st.tray = api.g(L, 0, 0);
@@ -155,17 +186,17 @@
         const phase = n => { st.ph = n; api.say(self.text); };
         st.ph = 0;
         api.tapable(fl, () => {
-          NL.audio.play('pop'); fl.querySelectorAll('circle').forEach(c => c.setAttribute('fill', '#D9CDB8'));
+          NL.audio.play('pop'); fl.stamens.style.opacity = 0.15; fl.stamens.querySelectorAll('circle').forEach(c => c.setAttribute('fill', '#D9CDB8'));
           phase(1);
           api.setOn(st.brush, true);
           api.draggable(st.brush, {
             target: { x: 420, y: 300, r: 80, sx: 420, sy: 300 }, onDrop: () => {
-              NL.audio.play('pop');
+              NL.audio.play('pop'); st.brushTip.setAttribute('opacity', 1);
               api.tween(st.brush, 420, 280, 200, () => {
                 api.setOn(st.brush, true);
                 api.draggable(st.brush, {
                   target: { x: 130, y: 300, r: 80, sx: 130, sy: 300 }, onDrop: () => {
-                    NL.audio.play('ting');
+                    NL.audio.play('ting'); st.brushTip.setAttribute('opacity', 0);
                     api.tween(st.brush, 275, 420, 500);
                     phase(2);
                     api.tapable(fl, () => {
@@ -209,7 +240,9 @@
           const cls = PH[st.mode].filter(c => r.exp.ph[c] > 0 || r.obs.ph[c]);
           api.table(['Kiểu hình', 'Đếm (O)', 'Lý thuyết (E)', '(O−E)²/E']).set(
             r.cs.rows.map(x => [x.c, x.O, x.E.toFixed(1), x.part.toFixed(2)]).concat(r.cs.df ? [['<b>χ²</b>', '', '', `<b>${r.cs.chi.toFixed(2)}</b>`]] : []));
-          api.panel(`<div>Tỉ lệ thực tế</div><div class="big-num" style="font-size:24px">${ratio(cls, r.obs.ph)}</div><div class="rep-sub" style="font-size:13px">Kiểu gene: ${Object.keys(r.obs.gt).sort().map(g => `${g} ${r.obs.gt[g]}`).join(' · ')}</div>`);
+          const gcd = (a, b) => b ? gcd(b, a % b) : a, tv = cls.map(c => Math.round(r.exp.ph[c] * 16)), tg = tv.reduce((a, b) => gcd(a, b));
+          const theo = tv.map(v => v / tg).join(' : ');
+          api.panel(`<div>Tỉ lệ thực tế</div><div class="big-num" style="font-size:24px">${ratio(cls, r.obs.ph)}</div><div class="rep-sub" style="font-size:13px">Lí thuyết: <b>${theo}</b> (${cls.join(' : ')})</div><div class="rep-sub" style="font-size:13px">Kiểu gene: ${Object.keys(r.obs.gt).sort().map(g => `${g} ${r.obs.gt[g]}`).join(' · ')}</div><div class="rep-sub" style="font-size:12px;opacity:.8">Kiểu gene của mỗi cây con được mô phỏng ngẫu nhiên theo xác suất Mendel nên tỉ lệ mỗi lần có thể lệch một chút</div>`);
           api.done('Kiểm định χ² ➜');
         });
       },
@@ -271,10 +304,10 @@
 
   const QUIZ = [
     {
-      kicker: '❓ Vì sao?', q: 'Vì sao gieo 10 hạt thì tỉ lệ hay lệch xa 3 : 1, còn 10.000 hạt thì rất sát?',
+      kicker: '❓ Vì sao?', q: 'Vì sao gieo 10 hạt thì tỉ lệ hay lệch xa 3 : 1, còn 10 000 hạt thì rất sát?',
       options: [
         { t: 'Mỗi lần thụ tinh là ngẫu nhiên; càng nhiều lần thì sai lệch ngẫu nhiên càng bù trừ nhau', ok: true },
-        { t: 'Cây sinh nhiều hạt thì gene trội mạnh hơn', why: 'Gene trội không mạnh lên theo số hạt. Hãy nghĩ tới việc tung đồng xu 10 lần và 10.000 lần.' },
+        { t: 'Cây sinh nhiều hạt thì gene trội mạnh hơn', why: 'Gene trội không mạnh lên theo số hạt. Hãy nghĩ tới việc tung đồng xu 10 lần và 10 000 lần.' },
         { t: 'Máy tính đếm sai khi số hạt ít', why: 'Phép đếm vẫn đúng. Sai lệch đến từ sự kết hợp ngẫu nhiên của giao tử.' }
       ],
       explain: 'Giống tung đồng xu: tung ít lần dễ lệch, tung càng nhiều lần thì tỉ lệ càng gần 1 : 1. Đó là quy luật số lớn.'

@@ -28,11 +28,27 @@
     // buồng điện di
     const box = api.g(L, 0, 0);
     el('rect', { x: 236, y: 112, width: 380, height: 352, rx: 18, fill: '#E3EEF7', stroke: '#9FB4C8', 'stroke-width': 4 }, box);
+    // dung dịch đệm TAE ngập bản gel
+    el('rect', { x: 240, y: 116, width: 372, height: 344, rx: 14, fill: 'rgba(120,190,235,.28)' }, box);
     st.gel = el('rect', { x: 250, y: 140, width: 352, height: 304, rx: 8, fill: 'rgba(235,245,255,.9)', stroke: '#C8DAEA', 'stroke-width': 2 }, box);
+    el('rect', { x: 240, y: 116, width: 372, height: 344, rx: 14, fill: 'rgba(120,190,235,.16)', 'pointer-events': 'none' }, box);
+    api.text(box, 300, 480, 'Dung dịch đệm TAE ngập bản gel', 12, '#4A7A9A', 700);
     el('rect', { x: 250, y: 120, width: 352, height: 8, rx: 4, fill: '#333' }, box);
     el('rect', { x: 250, y: 452, width: 352, height: 8, rx: 4, fill: '#E5534B' }, box);
     api.text(box, 630, 132, '−', 30, '#333', 800);
     api.text(box, 630, 466, '+', 30, '#E5534B', 800);
+    // nguồn điện có màn hiển thị V và mA
+    const ps = api.g(L, 712, 150);
+    el('rect', { x: -48, y: -36, width: 110, height: 92, rx: 10, fill: '#2B3443', stroke: '#111', 'stroke-width': 2 }, ps);
+    el('rect', { x: -40, y: -28, width: 94, height: 30, rx: 5, fill: '#0F1A12' }, ps);
+    el('rect', { x: -40, y: 8, width: 94, height: 30, rx: 5, fill: '#0F1A12' }, ps);
+    st.psV = api.text(ps, 50, -7, '0 V', 17, '#7CFC9A', 800); st.psV.setAttribute('text-anchor', 'end'); st.psV.setAttribute('font-family', 'monospace');
+    st.psA = api.text(ps, 50, 29, '0 mA', 17, '#7CFC9A', 800); st.psA.setAttribute('text-anchor', 'end'); st.psA.setAttribute('font-family', 'monospace');
+    st.psLed = el('circle', { cx: 54, cy: 48, r: 4, fill: '#555' }, ps);
+    api.text(ps, -42, 50, 'NGUỒN ĐIỆN DI', 9, '#AAB4C4', 800);
+    el('path', { d: 'M690 196 V124 H606', fill: 'none', stroke: '#333', 'stroke-width': 3 }, L);
+    el('path', { d: 'M740 196 V456 H606', fill: 'none', stroke: '#E5534B', 'stroke-width': 3 }, L);
+    st.psOn = on => { st.psLed.setAttribute('fill', on ? '#7CFC9A' : '#555'); st.psV.textContent = (on ? st.V : 0) + ' V'; st.psA.textContent = (on ? Math.round(st.V * 0.8) : 0) + ' mA'; };
     st.wells = [];
     for (let k = 0; k < LANES; k++) {
       st.wells.push(el('rect', { x: laneX(k) - 18, y: WELL_Y - 8, width: 36, height: 10, rx: 3, fill: '#CFDDEA', stroke: '#9FB4C8', 'stroke-width': 1.5 }, box));
@@ -117,6 +133,12 @@
       st.uv = true; NL.audio.play('unlock');
       st.gel.setAttribute('fill', '#1C1440'); st.dye.style.opacity = 0;
       drawBands(); st.bands.style.opacity = 1;
+      const all = st.samples.flat(), gone = all.filter(bp => yOf(bp, st.prog) > GEL_END).length;
+      if (gone) {
+        const redo = () => { st.prog = 0; st.t = 0; st.uv = false; st.dyeOut = false; st.est = []; st.bands.style.opacity = 0; st.bands.innerHTML = ''; st.gel.setAttribute('fill', 'rgba(235,245,255,.9)'); st.dye.style.opacity = 1; drawDye(); api.setOn(st.uvBtn, false); api.goto(3); };
+        if (gone === all.length) { setTimeout(() => api.lesson({ title: 'Không thấy băng DNA nào', text: 'Các đoạn DNA đã chạy ra khỏi gel do điện di quá lâu. Hãy làm lại và tắt nguồn khi vạch thuốc nhuộm theo dõi (loading dye) đi được khoảng 2/3 bản gel.', sub: `Chạy ${Math.floor(st.t)} phút ở ${st.V} V: ngay cả đoạn dài nhất cũng đã ra khỏi mép gel phía cực +.`, btn: '🔁 Làm lại' }, redo), 700); return; }
+        setTimeout(() => api.card({ kicker: '⚠️ Mất băng', text: `${gone} đoạn DNA đã chạy ra khỏi gel do điện di quá lâu nên không thấy dưới UV. Hãy làm lại và tắt nguồn khi vạch thuốc nhuộm theo dõi (loading dye) đi được khoảng 2/3 bản gel.`, sub: 'Hoặc tiếp tục với các băng còn lại.', btn: '🔁 Làm lại', btn2: 'Tiếp tục ➜' }, redo, () => {}), 700);
+      }
       api.say(st.prog > 1 ? 'Các đoạn nhỏ đã chạy ra khỏi gel nên mất băng. Lần sau tắt nguồn sớm hơn nhé' : 'Các băng DNA phát sáng! Đoạn nhỏ ở gần cực +');
       api.done();
     });
@@ -149,7 +171,7 @@
     {
       label: 'Đang điện di', text: 'Theo dõi vạch màu xanh chạy về cực +. Tắt nguồn khi vạch gần tới đáy', hint: 'Dưới ánh sáng thường chỉ thấy vạch màu nạp mẫu, chưa thấy DNA',
       enter(api) {
-        NL.audio.play('hum');
+        NL.audio.play('hum'); st.psOn(true);
         const card = api.panel(`<div>⏱ Thời gian chạy</div><div class="big-num"><span id="gelT">0</span> phút</div><div class="rep-sub" style="font-size:13px">${st.V} V · ${st.speed}×</div>`);
         api.choices({ items: [1, 2, 5, 10].map(n => ({ t: n + '×', v: n })), value: st.speed, onPick(v) { st.speed = v; card.querySelector('.rep-sub').textContent = `${st.V} V · ${v}×`; } });
         const out = card.querySelector('#gelT');
@@ -158,11 +180,12 @@
           const simMin = dt * st.speed / 1.5; // 1× = 1 phút mỗi 1,5 giây
           st.t += simMin; st.prog += simMin * (st.V / 100) / 40;
           out.textContent = Math.floor(st.t); drawDye();
-          if (st.prog > 0.75 && !shown) { shown = true; api.done('Tắt nguồn ⏻'); }
-          if (st.prog >= 1.08) { NL.game.toast('Vạch màu đã chạy ra khỏi gel! Mình tắt nguồn giúp em'); api.goto(5); return false; }
+          if (st.prog > 0.6 && !shown) { shown = true; api.done('Tắt nguồn ⏻'); }
+          if (st.prog >= 1.02 && !st.dyeOut) { st.dyeOut = true; NL.game.toast('Vạch màu đã chạy ra khỏi gel! Các đoạn DNA ngắn cũng đang chạy ra theo…'); }
+          if (st.prog >= 3) { NL.game.toast('Chạy quá lâu rồi, mình tắt nguồn giúp em'); st.psOn(false); api.goto(5); return false; }
         });
       },
-      onNext(api) { st.loop.stop(); api.goto(5); }
+      onNext(api) { st.loop.stop(); st.psOn(false); api.goto(5); }
     },
     {
       label: 'Nhuộm và soi UV', text: 'DNA không tự phát sáng. Nhuộm gel trước, rồi mới soi UV', hint: 'Chạm lọ thuốc nhuộm DNA, sau đó chạm nút UV tím',

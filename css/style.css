@@ -245,6 +245,7 @@ body.film #hud,body.film #teacher,body.film .t-alert{display:none!important}
 .quiz-fb{font-weight:700;font-size:16px;padding:8px 12px;border-radius:14px;line-height:1.35}
 .quiz-fb.warn{background:#FFF2C2;color:#6B4E00}.quiz-fb.ok{background:#EAF8F0;color:#1E6B45}
 .quiz-next{align-self:flex-end}
+.quiz-alt{align-self:flex-end;margin-top:6px}
 .rep-quiz{margin-top:8px;font-size:15px;color:var(--navy)}
 .rep-quiz ul{margin:4px 0 0;padding-left:20px}
 @media (max-height:500px){.quiz-q{font-size:18px}.quiz-opt{font-size:15px;padding:6px 12px}.quiz-card{padding:12px 16px;gap:7px}}
@@ -278,7 +279,8 @@ body.film #hud,body.film #teacher,body.film .t-alert{display:none!important}
 .cond-card .fold{display:flex;flex-direction:column;gap:6px;border-top:2px dashed #DCEBF7;padding-top:6px}.cond-card .fold-h{cursor:pointer;display:flex;justify-content:space-between;font-weight:800;font-size:14px;color:var(--blue-d)}.cond-card .fold-h::after{content:'⌃'}.cond-card .fold.closed .fold-h::after{content:'⌄'}.cond-card .fold.closed>*:not(.fold-h){display:none}
 .slider-card input.num-in{width:84px;height:auto;font-size:24px;padding:0 4px}
 .slider-card .big-num{display:flex;align-items:baseline;gap:6px}
-.lab-side .slider-card{padding:6px 12px;gap:2px}
+.lab-side .slider-card{padding:6px 12px;gap:2px;max-width:min(420px,46vw)}
+.lab-side .slider-card .seg{max-width:100%}
 
 /* ---------- Phòng mô hình 3D ---------- */
 .m3d{position:fixed;inset:0;z-index:26;background:#0F1B2B;animation:fade .3s;--pc:rgba(255,255,255,.95);--pt:var(--navy)}
@@ -286,6 +288,11 @@ body.film #hud,body.film #teacher,body.film .t-alert{display:none!important}
 .m3d-cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .m3d.has-strip .m3d-cv{height:calc(100% - var(--sh,110px))}
 .m3d-labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.m3d-leads{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.m3d-leads .lead{fill:none;stroke:rgba(255,255,255,.85);stroke-width:1.5}
+.m3d-leads .lead-dot{fill:#fff;stroke:rgba(0,0,0,.35);stroke-width:1}
+.m3d.light .m3d-leads .lead{stroke:rgba(31,78,121,.8)}
+.m3d.light .m3d-leads .lead-dot{fill:var(--navy);stroke:#fff}
 .m3d-lab{position:absolute;left:0;top:0;white-space:nowrap;font-weight:800;font-size:13px;padding:1px 9px;border-radius:999px;background:rgba(255,255,255,.88);color:var(--navy);border:2px solid var(--c,transparent);box-shadow:0 2px 6px rgba(0,0,0,.18)}
 .m3d-lab.big{font-size:16px;padding:2px 12px}
 .m3d-lab.tag{background:var(--c,#2F80C0);color:#fff;border:0}

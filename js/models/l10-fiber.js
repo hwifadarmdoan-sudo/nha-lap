@@ -56,7 +56,9 @@
 
   // ---------- sợi quang ----------
   const NCORE = 1.5, NCLAD = 1.25, A = 0.4, LS = 7, LV = 2.5;
+  const XE = LS + 4; // sợi thẳng: kéo dài từ −LS tới XE
   function walls(Rb) {
+    if (!Rb) return [{ k: 'L', p: [-LS, -A], q: [XE, -A] }, { k: 'L', p: [-LS, A], q: [XE, A] }];
     return [
       { k: 'L', p: [-LS, -A], q: [0, -A] }, { k: 'L', p: [-LS, A], q: [0, A] },
       { k: 'C', c: [0, Rb], r: Rb + A, a0: -Math.PI / 2, a1: 0 }, { k: 'C', c: [0, Rb], r: Rb - A, a0: -Math.PI / 2, a1: 0 },
@@ -80,7 +82,8 @@
         }
       });
       // đầu ra
-      if (d[1] > 0) { const tEnd = (Rb + LV - p[1]) / d[1]; if (tEnd > 1e-6 && (!best || tEnd < best.t)) { const e = [p[0] + d[0] * tEnd, p[1] + d[1] * tEnd]; segs.push([p, e]); return { segs, ok: true, n }; } }
+      if (!Rb) { if (d[0] > 0) { const tEnd = (XE - p[0]) / d[0]; if (tEnd > 1e-6 && (!best || tEnd < best.t)) { const e = [p[0] + d[0] * tEnd, p[1] + d[1] * tEnd]; segs.push([p, e]); return { segs, ok: true, n }; } } }
+      else if (d[1] > 0) { const tEnd = (Rb + LV - p[1]) / d[1]; if (tEnd > 1e-6 && (!best || tEnd < best.t)) { const e = [p[0] + d[0] * tEnd, p[1] + d[1] * tEnd]; segs.push([p, e]); return { segs, ok: true, n }; } }
       if (!best) return { segs, ok: false, n };
       const h = [p[0] + d[0] * best.t, p[1] + d[1] * best.t]; segs.push([p, h]);
       let nn = best.n; const cosI = Math.abs(d[0] * nn[0] + d[1] * nn[1]), sinI = Math.sqrt(Math.max(0, 1 - cosI * cosI));
@@ -105,17 +108,20 @@
     const info = api.note('');
     const build = () => {
       if (fg) api.root.remove(fg); fg = api.group();
-      const Rb = s.Rb, pts = [];
-      for (let k = 0; k <= 14; k++) pts.push(new T.Vector3(-LS + LS * k / 14, 0, 0));
-      for (let k = 1; k <= 30; k++) { const a = -Math.PI / 2 + Math.PI / 2 * k / 30; pts.push(new T.Vector3(Rb * Math.cos(a), Rb + Rb * Math.sin(a), 0)); }
-      for (let k = 1; k <= 8; k++) pts.push(new T.Vector3(Rb, Rb + LV * k / 8, 0));
+      const Rb = s.straight ? 0 : s.Rb, pts = [];
+      if (s.straight) for (let k = 0; k <= 20; k++) pts.push(new T.Vector3(-LS + (XE + LS) * k / 20, 0, 0));
+      else {
+        for (let k = 0; k <= 14; k++) pts.push(new T.Vector3(-LS + LS * k / 14, 0, 0));
+        for (let k = 1; k <= 30; k++) { const a = -Math.PI / 2 + Math.PI / 2 * k / 30; pts.push(new T.Vector3(Rb * Math.cos(a), Rb + Rb * Math.sin(a), 0)); }
+        for (let k = 1; k <= 8; k++) pts.push(new T.Vector3(Rb, Rb + LV * k / 8, 0));
+      }
       const curve = new T.CatmullRomCurve3(pts, false, 'catmullrom', 0.0);
       const core = api.mesh(new T.TubeGeometry(curve, 240, A, 20, false), api.mat(0x67E8F9, { opacity: 0.22, depthWrite: false, roughness: 0.05 }), null, fg);
       const clad = api.mesh(new T.TubeGeometry(curve, 240, A + 0.22, 20, false), api.mat(0xE2E8F0, { opacity: 0.1, depthWrite: false }), null, fg);
       api.part(core, { name: 'Lõi sợi quang', rows: [['Chiết suất', `n₁ = ${vn(NCORE, 2)} (lớn hơn vỏ)`], ['Ánh sáng', 'Phản xạ toàn phần liên tiếp ở mặt phân cách lõi – vỏ nên đi dọc theo lõi, kể cả khi sợi bị uốn cong']] });
-      api.part(clad, { name: 'Vỏ sợi quang', rows: [['Chiết suất', `n₂ = ${vn(NCLAD, 2)}`], ['Góc tới hạn lõi – vỏ', `i_gh = ${vn(Math.asin(NCLAD / NCORE) / D, 1)}°`]] });
-      det.position.set(Rb, Rb + LV + 0.25, 0);
-      const cx = (-LS - 3 + Rb) / 2 + 1.2, cy = (Rb + LV) / 2, dist = Math.max(14, (Rb + LS + 3) * 1.25, (Rb + LV + 2) * 1.9);
+      api.part(clad, { name: 'Vỏ sợi quang', rows: [['Chiết suất', `n₂ = ${vn(NCLAD, 2)}`], ['Góc tới hạn lõi – vỏ', `i_th = ${vn(Math.asin(NCLAD / NCORE) / D, 1)}°`]] });
+      if (s.straight) { det.position.set(XE + 0.25, 0, 0); det.rotation.z = Math.PI / 2; } else { det.position.set(Rb, Rb + LV + 0.25, 0); det.rotation.z = 0; }
+      const cx = s.straight ? (XE - LS - 3) / 2 + 2.8 : (-LS - 3 + Rb) / 2 + 1.2, cy = s.straight ? 0 : (Rb + LV) / 2, dist = s.straight ? 19 : Math.max(14, (Rb + LS + 3) * 1.25, (Rb + LV + 2) * 1.9);
       api.view({ pos: [cx, cy + 0.5, dist], target: [cx, cy, 0], min: 4, max: 45 }); if (built) api.homeView(); built = true;
       update();
     };
@@ -124,27 +130,29 @@
       laser.rotation.z = Math.PI / 2 + s.al * D; laser.position.set(-LS - 3 * Math.cos(s.al * D), -3 * Math.sin(s.al * D), 0);
       const m = api.mat(0xEF4444, { emissive: 0xEF4444, emissiveIntensity: 1 });
       api.lineBetween([-LS - 3 * Math.cos(s.al * D), -3 * Math.sin(s.al * D), 0], [-LS, 0, 0], 0.04, m, rg);
-      const r = trace(s.Rb, s.al, 0);
+      const r = trace(s.straight ? 0 : s.Rb, s.al, 0);
       r.segs.forEach(([a, b]) => api.lineBetween([a[0], a[1], 0], [b[0], b[1], 0], 0.035, m, rg));
       if (r.leak) { const lm = api.mat(0xF97316, { emissive: 0xF97316, emissiveIntensity: 1, opacity: 0.8 }); api.lineBetween([r.leak[0][0], r.leak[0][1], 0], [r.leak[1][0], r.leak[1][1], 0], 0.05, lm, rg); const sp = api.sphere(0.2, api.mat(0xF97316, { emissive: 0xF97316, emissiveIntensity: 1.2 }), [r.leak[0][0], r.leak[0][1], 0], rg); sp.userData.noPick = true; }
       rg.traverse(o => { o.userData.noPick = true; });
       detM.emissiveIntensity = r.ok ? 1.5 : 0;
       const na = Math.sqrt(NCORE * NCORE - NCLAD * NCLAD), amax = Math.asin(Math.min(1, na)) / D;
-      info.set(`${r.ok ? `✅ Ánh sáng tới đầu thu sau <b>${r.n}</b> lần phản xạ toàn phần.` : r.leak ? '❌ Ánh sáng <b>rò ra ngoài</b> (chấm cam): góc tới ở mặt lõi – vỏ nhỏ hơn góc tới hạn.' : '❌ Không tới được đầu thu.'}<br>Góc nhận lớn nhất của sợi (sợi thẳng): sin α<sub>max</sub> = √(n₁² − n₂²) = ${vn(na, 3)} → α<sub>max</sub> ≈ <b>${vn(amax, 1)}°</b>`);
-      if (r.leak && s.al > amax + 0.5) api.warn('wide', `Tia laser chiếu lệch quá ${vn(amax, 0)}° so với trục sợi. Vào trong lõi, tia gặp mặt lõi – vỏ với góc tới <b>nhỏ hơn góc tới hạn</b> ${vn(Math.asin(NCLAD / NCORE) / D, 1)}° nên một phần lớn ánh sáng khúc xạ ra vỏ rồi mất đi.<br>Muốn dẫn sáng tốt phải chiếu tia gần như dọc theo trục sợi.`, '💡 Rò sáng');
-      else if (r.leak) api.warn('bend', 'Sợi quang bị <b>uốn quá gắt</b>. Ở chỗ cong, tia sáng gặp thành sợi với góc tới nhỏ hơn, có lúc nhỏ hơn góc tới hạn nên ánh sáng rò ra ngoài. Vì vậy cáp quang khi lắp đặt có quy định bán kính uốn tối thiểu.', '💡 Rò sáng ở khúc uốn');
+      const th = Math.asin(Math.sin(s.al * D) / NCORE) / D, igh = Math.asin(NCLAD / NCORE) / D;
+      info.set(`Góc chiếu α = ${vn(s.al, 0)}° (so với trục sợi) → trong lõi tia lệch trục θ = ${vn(th, 1)}° → góc tới ở mặt lõi – vỏ (so với pháp tuyến của thành lõi) = 90° − θ = <b>${vn(90 - th, 1)}°</b>${s.straight ? '' : ' ở đoạn thẳng; ở khúc uốn góc này nhỏ đi'}. Góc tới hạn lõi – vỏ: i<sub>th</sub> = ${vn(igh, 1)}°.<br>${r.ok ? `✅ Ánh sáng tới đầu thu sau <b>${r.n}</b> lần phản xạ toàn phần.` : r.leak ? '❌ Ánh sáng <b>rò ra ngoài</b> (chấm cam): góc tới ở mặt lõi – vỏ nhỏ hơn góc tới hạn.' : '❌ Không tới được đầu thu.'}<br>Góc nhận lớn nhất của sợi (sợi thẳng): sin α<sub>max</sub> = √(n₁² − n₂²) = ${vn(na, 3)} → α<sub>max</sub> ≈ <b>${vn(amax, 1)}°</b>`);
+      if (r.leak && s.al > amax + 0.5) api.warn('wide', `Tia laser chiếu lệch quá ${vn(amax, 0)}° so với trục sợi. Vào trong lõi, tia gặp mặt lõi – vỏ với góc tới (đo so với pháp tuyến của thành lõi, không phải góc chiếu α) <b>nhỏ hơn góc tới hạn</b> ${vn(Math.asin(NCLAD / NCORE) / D, 1)}° nên một phần lớn ánh sáng khúc xạ ra vỏ rồi mất đi.<br>Muốn dẫn sáng tốt phải chiếu tia gần như dọc theo trục sợi.`, '💡 Rò sáng');
+      else if (r.leak) api.warn('bend', 'Sợi quang bị <b>uốn quá gắt</b>. Ở chỗ cong, tia sáng gặp thành sợi với góc tới (so với pháp tuyến của thành lõi) nhỏ hơn so với đoạn thẳng, có lúc nhỏ hơn góc tới hạn nên ánh sáng rò ra ngoài. So sánh với sợi thẳng: cùng góc chiếu α nhưng sợi thẳng vẫn dẫn được. Vì vậy cáp quang khi lắp đặt có quy định bán kính uốn tối thiểu.', '💡 Rò sáng ở khúc uốn');
     };
     api.section('🧵 Sợi quang');
+    api.choices({ label: 'Dạng sợi', items: [{ t: '📏 Sợi thẳng', v: true }, { t: '🧵 Sợi uốn cong', v: false }], value: !!s.straight, onPick(v) { s.straight = v; build(); } });
     api.slider({ label: 'Góc chiếu laser α', min: 0, max: 70, step: 1, value: s.al, unit: '°', lazy: true, onInput(v) { s.al = v; update(); } });
-    api.slider({ label: 'Bán kính khúc uốn', min: 1, max: 10, step: 0.5, value: s.Rb, unit: 'cm', lazy: true, onInput(v) { s.Rb = v; build(); } });
-    api.note('Sợi quang gồm lõi chiết suất lớn bọc trong lớp vỏ chiết suất nhỏ hơn một chút. Ứng dụng: cáp internet quang, nội soi trong y học.<br>🎯 Tìm góc chiếu lớn nhất mà ánh sáng vẫn tới đầu thu, rồi thử uốn sợi gắt dần.');
+    api.slider({ label: 'Bán kính khúc uốn (sợi uốn cong)', min: 1, max: 10, step: 0.5, value: s.Rb, unit: 'cm', lazy: true, onInput(v) { s.Rb = v; if (!s.straight) build(); } });
+    api.note('Sợi quang gồm lõi chiết suất lớn bọc trong lớp vỏ chiết suất nhỏ hơn một chút. Ứng dụng: cáp internet quang, nội soi trong y học.<br>🎯 Với sợi thẳng, tìm góc chiếu lớn nhất mà ánh sáng vẫn tới đầu thu; rồi đổi sang sợi uốn cong, cùng góc chiếu đó, uốn gắt dần xem ánh sáng rò ở đâu.');
     build();
   }
 
   NL.m3d.register('LM10', {
     title: 'Phản xạ toàn phần và sợi quang',
     tabs: [{ t: '💎 Phản xạ toàn phần', v: 'tir' }, { t: '🧵 Sợi quang', v: 'fiber' }],
-    init() { s = { pair: 'gl', i: 30, al: 10, Rb: 8 }; },
+    init() { s = { pair: 'gl', i: 30, al: 10, Rb: 8, straight: false }; },
     build(api, tab) { if (tab === 'tir') tir(api); else fiber(api); },
     data() {
       const Rbs = [3, 4, 5, 6, 7, 8, 9, 10];
@@ -154,7 +162,7 @@
         title: 'Góc tới hạn và sợi quang', sub: `Lõi n₁ = ${vn(NCORE, 2)}, vỏ n₂ = ${vn(NCLAD, 2)}, mô hình phóng to: lõi rộng 0,8 cm, vỏ chiết suất thấp để dễ quan sát (sợi thật mảnh như sợi tóc, n₂ chỉ nhỏ hơn n₁ khoảng 1%). Uốn càng gắt, góc chiếu chấp nhận được càng nhỏ.`,
         sheets: [
           { name: 'Góc tới hạn', head: ['Ánh sáng đi từ', 'Sang', 'n₁', 'n₂', 'Góc tới hạn'], rows: Object.values(PAIRS).map(P => [P.m1, P.m2, vn(P.n1, 2), vn(P.n2, 2), P.n1 > P.n2 ? vn(Math.asin(P.n2 / P.n1) / D, 1) + '°' : 'Không có']).concat([['Lõi sợi quang', 'Vỏ sợi quang', vn(NCORE, 2), vn(NCLAD, 2), vn(Math.asin(NCLAD / NCORE) / D, 1) + '°']]) },
-          { name: 'Uốn sợi', head: ['Bán kính uốn (cm)', 'Góc chiếu lớn nhất vẫn dẫn được sáng (°)'], rows: Rbs.map((r, k) => [vn(r, 1), vn(am[k], 1)]) }
+          { name: 'Uốn sợi', head: ['Bán kính uốn (cm)', 'Góc chiếu lớn nhất vẫn dẫn được sáng (°)'], rows: [['Sợi thẳng', vn(amax(0), 1)]].concat(Rbs.map((r, k) => [vn(r, 1), vn(am[k], 1)])) }
         ],
         chart: { type: 'line', xLabel: 'Bán kính uốn (cm)', yLabel: 'Góc chiếu lớn nhất (°)', xMin: 2, xMax: 10, yMin: 0, yMax: 60, series: [{ name: 'α lớn nhất', color: '#38BDF8', dots: true, points: Rbs.map((r, k) => [r, am[k]]) }] }
       };

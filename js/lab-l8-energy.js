@@ -62,7 +62,8 @@
     st.mark0.setAttribute('y1', Y(st.hs)); st.mark0.setAttribute('y2', Y(st.hs)); st.mark0T.setAttribute('y', Y(st.hs) - 6); st.mark0T.textContent = `thả ${vn(st.hs, 1)} m`;
   }
   function tick(dt) {
-    if (st.run) {
+    if (st.paused) dt = 0; else if (st.slow) dt *= 0.25;
+    if (st.run && dt > 0) {
       const n = Math.ceil(dt / 0.002), h = dt / n;
       for (let k = 0; k < n; k++) {
         const s = slope(st.x), q = Math.sqrt(1 + s * s), prev = st.v;
@@ -80,7 +81,7 @@
     place();
     const e = energies(), sc = 500 / 2200;
     [e.K, e.U, e.W, st.heat].forEach((v, k) => { st.bars[k].b.setAttribute('width', Math.max(0, v * sc)); st.bars[k].v.textContent = Math.round(v) + ' J'; });
-    st.info.textContent = `m = ${M} kg · h = ${vn(e.h, 2)} m · v = ${vn(Math.abs(st.v), 1)} m/s${st.mu ? ' · có ma sát' : ''}`;
+    st.info.textContent = `m = ${M} kg · h = ${vn(e.h, 2)} m · v = ${vn(e.v, 1)} m/s${st.mu ? ' · có ma sát' : ''}${st.paused ? ' · tạm dừng' : st.slow ? ' · chậm 0,25×' : ''}`;
   }
   function energies() {
     const h = hAt(st.x), s = slope(st.x), U = M * G * h;
@@ -119,13 +120,16 @@
       enter(api) {
         sideTable(api);
         if (!st.run) release(api);
+        st.paused = false; st.slow = false;
+        api.choices({ label: 'Tốc độ', items: [{ t: '▶ Chạy', v: 'run' }, { t: '🐢 Chậm 0,25×', v: 'slow' }, { t: '⏸ Tạm dừng', v: 'pause' }], value: 'run', onPick(v) { st.paused = v === 'pause'; st.slow = v === 'slow'; } });
         P.recButton(api, '📌 Ghi lúc này', () => {
           const e = energies();
           if (st.rows.some(r => Math.abs(r.h - e.h) < 0.4)) { NL.game.toast('Độ cao này gần lần trước, chờ ván tới chỗ khác'); return; }
-          const K = Math.round(P.measure(e.K, 0.01, 1)), U = Math.round(P.measure(e.U, 0.01, 1));
-          st.rows.push({ h: e.h, v: e.v, K, U, W: K + U }); sideTable(api); NL.audio.play('ting');
+          // h, v, Wđ, Wt lấy từ cùng một trạng thái: Wđ = ½mv², Wt = mgh
+          const v = Math.round(e.v * 10) / 10, K = Math.round(0.5 * M * v * v), U = Math.round(e.U);
+          st.rows.push({ h: e.h, v, K, U, W: K + U }); sideTable(api); NL.audio.play('ting');
           $('stepNo').textContent = `Ghi năng lượng · ${P.cnt(st.rows.length, 5, 'lần')}`;
-          if (st.rows.length >= 5) { const hs = st.rows.map(r => r.h); if (Math.min(...hs) < 1.2 && Math.max(...hs) > 2.5) api.done('Sang nhiệm vụ cắm cờ ➜'); else NL.game.toast('Cần thêm một lần ' + (Math.min(...hs) >= 1.2 ? 'gần đáy (dưới 1,2 m)' : 'gần đỉnh (trên 2,5 m)')); }
+          if (st.rows.length >= 5) { const hs = st.rows.map(r => r.h); if (Math.min(...hs) < 1.2 && Math.max(...hs) > 2.5) { st.paused = false; st.slow = false; api.done('Sang nhiệm vụ cắm cờ ➜'); } else NL.game.toast('Cần thêm một lần ' + (Math.min(...hs) >= 1.2 ? 'gần đáy (dưới 1,2 m)' : 'gần đỉnh (trên 2,5 m)')); }
         });
       }
     },
@@ -134,10 +138,13 @@
       enter(api) {
         st.run = false; st.flag.style.display = ''; setTrack('C');
         const go = () => {
+          let turns = 0;
           armTap(api, () => {
             st.onMove = () => { if (st.x >= 9.6) { st.onMove = null; st.onTurn = null; st.run = false; NL.audio.play('success'); api.say('Ván chạm cờ! 🚩 Đỉnh giữa thấp hơn chỗ thả nên ván vượt qua được'); api.done('Thử bật ma sát ➜'); } };
             st.onTurn = x => {
-              const hill = TRACKS[st.tr].pts[2]; if (st.tr === 'U' || x > hill[0]) return;
+              const hill = TRACKS[st.tr].pts[2];
+              if (st.tr === 'U') { if (++turns < 2) return; st.onTurn = null; st.onMove = null; api.wait(0.6, () => { st.run = false; api.lesson({ title: 'Máng chữ U không có đồi giữa', text: 'Ván chỉ chạy qua lại giữa hai bờ, không có đồi để vượt và không chạm được cờ.', sub: 'Hãy chọn máng có đồi ở giữa rồi chỉnh độ cao thả.', btn: '🔁 Chọn máng có đồi' }, () => { reset(); api.say('Chọn máng có đồi giữa rồi chạm ván để thử lại'); }); }); return; }
+              if (x > hill[0]) return;
               st.onTurn = null; st.onMove = null;
               api.wait(0.8, () => { st.run = false; api.lesson({ title: 'Đỉnh phía trước cao hơn chỗ thả nên ván không qua được', text: `Ván leo tới ${vn(hAt(x), 2)} m thì dừng rồi trôi ngược về, vì đỉnh đồi cao ${vn(hill[1], 1)} m.`, sub: 'Bài học: không ma sát thì cơ năng không đổi. Ván chỉ lên được tới đúng độ cao thả, muốn vượt đỉnh thì phải thả cao hơn đỉnh.', btn: '🔁 Chọn máng hoặc độ cao khác' }, () => { reset(); api.say('Đổi kiểu máng hoặc độ cao thả rồi chạm ván để thử lại'); }); });
             };

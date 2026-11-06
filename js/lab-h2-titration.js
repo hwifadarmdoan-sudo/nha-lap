@@ -17,12 +17,16 @@
 
   function build(api) {
     const L = api.svg, el = api.el;
-    st = { C: Math.round((0.08 + Math.random() * 0.07) * 1000) / 1000, V: 0, runs: [], tries: 0, curve: [] };
+    st = { C: Math.round((0.05 + Math.random() * 0.15) * 1000) / 1000, V: 0, runs: [], tries: 0, curve: [] }; // nồng độ HCl ngẫu nhiên 0,050–0,200 M, giữ kín
     st.Veq = st.C * VA / CB;
     // giá và buret
     el('rect', { x: 250, y: 455, width: 120, height: 14, rx: 5, fill: '#4A5A6A' }, L);
     el('rect', { x: 268, y: 60, width: 10, height: 400, fill: '#6B7B8B' }, L);
-    el('rect', { x: 276, y: 150, width: 150, height: 10, rx: 4, fill: '#6B7B8B' }, L);
+    el('rect', { x: 276, y: 150, width: 138, height: 10, rx: 4, fill: '#6B7B8B' }, L);
+    // kẹp buret ôm quanh thân buret
+    el('path', { d: `M414 140 L${FX - 16} 140 Q${FX - 22} 155 ${FX - 16} 170 L414 170 Z`, fill: '#4A5A6A' }, L);
+    el('path', { d: `M${FX + 16} 140 L${FX + 30} 140 L${FX + 30} 170 L${FX + 16} 170 Q${FX + 22} 155 ${FX + 16} 140 Z`, fill: '#4A5A6A' }, L);
+    el('rect', { x: FX + 28, y: 148, width: 16, height: 14, rx: 3, fill: '#3B4B5B' }, L);
     const bu = api.g(L, FX, 0); st.bu = bu;
     el('rect', { x: -12, y: 70, width: 24, height: 270, rx: 4, fill: 'rgba(220,240,255,.35)', stroke: A.GLASS, 'stroke-width': 3 }, bu);
     st.buLiq = el('rect', { x: -9, y: 74, width: 18, height: 0, fill: 'rgba(170,200,255,.55)' }, bu);
@@ -61,7 +65,7 @@
 
   const steps = [
     {
-      label: 'Chuẩn bị 1/3', text: 'Dùng pipette lấy 10,00 mL HCl cho vào bình tam giác', hint: 'Kéo pipette vào cốc HCl rồi sang bình tam giác',
+      label: 'Chuẩn bị 1/3', text: 'Dùng pipette lấy 10,00 mL HCl cho vào bình tam giác (bình nón)', hint: 'Kéo pipette vào cốc HCl rồi sang bình tam giác',
       enter(api) {
         sideTable(api);
         api.card({ kicker: '🥽 An toàn', text: 'HCl và NaOH đều ăn da. Đeo kính bảo hộ, không hút pipette bằng miệng, dùng quả bóp cao su.', btn: 'Đã đeo kính ➜' });

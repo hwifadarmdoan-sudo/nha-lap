@@ -36,8 +36,8 @@
     // giá ống nghiệm
     const rack = api.g(L, 0, 0);
     el('rect', { x: 318, y: 430, width: 110, height: 26, rx: 6, fill: '#C99A6B' }, rack);
-    st.t1 = A.tube(api, L, 345, 438, { label: 'Ống 1' });
-    st.t2 = A.tube(api, L, 400, 438, { label: 'Ống 2' });
+    st.t1 = A.tube(api, L, 345, 438, { label: 'Ống 1', labelY: -176 });
+    st.t2 = A.tube(api, L, 400, 438, { label: 'Ống 2', labelY: -176 });
     const led = api.g(L, 565, 0);
     el('rect', { x: -58, y: 470, width: 116, height: 40, rx: 8, fill: '#1E2A36' }, led);
     st.led = api.text(led, 0, 499, '--°C', 24, '#59F28A', 800);
@@ -47,14 +47,14 @@
     st.p2 = A.pipette(api, L, 285, 440, { bulb: '#2F80C0' });
     // đĩa sứ và Lugol
     const plate = api.g(L, 0, 0);
-    el('rect', { x: 40, y: 466, width: 250, height: 88, rx: 14, fill: '#FFFFFF', stroke: '#D5DEE8', 'stroke-width': 3 }, plate);
+    el('rect', { x: 40, y: 452, width: 250, height: 88, rx: 14, fill: '#FFFFFF', stroke: '#D5DEE8', 'stroke-width': 3 }, plate);
     st.wells = [];
     for (let r = 0; r < 3; r++) {
       st.wells.push([]);
-      for (let c = 0; c < SAMPLES; c++) st.wells[r].push(el('circle', { cx: 112 + c * 46, cy: 485 + r * 26, r: 10, fill: '#F1F4F7', stroke: '#D5DEE8', 'stroke-width': 2 }, plate));
+      for (let c = 0; c < SAMPLES; c++) st.wells[r].push(el('circle', { cx: 112 + c * 46, cy: 471 + r * 26, r: 10, fill: '#F1F4F7', stroke: '#D5DEE8', 'stroke-width': 2 }, plate));
     }
-    st.rowLab = [0, 1, 2].map(r => api.text(plate, 66, 490 + r * 26, '', 13, '#6C88A3', 800));
-    st.lugol = A.dropper(api, L, 395, 520, 'Lugol', '#C8892C');
+    st.rowLab = [0, 1, 2].map(r => api.text(plate, 66, 476 + r * 26, '', 13, '#6C88A3', 800));
+    st.lugol = A.dropper(api, L, 395, 500, 'Lugol', '#C8892C');
   }
 
   function setTemp(T) {
@@ -209,22 +209,26 @@
       t = Math.min(nextAt, t + dt * SPEED); out.textContent = fmt(t);
       if (t >= nextAt) {
         NL.audio.play('ting');
-        api.card({ kicker: '⏰ Đến giờ lấy mẫu', text: `Đã ${fmt(t)}! Hãy dùng pipette lấy một giọt hỗn hợp nhỏ lên đĩa sứ`, btn: 'Lấy mẫu ➜' }, () => sample(api, t, () => {
-          nextAt += EVERY;
-          if (st.run.samples.length >= SAMPLES) { card.remove(); api.goto(5); } else run();
-        }));
+        const after = () => { nextAt += EVERY; if (st.run.samples.length >= SAMPLES) { card.remove(); api.goto(5); } else run(); };
+        const nSoFar = st.runs.reduce((a, r) => a + r.samples.length, 0);
+        if (st.auto) { sample(api, t, after, true); return false; }
+        api.card({ kicker: '⏰ Đến giờ lấy mẫu', text: `Đã ${fmt(t)}! Hãy dùng pipette lấy một giọt hỗn hợp nhỏ lên đĩa sứ`, btn: 'Lấy mẫu ➜', btn2: nSoFar >= 2 ? '🤖 Tự lấy mẫu các lần còn lại' : '' }, () => sample(api, t, after), () => { st.auto = true; NL.game.toast('Mình sẽ tự hút và nhỏ mẫu các lần còn lại'); sample(api, t, after, true); });
         return false;
       }
     });
     run();
   }
 
-  function sample(api, t, next) {
+  // auto = true: máy tự hút và nhỏ (từ lần lấy mẫu thứ 3 học sinh có thể chọn)
+  function sample(api, t, next, auto) {
     const r = st.runs.length - 1, c = st.run.samples.length, w = st.wells[r][c];
     const wx = +w.getAttribute('cx'), wy = +w.getAttribute('cy');
-    api.say(`Lấy mẫu lần ${c + 1}: kéo pipette đỏ vào ống 1, rồi nhỏ vào ô trên đĩa sứ`);
+    api.say(auto ? `Lấy mẫu lần ${c + 1} (tự động) lúc ${Math.round(t)} giây` : `Lấy mẫu lần ${c + 1}: kéo pipette đỏ vào ống 1, rồi nhỏ vào ô trên đĩa sứ`);
     w.setAttribute('stroke', '#F2C94C'); w.setAttribute('stroke-width', 4);
-    pipetteMove(api, st.p1, { x: 525, y: 300, r: 80, sx: 525, sy: 300 }, MIX, { x: wx, y: wy, r: 60, sx: wx, sy: wy - 6 }, () => {
+    const mover = auto
+      ? (api, pip, from, color, to, after) => api.tween(pip, from.sx, from.sy, 450, () => { pip.fill(color); NL.audio.play('bubble'); api.tween(pip, to.sx, to.sy, 500, () => { pip.empty(); after(); }); })
+      : pipetteMove;
+    mover(api, st.p1, { x: 525, y: 300, r: 80, sx: 525, sy: 300 }, MIX, { x: wx, y: wy, r: 60, sx: wx, sy: wy - 6 }, () => {
       w.setAttribute('fill', '#F4EFD9');
       api.tween(st.p1, 250, 440, 300);
       const l = level(st.T, t);
@@ -241,7 +245,7 @@
       if (st.runs.length === 1 && c === 0) {
         api.say('Kéo lọ Lugol tới ô vừa nhỏ để thử tinh bột');
         api.setOn(st.lugol, true);
-        api.draggable(st.lugol, { target: { x: wx, y: wy - 50, r: 70, sx: wx, sy: wy - 64 }, onDrop: () => { color(); api.tween(st.lugol, 395, 520, 500); } });
+        api.draggable(st.lugol, { target: { x: wx, y: wy - 50, r: 70, sx: wx, sy: wy - 64 }, onDrop: () => { color(); api.tween(st.lugol, 395, 500, 500); } });
       } else color();
     });
   }

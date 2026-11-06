@@ -190,11 +190,12 @@ NL.learn = (function () {
     });
   }
   // Một thẻ thông tin có một nút (mở đầu thí nghiệm, so sánh với dự đoán).
-  function card(opt, cb) {
+  function card(opt, cb, cb2) {
     const box = document.createElement('div'); box.className = 'quiz';
-    box.innerHTML = `<div class="quiz-card"><div class="quiz-kick">${opt.kicker}</div>${opt.lead ? `<div class="quiz-lead">${decorate(opt.lead)}</div>` : ''}<div class="quiz-q">${decorate(opt.text)}</div>${opt.sub ? `<div class="quiz-sub">${decorate(opt.sub)}</div>` : ''}<button class="btn big pop quiz-next">${opt.btn || 'Tiếp ➜'}</button></div>`;
+    box.innerHTML = `<div class="quiz-card"><div class="quiz-kick">${opt.kicker}</div>${opt.lead ? `<div class="quiz-lead">${decorate(opt.lead)}</div>` : ''}<div class="quiz-q">${decorate(opt.text)}</div>${opt.sub ? `<div class="quiz-sub">${decorate(opt.sub)}</div>` : ''}<button class="btn big pop quiz-next">${opt.btn || 'Tiếp ➜'}</button>${opt.btn2 ? `<button class="btn quiz-alt" style="margin-left:8px">${opt.btn2}</button>` : ''}</div>`;
     (opt.parent || $('lab')).appendChild(box); bindTerms(box);
     box.querySelector('.quiz-next').addEventListener('click', () => { NL.audio.play('click'); box.remove(); cb && cb(); });
+    const alt = box.querySelector('.quiz-alt'); if (alt) alt.addEventListener('click', () => { NL.audio.play('click'); box.remove(); cb2 && cb2(); });
   }
   // Rút n câu ngẫu nhiên trong ngân hàng câu hỏi của một thí nghiệm, đảo thứ tự đáp án.
   function bank(id, n) {

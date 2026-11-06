@@ -15,7 +15,7 @@
     el('path', { d: 'M-16 -170 L-16 -16 A16 16 0 0 0 16 -16 L16 -170', fill: 'rgba(220,240,255,.3)', stroke: A.GLASS, 'stroke-width': 3 }, tb);
     st.kmn = el('path', { d: 'M-13 -40 L-13 -14 A13 13 0 0 0 13 -14 L13 -40 Z', fill: '#5B2A6E', opacity: 0 }, tb);
     el('rect', { x: 88, y: 284, width: 110, height: 10, rx: 4, fill: '#6B7B8B' }, gA);
-    st.pipeA = api.el('g', { opacity: 0 }, gA);
+    st.pipeA = api.el('g', { opacity: 1 }, gA); // ống dẫn khí và nút cao su vẽ sẵn từ bước lắp dụng cụ
     el('path', { d: 'M 290 316 L 420 316 C 470 316, 480 350, 490 405', stroke: A.GLASS, 'stroke-width': 6, fill: 'none' }, st.pipeA);
     el('rect', { x: 280, y: 302, width: 16, height: 28, rx: 3, fill: '#5A4A3A', transform: 'rotate(10 288 316)' }, st.pipeA);
     // đèn cồn

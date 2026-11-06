@@ -42,11 +42,11 @@
     const top = api.mesh(new T.PlaneGeometry(22, 10), api.mat(0xFFFFFF, { opacity: 0.05, depthWrite: false, side: T.DoubleSide }), [0, 10, 0]); top.rotation.x = Math.PI / 2; top.userData.noPick = true;
     api.label('Ra ngoài vũ trụ ↑', [7.5, 10.3, 0], { cls: 'plain' });
     // phân tử khí
-    const count = { N2: 12, O2: 5, H2O: 4, CO2: 30, CH4: 7, N2O: 4 };
-    const want = () => ({ N2: 12, O2: 5, H2O: 4, CO2: Math.min(30, Math.round(co2 / 280 * 3)), CH4: Math.min(7, Math.round(ch4 / 720)), N2O: Math.min(4, Math.round(n2o / 270)) });
-    const showCounts = () => { const w = want(), seen = {}; mols.forEach(g => { const k = g.userData.key; seen[k] = (seen[k] || 0) + 1; g.visible = seen[k] <= w[k]; g.userData.label.show(labels && g.visible); }); };
+    const count = { N2: 7, O2: 3, H2O: 3, CO2: 14, CH4: 4, N2O: 3 }; // ít phân tử để không chồng nhau
+    const want = () => ({ N2: 7, O2: 3, H2O: 3, CO2: Math.min(14, Math.max(2, Math.round(co2 / 280 * 2))), CH4: Math.min(4, Math.round(ch4 / 720)), N2O: Math.min(3, Math.round(n2o / 270)) });
+    const showCounts = () => { const w = want(), seen = {}; mols.forEach(g => { const k = g.userData.key; seen[k] = (seen[k] || 0) + 1; g.visible = seen[k] <= w[k]; g.userData.label.show(labels && g.visible && seen[k] === 1); }); };
     const mols = [];
-    Object.keys(count).forEach(k => { for (let i = 0; i < count[k]; i++) { const g = molecule(api, k, null); g.position.set((R() - 0.5) * 17, 0.8 + R() * 8.4, (R() - 0.5) * 6); g.userData.v = V(R() - 0.5, R() - 0.5, R() - 0.5).multiplyScalar(0.6); g.userData.key = k; g.userData.glow = 0; g.rotation.set(R() * 6, R() * 6, R() * 6); mols.push(g); const l = api.label(GAS[k].f, g, { cls: 'tag', color: GAS[k].gh ? '#F87171' : '#94A3B8', off: [0, 0.75, 0] }); l.el.dataset.mol = 1; l.show(labels); g.userData.label = l; } });
+    Object.keys(count).forEach(k => { for (let i = 0; i < count[k]; i++) { const g = molecule(api, k, null); g.position.set((R() - 0.5) * 17, 0.8 + R() * 8.4, (R() - 0.5) * 5); g.userData.v = V(R() - 0.5, R() - 0.5, R() - 0.5).multiplyScalar(0.6); g.userData.key = k; g.userData.glow = 0; g.rotation.set(R() * 6, R() * 6, R() * 6); mols.push(g); const l = api.label(GAS[k].f, g, { cls: 'tag', color: GAS[k].gh ? '#F87171' : '#94A3B8', off: [0, 0.75, 0] }); l.el.dataset.mol = 1; l.show(labels); g.userData.label = l; } });
     showCounts();
     // photon
     const ph = [];
@@ -94,7 +94,7 @@
     api.button('📅 Hiện nay (khoảng 2025)', () => { co2 = 425; ch4 = 1930; n2o = 337; api.setTab(api.tab); });
     api.choices({ label: '✨ Chùm photon', items: [{ t: '☀️ + 🌍 Cả hai', v: 'both' }, { t: '🌍 Chỉ hồng ngoại', v: 'earth' }], value: mode, onPick(v) { mode = v; } });
     api.slider({ label: '⏩ Tốc độ', min: 0.5, max: 3, step: 0.5, value: speed, unit: '×', lazy: true, onInput(v) { speed = v; } });
-    api.toggle({ label: '🏷 Nhãn tên phân tử', value: labels, onChange(v) { labels = v; showCounts(); } });
+    api.toggle({ label: '🏷 Nhãn tên phân tử (mỗi loại một nhãn)', value: labels, onChange(v) { labels = v; showCounts(); } });
     api.note('<span style="color:#FFE066">●</span> photon Mặt Trời đi xuyên qua · <span style="color:#FF4D6D">●</span> photon hồng ngoại bị <span style="color:#F87171">khí nhà kính</span> bắt rồi phát lại theo mọi hướng, một phần quay về mặt đất.');
     api.note('Mô hình đơn giản: chưa tính bụi khí (làm mát) và độ trễ của đại dương, nên nhiệt độ ra cao hơn số đo thực tế hiện nay (tăng khoảng 1,3 °C).');
     api.view({ pos: [0, 5, 18], target: [0, 4.5, 0], min: 5, max: 40 });

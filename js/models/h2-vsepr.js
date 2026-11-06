@@ -45,7 +45,7 @@
       api.part(a, { name: `Nguyên tử ${el}`, sci: el, rows: [['Liên kết với ' + m.c, 'Liên kết ' + BONDNAME[order]], ['Độ dài liên kết', `${Math.round(len * 100)} pm`]], zoom: 5 });
       if (!fill) {
         const b = C3().bond(api, center, p, order, g, { perp: m.perp ? V(...m.perp) : null });
-        api.part(b, { name: `Liên kết ${m.c}${order === 3 ? '≡' : order >= 2 ? '=' : '–'}${el}`, sci: BONDNAME[order], rows: [['Loại', 'Liên kết ' + BONDNAME[order]], ['Độ dài', `${Math.round(len * 100)} pm`], ['Trong VSEPR', 'Dù đơn, đôi hay ba, mỗi liên kết chỉ tính là <b>1 miền electron</b>']], zoom: 4, onSelect() { if (order === 3) api.warn('hcn', WARN_HCN, '🔬 Thông điệp khoa học'); } });
+        api.part(b, { name: `Liên kết ${m.c}${order === 3 ? '≡' : order >= 2 ? '=' : '–'}${el}`, sci: BONDNAME[order], rows: [['Loại', 'Liên kết ' + BONDNAME[order]], ['Số liên kết σ', order === 1.5 ? '1' : '1'], ['Số liên kết π', order === 1.5 ? '½ (cộng hưởng)' : String(order - 1)], ['Độ dài', `${Math.round(len * 100)} pm`], ['Trong VSEPR', 'Dù đơn, đôi hay ba, mỗi liên kết chỉ tính là <b>1 miền electron</b>']], zoom: 4, onSelect() { if (order === 3) api.warn('hcn', WARN_HCN, '🔬 Thông điệp khoa học'); } });
       }
     });
     m.lp.forEach(d => {
@@ -63,7 +63,8 @@
     }
     g.userData.spin = true;
     api.onFrame(dt => { if (spin) g.rotation.y += dt * 0.6; });
-    const card = `<b style="font-size:1.25em">${m.f}</b> · ${m.name}<br>Công thức VSEPR: <b>${m.axe}</b><br>Hình dạng: <b>${m.shape}</b><br>Góc liên kết: <b>${m.ang}</b><br>Lai hóa: ${m.hyb} · ${m.polar ? '<b style="color:#F59E0B">phân cực</b>' : 'không phân cực'}`;
+    const nS = m.lig.length, nP = m.lig.reduce((t, l) => t + (l[2] - 1), 0);
+    const card = `<b style="font-size:1.25em">${m.f}</b> · ${m.name}<br>Liên kết: <b>${nS} σ</b>${nP ? ` + <b>${nP} π</b>` : ''}<br>Công thức VSEPR: <b>${m.axe}</b><br>Hình dạng: <b>${m.shape}</b><br>Góc liên kết: <b>${m.ang}</b><br>Lai hóa: ${m.hyb} · ${m.polar ? '<b style="color:#F59E0B">phân cực</b>' : 'không phân cực'}`;
     api.overlay(`<div class="hm-card">${card}</div>`, 'hm-tl');
     api.caption(`${m.f}: ${m.axe}, ${m.shape}, góc ${m.ang}`);
     if (cur === 'HCN') setTimeout(() => api.warn('hcn', WARN_HCN, '🔬 Thông điệp khoa học'), 600);

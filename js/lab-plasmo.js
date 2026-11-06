@@ -7,14 +7,20 @@
     const L = api.svg, el = api.el;
     st = { runs: [], C: 5, zoom: 10, cells: [], speed: 5 };
 
-    // kính hiển vi
+    // kính hiển vi đủ bộ phận: đế, thân, bàn kính có kẹp, mâm vật kính, ống kính, thị kính, ốc thô, ốc vi cấp, đèn
     const mic = api.g(L, 850, 0);
-    el('path', { d: 'M-70 452 L70 452 L56 432 L-56 432 Z', fill: '#4A5A6A' }, mic);
-    el('path', { d: 'M30 432 L30 250 Q30 190 -10 170 L-26 190 Q4 206 4 250 L4 432 Z', fill: '#5E6E7E' }, mic);
-    el('rect', { x: -60, y: 300, width: 100, height: 14, rx: 4, fill: '#3B4B5B' }, mic);
-    el('rect', { x: -44, y: 120, width: 30, height: 110, rx: 8, fill: '#6B7B8B', transform: 'rotate(-18 -29 175)' }, mic);
-    el('rect', { x: -40, y: 236, width: 18, height: 40, rx: 4, fill: '#8C9CAC' }, mic);
-    el('circle', { cx: 30, cy: 330, r: 14, fill: '#8C9CAC' }, mic);
+    el('path', { d: 'M-80 452 L80 452 L66 428 L-66 428 Z', fill: '#4A5A6A' }, mic);
+    el('rect', { x: -22, y: 410, width: 44, height: 22, rx: 6, fill: '#F2C94C' }, mic); // đèn chiếu sáng
+    el('path', { d: 'M34 428 L34 250 Q34 184 -8 162 L-28 184 Q8 204 8 250 L8 428 Z', fill: '#5E6E7E' }, mic); // thân
+    el('path', { d: 'M8 250 Q8 204 -28 184 L-20 176 Q18 198 18 250 Z', fill: '#7B8B9B' }, mic);
+    el('rect', { x: -66, y: 296, width: 110, height: 16, rx: 4, fill: '#3B4B5B' }, mic); // bàn kính
+    el('rect', { x: -40, y: 290, width: 30, height: 6, rx: 2, fill: '#8C9CAC' }, mic); el('rect', { x: 0, y: 290, width: 30, height: 6, rx: 2, fill: '#8C9CAC' }, mic); // kẹp tiêu bản
+    el('rect', { x: -18, y: 312, width: 36, height: 26, rx: 5, fill: '#6B7B8B' }, mic); // tụ quang
+    el('circle', { cx: -18, cy: 268, r: 22, fill: '#6B7B8B' }, mic); // mâm quay vật kính
+    [[-40, 272, 46], [-18, 276, 56], [4, 272, 46]].forEach(([x, y, h], i) => el('rect', { x: x - 6, y, width: 12, height: h - 30, rx: 3, fill: i === 1 ? '#2B3240' : '#4A5A6A' }, mic)); // 3 vật kính
+    el('rect', { x: -44, y: 120, width: 30, height: 110, rx: 8, fill: '#6B7B8B', transform: 'rotate(-18 -29 175)' }, mic); // ống kính
+    el('rect', { x: -46, y: 108, width: 24, height: 26, rx: 6, fill: '#2B3240', transform: 'rotate(-18 -29 175)' }, mic); // thị kính
+    el('circle', { cx: 36, cy: 330, r: 15, fill: '#8C9CAC' }, mic); el('circle', { cx: 36, cy: 330, r: 7, fill: '#5E6E7E' }, mic); // ốc thô + ốc vi cấp
     api.text(mic, 0, 525, 'Kính hiển vi', 15, '#6C88A3', 700);
 
     // lá thài lài tía
@@ -81,7 +87,7 @@
       if (Math.hypot(x, y) > 290) continue;
       const cell = el('g', { transform: `translate(${x},${y})` }, st.zoomG);
       el('rect', { x: -29, y: -20, width: 58, height: 40, rx: 4, fill: '#E6F2D6', stroke: '#6E9E5A', 'stroke-width': 3.2 }, cell);
-      const pr = el('path', { d: '', fill: '#9B4FC4' }, cell);
+      const pr = el('path', { d: '', fill: '#9B4FC4', stroke: '#5E2A80', 'stroke-width': 1.2 }, cell);
       const nu = el('circle', { cx: -10, cy: -3, r: 4, fill: '#5E2A80' }, cell);
       st.cells.push({ pr, nu, p: Object.assign({}, FORM.normal), tp: FORM.normal, sev: 0.85 + ((n++ * 37) % 10) / 33 });
     }
@@ -204,7 +210,7 @@
           api.slider({
             label: 'Nồng độ NaCl', min: 0, max: 20, step: 0.1, value: st.C, unit: '%',
             onInput(v, c) {
-              st.C = v; st.bottles.nacl.lab.textContent = `NaCl ${v}%`;
+              st.C = v; st.bottles.nacl.lab.textContent = `NaCl ${NL.fmt(v, 1)}%`;
               const dup = st.runs.some(r => Math.abs(r.C - v) < 1);
               c.warn(dup ? 'Chọn nồng độ cách lần trước ít nhất 1% nhé' : v < 0.5 ? 'Nhược trương' : v < 1.5 ? 'Gần đẳng trương (với tế bào này)' : 'Ưu trương');
               if (dup) api.hideNext(); else api.done('Nhỏ dung dịch ➜');
@@ -215,16 +221,16 @@
       },
       onNext(api) {
         st.ctl.forEach(c => c.remove());
-        dropperTo(api, st.bottles.nacl, () => api.goto(5));
+        dropperTo(api, st.bottles.nacl, () => { soak(api); api.goto(5); });
       }
     },
     {
-      label: () => `Lần thử ${st.runs.length + 1}/3 · ${st.C}%`, text: 'Đặt giấy thấm ở mép bên kia lamen để kéo dung dịch qua mẫu', hint: 'Kéo giấy thấm lên bệ kính hiển vi',
+      label: () => `Lần thử ${st.runs.length + 1}/3 · ${NL.fmt(st.C, 1)}%`, text: 'Tế bào bắt đầu co ngay khi dung dịch chạm tới. Đặt giấy thấm ở mép đối diện để hút dung dịch cũ, kéo dung dịch mới tràn đều qua mẫu', hint: 'Kéo giấy thấm lên bệ kính hiển vi. Giấy thấm chỉ thay dung dịch, không phải nguyên nhân làm tế bào co',
       enter(api) {
         sideTable(api);
         const p = st.paper; p.style.display = ''; api.place(p, 560, 470);
         api.setOn(p, true);
-        api.draggable(p, { target: { x: STAGE.x, y: STAGE.y, r: 120, sx: STAGE.x + 40, sy: STAGE.y - 4 }, onDrop: () => soak(api) });
+        api.draggable(p, { target: { x: STAGE.x, y: STAGE.y, r: 120, sx: STAGE.x + 40, sy: STAGE.y - 4 }, onDrop: () => { st.paperOn = true; st.paper.style.display = 'none'; NL.game.toast('Giấy thấm hút dung dịch cũ, NaCl tràn đều qua mẫu'); } });
       }
     },
     {
@@ -241,21 +247,25 @@
       }
     },
     {
-      label: 'Phản co nguyên sinh', text: 'Nhỏ nước cất vào mẫu vừa thử, rồi đặt giấy thấm', hint: 'Chạm lọ nước cất, sau đó kéo giấy thấm lên bệ kính',
+      label: 'Phản co nguyên sinh', text: 'Nhỏ nước cất vào mép lamen, rồi đặt giấy thấm ở mép đối diện để thay dung dịch', hint: 'Chạm lọ nước cất, sau đó kéo giấy thấm lên bệ kính',
       enter(api) {
         sideTable(api);
         const b = st.bottles.cat; api.setOn(b, true);
         api.tapable(b, () => dropperTo(api, b, () => {
+          // nước cất chạm tới là tế bào bắt đầu phản co ngay; giấy thấm chỉ kéo nước tràn đều qua mẫu
+          const last = st.runs[st.runs.length - 1];
+          st.rate = 0.012;
+          if (last.form === 'loi') { st.recovered = false; st.viewLabel.textContent = 'Nước cất ngấm vào… tế bào hầu như không phản co'; }
+          else { setForm('normal'); st.recovered = true; st.viewLabel.textContent = 'Nước cất ngấm vào: tế bào bắt đầu phản co…'; }
           const p = st.paper; p.style.display = ''; api.place(p, 560, 470); api.setOn(p, true);
           api.draggable(p, {
             target: { x: STAGE.x, y: STAGE.y, r: 120, sx: STAGE.x + 40, sy: STAGE.y - 4 }, onDrop: () => {
-              const last = st.runs[st.runs.length - 1];
-              st.rate = 0.03;
+              st.rate = 0.035; st.paper.style.display = 'none';
               if (last.form === 'loi') {
-                st.recovered = false; st.viewLabel.textContent = 'Tế bào hầu như không phản co';
+                st.viewLabel.textContent = 'Tế bào hầu như không phản co';
                 api.card({ kicker: '🔬 Giải thích khoa học', text: 'Ở dạng co lồi, chất nguyên sinh tách khỏi thành ở mọi phía. Tế bào thường khó hoặc không phản co, tùy mức tổn thương và thời gian ngâm trong dung dịch ưu trương.', sub: 'Mẫu co góc hoặc co lõm, ngâm chưa lâu, thường phản co tốt hơn.' });
-              } else { setForm('normal'); st.recovered = true; st.viewLabel.textContent = 'Tế bào phản co nguyên sinh'; }
-              api.wait(1.8, () => { st.paper.style.display = 'none'; api.done('Xem biểu đồ ➜'); });
+              } else st.viewLabel.textContent = 'Tế bào phản co nguyên sinh';
+              api.wait(1.8, () => api.done('Xem biểu đồ ➜'));
             }
           });
         }));
@@ -277,7 +287,7 @@
 
   // dung dịch ngấm dần qua mẫu: đếm giờ tới khi tế bào ổn định, rồi em gọi tên dạng co
   function soak(api) {
-    st.paper.style.display = 'none';
+    st.paperOn = false;
     const f = formOf(st.C);
     // dạng co tiến triển theo thời gian: góc → lõm → lồi; nồng độ quyết định dạng cuối đạt tới trong thời gian quan sát
     const ORDER = ['goc', 'lom', 'loi'], seq = ORDER.includes(f) ? ORDER.slice(0, ORDER.indexOf(f) + 1) : [f];
@@ -288,12 +298,13 @@
     const sp = api.choices({ label: 'Tốc độ', items: [{ t: '1×', v: 1 }, { t: '5×', v: 5 }, { t: '10×', v: 10 }], value: 5, onPick(v) { st.speed = v; } });
     let t = 0;
     api.loop(dt => {
-      t += dt * st.speed; st.rate = Math.min(0.5, 0.004 * st.speed);
+      // chưa đặt giấy thấm: dung dịch mới chỉ ngấm ở mép, hiện tượng tiến triển chậm hơn
+      t += dt * st.speed * (st.paperOn ? 1 : 0.5); st.rate = Math.min(0.5, 0.004 * st.speed * (st.paperOn ? 1 : 0.5));
       card.querySelector('#plT').textContent = Math.floor(t);
       if (si < seq.length - 1 && settled() && t - tStage > 8) {
         si++; tStage = t; setForm(seq[si], st.C); st.viewLabel.textContent = `Ngâm lâu hơn: chuyển sang ${FORM_NAME[seq[si]].toLowerCase()}…`;
       }
-      if (si === seq.length - 1 && t > 20 && settled()) {
+      if (st.paperOn && si === seq.length - 1 && t > 20 && settled()) {
         card.remove(); sp.remove(); st.rate = 0.035;
         st.viewLabel.textContent = 'Tế bào đã ổn định';
         const right = f === 'nhuoc' || f === 'dang' ? 'Không co' : FORM_NAME[f];
@@ -303,7 +314,7 @@
           explain: EXPLAIN[f]
         }, r => {
           st.runs.push({ C: st.C, sec: Math.round(t), form: f, pct: Math.max(0, shrinkPct()), em: r.answer });
-          st.viewLabel.textContent = `NaCl ${st.C}%: ${FORM_NAME[f]}`;
+          st.viewLabel.textContent = `NaCl ${NL.fmt(st.C, 1)}%: ${FORM_NAME[f]}`;
           api.goto(6);
         });
         return false;
@@ -319,7 +330,7 @@
   };
   const EXPLAIN = {
     nhuoc: 'Nhược trương: nước đi vào, tế bào trương nước, không co.',
-    dang: 'Gần đẳng trương với tế bào này: nước ra vào cân bằng, tế bào giữ nguyên. Đẳng trương hay không còn tùy loại tế bào (0,9% NaCl chỉ đẳng trương với tế bào người).',
+    dang: 'Gần đẳng trương với tế bào này: nước ra vào cân bằng, tế bào giữ nguyên. NaCl 0,9% gần đẳng trương với tế bào động vật có vú (máu người); với tế bào thực vật, dung dịch đẳng trương thường loãng hơn.',
     goc: 'Co góc: nước mới đi ra ít, màng sinh chất mới tách khỏi thành ở các góc. Ở nồng độ này, trong thời gian quan sát tế bào dừng ở co góc.',
     lom: 'Co lõm: tế bào co góc trước, nước tiếp tục đi ra nên các mặt bên lõm vào. Dạng co tiến triển theo thời gian; nồng độ cao hơn thì tới dạng này nhanh hơn.',
     loi: 'Co lồi: tế bào đi qua co góc, co lõm rồi chất nguyên sinh co tròn, tách khỏi thành ở mọi phía. Nồng độ càng cao thì càng nhanh tới dạng này.'

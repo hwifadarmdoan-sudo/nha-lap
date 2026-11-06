@@ -50,13 +50,13 @@
     const style = api.cyl(0.06, 0.07, 2.2, api.mat(0xE9F5B8), [0, 1.95, 0], pis, 10); api.part(style, INFO.style);
     const stigma = api.group(pis, [0, 3.1, 0]); for (let k = 0; k < 3; k++) { const a = k * 2.094; api.sphere(0.12, api.mat(STG, { roughness: 0.15, metalness: 0.1 }), [0.1 * Math.cos(a), 0, 0.1 * Math.sin(a)], stigma, 14); } api.part(stigma, INFO.stigma);
     const feather = api.group(stigma); for (let k = 0; k < 14; k++) { const a = k / 14 * 6.28; api.lineBetween([0, 0, 0], [0.45 * Math.cos(a), 0.15 + (k % 3) * 0.1, 0.45 * Math.sin(a)], 0.012, 0xEFF7C8, feather); } feather.visible = false; feather.traverse(o => o.userData.noPick = true);
-    const sta = api.group(g); api.tag(sta, 'stamen'); const anthers = [];
+    const sta = api.group(g); api.tag(sta, 'stamen'); const anthers = [], fils = [];
     for (let k = 0; k < 6; k++) {
       const a = k * 1.047 + 0.3;
-      const f = api.tube([[0.12 * Math.cos(a), 0.6, 0.12 * Math.sin(a)], [0.35 * Math.cos(a), 1.5, 0.35 * Math.sin(a)], [0.8 * Math.cos(a), 2.4, 0.8 * Math.sin(a)]], 0.025, 0xF7F0D2, sta, 20); api.part(f, INFO.fil);
+      const f = api.tube([[0.12 * Math.cos(a), 0.6, 0.12 * Math.sin(a)], [0.35 * Math.cos(a), 1.5, 0.35 * Math.sin(a)], [0.8 * Math.cos(a), 2.4, 0.8 * Math.sin(a)]], 0.025, 0xF7F0D2, sta, 20); api.part(f, INFO.fil); fils.push(f);
       const an = api.mesh(new T.CapsuleGeometry(0.08, 0.28, 4, 10), api.mat(ANTH, { roughness: 0.8 }), [0.8 * Math.cos(a), 2.46, 0.8 * Math.sin(a)], sta); an.rotation.set(0, -a, Math.PI / 2); api.part(an, INFO.anther); anthers.push(an);
     }
-    return { g, peri, sepals, petals, ovary, ovM, style, stigma, feather, sta, anthers, pis };
+    return { g, peri, sepals, petals, ovary, ovM, style, stigma, feather, sta, anthers, fils, rec, pis };
   }
 
   // ---------- Tab 1: giải phẫu, vector thụ phấn, tua nhanh ----------
@@ -66,6 +66,8 @@
     const bLab = api.label('Hoa khác cùng loài', [0, 3.9, 0], { cls: 'plain', parent: B.g });
     api.label('Cánh hoa', A.petals[1], { off: [0.4, 0.6, 1.4] }); api.label('Đài hoa', A.sepals[2], { off: [0, -0.2, 0.9], cls: 'plain' });
     api.label('Bao phấn', A.anthers[0], { cls: 'tag', color: '#E09A00', off: [0.5, 0.25, 0] }); api.label('Đầu nhụy', A.stigma, { cls: 'tag', color: '#8DB33A', off: [0, 0.45, 0] });
+    api.label('Hạt phấn', A.anthers[3], { cls: 'plain', off: [-0.3, 0.35, 0.3] }); api.label('Chỉ nhị', [0.55, 1.9, -0.45], { cls: 'plain', parent: A.sta });
+    api.label('Vòi nhụy', A.style, { cls: 'plain', off: [-0.55, 0.2, 0.3] }); api.label('Đế hoa', A.rec, { cls: 'plain', off: [0.75, -0.25, 0.3] });
     const oLab = api.label('Bầu nhụy', A.ovary, { cls: 'plain', off: [-0.8, -0.1, 0.5] });
     // hạt trong quả
     const seeds = api.group(A.ovary); api.tag(seeds, 'fruit'); const seedL = [];
@@ -159,7 +161,7 @@
     [[-0.45, 0.3], [0.45, 0.3], [-0.45, -0.3], [0.45, -0.3]].forEach(p => { const m = api.mesh(new T.CapsuleGeometry(0.38, 1.4, 6, 16), api.mat(ANTH, { opacity: 0.35, depthWrite: false }), [p[0], 0, p[1]], sacs); api.part(m, INFO.anther); });
     const pg = new T.IcosahedronGeometry(0.11, 1);
     for (let k = 0; k < 60; k++) { const m = api.mesh(pg, api.mat(POL, { roughness: 0.9 }), [(k % 2 ? 0.45 : -0.45) + (rnd() - 0.5) * 0.4, (rnd() - 0.5) * 1.6, (k % 4 < 2 ? 0.3 : -0.3) + (rnd() - 0.5) * 0.35], sacs); api.part(m, INFO.pollen); }
-    api.label('Bao phấn (4 túi phấn)', sacs, { off: [0, 1.6, 0] }); api.label('Chỉ nhị', fil, { off: [-0.9, -1, 0], cls: 'plain' }); api.label('Hạt phấn (n)', [-3.75, 2.6, 0.6], { cls: 'tag', color: '#E0A100' });
+    api.label('Bao phấn (4 túi phấn)', sacs, { off: [0, 1.6, 0] }); api.label('Chỉ nhị', fil, { off: [-0.9, -1, 0], cls: 'plain' }); api.label('Hạt phấn (n)', [0.45, 2.6, 0.6], { cls: 'tag', color: '#E0A100', parent: st_ });
     // nhụy cắt dọc
     const pis = api.group(); api.tag(pis, 'pistil');
     const stig = api.mesh(new T.SphereGeometry(0.9, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.55), api.mat(STG, { roughness: 0.1, metalness: 0.15, opacity: 0.9 }), [0, 4.8, 0], pis); stig.scale.y = 0.6; api.part(stig, INFO.stigma);
@@ -169,9 +171,9 @@
     const OV = [V(-0.9, -1.5, 0.3), V(0.9, -1.5, -0.3), V(0, -2.2, 0.8)];
     const mic = OV.map(p => p.clone().add(V(-p.x * 0.25, 0.5, -p.z * 0.25)));
     OV.forEach(p => { const m = api.sphere(0.5, 0xF2E4A8, [p.x, p.y, p.z], ovG, 20); m.scale.y = 1.25; api.part(m, INFO.ovule); });
-    api.label('Đầu nhụy (chất nhầy dính)', stig, { off: [1.6, 0.4, 0] }); api.label('Vòi nhụy', sty, { off: [1.2, 0.6, 0], cls: 'plain' }); api.label('Bầu nhụy', ova, { off: [2.2, -0.6, 0], cls: 'plain' }); api.label('Noãn', [0.9, -1.5, -0.3], { off: [0.9, -0.5, 0], cls: 'tag', color: '#C9A100' });
+    api.label('Đầu nhụy (chất nhầy dính)', stig, { off: [1.6, 0.4, 0] }); api.label('Vòi nhụy', sty, { off: [1.2, 0.6, 0], cls: 'plain' }); api.label('Bầu nhụy', ova, { off: [2.2, -0.6, 0], cls: 'plain' }); api.label('Noãn', [1.8, -2.0, -0.3], { cls: 'tag', color: '#C9A100', parent: ovG });
     // hạt phấn và ống phấn
-    const N = 7, tubes = [], tubeG = api.group(); api.tag(tubeG, 'tube');
+    const N = 7, tubes = [], tubeG = api.group(); api.tag(tubeG, 'tube'); let tubeLab = null;
     const chem = []; for (let k = 0; k < 40; k++) { const m = api.sphere(0.05, api.mat(0xFF9A3C, { emissive: 0xFF9A3C, emissiveIntensity: 0.5, opacity: 0.8 }), null, null, 6); m.userData.noPick = true; m.visible = false; chem.push(m); }
     const steps = api.note('');
     let stage = -1, run = null;
@@ -193,6 +195,7 @@
         const nuc = [api.sphere(0.07, 0x7A4FB5, null, tubeG, 8), api.sphere(0.06, 0x3E7BFA, null, tubeG, 8), api.sphere(0.06, 0x3E7BFA, null, tubeG, 8)]; nuc.forEach(n => { n.visible = false; n.userData.noPick = true; });
         tubes.push({ mesh, curve, seg, grain, top, nuc, f: 0, v: 0.11 + rnd() * 0.06, stop: false, delay: rnd() * 0.6 });
       }
+      if (!tubeLab) tubeLab = api.label('Ống phấn (mang 2 tinh tử)', [1.0, 2.2, 0.4], { cls: 'tag', color: '#C9A100', parent: tubeG });
       run = { t0: api.time, winner: null, self };
       api.beep(520, 0.08, 'sine', 0.08);
       addLog(self ? 'Thả phấn cùng cây lên đầu nhụy' : 'Thả phấn cây khác lên đầu nhụy', '…');
@@ -230,7 +233,7 @@
     api.button('▶ Thả hạt phấn lên đầu nhụy', () => release());
     api.button('➡ Bước 3: Thụ tinh kép', () => api.setTab('sac'));
     api.slider({ label: '🚀 Tốc độ mọc ống phấn', min: 1, max: 10, step: 1, value: speed, unit: '×', lazy: true, onInput(v) { speed = v; } });
-    commonCtl(api, o => { op = o; api.setOpacity(sty, o); api.setOpacity(ova, o); });
+    commonCtl(api, o => { op = o; api.setOpacity(sty, o); api.setOpacity(ova, o); }, ['stamen', 'pistil', 'ovule', 'tube']);
     api.view({ pos: [-1.6, 2, 13], target: [-1.6, 1.2, 0], min: 3, max: 24 });
   }
 
@@ -284,16 +287,18 @@
     api.button('▶ Thụ tinh kép', () => go());
     api.button('↺ Về trước thụ tinh', () => { fertilized = false; reset(); });
     api.slider({ label: '🚀 Tốc độ', min: 1, max: 10, step: 1, value: speed, unit: '×', lazy: true, onInput(v) { speed = v; } });
-    commonCtl(api, o => { op = o; api.setOpacity(oi, o); api.setOpacity(ii, o); });
+    commonCtl(api, o => { op = o; api.setOpacity(oi, o); api.setOpacity(ii, o); }, ['ovule', 'tube']);
     api.view({ pos: [0, 0, 12], target: [0, -0.4, 0], min: 3, max: 22 });
   }
 
-  function commonCtl(api, onOp) {
+  // mỗi tab chỉ liệt kê bộ phận có trên hình; nhãn gắn vào bộ phận nên ẩn theo khi tắt
+  const CK = {
+    peri: { k: 'peri', label: 'Cánh hoa, đài hoa' }, stamen: { k: 'stamen', label: 'Bộ nhị (bao phấn, chỉ nhị, hạt phấn)' }, pistil: { k: 'pistil', label: 'Bộ nhụy (đầu nhụy, vòi nhụy, bầu nhụy)' },
+    ovule: { k: 'ovule', label: 'Noãn' }, tube: { k: 'tube', label: 'Ống phấn và 2 tinh tử' }, fruit: { k: 'fruit', label: 'Hạt và quả (sau thụ tinh)' }
+  };
+  function commonCtl(api, onOp, keys) {
     api.slider({ label: 'Độ trong suốt cánh hoa, vòi, bầu', min: 0, max: 100, step: 5, value: Math.round((1 - op) * 100), unit: '%', lazy: true, onInput(v) { onOp(Math.max(0.05, 1 - v / 100)); } });
-    api.checklist([
-      { k: 'peri', label: 'Cánh hoa và Đài hoa' }, { k: 'stamen', label: 'Bộ nhị (Bao phấn, Chỉ nhị, Hạt phấn)' }, { k: 'pistil', label: 'Bộ nhụy (Đầu, Vòi, Bầu nhụy)' },
-      { k: 'ovule', label: 'Noãn và Túi phôi' }, { k: 'tube', label: 'Ống phấn và 2 Tinh tử' }, { k: 'fruit', label: 'Vỏ Hạt và Thịt Quả' }
-    ]);
+    api.checklist((keys || ['peri', 'stamen', 'pistil', 'fruit']).map(k => CK[k]));
   }
 
   function flowSVG() {

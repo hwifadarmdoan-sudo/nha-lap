@@ -9,11 +9,11 @@ NL.chem = (function () {
   };
   // màu hạt trong kính lúp (ion lấy màu nguyên tố chính)
   const SP = {
-    'H⁺': '#E5534B', 'OH⁻': '#8E44AD', 'Cl⁻': '#2EA44F', 'Na⁺': '#9B59B6', 'K⁺': '#A0529F', 'Cu²⁺': '#1E88E5',
+    'H⁺': '#E5534B', 'OH⁻': '#8E44AD', 'Cl⁻': '#2EA44F', 'Na⁺': '#F06292', 'K⁺': '#A0529F', 'Cu²⁺': '#1E88E5',
     'Fe²⁺': '#6FA86A', 'Fe³⁺': '#B5532E', 'Zn²⁺': '#6C7A89', 'Mg²⁺': '#8E6CC9', 'Al³⁺': '#7F8C9A', 'Ag⁺': '#8A9BA8',
     'Ba²⁺': '#2A9D8F', 'Ca²⁺': '#D07A2B', 'SO₄²⁻': '#C9A100', 'NO₃⁻': '#3D6FD9', 'CO₃²⁻': '#555555',
     'CH₃COO⁻': '#E07B00', 'H₂O': '#9CC7E3', 'H₂': '#C9D3DC', 'N₂': '#3D6FD9', 'O₂': '#E5534B', 'CO₂': '#555555',
-    'C₁₂H₂₂O₁₁': '#E8B04B', 'Cu(OH)₂': '#1565C0', 'BaSO₄': '#9AA8B2', 'BaCO₃': '#7F8F99', 'CuCO₃': '#26A69A', 'Fe(OH)₃': '#A0461E', 'Fe(OH)₂': '#5E8C5A', 'Al(OH)₃': '#AAB4BE', 'CH₃COOC₂H₅': '#E8A33D', 'CH₄': '#3B3B3B', 'C': '#222222', 'C₂₅H₅₂': '#C9B47A', 'Al(OH)₄⁻': '#8FA0AE', 'FeCl₃': '#B5532E', 'C₂H₂': '#5A5A5A', 'Fe²⁺(aq)': '#6FA86A', 'CH₃COOH': '#E07B00', 'C₂H₅OH': '#5FA8D3', 'Cu': '#C8743A', 'Fe': '#8C8C8C', 'e⁻': '#FFD54A'
+    'C₁₂H₂₂O₁₁': '#E8B04B', 'Cu(OH)₂': '#1565C0', 'BaSO₄': '#9AA8B2', 'AgCl': '#B0BAC4', 'CaCO₃': '#A3ADB7', 'CaSO₄': '#B8C2CC', 'Ag₂CO₃': '#D9C27A', 'Mg(OH)₂': '#B8C2CC', 'Zn(OH)₂': '#B8C2CC', 'NH₃': '#5DADE2', 'SO₂': '#8E7A3A', 'H₂S': '#7A6A2A', 'NH₄⁺': '#5DADE2', 'S²⁻': '#B8A000', 'HCO₃⁻': '#777777', 'Zn²⁺': '#6C7A89', 'Pb²⁺': '#5A6570', 'PbI₂': '#F2C200', 'I⁻': '#7B3FA0', 'PbSO₄': '#AAB4BE', 'PbCl₂': '#B8C2CC', 'BaCO₃': '#7F8F99', 'CuCO₃': '#26A69A', 'Fe(OH)₃': '#A0461E', 'Fe(OH)₂': '#5E8C5A', 'Al(OH)₃': '#AAB4BE', 'CH₃COOC₂H₅': '#E8A33D', 'CH₄': '#3B3B3B', 'C': '#222222', 'C₂₅H₅₂': '#C9B47A', 'Al(OH)₄⁻': '#8FA0AE', 'FeCl₃': '#B5532E', 'C₂H₂': '#5A5A5A', 'Fe²⁺(aq)': '#6FA86A', 'CH₃COOH': '#E07B00', 'C₂H₅OH': '#5FA8D3', 'Cu': '#C8743A', 'Fe': '#8C8C8C', 'e⁻': '#FFD54A'
   };
   const SYM = Object.keys(EL).sort((a, b) => b.length - a.length);
   const PART = '(?:' + SYM.join('|') + ')[₀-₉]*';
@@ -61,7 +61,9 @@ NL.chem = (function () {
       d._vx = (Math.random() * 2 - 1) * 40; d._vy = (Math.random() * 2 - 1) * 40; d._f = f; d._a = 0; d._ta = 1;
       d.setAttribute('opacity', 0); return d;
     }
-    function set(list) {
+    let clump = {};
+    function set(list, o) {
+      clump = {}; (o && o.clump || []).forEach(f => { clump[f] = 1; });
       const want = {}; list.forEach(s => { want[s.f] = (want[s.f] || 0) + s.n; });
       const have = {};
       parts.forEach(p => { if (p._ta > 0) { have[p._f] = (have[p._f] || 0) + 1; if (have[p._f] > (want[p._f] || 0)) p._ta = 0; } });
@@ -78,6 +80,12 @@ NL.chem = (function () {
         p._a += (p._ta - p._a) * Math.min(1, dt * 3);
         if (p._ta === 0 && p._a < 0.03) { p.remove(); return false; }
         p.setAttribute('opacity', p._a.toFixed(2));
+        if (clump[p._f]) { // hạt kết tủa: kết cụm và lắng xuống đáy kính lúp
+          p._vx *= 0.9; p._vy = Math.min(40, p._vy + dt * 60); p._x += p._vx * dt; p._y += p._vy * dt;
+          const lim = r - 14; if (p._y > lim * 0.75) { p._y = lim * 0.75 + (Math.abs(p._x) < lim * 0.5 ? 0 : 0); p._vy = 0; }
+          if (p._y > 0) p._x += (Math.sign(-p._x) * 10) * dt;
+          api.place(p); return true;
+        }
         p._x += p._vx * dt * (opt.speed || 1); p._y += p._vy * dt * (opt.speed || 1);
         const lim = r - 16;
         if (Math.hypot(p._x, p._y) > lim) { const a = Math.atan2(p._y, p._x); p._x = Math.cos(a) * lim; p._y = Math.sin(a) * lim; p._vx = -p._vx + (Math.random() - 0.5) * 20; p._vy = -p._vy + (Math.random() - 0.5) * 20; }

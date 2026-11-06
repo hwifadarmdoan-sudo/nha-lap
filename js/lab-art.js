@@ -11,7 +11,7 @@ NL.art = (function () {
     const liq = api.el('path', { d: '', fill: opt.color || LIQ }, g);
     api.el('path', { d: `M${-r} ${-h} L${-r} ${-r} A${r} ${r} 0 0 0 ${r} ${-r} L${r} ${-h}`, fill: 'rgba(220,240,255,.25)', stroke: GLASS, 'stroke-width': 3.5 }, g);
     api.el('rect', { x: -r + 4, y: -h + 8, width: 4, height: h - r - 14, rx: 2, fill: 'rgba(255,255,255,.7)' }, g);
-    if (opt.label) api.text(g, 0, -h - 10, opt.label, 15, '#1F4E79', 800);
+    if (opt.label) api.text(g, 0, opt.labelY || -h - 10, opt.label, 15, '#1F4E79', 800);
     g.fill = (color, k) => {
       if (!k) { liq.setAttribute('d', ''); return; }
       const top = -r - (h - r - 6) * k;
