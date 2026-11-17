@@ -32,7 +32,7 @@
           "hair": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 9" },
           "hairColor": { ".validate": "newData.isString() && newData.val().length <= 9" },
           "coat": { ".validate": "newData.isString() && newData.val().length <= 9" },
-          "$other": { ".validate": false }
+          "$other": { ".validate": "(newData.isString() && newData.val().length <= 9) || (newData.isNumber() && newData.val() >= 0 && newData.val() <= 20)" }
         },
         "$other": { ".validate": false }
       }
